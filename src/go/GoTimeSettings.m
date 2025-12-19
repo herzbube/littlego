@@ -40,17 +40,31 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes a GoTimeSettings object with two GoTimeSystem objects
+/// which both have the time system type #GoTimeSystemNone.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  return [self initWithAbsoluteTimeSystem:[[[GoTimeSystem alloc] init] autorelease]
+                    periodBasedTimeSystem:[[[GoTimeSystem alloc] init] autorelease]];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Initializes a GoTimeSettings object with the supplied time systems.
-/// At least one time system must be supplied. If @a absoluteTimeSystem is
-/// supplied, it must have time system type #GoTimeSystemTypeAbsolute. If
-/// @a periodBasedTimeSystem is supplied, it must @b not have time system type
+/// Both time systems can have the time system type #GoTimeSystemNone to
+/// indicate that the game does not use timed play.
+///
+/// The time system type of @a absoluteTimeSystem must be either
+/// #GoTimeSystemNone or #GoTimeSystemTypeAbsolute.
+/// The time system type of @a periodBasedTimeSystem must not be
 /// #GoTimeSystemTypeAbsolute.
 ///
 /// Raises an @e NSInternalInconsistencyException in the following cases:
-/// - If both @a absoluteTimeSystem and @a periodBasedTimeSystem are @e nil.
-/// - If @a absoluteTimeSystem is not @e nil and has a time system type that
-///   is not #GoTimeSystemTypeAbsolute.
-/// - If @a periodBasedTimeSystem is not @e nil and has the time system type
+/// - If either @a absoluteTimeSystem or @a periodBasedTimeSystem or both are
+///   @e nil.
+/// - If the time system type of @a absoluteTimeSystem is neither
+///   #GoTimeSystemTypeNone nor #GoTimeSystemTypeAbsolute.
+/// - If the time system type of @a periodBasedTimeSystem is
 ///   #GoTimeSystemTypeAbsolute.
 ///
 /// @note This is the designated initializer of GoTimeSettings.
@@ -63,20 +77,21 @@
   if (! self)
     return nil;
 
-  if (! absoluteTimeSystem && ! periodBasedTimeSystem)
+  if (! absoluteTimeSystem || ! periodBasedTimeSystem)
   {
-    NSString* errorMessage = @"Failed to initialize GoTimeSettings object, both time systems are nil";
+    NSString* errorMessage = @"Failed to initialize GoTimeSettings object, one or both time systems are nil";
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
-  if (absoluteTimeSystem && absoluteTimeSystem.goTimeSystemType != GoTimeSystemTypeAbsolute)
+  if (absoluteTimeSystem.goTimeSystemType != GoTimeSystemTypeNone &&
+      absoluteTimeSystem.goTimeSystemType != GoTimeSystemTypeAbsolute)
   {
     NSString* errorMessage = @"Failed to initialize GoTimeSettings object, absoluteTimeSystem has unexpected time system type %ld";
     [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:errorMessage
                                                       argumentValue:absoluteTimeSystem.goTimeSystemType];
   }
 
-  if (periodBasedTimeSystem && periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute)
+  if (periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute)
   {
     NSString* errorMessage = @"Failed to initialize GoTimeSettings object, periodBasedTimeSystem has unexpected time system type GoTimeSystemTypeAbsolute";
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
@@ -100,8 +115,8 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.absoluteTimeSystem = [decoder decodeObjectOfClass:[NSDate class] forKey:goTimeSettingsAbsoluteTimeSystem];
-  self.periodBasedTimeSystem = [decoder decodeObjectOfClass:[NSDate class] forKey:goTimeSettingsPeriodBasedTimeSystem];
+  self.absoluteTimeSystem = [decoder decodeObjectOfClass:[NSDate class] forKey:goTimeSettingsAbsoluteTimeSystemKey];
+  self.periodBasedTimeSystem = [decoder decodeObjectOfClass:[NSDate class] forKey:goTimeSettingsPeriodBasedTimeSystemKey];
 
   return self;
 }
@@ -131,8 +146,8 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-  [encoder encodeObject:self.absoluteTimeSystem forKey:goTimeSettingsAbsoluteTimeSystem];
-  [encoder encodeObject:self.periodBasedTimeSystem forKey:goTimeSettingsPeriodBasedTimeSystem];
+  [encoder encodeObject:self.absoluteTimeSystem forKey:goTimeSettingsAbsoluteTimeSystemKey];
+  [encoder encodeObject:self.periodBasedTimeSystem forKey:goTimeSettingsPeriodBasedTimeSystemKey];
 }
 
 @end

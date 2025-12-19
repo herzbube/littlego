@@ -21,6 +21,7 @@
 @class GoNodeAnnotation;
 @class GoNodeMarkup;
 @class GoNodeSetup;
+@class GoNodeTimeData;
 
 
 // -----------------------------------------------------------------------------
@@ -147,8 +148,9 @@
 /// A node is empty if it has no setup data (property @e goNodeSetup is @e nil
 /// or the GoNodeSetup object's property @e isEmpty is @e true), no move data
 /// (property @e goMove is @e nil), no annotation data (property
-/// @e goNodeAnnotation is @e nil) and no markup data (property @e goNodeMarkup
-/// is @e nil or the GoNodeMarkup object's property @e hasMarkup is @e false).
+/// @e goNodeAnnotation is @e nil), no markup data (property @e goNodeMarkup
+/// is @e nil or the GoNodeMarkup object's property @e hasMarkup is @e false)
+/// and no time data (property @e goNodeTimeData is @e nil).
 @property(nonatomic, assign, getter=isEmpty, readonly) bool empty;
 
 /// @brief The game setup data associated with this node. @e nil if this node
@@ -166,6 +168,10 @@
 /// @brief The markup data associated with this node. @e nil if this
 /// node has no associated markup data. The default value is @e nil.
 @property(nonatomic, retain) GoNodeMarkup* goNodeMarkup;
+
+/// @brief The time data associated with this node. @e nil if this
+/// node has no associated time data. The default value is @e nil.
+@property(nonatomic, retain) GoNodeTimeData* goNodeTimeData;
 //@}
 
 /// @brief Zobrist hash that identifies the board position created by this node.

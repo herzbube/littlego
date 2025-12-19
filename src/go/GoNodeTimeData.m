@@ -85,4 +85,20 @@
   [encoder encodeInt:self.remainingNumberOfPeriods forKey:goNodeTimeDataRemainingNumberOfPeriodsKey];
 }
 
+#pragma mark - NSObject overrides
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GoNodeTimeData object.
+///
+/// This method is invoked when GoNodeTimeData needs to be represented as a
+/// string, i.e. by NSLog, or when the debugger command "po" is used on the
+/// object.
+// -----------------------------------------------------------------------------
+- (NSString*) description
+{
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GoNodeTimeData(%p): isRemainingTimeAbsoluteTime = %d, remainingTimeInSeconds = %f, remainingNumberOfMoves = %d, remainingNumberOfPeriods = %d", self, _isRemainingTimeAbsoluteTime, _remainingTimeInSeconds, _remainingNumberOfMoves, _remainingNumberOfPeriods];
+}
+
 @end

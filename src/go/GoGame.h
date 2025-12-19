@@ -27,6 +27,7 @@
 @class GoPlayer;
 @class GoPoint;
 @class GoScore;
+@class GoTimeSettings;
 
 
 // -----------------------------------------------------------------------------
@@ -197,6 +198,10 @@
 @property(nonatomic, retain) GoBoardPosition* boardPosition;
 /// @brief Defines the rules that are in effect for this GoGame.
 @property(nonatomic, retain) GoGameRules* rules;
+/// @brief Defines the time settings that are in effect for this GoGame. For
+/// non-timed play the GoTimeSettings object contains two GoTimeSystem objects
+/// that both have the time system type #GoTimeSystemTypeNone.
+@property(nonatomic, retain) GoTimeSettings* timeSettings;
 /// @brief Represents this GoGame as a document that can be saved to / loaded
 /// from disk.
 @property(nonatomic, retain) GoGameDocument* document;

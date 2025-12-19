@@ -31,6 +31,7 @@
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoScore.h"
+#import "GoTimeSettings.h"
 #import "GoUtilities.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
@@ -38,6 +39,9 @@
 #import "../player/Player.h"
 #import "../utility/ExceptionUtility.h"
 #import "../utility/NSArrayAdditions.h"
+
+
+// TODO xxx update unit tests for new property timeSettings
 
 
 @implementation GoGame
@@ -81,6 +85,7 @@
   // GoNodeModel to be already around
   _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
   _rules = [[GoGameRules alloc] init];
+  _timeSettings = [[GoTimeSettings alloc] init];
   _document = [[GoGameDocument alloc] init];
   _score = [[GoScore alloc] initWithGame:self];
   self.setupFirstMoveColor = GoColorNone;
@@ -117,6 +122,10 @@
   _reasonForComputerIsThinking = [decoder decodeIntForKey:goGameReasonForComputerIsThinking];
   _boardPosition = [[decoder decodeObjectOfClass:[GoBoardPosition class] forKey:goGameBoardPositionKey] retain];
   _rules = [[decoder decodeObjectOfClass:[GoGameRules class] forKey:goGameRulesKey] retain];
+  _timeSettings = [[decoder decodeObjectOfClass:[GoTimeSettings class] forKey:goGameTimeSettingsKey] retain];
+  // Backward compatibility so we don't have to increase the NSCoding version
+  if (! _timeSettings)
+    _timeSettings = [[GoTimeSettings alloc] init];
   _document = [[decoder decodeObjectOfClass:[GoGameDocument class] forKey:goGameDocumentKey] retain];
   _score = [[decoder decodeObjectOfClass:[GoScore class] forKey:goGameScoreKey] retain];
   self.setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
@@ -156,6 +165,7 @@
   self.boardPosition = nil;
   self.nodeModel = nil;
   self.rules = nil;
+  self.timeSettings = nil;
   self.document = nil;
   self.score = nil;
 
@@ -1611,6 +1621,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   [encoder encodeInt:self.reasonForComputerIsThinking forKey:goGameReasonForComputerIsThinking];
   [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
   [encoder encodeObject:self.rules forKey:goGameRulesKey];
+  [encoder encodeObject:self.timeSettings forKey:goGameTimeSettingsKey];
   [encoder encodeObject:self.document forKey:goGameDocumentKey];
   [encoder encodeObject:self.score forKey:goGameScoreKey];
   [encoder encodeInt:self.setupFirstMoveColor forKey:goGameSetupFirstMoveColorKey];

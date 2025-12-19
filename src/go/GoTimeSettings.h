@@ -29,14 +29,15 @@
 {
 }
 
+- (id) init;
 - (id) initWithAbsoluteTimeSystem:(GoTimeSystem*)absoluteTimeSystem
             periodBasedTimeSystem:(GoTimeSystem*)periodBasedTimeSystem;
 
-/// @brief The absolute time system that is in effect. Is @e nil if no absolute
-/// time system is in effect.
+/// @brief The absolute time system that is in effect. The GoTimeSystem object
+/// has #GoTimeSystemNone if no absolute time system is in effect.
 @property(nonatomic, retain, readonly) GoTimeSystem* absoluteTimeSystem;
-/// @brief The period-based time system that is in effect. Is @e nil if no
-/// period-based time system is in effect.
+/// @brief The period-based time system that is in effect. The GoTimeSystem object
+/// has #GoTimeSystemNone if no period-based time system is in effect.
 @property(nonatomic, retain, readonly) GoTimeSystem* periodBasedTimeSystem;
 
 @end

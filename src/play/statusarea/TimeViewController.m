@@ -18,6 +18,10 @@
 // Project includes
 #import "TimeViewController.h"
 #import "TimeView.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoTimeSettings.h"
+#import "../../go/GoTimeSystem.h"
+#import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/ExceptionUtility.h"
@@ -31,6 +35,7 @@
 @property(nonatomic, retain) TimeView* timeViewWhitePlayer;
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizerTimeViewBlackPlayer;
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizerTimeViewWhitePlayer;
+@property(nonatomic, assign) bool timeDataNeedsUpdate;
 @end
 
 
@@ -55,6 +60,10 @@
   self.tapRecognizerTimeViewBlackPlayer = nil;
   self.tapRecognizerTimeViewWhitePlayer = nil;
 
+  self.timeDataNeedsUpdate = false;
+
+  [self setupNotificationResponders];
+
   return self;
 }
 
@@ -63,12 +72,34 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeNotificationResponders];
+  
   self.timeViewBlackPlayer = nil;
   self.timeViewWhitePlayer = nil;
   self.tapRecognizerTimeViewBlackPlayer = nil;
   self.tapRecognizerTimeViewWhitePlayer = nil;
 
   [super dealloc];
+}
+
+#pragma mark - Setup/remove notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - UIViewController overrides
@@ -194,6 +225,104 @@
       [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"Invalid clock state %d"
                                                   argumentValue:timeView.clockState];
       break;
+  }
+}
+
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  self.timeDataNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notification.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  [self delayedUpdate];
+}
+
+#pragma mark - Updaters
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
+    return;
+
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(delayedUpdate) withObject:nil waitUntilDone:YES];
+    return;
+  }
+
+  [self updateTimeData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates TimeView objects to display each player's current time data.
+// -----------------------------------------------------------------------------
+- (void) updateTimeData
+{
+  if (! self.timeDataNeedsUpdate)
+    return;
+  self.timeDataNeedsUpdate = false;
+
+  GoGame* game = [GoGame sharedGame];
+  GoTimeSettings* timeSettings = game.timeSettings;
+
+  NSArray* timeSystems = @[timeSettings.absoluteTimeSystem, timeSettings.periodBasedTimeSystem];
+  for (GoTimeSystem* timeSystem in timeSystems)
+  {
+    if (timeSystem.goTimeSystemType != GoTimeSystemTypeNone &&
+        timeSystem.goTimeSystemType != GoTimeSystemTypeCustom)
+    {
+      [self updateTimeData:self.timeViewBlackPlayer timeSystem:timeSystem];
+      [self updateTimeData:self.timeViewWhitePlayer timeSystem:timeSystem];
+      break;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates TimeView objects to display each player's current time data.
+// -----------------------------------------------------------------------------
+- (void) updateTimeData:(TimeView*)timeView timeSystem:(GoTimeSystem*)timeSystem
+{
+  timeView.clockState = GoClockStateStopped;
+
+  if (timeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute)
+  {
+    timeView.isRemainingTimeAbsoluteTime = true;
+    timeView.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
+    timeView.remainingNumberOfMovesOrPeriods = 0;
+  }
+  else
+  {
+    timeView.isRemainingTimeAbsoluteTime = false;
+    if (timeSystem.goTimeSystemType == GoTimeSystemTypeJapanese)
+    {
+      timeView.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
+      timeView.remainingNumberOfMovesOrPeriods = timeSystem.numberOfPeriods;
+    }
+    else if (timeSystem.goTimeSystemType == GoTimeSystemTypeFischer)
+    {
+      timeView.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
+      // TODO xxx TimeView should not show anything
+      timeView.remainingNumberOfMovesOrPeriods = 0;
+    }
+    else
+    {
+      timeView.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
+      timeView.remainingNumberOfMovesOrPeriods = timeSystem.minimumNumberOfMovesPerPeriod;
+    }
   }
 }
 

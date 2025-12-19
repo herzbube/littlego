@@ -23,8 +23,12 @@
 #import "GoNodeAnnotation.h"
 #import "GoNodeMarkup.h"
 #import "GoNodeSetup.h"
+#import "GoNodeTimeData.h"
 #import "GoZobristTable.h"
 #import "../utility/ExceptionUtility.h"
+
+
+// TODO xxx update unit tests for new property goNodeTimeData
 
 
 // -----------------------------------------------------------------------------
@@ -73,6 +77,7 @@
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
+  self.goNodeTimeData = nil;
 
   self.zobristHash = 0;
 
@@ -111,6 +116,7 @@
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
+  self.goNodeTimeData = nil;
 
   [super dealloc];
 }
@@ -125,12 +131,13 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@",
+  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@, %@",
           self,
           _goNodeSetup ? _goNodeSetup : @"No setup",
           _goMove ? _goMove : @"No move",
           _goNodeAnnotation ? _goNodeAnnotation : @"No annotation",
-          _goNodeMarkup ? _goNodeMarkup : @"No markup"];
+          _goNodeMarkup ? _goNodeMarkup : @"No markup",
+          _goNodeTimeData ? _goNodeTimeData : @"No time data"];
 }
 
 #pragma mark - NSCoding overrides
@@ -167,6 +174,7 @@
   self.goMove = [decoder decodeObjectOfClass:[GoMove class] forKey:goNodeGoMoveKey];
   self.goNodeAnnotation = [decoder decodeObjectOfClass:[GoNodeAnnotation class] forKey:goNodeGoNodeAnnotationKey];
   self.goNodeMarkup = [decoder decodeObjectOfClass:[GoNodeMarkup class] forKey:goNodeGoNodeMarkupKey];
+  self.goNodeTimeData = [decoder decodeObjectOfClass:[GoNodeTimeData class] forKey:goNodeGoNodeTimeDataKey];
 
   // The hash was not archived. Whoever is unarchiving this GoNode is
   // responsible for re-calculating the hash.
@@ -213,6 +221,8 @@
     [encoder encodeObject:self.goNodeAnnotation forKey:goNodeGoNodeAnnotationKey];
   if (self.goNodeMarkup)
     [encoder encodeObject:self.goNodeMarkup forKey:goNodeGoNodeMarkupKey];
+  if (self.goNodeTimeData)
+    [encoder encodeObject:self.goNodeTimeData forKey:goNodeGoNodeTimeDataKey];
 
   // GoZobristTable is not archived, instead a new GoZobristTable object with
   // random values is created each time when a game is unarchived. Zobrist
@@ -404,7 +414,8 @@
   return ((! self.goNodeSetup || self.goNodeSetup.isEmpty) &&
           ! self.goMove &&
           ! self.goNodeAnnotation &&
-          (! self.goNodeMarkup || ! self.goNodeMarkup.hasMarkup));
+          (! self.goNodeMarkup || ! self.goNodeMarkup.hasMarkup) &&
+          ! self.goNodeTimeData);
 }
 
 #pragma mark - Public API - Changing the board based upon the node's data
@@ -418,6 +429,7 @@
     [self.goMove doIt];
   else if (self.goNodeSetup)
     [self.goNodeSetup applySetup];
+  // TODO xxx consider modifying GoPlayerTimeData
 }
 
 // -----------------------------------------------------------------------------
@@ -429,6 +441,7 @@
     [self.goMove undo];
   else if (self.goNodeSetup)
     [self.goNodeSetup revertSetup];
+  // TODO xxx consider modifying GoPlayerTimeData
 }
 
 #pragma mark - Public API - Calculating the Zobrist hash

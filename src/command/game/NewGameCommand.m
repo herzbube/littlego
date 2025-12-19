@@ -29,7 +29,10 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameRules.h"
 #import "../../go/GoPlayer.h"
+#import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoTimeSettings.h"
+#import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
 #import "../../play/model/BoardSetupModel.h"
 #import "../../player/Player.h"
@@ -190,13 +193,27 @@
       newGame.rules.disputeResolutionRule = newGameModel.disputeResolutionRule;
       newGame.rules.fourPassesRule = newGameModel.fourPassesRule;
     }
+    // TODO xxx replace with values chosen by the user
+    GoTimeSystem* absoluteTimeSystem = [[[GoTimeSystem alloc] initWithAbsoluteTimeDurationInSeconds:30.0] autorelease];
+    GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithGoTimeSystemType:GoTimeSystemTypeCanadian
+                                                                  periodDurationInSeconds:60.0
+                                                            minimumNumberOfMovesPerPeriod:3
+                                                                     goUnusedTimeHandling:GoUnusedTimeHandlingRoundDown] autorelease];
+    GoTimeSettings* timeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:absoluteTimeSystem
+                                                                 periodBasedTimeSystem:periodBasedTimeSystem] autorelease];
+    GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:timeSettings] autorelease];
+    GoPlayerTimeData* whitePlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:timeSettings] autorelease];
+    newGame.timeSettings = timeSettings;
+    newGame.playerBlack.timeData = blackPlayerTimeData;
+    newGame.playerWhite.timeData = whitePlayerTimeData;
   }
   DDLogVerbose((@"%@: Game object configuration: board = %@, "
                 "komi = %.1f, handicapPoints = %@, "
                 "playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), "
                 "type = %d, "
                 "koRule = %d, scoringSystem = %d, "
-                "lifeAndDeathSettlingRule = %d, disputeResolutionRule = %d, fourPassesRule = %d"),
+                "lifeAndDeathSettlingRule = %d, disputeResolutionRule = %d, fourPassesRule = %d, "
+                "absoluteTimeSystem = %@, period-based time system = %@"),
                [self shortDescription],
                newGame.board,
                newGame.komi,
@@ -210,7 +227,9 @@
                newGame.rules.scoringSystem,
                newGame.rules.lifeAndDeathSettlingRule,
                newGame.rules.disputeResolutionRule,
-               newGame.rules.fourPassesRule);
+               newGame.rules.fourPassesRule,
+               newGame.timeSettings.absoluteTimeSystem,
+               newGame.timeSettings.periodBasedTimeSystem);
 
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what

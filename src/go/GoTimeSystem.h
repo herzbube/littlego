@@ -28,6 +28,7 @@
 }
 
 - (id) init;
+- (id) initWithCustomTimeSystemDescription:(NSString*)customTimeSystemDescription;
 - (id) initWithAbsoluteTimeDurationInSeconds:(double)absoluteTimeDurationInSeconds;
 - (id) initWithGoTimeSystemType:(enum GoTimeSystemType)goTimeSystemType
         periodDurationInSeconds:(double)periodDurationInSeconds
@@ -39,37 +40,32 @@
                         extraTimeDurationInSeconds:(double)extraTimeDurationInSeconds;
 
 /// @brief The type of time system that this GoTimeSystem object represents.
-///
-/// The default value is #GoTimeSystemNone.
 @property(nonatomic, assign, readonly) enum GoTimeSystemType goTimeSystemType;
-/// @brief The number of time periods the time system has.
+/// @brief A string describing the time system when @e goTimeSystemType has
+/// the type #GoTimeSystemTypeCustom. Is @e nil if @e goTimeSystemType has some
+/// other type.
 ///
-/// The default value after initialization is 0.
+/// This property corresponds to the SGF time property OT. It is used when the
+/// app fails to parse the value of the OT property.
+@property(nonatomic, assign, readonly) NSString* customTimeSystemDescription;
+/// @brief The number of time periods the time system has.
 @property(nonatomic, assign, readonly) unsigned int numberOfPeriods;
 /// @brief The duration of each time period in seconds.
-///
-/// The default value after initialization is 0.0.
 @property(nonatomic, assign, readonly) double periodDurationInSeconds;
 /// @brief Whether or not the time system requires the player to play a minimum
 /// number of moves per time period.
-///
-/// The default value after initialization is false.
 @property(nonatomic, assign, readonly) bool hasMinimumNumberOfMovesPerPeriod;
 /// @brief The minimum number of moves a player has to make within each time
 /// period.
 ///
 /// This property can be ignored if @e hasMinimumNumberOfMovesPerPeriod is
 /// false.
-///
-/// The default value after initialization is 0.
 @property(nonatomic, assign, readonly) unsigned int minimumNumberOfMovesPerPeriod;
 /// @brief Indicates what to do with the remaining unused time
 /// after @e minimumNumberOfMovesPerPeriod have been played.
 ///
 /// This property can be ignored if @e hasMinimumNumberOfMovesPerPeriod is
 /// false.
-///
-/// The default value after initialization is #GoUnusedTimeHandlingNone.
 @property(nonatomic, assign, readonly) enum GoUnusedTimeHandling goUnusedTimeHandling;
 /// @brief The extra time duration in seconds to be added to the remaining
 /// unused time after @e minimumNumberOfMovesPerPeriod have been played.
@@ -77,8 +73,6 @@
 /// This property can be ignored if @e hasMinimumNumberOfMovesPerPeriod is
 /// false, or if @e goUnusedTimeHandling is not
 /// #GoUnusedTimeHandlingAddExtraTime.
-///
-/// The default value after initialization is 0.
 @property(nonatomic, assign, readonly) double extraTimeDurationInSeconds;
 
 @end

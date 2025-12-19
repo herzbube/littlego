@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoPlayerTimeData;
 @class Player;
 
 
@@ -47,5 +48,13 @@
 /// @brief Returns a string that corresponds to the color taken by the
 /// player. "B" for black, "W" for white.
 @property(nonatomic, assign, readonly) NSString* colorString;
+/// @brief Reference to a GoPlayerTimeData object that stores time data for
+/// the GoPlayer in a game that uses timed play. Is @e nil if the game does not
+/// use timed play.
+///
+/// This property is @e nil for newly initialized GoPlayer objects. For games
+/// that use timed play, the property must be populated by an actor that has
+/// information about the game's time settings.
+@property(nonatomic, retain) GoPlayerTimeData* timeData;
 
 @end

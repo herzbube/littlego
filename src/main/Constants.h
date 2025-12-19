@@ -2298,12 +2298,14 @@ extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameReasonForComputerIsThinking;
 extern NSString* goGameBoardPositionKey;
 extern NSString* goGameRulesKey;
+extern NSString* goGameTimeSettingsKey;
 extern NSString* goGameDocumentKey;
 extern NSString* goGameScoreKey;
 extern NSString* goGameSetupFirstMoveColorKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
+extern NSString* goPlayerTimeDataKey;
 // GoPlayerTimeData keys
 extern NSString* goPlayerTimeDataTimeSettingsKey;
 extern NSString* goPlayerTimeDataClockKey;
@@ -2345,6 +2347,7 @@ extern NSString* goNodeGoNodeSetupKey;
 extern NSString* goNodeGoMoveKey;
 extern NSString* goNodeGoNodeAnnotationKey;
 extern NSString* goNodeGoNodeMarkupKey;
+extern NSString* goNodeGoNodeTimeDataKey;
 // GoNodeSetup keys
 extern NSString* goNodeSetupGameKey;
 extern NSString* goNodeSetupBlackSetupStonesKey;
@@ -2432,16 +2435,17 @@ extern NSString* goClockSuspendedReasonKey;
 extern NSString* goClockStartDateKey;
 extern NSString* goClockElapsedTimeInSecondsKey;
 // GoTimeSystem keys
-extern NSString* goTimeSystemGoTimeSystemType;
-extern NSString* goTimeSystemNumberOfPeriods;
-extern NSString* goTimeSystemPeriodDurationInSeconds;
-extern NSString* goTimeSystemHasMinimumNumberOfMovesPerPeriod;
-extern NSString* goTimeSystemMinimumNumberOfMovesPerPeriod;
-extern NSString* goTimeSystemGoUnusedTimeHandling;
-extern NSString* goTimeSystemExtraTimeDurationInSeconds;
+extern NSString* goTimeSystemGoTimeSystemTypeKey;
+extern NSString* goTimeSystemCustomTimeSystemDescriptionKey;
+extern NSString* goTimeSystemNumberOfPeriodsKey;
+extern NSString* goTimeSystemPeriodDurationInSecondsKey;
+extern NSString* goTimeSystemHasMinimumNumberOfMovesPerPeriodKey;
+extern NSString* goTimeSystemMinimumNumberOfMovesPerPeriodKey;
+extern NSString* goTimeSystemGoUnusedTimeHandlingKey;
+extern NSString* goTimeSystemExtraTimeDurationInSecondsKey;
 // GoTimeSettings keys
-extern NSString* goTimeSettingsAbsoluteTimeSystem;
-extern NSString* goTimeSettingsPeriodBasedTimeSystem;
+extern NSString* goTimeSettingsAbsoluteTimeSystemKey;
+extern NSString* goTimeSettingsPeriodBasedTimeSystemKey;
 //@}
 
 // -----------------------------------------------------------------------------

@@ -17,11 +17,15 @@
 
 // Project includes
 #import "GoPlayer.h"
+#import "GoPlayerTimeData.h"
 #import "../main/ModelProvider.h"
 #import "../main/Registry.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../newgame/NewGameModel.h"
+
+
+// TODO xxx update unit tests for new property timeData
 
 
 // -----------------------------------------------------------------------------
@@ -139,6 +143,7 @@
 
   self.player = aPlayer;
   self.black = true;
+  self.timeData = nil;
 
   return self;
 }
@@ -165,6 +170,7 @@
   NSString* uuid = [decoder decodeObjectOfClass:[NSString class] forKey:goPlayerPlayerUUIDKey];
   self.player = [GoPlayer playerWithUUID:uuid];
   self.black = [decoder decodeBoolForKey:goPlayerIsBlackKey];
+  self.timeData = [decoder decodeObjectOfClass:[GoPlayerTimeData class] forKey:goPlayerTimeDataKey];
 
   if (! self.player)
   {
@@ -193,6 +199,8 @@
 - (void) dealloc
 {
   self.player = nil;
+  self.timeData = nil;
+
   [super dealloc];
 }
 
@@ -252,6 +260,7 @@
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.player.uuid forKey:goPlayerPlayerUUIDKey];
   [encoder encodeBool:self.isBlack forKey:goPlayerIsBlackKey];
+  [encoder encodeObject:self.timeData forKey:goPlayerTimeDataKey];
 }
 
 @end
