@@ -50,13 +50,13 @@
 /// @brief The state of the clock (e.g. stopped, running, etc.).
 ///
 /// The default value after initialization is #GoClockStateStopped.
-@property(nonatomic, assign) enum GoClockState state;
+@property(nonatomic, assign, readonly) enum GoClockState state;
 /// @brief The reason why the clock is currently suspended.
 ///
 /// This property has value #GoClockSuspendedReasonNotSuspended if the clock
 /// is currently not suspended, i.e. if property @e state does not have the
 /// value #GoClockStateSuspended.
-@property(nonatomic, assign) enum GoClockSuspendedReason suspendedReason;
+@property(nonatomic, assign, readonly) enum GoClockSuspendedReason suspendedReason;
 /// @brief Returns the total time in seconds that has elapsed since the
 /// clock was last started (excluding time during which the clock was
 /// suspended). Returns 0 if the clock is currently stopped.

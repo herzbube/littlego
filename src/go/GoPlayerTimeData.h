@@ -51,14 +51,11 @@
                                                      goNodeTimeData:(GoNodeTimeData*)goNodeTimeData;
 - (double) timeWithoutMoveUntilGameIsLostOnTime;
 - (int) remainingNumberOfMovesOrPeriods;
+- (enum GoClockState) clockState;
 
 /// @brief True if this GoPlayerTimeData object holds time data for the black
 /// player, false if it holds time data for the white player.
 @property(nonatomic, assign, readonly) bool isTimeDataForBlackPlayer;
-/// @brief The clock that is used to keep the time for the player.
-///
-/// TODO xxx remove from public interface?
-@property(nonatomic, retain, readonly) GoClock* goClock;
 /// @brief True if @e remainingTimeInSeconds refers to absolute time, false if
 /// not.
 ///

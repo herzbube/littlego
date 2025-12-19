@@ -115,6 +115,7 @@ NSString* nodeTreeViewNodeSymbolDidChange = @"NodeTreeViewNodeSymbolDidChange";
 // Time-based play notifications
 NSString* playerClockStateHasChanged = @"PlayerClockStateHasChanged";
 NSString* playerTimeDataHasChanged = @"PlayerTimeDataHasChanged";
+NSString* playerLostOnTime = @"PlayerLostOnTime";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";

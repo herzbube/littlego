@@ -222,10 +222,9 @@
   GoPlayerTimeData* playerTimeData = (sender == self.tapRecognizerTimeViewBlackPlayer
                                       ? game.playerBlack.timeData
                                       : game.playerWhite.timeData);
-  GoClock* clock = playerTimeData.goClock;
 
-  // TODO xxx implement real handling
-  switch (clock.state)
+  // TODO xxx implement real handling => implement command
+  switch (playerTimeData.clockState)
   {
     case GoClockStateStopped:
       [playerTimeData startClock];
@@ -238,7 +237,7 @@
       break;
     default:
       [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"Invalid clock state %d"
-                                                  argumentValue:clock.state];
+                                                  argumentValue:playerTimeData.clockState];
       break;
   }
 }
@@ -375,7 +374,7 @@
 - (void) updateClockStateInTimeView:(TimeView*)timeView
                  withPlayerTimeData:(GoPlayerTimeData*)playerTimeData
 {
-  timeView.clockState = playerTimeData.goClock.state;
+  timeView.clockState = playerTimeData.clockState;
 }
 
 // -----------------------------------------------------------------------------

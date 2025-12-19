@@ -25,12 +25,20 @@
 /// @brief Class extension with private properties for GoClock.
 // -----------------------------------------------------------------------------
 @interface GoClock()
+/// @name Private properties
+//@{
 /// @brief Timestamp when the clock was started.
 @property(nonatomic, retain) NSDate* startDate;
 /// @brief Every time the clock is suspended the elapsed time since the clock
 /// was started is calculated and added to this property. If the clock is
 /// suspended multiple times, this property stores the cumulated elapsed times.
 @property(nonatomic, assign) double elapsedTimeInSeconds;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) enum GoClockState state;
+@property(nonatomic, assign, readwrite) enum GoClockSuspendedReason suspendedReason;
+//@}
 @end
 
 

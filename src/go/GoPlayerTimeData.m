@@ -24,7 +24,7 @@
 #import "../utility/ExceptionUtility.h"
 
 
-static NSTimeInterval timerIntervalOneSecond = 1.0;
+static double timerIntervalOneSecond = 1.0;
 
 // TODO xxx Review synchronization, e.g. timer/Fuego/user triggers could overlap
 // TODO xxx Add unit tests
@@ -37,12 +37,15 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
 //@{
 /// @brief The time settings that provide the parameters for the updating logic.
 @property(nonatomic, assign) GoTimeSettings* goTimeSettings;
+/// @brief The clock that is used to keep the time for the player.
+@property(nonatomic, retain, readwrite) GoClock* goClock;
+/// @brief The timer object used to periodically update the time data in this
+/// GoPlayerTimeData object.
 @property(nonatomic, retain) NSTimer* timer;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) bool isTimeDataForBlackPlayer;
-@property(nonatomic, retain, readwrite) GoClock* goClock;
 @property(nonatomic, assign, readwrite) bool isRemainingTimeAbsoluteTime;
 @property(nonatomic, assign, readwrite) double remainingTimeInSeconds;
 @property(nonatomic, assign, readwrite) unsigned int remainingNumberOfMoves;
@@ -71,10 +74,10 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
     return nil;
 
   self.goTimeSettings = goTimeSettings;
+  self.goClock = [[[GoClock alloc] init] autorelease];
   self.timer = nil;
 
   self.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
-  self.goClock = [[[GoClock alloc] init] autorelease];
 
   // Initializes the remaining properties
   [self updateWithTimeSettings];
@@ -95,9 +98,9 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
     return nil;
 
   self.goTimeSettings = [decoder decodeObjectOfClass:[GoTimeSettings class] forKey:goPlayerTimeDataTimeSettingsKey];
+  self.goClock = [decoder decodeObjectOfClass:[GoClock class] forKey:goPlayerTimeDataClockKey];
   // TODO xxx probably we don't need to get the timer from the archive
   self.isTimeDataForBlackPlayer = [decoder decodeBoolForKey:goPlayerTimeDataIsTimeDataForBlackPlayerKey];
-  self.goClock = [decoder decodeObjectOfClass:[GoClock class] forKey:goPlayerTimeDataClockKey];
   self.isRemainingTimeAbsoluteTime = [decoder decodeBoolForKey:goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey];
   self.remainingTimeInSeconds = [decoder decodeDoubleForKey:goPlayerTimeDataRemainingTimeInSecondsKey];
   self.remainingNumberOfMoves = [decoder decodeIntForKey:goPlayerTimeDataRemainingNumberOfMovesKey];
@@ -132,9 +135,9 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.goTimeSettings forKey:goPlayerTimeDataTimeSettingsKey];
+  [encoder encodeObject:self.goClock forKey:goPlayerTimeDataClockKey];
   // TODO xxx probably we don't need to archive the timer
   [encoder encodeBool:self.isTimeDataForBlackPlayer forKey:goPlayerTimeDataIsTimeDataForBlackPlayerKey];
-  [encoder encodeObject:self.goClock forKey:goPlayerTimeDataClockKey];
   [encoder encodeBool:self.isRemainingTimeAbsoluteTime forKey:goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey];
   [encoder encodeDouble:self.remainingTimeInSeconds forKey:goPlayerTimeDataRemainingTimeInSecondsKey];
   [encoder encodeInt:self.remainingNumberOfMoves forKey:goPlayerTimeDataRemainingNumberOfMovesKey];
@@ -368,6 +371,17 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
     return self.remainingNumberOfMoves;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief The state of the clock that is used to keep the time for the
+/// player (e.g. stopped, running, etc.).
+///
+/// The default value after initialization is #GoClockStateStopped.
+// -----------------------------------------------------------------------------
+- (enum GoClockState) clockState
+{
+  return self.goClock.state;
+}
+
 #pragma mark - Clock/timer handling
 
 // -----------------------------------------------------------------------------
@@ -377,18 +391,19 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
 {
   @synchronized(self)
   {
-    NSNumber* timerInterval = [self timerIntervalFiringAtNextRemainingSecond];
+    if (self.goClock.state == GoClockStateStarted)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to start clock for %d, clock is already started", self.isTimeDataForBlackPlayer];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
 
-    // TODO xxx state check needed? yes! must not start two timers
-    if (self.goClock.state == GoClockStateStopped)
-      [self.goClock start];
-    else
-      [self.goClock resume];
+    [self.goClock start];
 
     // In case the timer fires exactly at the interval: By scheduling the timer
     // AFTER the clock has started, we can be sure that the clock will NOT see
     // that less than one second have elapsed.
-    [self scheduleTimerOnMainThread:timerInterval];
+    double timerInterval = [GoPlayerTimeData timeUntilNextFullSecond:self.remainingTimeInSeconds];
+    [self scheduleTimerOnMainThread:[NSNumber numberWithDouble:timerInterval]];
 
     [self postNotificationOnMainThread:playerClockStateHasChanged];
   }
@@ -401,37 +416,36 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
 {
   @synchronized(self)
   {
+    if (self.goClock.state != GoClockStateStarted)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to suspend clock for %d, clock is not started, state = %d", self.isTimeDataForBlackPlayer, self.goClock.state];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+
     [self invalidateTimerOnMainThread];
 
-    // TODO xxx state check needed? Yes, the timer handler may have left the
-    // clock in suspended state
     [self.goClock suspend:reason];
 
-    // TODO xxx must not deduct because the suspended clock keeps track of the elapsed time
-//    self.remainingTimeInSeconds -= self.goClock.totalElapsedTimeInSecondsSinceClockWasStarted;
-
     [self postNotificationOnMainThread:playerClockStateHasChanged];
-//    [self postNotificationOnMainThread:playerTimeDataHasChanged];
+
+    // startClock() restarts the clock, i.e. the clock forgets about elapsed
+    // time => it is safe to deduct the time already here
+    self.remainingTimeInSeconds -= self.goClock.totalElapsedTimeInSecondsSinceClockWasStarted;
+    [self postNotificationOnMainThread:playerTimeDataHasChanged];
   }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief TODO xxx document
 // -----------------------------------------------------------------------------
-- (NSNumber*) timerIntervalFiringAtNextRemainingSecond
++ (double) timeUntilNextFullSecond:(double)remainingTimeInSeconds
 {
-  double remainingTimeInSeconds;
-  if (self.goClock.state == GoClockStateStopped)
-    remainingTimeInSeconds = self.remainingTimeInSeconds;
-  else
-    remainingTimeInSeconds = self.remainingTimeInSeconds - self.goClock.totalElapsedTimeInSecondsSinceClockWasStarted;
-
   double integralPartOfRemainingTimeInSeconds;
   double fractionalPartOfRemainingTimeInSeconds = modf(remainingTimeInSeconds, &integralPartOfRemainingTimeInSeconds);
   if (fractionalPartOfRemainingTimeInSeconds > 0)
-    return [NSNumber numberWithDouble:fractionalPartOfRemainingTimeInSeconds];
+    return fractionalPartOfRemainingTimeInSeconds;
   else
-    return [NSNumber numberWithDouble:timerIntervalOneSecond];
+    return timerIntervalOneSecond;
 }
 
 // -----------------------------------------------------------------------------
@@ -453,7 +467,20 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
   // TODO xxx remove
   DDLogError(@"scheduling timer with interval %@", timerIntervalAsNumber);
 
-  self.timer = [NSTimer scheduledTimerWithTimeInterval:[timerIntervalAsNumber doubleValue]
+  double timerInterval = [timerIntervalAsNumber doubleValue];
+  if (timerInterval < 0)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to schedule timer, timer interval %f is less than zero", timerInterval];
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+  }
+
+  if (self.timer)
+  {
+    NSString* errorMessage = @"Failed to schedule timer, another timer is already running";
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+  }
+
+  self.timer = [NSTimer scheduledTimerWithTimeInterval:timerInterval
                                                 target:self
                                               selector:@selector(timerHasElapsed)
                                               userInfo:nil
@@ -497,24 +524,68 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
       return;
     self.timer = nil;
 
+    if (self.goClock.state != GoClockStateStarted)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Timer failed to suspend clock for %d, clock is not started, state = %d", self.isTimeDataForBlackPlayer, self.goClock.state];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+
     // TODO xxx do we need a different reason?
     [self.goClock suspend:GoClockSuspendedReasonAppSuspended];
 
-    // Calculate the interval before updating self.remainingTimeInSeconds,
-    // because the calculation includes the clock's elapsed time
-    NSNumber* timerInterval = [self timerIntervalFiringAtNextRemainingSecond];
-
-    // TODO xxx implement more logic => period change, lose on time
     self.remainingTimeInSeconds -= self.goClock.totalElapsedTimeInSecondsSinceClockWasStarted;
+
+    bool lostOnTime = false;
+    if (self.remainingTimeInSeconds <= 0)
+    {
+      GoTimeSystem* periodBasedTimeSystem = self.goTimeSettings.periodBasedTimeSystem;
+      if (self.isRemainingTimeAbsoluteTime)
+      {
+        enum GoTimeSystemType timeSystemType = periodBasedTimeSystem.goTimeSystemType;
+        if (timeSystemType == GoTimeSystemTypeNone ||
+            timeSystemType == GoTimeSystemTypeCustom)
+        {
+          lostOnTime = true;
+        }
+        else
+        {
+          self.isRemainingTimeAbsoluteTime = false;
+          self.remainingTimeInSeconds += periodBasedTimeSystem.periodDurationInSeconds;
+          self.remainingNumberOfPeriods = periodBasedTimeSystem.numberOfPeriods;
+          self.remainingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
+
+          enum GoPeriodDurationElapsedResultType result = [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
+          if (result == GoPeriodDurationElapsedResultTypeGameLostOnTime)
+            lostOnTime = true;
+        }
+      }
+      else
+      {
+        enum GoPeriodDurationElapsedResultType result = [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
+        if (result == GoPeriodDurationElapsedResultTypeGameLostOnTime)
+          lostOnTime = true;
+      }
+    }
 
     [self postNotificationOnMainThread:playerTimeDataHasChanged];
 
-    [self.goClock restart];
+    if (lostOnTime)
+    {
+      [self.goClock stop];
+      [self postNotificationOnMainThread:playerClockStateHasChanged];
 
-    // In case the timer fires exactly at the interval: By scheduling the timer
-    // AFTER the clock has started, we can be sure that the clock will NOT see
-    // that less than one second have elapsed.
-    [self scheduleTimerOnMainThread:timerInterval];
+      [self postNotificationOnMainThread:playerLostOnTime];
+    }
+    else
+    {
+      [self.goClock restart];
+
+      // In case the timer fires exactly at the interval: By scheduling the timer
+      // AFTER the clock has started, we can be sure that the clock will NOT see
+      // that less than one second have elapsed.
+      double timerInterval = [GoPlayerTimeData timeUntilNextFullSecond:self.remainingTimeInSeconds];
+      [self scheduleTimerOnMainThread:[NSNumber numberWithDouble:timerInterval]];
+    }
   }
 }
 
@@ -535,7 +606,6 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
 }
 
-
 #pragma mark - Private helper methods
 
 // -----------------------------------------------------------------------------
@@ -545,7 +615,7 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
 // -----------------------------------------------------------------------------
 - (void) updateWithTimeSettings
 {
-  self.isRemainingTimeAbsoluteTime = (self.goTimeSettings.absoluteTimeSystem != nil);
+  self.isRemainingTimeAbsoluteTime = (self.goTimeSettings.absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute);
 
   GoTimeSystem* timeSystem = self.effectiveTimeSystem;
 
@@ -568,6 +638,26 @@ static NSTimeInterval timerIntervalOneSecond = 1.0;
     return self.goTimeSettings.absoluteTimeSystem;
   else
     return self.goTimeSettings.periodBasedTimeSystem;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief TODO xxx document
+// -----------------------------------------------------------------------------
+- (enum GoPeriodDurationElapsedResultType) countDownPeriodsWithTimeSystem:(GoTimeSystem*)timeSystem
+{
+  while (self.remainingTimeInSeconds <= 0)
+  {
+    self.remainingNumberOfPeriods--;
+
+    if (self.remainingNumberOfPeriods == 0)
+    {
+      return GoPeriodDurationElapsedResultTypeGameLostOnTime;
+    }
+
+    self.remainingTimeInSeconds += timeSystem.periodDurationInSeconds;
+  }
+
+  return GoPeriodDurationElapsedResultTypeGameContinues;
 }
 
 @end

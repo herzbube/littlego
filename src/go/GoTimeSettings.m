@@ -115,8 +115,8 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.absoluteTimeSystem = [decoder decodeObjectOfClass:[NSDate class] forKey:goTimeSettingsAbsoluteTimeSystemKey];
-  self.periodBasedTimeSystem = [decoder decodeObjectOfClass:[NSDate class] forKey:goTimeSettingsPeriodBasedTimeSystemKey];
+  self.absoluteTimeSystem = [decoder decodeObjectOfClass:[GoTimeSystem class] forKey:goTimeSettingsAbsoluteTimeSystemKey];
+  self.periodBasedTimeSystem = [decoder decodeObjectOfClass:[GoTimeSystem class] forKey:goTimeSettingsPeriodBasedTimeSystemKey];
 
   return self;
 }

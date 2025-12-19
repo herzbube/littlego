@@ -1466,6 +1466,8 @@ extern NSString* nodeTreeViewNodeSymbolDidChange;
 /// player losing time while receivers are handling the notification. Once all
 /// receivers have handled the notification, one of the clocks may be
 /// (re)started.
+///
+/// TODO xxx notify ApplicationStateManager that data is dirty
 extern NSString* playerClockStateHasChanged;
 /// @brief Is sent to indicate that something about the time data of one of the
 /// players has changed (e.g. remaining time has been decreased, remaining moves
@@ -1478,7 +1480,19 @@ extern NSString* playerClockStateHasChanged;
 /// player losing time while receivers are handling the notification. Once all
 /// receivers have handled the notification, one of the clocks may be
 /// (re)started.
+///
+/// TODO xxx notify ApplicationStateManager that data is dirty
 extern NSString* playerTimeDataHasChanged;
+/// @brief Is sent to indicate that a player has run out of time and lost the
+/// game. The GoPlayerTimeData object associated with the player who lost is
+/// associated with the notification.
+///
+/// This notification is guaranteed to be posted on the main thread. When this
+/// notification is posted, the clock of the losing player is stopped and the
+/// clock of the winning player is suspended.
+///
+/// TODO xxx notify ApplicationStateManager that data is dirty
+extern NSString* playerLostOnTime;
 //@}
 
 // -----------------------------------------------------------------------------
