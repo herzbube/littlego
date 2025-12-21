@@ -29,6 +29,7 @@
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) enum GoTimeSystemType goTimeSystemType;
+@property(nonatomic, assign, readwrite) bool supportsTimedPlay;
 @property(nonatomic, assign, readwrite) NSString* customTimeSystemDescription;
 @property(nonatomic, assign, readwrite) unsigned int numberOfPeriods;
 @property(nonatomic, assign, readwrite) double periodDurationInSeconds;
@@ -239,6 +240,7 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
 
   self.goTimeSystemType = goTimeSystemType;
   self.customTimeSystemDescription = customTimeSystemDescription;
+  self.supportsTimedPlay = [GoTimeSystem doesTimeSystemTypeSupportTimedPlay:goTimeSystemType];
   self.numberOfPeriods = numberOfPeriods;
   self.periodDurationInSeconds = periodDurationInSeconds;
   self.hasMinimumNumberOfMovesPerPeriod = hasMinimumNumberOfMovesPerPeriod;
@@ -263,6 +265,7 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
 
   self.goTimeSystemType = [decoder decodeIntForKey:goTimeSystemGoTimeSystemTypeKey];
   self.customTimeSystemDescription = [decoder decodeObjectOfClass:[NSString class] forKey:goTimeSystemCustomTimeSystemDescriptionKey];
+  self.supportsTimedPlay = [GoTimeSystem doesTimeSystemTypeSupportTimedPlay:self.goTimeSystemType];
   self.numberOfPeriods = [decoder decodeIntForKey:goTimeSystemNumberOfPeriodsKey];
   self.periodDurationInSeconds = [decoder decodeDoubleForKey:goTimeSystemPeriodDurationInSecondsKey];
   self.hasMinimumNumberOfMovesPerPeriod = [decoder decodeBoolForKey:goTimeSystemHasMinimumNumberOfMovesPerPeriodKey];
@@ -287,8 +290,9 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-  [encoder encodeObject:self.customTimeSystemDescription forKey:goTimeSystemCustomTimeSystemDescriptionKey];
   [encoder encodeInt:self.goTimeSystemType forKey:goTimeSystemGoTimeSystemTypeKey];
+  [encoder encodeObject:self.customTimeSystemDescription forKey:goTimeSystemCustomTimeSystemDescriptionKey];
+  // No need to encode supportsTimedPlay, property value is calculated by the initializer
   [encoder encodeInt:self.numberOfPeriods forKey:goTimeSystemNumberOfPeriodsKey];
   [encoder encodeDouble:self.periodDurationInSeconds forKey:goTimeSystemPeriodDurationInSecondsKey];
   [encoder encodeBool:self.hasMinimumNumberOfMovesPerPeriod forKey:goTimeSystemHasMinimumNumberOfMovesPerPeriodKey];
@@ -332,6 +336,22 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
       assert(0);
       return [NSString stringWithFormat:@"GoTimeSystem(%p): Unhandled time system type %d", self, _goTimeSystemType];
   }
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if @a timeSystemType is a time system for which the app
+/// supports timed play. Returns false otherwise.
+// -----------------------------------------------------------------------------
++ (bool) doesTimeSystemTypeSupportTimedPlay:(enum GoTimeSystemType)timeSystemType
+{
+  if (timeSystemType == GoTimeSystemTypeNone)
+    return false;
+  else if (timeSystemType == GoTimeSystemTypeCustom)
+    return false;
+  else
+    return true;
 }
 
 @end

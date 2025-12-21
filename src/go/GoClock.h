@@ -25,24 +25,26 @@
 /// changing its state to #GoClockStateStarted.
 ///
 /// A started GoClock can be suspended, changing its state to
-/// #GoClockStateSuspended. GoClock keeps an internal record of how much time
-/// has elapsed since it was last started. A suspended GoClock can be resumed,
-/// changing its state back to #GoClockStateStarted. GoClock keeps track of
-/// elapsed times across multiple suspend/resume cycles.
+/// #GoClockStateSuspended. A suspended GoClock can be resumed, changing its
+/// state back to #GoClockStateStarted.
 ///
 /// A started or suspended GoClock can be stopped, changing its state to
-/// #GoClockStateStopped. When stopped, GoClock discards its internal record of
-/// elapsed time.
+/// #GoClockStateStopped.
 ///
 /// As a convenience, a started or suspended GoClock can be restarted. This is
 /// equivalent to stopping and then starting the GoClock.
+///
+/// Whenever a started GoClock is suspended, stopped or restarted, it returns
+/// the amount of time in seconds that has elapsed since the clock was started.
+/// It is the responsibility of the caller to keep track of the total elapsed
+/// time across multiple starts of the clock.
 // -----------------------------------------------------------------------------
 @interface GoClock : NSObject <NSSecureCoding>
 {
 }
 
 - (void) start;
-- (void) suspend:(enum GoClockSuspendedReason)reason;
+- (double) suspend:(enum GoClockSuspendedReason)reason;
 - (void) resume;
 - (double) stop;
 - (double) restart;
@@ -57,14 +59,5 @@
 /// is currently not suspended, i.e. if property @e state does not have the
 /// value #GoClockStateSuspended.
 @property(nonatomic, assign, readonly) enum GoClockSuspendedReason suspendedReason;
-/// @brief Returns the total time in seconds that has elapsed since the
-/// clock was last started (excluding time during which the clock was
-/// suspended). Returns 0 if the clock is currently stopped.
-///
-/// This is a dynamically calculated property. Invoking it two times in a row
-/// while the clock is running will return different values.
-///
-/// @attention This property @b cannot be observed with KVO.
-@property(nonatomic, assign, readonly) double totalElapsedTimeInSecondsSinceClockWasStarted;
 
 @end

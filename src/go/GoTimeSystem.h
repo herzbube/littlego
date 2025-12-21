@@ -48,6 +48,13 @@
 /// This property corresponds to the SGF time property OT. It is used when the
 /// app fails to parse the value of the OT property.
 @property(nonatomic, assign, readonly) NSString* customTimeSystemDescription;
+/// @brief True if the app supports timed play with the time system represented
+/// by this GoTimeSystem object. False if not.
+///
+/// The app does not support timed play for time systems #GoTimeSystemTypeNone
+/// and #GoTimeSystemTypeCustom. The app supports timed play for all other time
+/// systems.
+@property(nonatomic, assign, readonly) bool supportsTimedPlay;
 /// @brief The number of time periods the time system has.
 @property(nonatomic, assign, readonly) unsigned int numberOfPeriods;
 /// @brief The duration of each time period in seconds.

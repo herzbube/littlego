@@ -185,22 +185,40 @@ static double timerIntervalOneSecond = 1.0;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the time data in this GoPlayerTimeData object after a move
-/// was played. @a timeUsedForMoveInSeconds indicates how much time was used
-/// to play the move. Updating is performed according to the parameters in the
-/// GoTimeSettings object that was supplied to the GoPlayerTimeData initializer.
+/// @brief Updates the time data in this GoPlayerTimeData object and in
+/// @a goNodeTimeData after a move was played. Updating is performed according
+/// to the parameters in the GoTimeSettings object that was supplied to the
+/// GoPlayerTimeData initializer.
 ///
-/// Returns whether the game can continue, or whether the game is lost on time.
-/// If the game is lost on time, property @e remainingTimeInSeconds has a
-/// negative value indicating how much time was.
+/// Raises an @e NSInternalInconsistencyException in the following cases:
+/// - If the clock is started. The caller needs to suspend or stop the clock
+///   before invoking this method, to guarantee consistent data.
+/// - If the player has already lost on time. The caller needs to make sure
+///   the player still has some time left before invoking this method. Invoke
+///   didPlayerLoseOnTime() to check.
 ///
-/// TODO xxx when this returns, if a period reset was necessary the reset
-/// has already been done; in this case the time data cannot be used to populate
-/// GoNodeTimeData.
+/// Raises @e NSInvalidArgumentException if @a goNodeTimeData is @e nil.
 // -----------------------------------------------------------------------------
-- (enum GoPeriodDurationElapsedResultType) updateAfterMoveWasPlayed:(double)timeUsedForMoveInSeconds
-                                                     goNodeTimeData:(GoNodeTimeData*)goNodeTimeData
+- (void) updateAfterMoveWasPlayed:(GoNodeTimeData*)goNodeTimeData
 {
+  if (! goNodeTimeData)
+  {
+    NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: goNodeTimeData is nil";
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+  }
+
+  if (self.goClock.state == GoClockStateStarted)
+  {
+    NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: Clock is still started";
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+  }
+
+  if (self.didPlayerLoseOnTime)
+  {
+    NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: player has lost on time";
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+  }
+
   GoTimeSystem* timeSystem = self.effectiveTimeSystem;
   __block bool isRemainingTimeAbsoluteTime = self.isRemainingTimeAbsoluteTime;
   __block double remainingTimeInSeconds = self.remainingTimeInSeconds;
@@ -217,63 +235,19 @@ static double timerIntervalOneSecond = 1.0;
 
   void (^updateSelf) (void) = ^ void ()
   {
-    // TODO xxx does KVO trigger if the same value is set?
-
-    // TODO xxx order in which properties are updated may be important when
-    // clients use KVO; think about it and document it.
-
-    self.isRemainingTimeAbsoluteTime = isRemainingTimeAbsoluteTime;
     self.remainingTimeInSeconds = remainingTimeInSeconds;
     self.remainingNumberOfMoves = remainingNumberOfMoves;
-    self.remainingNumberOfPeriods = remainingNumberOfPeriods;
+
+    [self postNotificationOnMainThread:playerTimeDataHasChanged];
   };
-
-  remainingTimeInSeconds -= timeUsedForMoveInSeconds;
-
-  // If necessary, switch from absolute time system to period-based time system
-  if (remainingTimeInSeconds <= 0 && isRemainingTimeAbsoluteTime && self.goTimeSettings.periodBasedTimeSystem)
-  {
-    timeSystem = self.goTimeSettings.periodBasedTimeSystem;
-
-    isRemainingTimeAbsoluteTime = false;
-    remainingTimeInSeconds += timeSystem.periodDurationInSeconds;
-    if (timeSystem.hasMinimumNumberOfMovesPerPeriod)
-      remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
-    else
-      remainingNumberOfMoves = 0;
-    remainingNumberOfPeriods = timeSystem.numberOfPeriods;
-  }
-
-  // Now that we are in the correct time system, we can deduct time periods
-  // if necessary
-  while (remainingTimeInSeconds <= 0)
-  {
-    remainingNumberOfPeriods--;
-
-    // TODO xxx this should not happen, should it? the computer player should
-    // always play on time, and the user should never get the opportunity to
-    // play a move after they run out of time
-    if (remainingNumberOfPeriods == 0)
-    {
-      updateGoNodeTimeData();
-      updateSelf();
-      return GoPeriodDurationElapsedResultTypeGameLostOnTime;
-    }
-
-    remainingTimeInSeconds += timeSystem.periodDurationInSeconds;
-  }
-
-  // At this point no further period switching is possible and
-  // we can start dealing with remainingNumberOfMoves.
 
   // If the time system does not have a requirement for minimum number of moves,
   // we don't have to modify remainingNumberOfMoves, and therefore also don't
-  // have to do a period reset.
+  // have to do a period reset. The typical case for this is Absolute Timing.
   if (! timeSystem.hasMinimumNumberOfMovesPerPeriod)
   {
     updateGoNodeTimeData();
-    updateSelf();
-    return GoPeriodDurationElapsedResultTypeGameContinues;
+    return;
   }
 
   if (remainingNumberOfMoves > 0)
@@ -285,14 +259,14 @@ static double timerIntervalOneSecond = 1.0;
       // No reset needed
       updateGoNodeTimeData();
       updateSelf();
-      return GoPeriodDurationElapsedResultTypeGameContinues;
+      return;
     }
   }
   else
   {
     if (timeSystem.goUnusedTimeHandling != GoUnusedTimeHandlingUseForExtraMoves)
     {
-      NSString* errorMessage = @"Failed to update time data after move was played, time system has unexpected unused time handling %ld";
+      NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: time system has unexpected unused time handling %ld";
       [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:errorMessage
                                                         argumentValue:timeSystem.goUnusedTimeHandling];
     }
@@ -324,7 +298,7 @@ static double timerIntervalOneSecond = 1.0;
     case GoUnusedTimeHandlingNone:
     default:
     {
-      NSString* errorMessage = @"Failed to update time data after move was played (period reset), time system has unexpected unused time handling %ld";
+      NSString* errorMessage = @"updateAfterMoveWasPlayed: failed (period reset): time system has unexpected unused time handling %ld";
       [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:errorMessage
                                                         argumentValue:timeSystem.goUnusedTimeHandling];
       break;
@@ -332,20 +306,7 @@ static double timerIntervalOneSecond = 1.0;
   }
 
   updateSelf();
-  return GoPeriodDurationElapsedResultTypeGameContinues;
 }
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the time data in this GoPlayerTimeData object after the
-/// current period's duration has elapsed while the player is still thinking
-/// about their move. Updating is performed according to the parameters in the
-/// GoTimeSettings object that was supplied to the GoPlayerTimeData initializer.
-// -----------------------------------------------------------------------------
-//- (enum GoPeriodDurationElapsedResultType) updateAfterPeriodDurationHasElapsed
-//{
-//  // TODO xxx implement
-//  return GoPeriodDurationElapsedResultTypeGameContinues;
-//}
 
 // -----------------------------------------------------------------------------
 /// @brief TODO xxx document; idea is that we need to know when to trigger the game loss; player can think until then
@@ -397,7 +358,16 @@ static double timerIntervalOneSecond = 1.0;
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     }
 
-    [self.goClock start];
+    if (self.didPlayerLoseOnTime)
+    {
+      NSString* errorMessage = @"Failed to start clock for %d, player has lost on time";
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+
+    if (self.goClock.state == GoClockStateStopped)
+      [self.goClock start];
+    else
+      [self.goClock resume];
 
     // In case the timer fires exactly at the interval: By scheduling the timer
     // AFTER the clock has started, we can be sure that the clock will NOT see
@@ -424,15 +394,62 @@ static double timerIntervalOneSecond = 1.0;
 
     [self invalidateTimerOnMainThread];
 
-    [self.goClock suspend:reason];
+    double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock suspend:reason];
 
     [self postNotificationOnMainThread:playerClockStateHasChanged];
 
-    // startClock() restarts the clock, i.e. the clock forgets about elapsed
-    // time => it is safe to deduct the time already here
-    self.remainingTimeInSeconds -= self.goClock.totalElapsedTimeInSecondsSinceClockWasStarted;
+    enum GoPeriodDurationElapsedResultType result = [self deductElapsedTimeInSeconds:elapsedTimeInSecondsSinceClockWasStarted];
+
     [self postNotificationOnMainThread:playerTimeDataHasChanged];
+
+    if (result == GoPeriodDurationElapsedResultTypeGameLostOnTime)
+    {
+      [self.goClock stop];
+      [self postNotificationOnMainThread:playerClockStateHasChanged];
+
+      [self postNotificationOnMainThread:playerLostOnTime];
+    }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief TODO xxx document
+// -----------------------------------------------------------------------------
+- (void) stopClockIfNotStopped
+{
+  @synchronized(self)
+  {
+    if (self.goClock.state == GoClockStateStopped)
+      return;
+
+    if (self.goClock.state == GoClockStateStarted)
+      [self invalidateTimerOnMainThread];
+
+    double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock stop];
+
+    [self postNotificationOnMainThread:playerClockStateHasChanged];
+
+    enum GoPeriodDurationElapsedResultType result = [self deductElapsedTimeInSeconds:elapsedTimeInSecondsSinceClockWasStarted];
+
+    [self postNotificationOnMainThread:playerTimeDataHasChanged];
+
+    if (result == GoPeriodDurationElapsedResultTypeGameLostOnTime)
+      [self postNotificationOnMainThread:playerLostOnTime];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief TODO xxx document
+// -----------------------------------------------------------------------------
+- (bool) didPlayerLoseOnTime
+{
+  if (self.goClock.state == GoClockStateStarted)
+  {
+    NSString* errorMessage = @"Failed to determine whether player lost on time, clock is still started";
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+  }
+
+  return (self.remainingTimeInSeconds <= 0);
 }
 
 // -----------------------------------------------------------------------------
@@ -530,46 +547,13 @@ static double timerIntervalOneSecond = 1.0;
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     }
 
-    // TODO xxx do we need a different reason?
-    [self.goClock suspend:GoClockSuspendedReasonAppSuspended];
+    double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock suspend:GoClockSuspendedReasonHandleTimer];
 
-    self.remainingTimeInSeconds -= self.goClock.totalElapsedTimeInSecondsSinceClockWasStarted;
-
-    bool lostOnTime = false;
-    if (self.remainingTimeInSeconds <= 0)
-    {
-      GoTimeSystem* periodBasedTimeSystem = self.goTimeSettings.periodBasedTimeSystem;
-      if (self.isRemainingTimeAbsoluteTime)
-      {
-        enum GoTimeSystemType timeSystemType = periodBasedTimeSystem.goTimeSystemType;
-        if (timeSystemType == GoTimeSystemTypeNone ||
-            timeSystemType == GoTimeSystemTypeCustom)
-        {
-          lostOnTime = true;
-        }
-        else
-        {
-          self.isRemainingTimeAbsoluteTime = false;
-          self.remainingTimeInSeconds += periodBasedTimeSystem.periodDurationInSeconds;
-          self.remainingNumberOfPeriods = periodBasedTimeSystem.numberOfPeriods;
-          self.remainingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
-
-          enum GoPeriodDurationElapsedResultType result = [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
-          if (result == GoPeriodDurationElapsedResultTypeGameLostOnTime)
-            lostOnTime = true;
-        }
-      }
-      else
-      {
-        enum GoPeriodDurationElapsedResultType result = [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
-        if (result == GoPeriodDurationElapsedResultTypeGameLostOnTime)
-          lostOnTime = true;
-      }
-    }
+    enum GoPeriodDurationElapsedResultType result = [self deductElapsedTimeInSeconds:elapsedTimeInSecondsSinceClockWasStarted];
 
     [self postNotificationOnMainThread:playerTimeDataHasChanged];
 
-    if (lostOnTime)
+    if (result == GoPeriodDurationElapsedResultTypeGameLostOnTime)
     {
       [self.goClock stop];
       [self postNotificationOnMainThread:playerClockStateHasChanged];
@@ -638,6 +622,37 @@ static double timerIntervalOneSecond = 1.0;
     return self.goTimeSettings.absoluteTimeSystem;
   else
     return self.goTimeSettings.periodBasedTimeSystem;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief TODO xxx document
+// -----------------------------------------------------------------------------
+- (enum GoPeriodDurationElapsedResultType) deductElapsedTimeInSeconds:(double)elapsedTimeInSeconds
+{
+  self.remainingTimeInSeconds -= elapsedTimeInSeconds;
+
+  if (self.remainingTimeInSeconds > 0)
+    return GoPeriodDurationElapsedResultTypeGameContinues;
+
+  GoTimeSystem* periodBasedTimeSystem = self.goTimeSettings.periodBasedTimeSystem;
+  if (self.isRemainingTimeAbsoluteTime)
+  {
+    if (! periodBasedTimeSystem.supportsTimedPlay)
+      return GoPeriodDurationElapsedResultTypeGameLostOnTime;
+
+    self.isRemainingTimeAbsoluteTime = false;
+    self.remainingTimeInSeconds += periodBasedTimeSystem.periodDurationInSeconds;
+    self.remainingNumberOfPeriods = periodBasedTimeSystem.numberOfPeriods;
+    if (periodBasedTimeSystem.hasMinimumNumberOfMovesPerPeriod)
+      self.remainingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
+    else
+      self.remainingNumberOfMoves = 0;
+    return [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
+  }
+  else
+  {
+    return [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
+  }
 }
 
 // -----------------------------------------------------------------------------

@@ -2476,7 +2476,6 @@ extern NSString* goGameRulesFourPassesRuleKey;
 extern NSString* goClockStateKey;
 extern NSString* goClockSuspendedReasonKey;
 extern NSString* goClockStartDateKey;
-extern NSString* goClockElapsedTimeInSecondsKey;
 // GoTimeSystem keys
 extern NSString* goTimeSystemGoTimeSystemTypeKey;
 extern NSString* goTimeSystemCustomTimeSystemDescriptionKey;

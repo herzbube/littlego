@@ -31,6 +31,7 @@
 //@{
 @property(nonatomic, retain, readwrite) GoTimeSystem* absoluteTimeSystem;
 @property(nonatomic, retain, readwrite) GoTimeSystem* periodBasedTimeSystem;
+@property(nonatomic, assign, readwrite) bool isGameUsingTimedPlay;
 //@}
 @end
 
@@ -99,6 +100,7 @@
 
   self.absoluteTimeSystem = absoluteTimeSystem;
   self.periodBasedTimeSystem = periodBasedTimeSystem;
+  self.isGameUsingTimedPlay = [self doTimeSystemsSupportTimedPlay];
 
   return self;
 }
@@ -117,6 +119,7 @@
 
   self.absoluteTimeSystem = [decoder decodeObjectOfClass:[GoTimeSystem class] forKey:goTimeSettingsAbsoluteTimeSystemKey];
   self.periodBasedTimeSystem = [decoder decodeObjectOfClass:[GoTimeSystem class] forKey:goTimeSettingsPeriodBasedTimeSystemKey];
+  self.isGameUsingTimedPlay = [self doTimeSystemsSupportTimedPlay];
 
   return self;
 }
@@ -148,6 +151,19 @@
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.absoluteTimeSystem forKey:goTimeSettingsAbsoluteTimeSystemKey];
   [encoder encodeObject:self.periodBasedTimeSystem forKey:goTimeSettingsPeriodBasedTimeSystemKey];
+  // No need to encode isGameUsingTimedPlay, property value is calculated by the initializer
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if either @e absoluteTimeSystem or
+/// @e periodBasedTimeSystem or both have a time system for which the app
+/// supports timed play.
+// -----------------------------------------------------------------------------
+- (bool) doTimeSystemsSupportTimedPlay
+{
+  return (self.absoluteTimeSystem.supportsTimedPlay || self.periodBasedTimeSystem.supportsTimedPlay);
 }
 
 @end

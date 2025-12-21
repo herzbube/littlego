@@ -333,7 +333,7 @@
   // Grab a local copy so that we can be sure that nobody updates the array
   // while we iterate over it
   NSMutableArray* playerTimeDataObjectsWithClockStateUpdates = [[self.playerTimeDataObjectsWithClockStateUpdates retain] autorelease];
-  self.playerTimeDataObjectsWithTimeDataUpdates = [NSMutableArray array];
+  self.playerTimeDataObjectsWithClockStateUpdates = [NSMutableArray array];
 
   for (GoPlayerTimeData* playerTimeData in playerTimeDataObjectsWithClockStateUpdates)
   {

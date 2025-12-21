@@ -44,11 +44,13 @@
 
 - (void) startClock;
 - (void) suspendClock:(enum GoClockSuspendedReason)reason;
+- (void) stopClockIfNotStopped;
+
+- (bool) didPlayerLoseOnTime;
 
 - (enum GoPeriodDurationElapsedResultType) updateAfterNodeChanged:(GoNode*)Node
                                                         forPlayer:(enum GoColor)goColor;
-- (enum GoPeriodDurationElapsedResultType) updateAfterMoveWasPlayed:(double)timeUsedForMoveInSeconds
-                                                     goNodeTimeData:(GoNodeTimeData*)goNodeTimeData;
+- (void) updateAfterMoveWasPlayed:(GoNodeTimeData*)goNodeTimeData;
 - (double) timeWithoutMoveUntilGameIsLostOnTime;
 - (int) remainingNumberOfMovesOrPeriods;
 - (enum GoClockState) clockState;

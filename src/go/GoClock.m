@@ -29,10 +29,6 @@
 //@{
 /// @brief Timestamp when the clock was started.
 @property(nonatomic, retain) NSDate* startDate;
-/// @brief Every time the clock is suspended the elapsed time since the clock
-/// was started is calculated and added to this property. If the clock is
-/// suspended multiple times, this property stores the cumulated elapsed times.
-@property(nonatomic, assign) double elapsedTimeInSeconds;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -61,7 +57,6 @@
   self.state = GoClockStateStopped;
   self.suspendedReason = GoClockSuspendedReasonNotSuspended;
   self.startDate = nil;
-  self.elapsedTimeInSeconds = 0.0;
 
   return self;
 }
@@ -82,7 +77,6 @@
   self.suspendedReason = [decoder decodeIntForKey:goClockSuspendedReasonKey];
   // TODO xxx don't restore the start date - see comment in encodeWithCoder:()
   self.startDate = [decoder decodeObjectOfClass:[NSDate class] forKey:goClockStartDateKey];
-  self.elapsedTimeInSeconds = [decoder decodeDoubleForKey:goClockElapsedTimeInSecondsKey];
 
   return self;
 }
@@ -119,7 +113,6 @@
   // the next time, because any amount of time could have elapsed since the
   // crash
   [encoder encodeObject:self.startDate forKey:goClockStartDateKey];
-  [encoder encodeDouble:self.elapsedTimeInSeconds forKey:goClockElapsedTimeInSecondsKey];
 }
 
 #pragma mark - Public API
@@ -139,26 +132,24 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Suspends the clock when it is started, because of @a reason.
-///
-/// Keeps an internal record of how much time has elapsed since the clock was
-/// last started. If the clock is suspended multiple times, the elapsed times
-/// are cumulated.
+/// @brief Suspends the clock when it is started, because of @a reason. Returns
+/// the time in seconds that has elapsed since the clock was last started.
 ///
 /// Raises an @e NSInternalInconsistencyException if the clock is not started,
 /// i.e. if it is stopped or suspended.
 // -----------------------------------------------------------------------------
-- (void) suspend:(enum GoClockSuspendedReason)reason
+- (double) suspend:(enum GoClockSuspendedReason)reason
 {
   NSString* operationName = @"suspend";
   [self throwIfClockDoesNotHaveState:GoClockStateStarted operationName:operationName];
 
-  double totalElapsedTimeInSeconds = [self totalElapsedTimeInSecondsSinceClockWasStarted:operationName];
+  double elapsedTimeInSeconds = [self elapsedTimeInSecondsSinceClockWasStarted:operationName];
 
   self.state = GoClockStateSuspended;
   self.suspendedReason = reason;
   self.startDate = nil;
-  self.elapsedTimeInSeconds = totalElapsedTimeInSeconds;
+
+  return elapsedTimeInSeconds;
 }
 
 // -----------------------------------------------------------------------------
@@ -178,9 +169,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Stops the clock when it is started or suspended. Returns the time in
-/// seconds that has elapsed since the clock was last started (excluding time
-/// during which the clock was suspended).
+/// @brief Stops the clock when it is started or suspended. If the clock was
+/// started, returns the time in seconds that has elapsed since the clock was
+/// last started. If the clock was suspended, returns 0.0.
 ///
 /// Raises an @e NSInternalInconsistencyException if the clock is not started
 /// or suspended, i.e. if it is stopped.
@@ -190,20 +181,19 @@
   NSString* operationName = @"stop";
   [self throwIfClockHasState:GoClockStateStopped operationName:operationName];
 
-  double totalElapsedTimeInSeconds = [self totalElapsedTimeInSecondsSinceClockWasStarted:operationName];
+  double elapsedTimeInSeconds = [self elapsedTimeInSecondsSinceClockWasStarted:operationName];
 
   self.state = GoClockStateStopped;
   self.suspendedReason = GoClockSuspendedReasonNotSuspended;
   self.startDate = nil;
-  self.elapsedTimeInSeconds = 0;
 
-  return totalElapsedTimeInSeconds;
+  return elapsedTimeInSeconds;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Restarts the clock when it is started or suspended. Returns the time
-/// in seconds that has elapsed since the clock was last started (excluding time
-/// during which the clock was suspended).
+/// @brief Restarts the clock when it is started or suspended. If the clock was
+/// started, returns the time in seconds that has elapsed since the clock was
+/// last started. If the clock was suspended, returns 0.0.
 ///
 /// This method is a convenience method, equivalent to invoking stop() and
 /// then start().
@@ -216,58 +206,42 @@
   NSString* operationName = @"restart";
   [self throwIfClockHasState:GoClockStateStopped operationName:operationName];
 
-  double totalElapsedTimeInSeconds = [self totalElapsedTimeInSecondsSinceClockWasStarted:operationName];
+  double elapsedTimeInSeconds = [self elapsedTimeInSecondsSinceClockWasStarted:operationName];
 
   [self startUnconditionally];
 
-  return totalElapsedTimeInSeconds;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Property getter implementation. See property documentation in header
-/// file.
-// -----------------------------------------------------------------------------
-- (double) totalElapsedTimeInSecondsSinceClockWasStarted
-{
-  if (self.state == GoClockStateStopped)
-    return 0.0;
-
-  NSString* operationName = @"totalElapsedTimeInSecondsSinceClockWasStarted";
-  return [self totalElapsedTimeInSecondsSinceClockWasStarted:operationName];
+  return elapsedTimeInSeconds;
 }
 
 #pragma mark - Private helper methods
 
 // -----------------------------------------------------------------------------
-/// @brief Starts the clock regardless of what its previous state was and
-/// forgets about any elapsed time that was recorded by previous suspend
-/// operations.
+/// @brief Starts the clock regardless of what its previous state was.
 // -----------------------------------------------------------------------------
 - (void) startUnconditionally
 {
   self.state = GoClockStateStarted;
   self.suspendedReason = GoClockSuspendedReasonNotSuspended;
   self.startDate = [NSDate now];
-  self.elapsedTimeInSeconds = 0;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Calculates and returns the time in seconds that has elapsed since the
-/// clock was last started (excluding time during which the clock was
-/// suspended). The calculation is performed on behalf of the operation named
+/// clock was last started. Returns 0.0 if the clock is suspended or stopped.
+/// The calculation is performed on behalf of the operation named
 /// @a operationName.
 // -----------------------------------------------------------------------------
-- (double) totalElapsedTimeInSecondsSinceClockWasStarted:(NSString*)operationName
+- (double) elapsedTimeInSecondsSinceClockWasStarted:(NSString*)operationName
 {
-  double totalElapsedTimeInSeconds = self.elapsedTimeInSeconds;
-
   if (self.state == GoClockStateStarted)
   {
     [self throwIfStartDateIsMissing:operationName];
-    totalElapsedTimeInSeconds += [[NSDate now] timeIntervalSinceDate:self.startDate];
+    return [[NSDate now] timeIntervalSinceDate:self.startDate];
   }
-
-  return totalElapsedTimeInSeconds;
+  else
+  {
+    return 0.0;
+  }
 }
 
 // -----------------------------------------------------------------------------
