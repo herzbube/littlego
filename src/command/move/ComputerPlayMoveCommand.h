@@ -25,14 +25,22 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The ComputerPlayMoveCommand class is responsible for letting the
-/// computer player make a move (even if it is not his turn).
+/// computer player make a move (even if it is not its turn).
 ///
-/// ComputerPlayMoveCommand submits a "genmove" command to the GTP engine, then
-/// updates GoGame so that it generates a GoMove of the appropriate type for
-/// the player whose turn it is (not necessarily a computer player).
-///
-/// Another ComputerPlayMoveCommand is submitted automatically if it is now
-/// the computer player's turn to move.
+/// ComputerPlayMoveCommand performs the following operations:
+/// - If the game uses timed play: Starts the clock of the player on whose
+///   behalf the computer will play a move.
+/// - Submits a "genmove" command to the GTP engine (see note below).
+/// - If the game uses timed play: Stops the clock of the player on whose
+///   behalf the computer played a move (so as not to waste the player's time
+///   while the app handles playing the move).
+/// - Updates GoGame so that it generates a GoMove of the appropriate type for
+///   the player whose turn it is (not necessarily a computer player).
+/// - If it is the turn of a human player and the game uses timed play: Starts
+///   the clock of the human player.
+/// - If it is the turn of a computer player: Submits another
+///   ComputerPlayMoveCommand. If the game uses timed play, this includes
+///   starting the computer player's clock (see above).
 ///
 /// @note The GTP command is executed asynchronously, i.e. control returns to
 /// the submitter of ComputerPlayMoveCommand before the computer player's move

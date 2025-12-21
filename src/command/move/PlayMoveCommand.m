@@ -136,6 +136,9 @@ enum AlertType
 {
   bool success;
 
+  // Abort and don't try to play the move if the player has lost on time. We
+  // expect that someone else reacts to the notification that is posted when
+  // a player loses on time.
   success = [self stopPlayerClockIfGameUsesTimedPlay];
   if (! success)
     return false;
@@ -161,7 +164,17 @@ enum AlertType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper of doIt().
+/// @brief If the game uses timed play, stops the clock of the player who is
+/// playing a move. Returns false if the player lost on time, otherwise returns
+/// true. Does not do anything and returns true if the game does not use timed
+/// play.
+///
+/// A return value false is unexpected - the user should no longer be able to
+/// play a move once they have lost. There is a chance, though, that it happens,
+/// because time runs out between the moment when the user submits the move and
+/// the time we stop the clock in this method.
+///
+/// Private helper of doIt().
 // -----------------------------------------------------------------------------
 - (bool) stopPlayerClockIfGameUsesTimedPlay
 {
@@ -179,10 +192,7 @@ enum AlertType
   [playerTimeData stopClockIfNotStopped];
 
   if (playerTimeData.didPlayerLoseOnTime)
-  {
-    // TODO xxx display popup warning about the move not being possible
     return false;
-  }
 
   return true;
 }

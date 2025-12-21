@@ -28,6 +28,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoMoveNodeCreationOptions.h"
 #import "../../go/GoPlayer.h"
+#import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
@@ -111,6 +112,30 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  bool success;
+
+  success = [self startPlayerClockIfGameUsesTimedPlay];
+  if (! success)
+    return false;
+
+  success = [self submitGenmoveCommandToGtpEngine];
+  if (! success)
+    return false;
+
+  return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Submits a "genmove" command to the GTP engine. The response to the
+/// command is received and processed asynchronously, i.e. after control returns
+/// to the caller. Always returns true.
+///
+/// This is a private helper for doIt.
+// -----------------------------------------------------------------------------
+- (bool) submitGenmoveCommandToGtpEngine
+{
+  self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonComputerPlay;
+
   // It's important that we do not wait for the GTP command to complete. This
   // gives the UI the time to update (e.g. status view, activity indicator).
   NSString* commandString = @"genmove ";
@@ -119,13 +144,13 @@ enum AlertType
                                          responseTarget:self
                                                selector:@selector(gtpResponseReceived:)];
   [command submit];
-  self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonComputerPlay;
+
   return true;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Is triggered when the GTP engine responds to the command submitted
-/// in doIt().
+/// in submitGenmoveCommandToGtpEngine().
 // -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(GtpResponse*)response
 {
@@ -133,6 +158,13 @@ enum AlertType
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
+
+    // Abort and don't try to play the move if the player has lost on time. We
+    // expect that someone else reacts to the notification that is posted when
+    // a player loses on time.
+    bool success = [self stopPlayerClockIfGameUsesTimedPlay];
+    if (! success)
+      return;
 
     if (! response.status)
     {
@@ -142,7 +174,7 @@ enum AlertType
       return;
     }
 
-    bool success = [self playMoveInsideResponse:response];
+    success = [self playMoveInsideResponse:response];
     if (! success)
       return;
 
@@ -164,6 +196,40 @@ enum AlertType
     [[ApplicationStateManager sharedManager] commitSavePoint];
     [[LongRunningActionCounter sharedCounter] decrement];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief If the game uses timed play, stops the clock of the player on whose
+/// behalf the computer played a move. Returns false if the player lost on time,
+/// otherwise returns true. Does not do anything and returns true if the game
+/// does not use timed play.
+///
+/// A return value false is unexpected - the computer player is expected to
+/// always generate a move within the remaining time. There is a chance, though,
+/// that it happens, because the app and the computer player use different
+/// clocks.
+///
+/// This is a private helper for gtpResponseReceived.
+// -----------------------------------------------------------------------------
+- (bool) stopPlayerClockIfGameUsesTimedPlay
+{
+  // GoPlayerTimeData is nil if game does not use timed play
+  GoPlayerTimeData* playerTimeData = self.game.nextMovePlayer.timeData;
+  if (! playerTimeData)
+    return true;
+
+  // Reasons why the clock could not be started:
+  // - It could be suspended because the player has manually suspended it, or
+  //   because the app has suspended it automatically (e.g. when the user
+  //   navigated to a node in the past).
+  // - At the time of writing this, there is no intended scenario where the
+  //   clock could be stopped.
+  [playerTimeData stopClockIfNotStopped];
+
+  if (playerTimeData.didPlayerLoseOnTime)
+    return false;
+
+  return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -438,6 +504,7 @@ enum AlertType
 - (void) continuePlayingIfNecessary
 {
   bool computerGoesOnPlaying = false;
+  bool startHumanPlayerClock = false;
   switch (self.game.state)
   {
     case GoGameStateGameIsPaused:  // game has been paused while GTP was thinking about its last move
@@ -446,12 +513,48 @@ enum AlertType
     default:
       if (self.game.nextMovePlayerIsComputerPlayer)
         computerGoesOnPlaying = true;
+      else
+        startHumanPlayerClock = true;
       break;
   }
+
   if (computerGoesOnPlaying)
+  {
     [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+  }
   else
+  {
     self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
+    if (startHumanPlayerClock)
+      [self startPlayerClockIfGameUsesTimedPlay];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief If the game uses timed play, starts the clock of the player whose
+/// turn it is to play next. Always returns true. Does not do anything and
+/// returns true if the game does not use timed play.
+///
+/// Which player's clock is started depends on when this method is invoked:
+/// - If a "genmove" is about to be submitted: Starts the clock of the player
+///   on whose behalf the computer will play a move. This can be the computer
+///   player itself, or a human player
+/// - Once the move generated by "genmove" has been processed, and it is now the
+///   human player's turn: Starts the clock of the human player.
+// -----------------------------------------------------------------------------
+- (bool) startPlayerClockIfGameUsesTimedPlay
+{
+  // GoPlayerTimeData is nil if game does not use timed play
+  GoPlayerTimeData* playerTimeData = self.game.nextMovePlayer.timeData;
+  if (! playerTimeData)
+    return true;
+
+  // The clock may already be started, e.g. if it is the turn of a human player
+  // and they are using the "play for me" function
+  if (playerTimeData.clockState != GoClockStateStarted)
+    [playerTimeData startClock];
+
+  return true;
 }
 
 @end
