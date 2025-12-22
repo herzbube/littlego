@@ -67,7 +67,10 @@ static Registry* sharedRegistry = nil;
 
   self.applicationDelegate = nil;
   self.sceneDelegate = nil;
+  self.modelProvider = nil;
   self.magnifyingGlassOwner = nil;
+  self.windowProvider = nil;
+  self.playerClockService = nil;
 
   return self;
 }

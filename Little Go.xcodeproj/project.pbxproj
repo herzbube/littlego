@@ -903,6 +903,10 @@
 		D79B28092ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
 		D79B280C2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */ = {isa = PBXBuildFile; fileRef = D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */; };
 		D79B280D2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */ = {isa = PBXBuildFile; fileRef = D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */; };
+		D7F593DE2EF891EF0031317A /* TimedPlayController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F593DC2EF891EF0031317A /* TimedPlayController.m */; };
+		D7F593DF2EF891EF0031317A /* TimedPlayController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F593DC2EF891EF0031317A /* TimedPlayController.m */; };
+		D7F593E22EF951180031317A /* PlayerClockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F593E12EF951180031317A /* PlayerClockTimer.m */; };
+		D7F593E32EF951180031317A /* PlayerClockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F593E12EF951180031317A /* PlayerClockTimer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1938,6 +1942,11 @@
 		D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FilesystemMonitor.m; sourceTree = "<group>"; };
 		D79B280A2EDB12C900AA71A6 /* FilesystemOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemOperations.h; sourceTree = "<group>"; };
 		D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FilesystemOperations.mm; sourceTree = "<group>"; };
+		D7F593DA2EF891EF0031317A /* PlayerClockService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerClockService.h; sourceTree = "<group>"; };
+		D7F593DB2EF891EF0031317A /* TimedPlayController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimedPlayController.h; sourceTree = "<group>"; };
+		D7F593DC2EF891EF0031317A /* TimedPlayController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlayController.m; sourceTree = "<group>"; };
+		D7F593E02EF951180031317A /* PlayerClockTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerClockTimer.h; sourceTree = "<group>"; };
+		D7F593E12EF951180031317A /* PlayerClockTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerClockTimer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2303,6 +2312,7 @@
 				CD3591DC1735A757000E2963 /* rootview */,
 				CD05199216B1C09B002771F7 /* splitview */,
 				D70D7A192EEF1D8600648CBB /* statusarea */,
+				D7F593DD2EF891EF0031317A /* timedplay */,
 			);
 			path = play;
 			sourceTree = "<group>";
@@ -3903,6 +3913,18 @@
 			path = statusarea;
 			sourceTree = "<group>";
 		};
+		D7F593DD2EF891EF0031317A /* timedplay */ = {
+			isa = PBXGroup;
+			children = (
+				D7F593DA2EF891EF0031317A /* PlayerClockService.h */,
+				D7F593E02EF951180031317A /* PlayerClockTimer.h */,
+				D7F593E12EF951180031317A /* PlayerClockTimer.m */,
+				D7F593DB2EF891EF0031317A /* TimedPlayController.h */,
+				D7F593DC2EF891EF0031317A /* TimedPlayController.m */,
+			);
+			path = timedplay;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -4643,6 +4665,7 @@
 				CD81794D25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */,
 				CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */,
+				D7F593DE2EF891EF0031317A /* TimedPlayController.m in Sources */,
 				CDB49E3C2220AFE5006DC1A4 /* AccessibilityUtility.m in Sources */,
 				CD1F4F8025AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */,
 				CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */,
@@ -4702,6 +4725,7 @@
 				CDDB08C22927F15D00B38F91 /* NodeTreeViewCell.m in Sources */,
 				CDC8DEF128EDECCA00619305 /* NodeNumbersTileView.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
+				D7F593E22EF951180031317A /* PlayerClockTimer.m in Sources */,
 				CD7C69C31A9D2086009EC5AD /* GameActionManager.m in Sources */,
 				CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
 				CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */,
@@ -4779,6 +4803,7 @@
 				CDB3ED3F284E001A007512F6 /* MarkupModel.m in Sources */,
 				CD7C69C01A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
 				CD85B5C41401C338001715B8 /* Player.m in Sources */,
+				D7F593DF2EF891EF0031317A /* TimedPlayController.m in Sources */,
 				CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */,
 				CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */,
 				CD1F4FB925B0C1120098037A /* SgfUtilities.m in Sources */,
@@ -4811,6 +4836,7 @@
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
 				CD1D606525BC230A00345506 /* UIViewControllerAdditions.m in Sources */,
 				CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */,
+				D7F593E32EF951180031317A /* PlayerClockTimer.m in Sources */,
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,

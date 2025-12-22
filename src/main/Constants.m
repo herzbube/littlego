@@ -623,7 +623,7 @@ NSString* goGameRulesFourPassesRuleKey = @"FourPassesRule";
 // GoClock keys
 NSString* goClockStateKey = @"State";
 NSString* goClockSuspendedReasonKey = @"SuspendedReason";
-NSString* goClockStartDateKey = @"StartDate";
+NSString* goClockElapsedTimeInSecondsKey = @"ElapsedTimeInSeconds";
 // GoTimeSystem keys
 NSString* goTimeSystemGoTimeSystemTypeKey = @"GoTimeSystemType";
 NSString* goTimeSystemCustomTimeSystemDescriptionKey = @"CustomTimeSystemDescription";

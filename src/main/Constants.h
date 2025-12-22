@@ -920,9 +920,30 @@ enum GoClockState
 /// @ingroup go
 enum GoClockSuspendedReason
 {
-  GoClockSuspendedReasonAppSuspended,   ///< @brief The clock is suspended because the app was suspended. When the app becomes active again, the app will automatically set the clock to #GoClockStateStarted.
-  GoClockSuspendedReasonUserAction,     ///< @brief The clock is suspended because of a user action (e.g. the user changed the current node). The user has to manually set the clock to #GoClockStateStarted.
-  GoClockSuspendedReasonNotSuspended,   ///< @brief The clock is not suspended. The clock is set to either #GoClockStateStopped or #GoClockStateStarted.
+  /// @brief The clock is suspended temporarily because the app is handling a
+  /// timer update. When the handling completes, the app will set the clock back
+  /// to #GoClockStateStarted or #GoClockStateStopped (the latter if the player
+  /// loses on time).
+  GoClockSuspendedReasonHandleTimer,
+  /// @brief The clock is suspended temporarily because it was unexpectedly
+  /// restored from the archive in started state. If the app detects during the
+  /// restore-from-archive process that the player has lost on time, it sets the
+  /// clock to #GoClockStateStopped. Otherwise the app sets the clock to
+  /// #GoClockStateStarted when the restore-from-archive process completes and
+  /// the app is ready for handling user interactions.
+  GoClockSuspendedReasonRestoredFromArchive,
+  /// @brief The clock is suspended because the app was suspended. When the app
+  /// becomes active again, the app will automatically set the clock to
+  /// #GoClockStateStarted.
+  GoClockSuspendedReasonAppSuspended,
+  /// @brief The clock is suspended because of a user action (e.g. the user
+  /// changed the current node). The app sets the clock to #GoClockStateStarted
+  /// when a move is played and it is now the player's turn. Alternatively, the
+  /// user can manually set the clock back to #GoClockStateStarted.
+  GoClockSuspendedReasonUserAction,
+  /// @brief The clock is not suspended. The clock is set to either
+  /// #GoClockStateStopped or #GoClockStateStarted.
+  GoClockSuspendedReasonNotSuspended,
 };
 
 /// @brief Enumerates the possible results when the duration of a player's
@@ -2475,7 +2496,7 @@ extern NSString* goGameRulesFourPassesRuleKey;
 // GoClock keys
 extern NSString* goClockStateKey;
 extern NSString* goClockSuspendedReasonKey;
-extern NSString* goClockStartDateKey;
+extern NSString* goClockElapsedTimeInSecondsKey;
 // GoTimeSystem keys
 extern NSString* goTimeSystemGoTimeSystemTypeKey;
 extern NSString* goTimeSystemCustomTimeSystemDescriptionKey;

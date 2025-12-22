@@ -24,6 +24,8 @@
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeSettings.h"
 #import "../../go/GoTimeSystem.h"
+#import "../../main/Registry.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
@@ -218,26 +220,31 @@
 // -----------------------------------------------------------------------------
 - (void) viewTapped:(id)sender
 {
+  id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
+
   GoGame* game = [GoGame sharedGame];
-  GoPlayerTimeData* playerTimeData = (sender == self.tapRecognizerTimeViewBlackPlayer
-                                      ? game.playerBlack.timeData
-                                      : game.playerWhite.timeData);
+  GoPlayer* player = (sender == self.tapRecognizerTimeViewBlackPlayer
+                      ? game.playerBlack
+                      : game.playerWhite);
 
   // TODO xxx implement real handling => implement command
-  switch (playerTimeData.clockState)
+  switch (player.timeData.clockState)
   {
     case GoClockStateStopped:
-      [playerTimeData startClock];
+      [playerClockService startClockOfPlayer:player
+                                      reason:PlayerClockStartReasonUserRequest];
       break;
     case GoClockStateStarted:
-      [playerTimeData suspendClock:GoClockSuspendedReasonUserAction];
+      [playerClockService suspendClockOfPlayer:player
+                                        reason:PlayerClockSuspendReasonUserRequest];
       break;
     case GoClockStateSuspended:
-      [playerTimeData startClock];
+      [playerClockService startClockOfPlayer:player
+                                      reason:PlayerClockStartReasonUserRequest];
       break;
     default:
       [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"Invalid clock state %d"
-                                                  argumentValue:playerTimeData.clockState];
+                                                  argumentValue:player.timeData.clockState];
       break;
   }
 }

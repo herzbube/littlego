@@ -24,8 +24,6 @@
 #import "../utility/ExceptionUtility.h"
 
 
-static double timerIntervalOneSecond = 1.0;
-
 // TODO xxx Review synchronization, e.g. timer/Fuego/user triggers could overlap
 // TODO xxx Add unit tests
 
@@ -39,9 +37,6 @@ static double timerIntervalOneSecond = 1.0;
 @property(nonatomic, assign) GoTimeSettings* goTimeSettings;
 /// @brief The clock that is used to keep the time for the player.
 @property(nonatomic, retain, readwrite) GoClock* goClock;
-/// @brief The timer object used to periodically update the time data in this
-/// GoPlayerTimeData object.
-@property(nonatomic, retain) NSTimer* timer;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
@@ -75,7 +70,6 @@ static double timerIntervalOneSecond = 1.0;
 
   self.goTimeSettings = goTimeSettings;
   self.goClock = [[[GoClock alloc] init] autorelease];
-  self.timer = nil;
 
   self.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
 
@@ -99,12 +93,31 @@ static double timerIntervalOneSecond = 1.0;
 
   self.goTimeSettings = [decoder decodeObjectOfClass:[GoTimeSettings class] forKey:goPlayerTimeDataTimeSettingsKey];
   self.goClock = [decoder decodeObjectOfClass:[GoClock class] forKey:goPlayerTimeDataClockKey];
-  // TODO xxx probably we don't need to get the timer from the archive
   self.isTimeDataForBlackPlayer = [decoder decodeBoolForKey:goPlayerTimeDataIsTimeDataForBlackPlayerKey];
   self.isRemainingTimeAbsoluteTime = [decoder decodeBoolForKey:goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey];
   self.remainingTimeInSeconds = [decoder decodeDoubleForKey:goPlayerTimeDataRemainingTimeInSecondsKey];
   self.remainingNumberOfMoves = [decoder decodeIntForKey:goPlayerTimeDataRemainingNumberOfMovesKey];
   self.remainingNumberOfPeriods = [decoder decodeIntForKey:goPlayerTimeDataRemainingNumberOfPeriodsKey];
+
+  // If all goes well we should restore into the suspended clock state (because
+  // when it is suspended the app is supposed to suspend clocks). However, if
+  // the app crashes we may subsequentially restore into the started clock
+  // state.
+  //
+  // A GoClock that is restored into its started state begins its life with the
+  // same amount of elapsed time as when it was archived, and continues to run
+  // seemingly uninterrupted. One way how we could handle this is to immediately
+  // schedule a timer to get back into sync with the clock. However, the whole
+  // process of restoring the app into its previous state is relatively time
+  // consuming. During that time no user interactions are possible, so letting
+  // the clock running is a bad idea. The best solution therefore is to suspend
+  // the clock now (which will deduce any elapsed time from our remaining time),
+  // and to let an external handler decide at the appropriate time whether to
+  // start the clock again, or leave it suspended.
+
+  // TODO xxx do we still need this?
+  if (self.clockState == GoClockStateStarted)
+    [self suspendClock:GoClockSuspendedReasonRestoredFromArchive];
 
   return self;
 }
@@ -136,7 +149,6 @@ static double timerIntervalOneSecond = 1.0;
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.goTimeSettings forKey:goPlayerTimeDataTimeSettingsKey];
   [encoder encodeObject:self.goClock forKey:goPlayerTimeDataClockKey];
-  // TODO xxx probably we don't need to archive the timer
   [encoder encodeBool:self.isTimeDataForBlackPlayer forKey:goPlayerTimeDataIsTimeDataForBlackPlayerKey];
   [encoder encodeBool:self.isRemainingTimeAbsoluteTime forKey:goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey];
   [encoder encodeDouble:self.remainingTimeInSeconds forKey:goPlayerTimeDataRemainingTimeInSecondsKey];
@@ -343,7 +355,7 @@ static double timerIntervalOneSecond = 1.0;
   return self.goClock.state;
 }
 
-#pragma mark - Clock/timer handling
+#pragma mark - Clock handling
 
 // -----------------------------------------------------------------------------
 /// @brief TODO xxx document
@@ -369,12 +381,6 @@ static double timerIntervalOneSecond = 1.0;
     else
       [self.goClock resume];
 
-    // In case the timer fires exactly at the interval: By scheduling the timer
-    // AFTER the clock has started, we can be sure that the clock will NOT see
-    // that less than one second have elapsed.
-    double timerInterval = [GoPlayerTimeData timeUntilNextFullSecond:self.remainingTimeInSeconds];
-    [self scheduleTimerOnMainThread:[NSNumber numberWithDouble:timerInterval]];
-
     [self postNotificationOnMainThread:playerClockStateHasChanged];
   }
 }
@@ -391,8 +397,6 @@ static double timerIntervalOneSecond = 1.0;
       NSString* errorMessage = [NSString stringWithFormat:@"Failed to suspend clock for %d, clock is not started, state = %d", self.isTimeDataForBlackPlayer, self.goClock.state];
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     }
-
-    [self invalidateTimerOnMainThread];
 
     double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock suspend:reason];
 
@@ -421,9 +425,6 @@ static double timerIntervalOneSecond = 1.0;
   {
     if (self.goClock.state == GoClockStateStopped)
       return;
-
-    if (self.goClock.state == GoClockStateStarted)
-      [self invalidateTimerOnMainThread];
 
     double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock stop];
 
@@ -455,132 +456,8 @@ static double timerIntervalOneSecond = 1.0;
 // -----------------------------------------------------------------------------
 /// @brief TODO xxx document
 // -----------------------------------------------------------------------------
-+ (double) timeUntilNextFullSecond:(double)remainingTimeInSeconds
-{
-  double integralPartOfRemainingTimeInSeconds;
-  double fractionalPartOfRemainingTimeInSeconds = modf(remainingTimeInSeconds, &integralPartOfRemainingTimeInSeconds);
-  if (fractionalPartOfRemainingTimeInSeconds > 0)
-    return fractionalPartOfRemainingTimeInSeconds;
-  else
-    return timerIntervalOneSecond;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief TODO xxx document
-// -----------------------------------------------------------------------------
-- (void) scheduleTimerOnMainThread:(NSNumber*)timerIntervalAsNumber
-{
-  // We want to make sure that the timer is scheduled on the main thread so
-  // that the timer also fires on the main thread, and the app is notified of
-  // the time data update on the main thread
-  if ([NSThread currentThread] != [NSThread mainThread])
-  {
-    [self performSelectorOnMainThread:@selector(scheduleTimerOnMainThread:)
-                           withObject:timerIntervalAsNumber
-                        waitUntilDone:YES];
-    return;
-  }
-
-  // TODO xxx remove
-  DDLogError(@"scheduling timer with interval %@", timerIntervalAsNumber);
-
-  double timerInterval = [timerIntervalAsNumber doubleValue];
-  if (timerInterval < 0)
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to schedule timer, timer interval %f is less than zero", timerInterval];
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
-  }
-
-  if (self.timer)
-  {
-    NSString* errorMessage = @"Failed to schedule timer, another timer is already running";
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
-  }
-
-  self.timer = [NSTimer scheduledTimerWithTimeInterval:timerInterval
-                                                target:self
-                                              selector:@selector(timerHasElapsed)
-                                              userInfo:nil
-                                               repeats:NO];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief TODO xxx document
-// -----------------------------------------------------------------------------
-- (void) invalidateTimerOnMainThread
-{
-  // The timer must be invalidated on the same thread where it was scheduled
-  if ([NSThread currentThread] != [NSThread mainThread])
-  {
-    [self performSelectorOnMainThread:@selector(invalidateTimerOnMainThread)
-                           withObject:nil
-                        waitUntilDone:YES];
-    return;
-  }
-
-  // The timer has fired at the same time we were trying to invalidate it, and
-  // the timer handler did not schedule a new timer
-  if (! self.timer)
-    return;
-
-  [self.timer invalidate];
-  self.timer = nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief TODO xxx document
-// -----------------------------------------------------------------------------
-- (void) timerHasElapsed
-{
-  @synchronized(self)
-  {
-    // The timer was invalidated at the same time it was firing. This means we
-    // should not continue, whoever did the invalidation will take the necessary
-    // steps to update our data.
-    if (! self.timer)
-      return;
-    self.timer = nil;
-
-    if (self.goClock.state != GoClockStateStarted)
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Timer failed to suspend clock for %d, clock is not started, state = %d", self.isTimeDataForBlackPlayer, self.goClock.state];
-      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
-    }
-
-    double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock suspend:GoClockSuspendedReasonHandleTimer];
-
-    enum GoPeriodDurationElapsedResultType result = [self deductElapsedTimeInSeconds:elapsedTimeInSecondsSinceClockWasStarted];
-
-    [self postNotificationOnMainThread:playerTimeDataHasChanged];
-
-    if (result == GoPeriodDurationElapsedResultTypeGameLostOnTime)
-    {
-      [self.goClock stop];
-      [self postNotificationOnMainThread:playerClockStateHasChanged];
-
-      [self postNotificationOnMainThread:playerLostOnTime];
-    }
-    else
-    {
-      [self.goClock restart];
-
-      // In case the timer fires exactly at the interval: By scheduling the timer
-      // AFTER the clock has started, we can be sure that the clock will NOT see
-      // that less than one second have elapsed.
-      double timerInterval = [GoPlayerTimeData timeUntilNextFullSecond:self.remainingTimeInSeconds];
-      [self scheduleTimerOnMainThread:[NSNumber numberWithDouble:timerInterval]];
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief TODO xxx document
-// -----------------------------------------------------------------------------
 - (void) postNotificationOnMainThread:(NSString*)notificationName
 {
-  // We want to make sure that the timer is scheduled on the main thread so
-  // that the timer also fires on the main thread, and the app is notified of
-  // the time data update on the main thread
   if ([NSThread currentThread] != [NSThread mainThread])
   {
     [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:) withObject:notificationName waitUntilDone:YES];
@@ -629,6 +506,8 @@ static double timerIntervalOneSecond = 1.0;
 // -----------------------------------------------------------------------------
 - (enum GoPeriodDurationElapsedResultType) deductElapsedTimeInSeconds:(double)elapsedTimeInSeconds
 {
+  // TODO xxx do we really want to deduct time with full accuracy? SGF does
+  // allow saving fractional values, but how much accuracy do we really need?
   self.remainingTimeInSeconds -= elapsedTimeInSeconds;
 
   if (self.remainingTimeInSeconds > 0)

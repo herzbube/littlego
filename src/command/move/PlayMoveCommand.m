@@ -24,7 +24,6 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoMoveNodeCreationOptions.h"
 #import "../../go/GoPlayer.h"
-#import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
@@ -34,6 +33,7 @@
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../play/model/GameVariationModel.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UIViewControllerAdditions.h"
@@ -178,23 +178,10 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (bool) stopPlayerClockIfGameUsesTimedPlay
 {
-  // GoPlayerTimeData is nil if game does not use timed play
-  GoPlayerTimeData* playerTimeData = self.game.nextMovePlayer.timeData;
-  if (! playerTimeData)
-    return true;
-
-  // Reasons why the clock could not be started:
-  // - It could be suspended because the player has manually suspended it, or
-  //   because the app has suspended it automatically (e.g. when the user
-  //   navigated to a node in the past).
-  // - At the time of writing this, there is no intended scenario where the
-  //   clock could be stopped.
-  [playerTimeData stopClockIfNotStopped];
-
-  if (playerTimeData.didPlayerLoseOnTime)
-    return false;
-
-  return true;
+  id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
+  enum PlayerClockServiceOperationResult result = [playerClockService stopClockOfPlayer:self.game.nextMovePlayer
+                                                                                 reason:PlayerClockStopReasonPlayerTurnEnds];
+  return (result == PlayerClockServiceOperationResultGameContinues);
 }
 
 // -----------------------------------------------------------------------------
@@ -423,10 +410,9 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (bool) startPlayerClockIfGameUsesTimedPlay
 {
-  // GoPlayerTimeData is nil if game does not use timed play
-  GoPlayerTimeData* playerTimeData = self.game.nextMovePlayer.timeData;
-  if (playerTimeData)
-    [playerTimeData startClock];
+  id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
+  [playerClockService startClockOfPlayer:self.game.nextMovePlayer
+                                  reason:PlayerClockStartReasonHumanPlayerTurnBegins];
 
   return true;
 }

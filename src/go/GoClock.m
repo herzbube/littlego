@@ -75,8 +75,11 @@
 
   self.state = [decoder decodeIntForKey:goClockStateKey];
   self.suspendedReason = [decoder decodeIntForKey:goClockSuspendedReasonKey];
-  // TODO xxx don't restore the start date - see comment in encodeWithCoder:()
-  self.startDate = [decoder decodeObjectOfClass:[NSDate class] forKey:goClockStartDateKey];
+  if (self.state == GoClockStateStarted)
+  {
+    double elapsedTimeInSeconds = [decoder decodeDoubleForKey:goClockElapsedTimeInSecondsKey];
+    self.startDate = [NSDate dateWithTimeIntervalSinceNow:-elapsedTimeInSeconds];
+  }
 
   return self;
 }
@@ -107,12 +110,11 @@
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeInt:self.state forKey:goClockStateKey];
   [encoder encodeInt:self.suspendedReason forKey:goClockSuspendedReasonKey];
-  // TODO xxx There's no point in placing the start date in the archive: if the
-  // app is suspended, we expect that this clock is also suspended; if the app
-  // crashes, we don't want to restore the start date when the app is started
-  // the next time, because any amount of time could have elapsed since the
-  // crash
-  [encoder encodeObject:self.startDate forKey:goClockStartDateKey];
+  if (self.state == GoClockStateStarted)
+  {
+    double elapsedTimeInSeconds = [self elapsedTimeInSecondsSinceClockWasStarted:@"encodeWithCoder"];
+    [encoder encodeDouble:elapsedTimeInSeconds forKey:goClockElapsedTimeInSecondsKey];
+  }
 }
 
 #pragma mark - Public API
