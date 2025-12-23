@@ -114,7 +114,10 @@ enum AlertType
 {
   bool success;
 
-  success = [self startPlayerClockIfGameUsesTimedPlay:PlayerClockStartReasonComputerPlayerStartsThinking];
+  enum PlayerClockStartReason playerClockStartReason = (self.game.nextMovePlayerIsComputerPlayer
+                                                        ? PlayerClockStartReasonComputerPlayerTurnBegins
+                                                        : PlayerClockStartReasonComputerPlayerStartsThinkingOnBehalfOfHumanPlayer);
+  success = [self startPlayerClockIfGameUsesTimedPlay:playerClockStartReason];
   if (! success)
     return false;
 

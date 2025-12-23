@@ -355,6 +355,18 @@
   return self.goClock.state;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief The reason why the clock is currently suspended.
+///
+/// This property has value #GoClockSuspendedReasonNotSuspended if the clock
+/// is currently not suspended, i.e. if property @e state does not have the
+/// value #GoClockStateSuspended.
+// -----------------------------------------------------------------------------
+- (enum GoClockSuspendedReason) clockSuspendedReason
+{
+  return self.goClock.suspendedReason;
+}
+
 #pragma mark - Clock handling
 
 // -----------------------------------------------------------------------------

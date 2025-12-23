@@ -926,21 +926,30 @@ enum GoClockSuspendedReason
   /// loses on time).
   GoClockSuspendedReasonHandleTimer,
   /// @brief The clock is suspended temporarily because it was unexpectedly
-  /// restored from the archive in started state. If the app detects during the
-  /// restore-from-archive process that the player has lost on time, it sets the
-  /// clock to #GoClockStateStopped. Otherwise the app sets the clock to
-  /// #GoClockStateStarted when the restore-from-archive process completes and
-  /// the app is ready for handling user interactions.
+  /// restored from the archive in started state, probably due to an application
+  /// crash. The app will automatically set the clock to #GoClockStateStopped
+  /// when the scene activates to let the user investigate the situation
+  /// without time pressure.
   GoClockSuspendedReasonRestoredFromArchive,
-  /// @brief The clock is suspended because the app was suspended. When the app
-  /// becomes active again, the app will automatically set the clock to
-  /// #GoClockStateStarted.
-  GoClockSuspendedReasonAppSuspended,
-  /// @brief The clock is suspended because of a user action (e.g. the user
-  /// changed the current node). The app sets the clock to #GoClockStateStarted
-  /// when a move is played and it is now the player's turn. Alternatively, the
-  /// user can manually set the clock back to #GoClockStateStarted.
+  /// @brief The clock is suspended because the scene was deactivated (e.g.
+  /// because the user sent the app to the background, or because an
+  /// interruption such as a phone call occurred). When the scene becomes active
+  /// again, the app will automatically set the clock to #GoClockStateStarted.
+  GoClockSuspendedReasonSceneDeactivated,
+  /// @brief The clock is suspended because the user explicitly requested it
+  /// via interaction with the user interface clock. The user can manually
+  /// start the clock again via interaction with the user interface clock.
+  /// The application may stop or start the clock automatically under certain
+  /// conditions.
   GoClockSuspendedReasonUserAction,
+  /// @brief The clock is suspended temporarily because the user currently
+  /// cannot interact with the Go board to play a move (e.g. the board is not
+  /// visible at all, or it is partially covered by a popup, or an animation of
+  /// long duration is blocking interaction, or the board is not in
+  /// #UIAreaPlayModePlay) and may therefore lose on time because they cannot
+  /// play their move on time. The app will automatically set the clock back
+  /// to #GoClockStateStarted when the user can interact with the board again.
+  GoClockSuspendedReasonBoardNotInteractive,
   /// @brief The clock is not suspended. The clock is set to either
   /// #GoClockStateStopped or #GoClockStateStarted.
   GoClockSuspendedReasonNotSuspended,

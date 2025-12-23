@@ -28,14 +28,13 @@ enum PlayerClockStartReason
   /// @brief The clock is requested to be started because it is the beginning
   /// of a human player's turn.
   PlayerClockStartReasonHumanPlayerTurnBegins,
+  /// @brief The clock is requested to be started because it is the beginning
+  /// of a computer player's turn.
+  PlayerClockStartReasonComputerPlayerTurnBegins,
   /// @brief The clock is requested to be started because the computer player
-  /// starts thinking.
-  ///
-  /// This may represent the beginning of a computer player's turn, but it may
-  /// also represent the start of the computer player starting to think on
-  /// behalf of a human player (e.g. "play for me" function) after the human
-  /// player's turn has already started.
-  PlayerClockStartReasonComputerPlayerStartsThinking,
+  /// starts thinking on behalf of a human player (e.g. "play for me" function)
+  /// after the human player's turn has already started.
+  PlayerClockStartReasonComputerPlayerStartsThinkingOnBehalfOfHumanPlayer,
   /// @brief The user interactively requests the clock to be started.
   PlayerClockStartReasonUserRequest,
 };

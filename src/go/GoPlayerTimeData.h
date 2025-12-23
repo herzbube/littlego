@@ -54,6 +54,7 @@
 - (double) timeWithoutMoveUntilGameIsLostOnTime;
 - (int) remainingNumberOfMovesOrPeriods;
 - (enum GoClockState) clockState;
+- (enum GoClockSuspendedReason) clockSuspendedReason;
 
 /// @brief True if this GoPlayerTimeData object holds time data for the black
 /// player, false if it holds time data for the white player.
