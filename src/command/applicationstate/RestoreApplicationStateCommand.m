@@ -57,6 +57,8 @@
   // sync'ed (it is irrelevant that we are not going to trigger the computer
   // player at all)
   command.shouldTriggerComputerPlayerIfItIsTheirTurn = false;
+  // Human player's clock will be started if necessary by TimedPlayController
+  command.shouldStartHumanPlayerClockIfItIsTheirTurn = false;
   [command submit];
 
   SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];

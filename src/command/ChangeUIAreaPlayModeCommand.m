@@ -55,6 +55,7 @@
   if (! self)
     return nil;
 
+  self.applicationSetupIsInProgress = false;
   self.newGameSetupIsInProgress = false;
   self.newUIAreaPlayMode = uiAreaPlayMode;
   self.oldAndNewModes = nil;
@@ -83,12 +84,21 @@
   UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
   enum UIAreaPlayMode oldUIAreaPlayMode = uiSettingsModel.uiAreaPlayMode;
 
+  self.oldAndNewModes = @[[NSNumber numberWithInt:oldUIAreaPlayMode],
+                          [NSNumber numberWithInt:self.newUIAreaPlayMode]];
+
   // We gracefully handle clients that invoke this command even though there's
   // nothing to do. In some places of the application it might be inconvenient
   // to have to deal with the application delegate or the UiSettingsModel.
   if (oldUIAreaPlayMode == self.newUIAreaPlayMode)
   {
-    DDLogInfo(@"UI area 'Play' already has the desired mode");
+    DDLogInfo(@"%@: UI area 'Play' already has the desired mode", self);
+    if (self.applicationSetupIsInProgress)
+    {
+      DDLogInfo(@"%@: Application setup in progress, posting notifications anyways", self);
+      [self postNotificationOnMainThread:uiAreaPlayModeWillChange];
+      [self postNotificationOnMainThread:uiAreaPlayModeDidChange];
+    }
     return true;
   }
 
@@ -102,11 +112,8 @@
     return false;
   }
 
-  self.oldAndNewModes = @[[NSNumber numberWithInt:oldUIAreaPlayMode],
-                          [NSNumber numberWithInt:self.newUIAreaPlayMode]];
-
   // Post the notification before we do anything
-  [self postNotification:uiAreaPlayModeWillChange];
+  [self postNotificationOnMainThread:uiAreaPlayModeWillChange];
 
   // The UIAreaPlayMode value that we set here can be saved to disk at different
   // times than the state in the Go model objects, notably the scoring data in
@@ -140,7 +147,7 @@
   }
 
   // Post the notification after we have finished
-  [self postNotification:uiAreaPlayModeDidChange];
+  [self postNotificationOnMainThread:uiAreaPlayModeDidChange];
 
   // Perform auto-resume handling after posting uiAreaPlayModeDidChange. This
   // guarantees that the order of notifications remains constant even if
@@ -157,24 +164,21 @@
 /// notification center. This method makes sure that the notification is posted
 /// synchronously and on the main thread.
 // -----------------------------------------------------------------------------
-- (void) postNotification:(NSString*)notificationName
+- (void) postNotificationOnMainThread:(NSString*)notificationName
 {
   // The command may be executed in a secondary thread (example: when a new game
   // is started). Observers who listen for the notification will likely perform
   // changes in the UI, so we must make sure that the notification is posted
   // on the main thread. We also must use waitUntilDone:YES here to guarantee
   // that UIAreaPlayModeWillChange is delivered before UIAreaPlayModeDidChange.
-  [self performSelector:@selector(postNotificationOnMainThread:)
-               onThread:[NSThread mainThread]
-             withObject:notificationName
-          waitUntilDone:YES];
-}
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper. Is invoked in the context of the main thread.
-// -----------------------------------------------------------------------------
-- (void) postNotificationOnMainThread:(NSString*)notificationName
-{
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self.oldAndNewModes];
 }
 

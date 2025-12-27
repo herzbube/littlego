@@ -21,9 +21,14 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeSettings.h"
-#import "../../shared/ApplicationStateManager.h"
+#import "../../player/Player.h"
 #import "../../main/Registry.h"
+#import "../../shared/ApplicationStateManager.h"
 #import "../../utility/ExceptionUtility.h"
+
+
+// There is no enum value UIAreaPlayModeUnknown, so we fake one
+static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 
 
 // -----------------------------------------------------------------------------
@@ -45,7 +50,6 @@
 @property(nonatomic, assign) GoPlayerTimeData* whitePlayerTimeData;
 /// @brief The GoGame object representing the current game.
 @property(nonatomic, assign) GoGame* game;
-@property(nonatomic, assign) bool haveSeenFirstGame;
 /// @brief Is true if player's clocks are currently managed, false if not.
 /// The value of this property is used by notification responders and service
 /// request handlers for a quick, inexpensive check to see whether they need
@@ -66,22 +70,32 @@
 /// actually a human player's turn, merely that the user has interactive access
 /// to the Go board.
 
-/// This flag is true if the following conditions are met:
-/// - If the UIKit scene is currently active, i.e. if property @e isSceneActive
+/// This flag is true if all of the following conditions are met:
+/// - The UIKit scene is currently active, i.e. property @e isSceneActive
 ///   has value true.
-/// - And if the user (representing a human player) can currently play a move,
-///   i.e. if property @e canUserPlayMove is true.
+/// - The UI area "Play" is visible, i.e. property @e uiArea has value
+///    #UIAreaPlay.
+/// - The board view is in Play mode, i.e. property @e uiAreaPlayMode has
+///   value #UIAreaPlayModePlay.
+/// - Nothing is blocking board interactions, i.e. property
+///   @e numberOfThingsBlockingBoardInteractions has value 0 (zero).
 ///
 /// This flag is not relevant for the computer player, because the computer
-/// player can think and play a move in the background.
+/// player can think, and play a move, in the background.
 @property(nonatomic, assign) bool isBoardInteractive;
 @property(nonatomic, assign) bool isSceneActive;
-/// @brief Is true if the user (representing a human player) can currently
-/// play a move, false if not. Important: This property does @b NOT reflect
-/// whether it is actually a human player's turn, merely that the user has
-/// interactive access to the Go board.
-@property(nonatomic, assign) bool canUserPlayMove;
-@property(nonatomic, assign) bool isGameEnded;
+@property(nonatomic, assign) enum UIArea uiArea;
+@property(nonatomic, assign) enum UIAreaPlayMode uiAreaPlayMode;
+/// @brief A number of things that can block user interaction with the Go board
+/// are tracked with this counter.
+///
+/// Only things that are known to be @b NOT blocking when this controller is
+/// initialized (i.e. at the application start) can be tracked with this
+/// counter, because the counter is initialized at 0 (zero). For instance,
+/// isSceneActive needs to be tracked separately because initially the scene
+/// is @b NOT active, i.e. initially it @b IS blocking.
+@property(nonatomic, assign) int numberOfThingsBlockingBoardInteractions;
+
 @end
 
 
@@ -109,14 +123,14 @@
   self.whitePlayerTimeData = nil;
   self.game = nil;
 
-  self.haveSeenFirstGame = false;
   self.arePlayerClocksManaged = false;
   self.isGameUsingTimedPlay = false;
   self.isTimeDataValid = true; // TODO xxx set default to false once time data validity is checked
   self.isBoardInteractive = false;
   self.isSceneActive = false;
-  self.canUserPlayMove = true; // TODO xxx set default to false once board interactivity is managed
-  self.isGameEnded = false;
+  self.uiArea = UIAreaUnknown;
+  self.uiAreaPlayMode = UIAreaPlayModeUnknown;
+  self.numberOfThingsBlockingBoardInteractions = 0;
 
   self.registry.playerClockService = self;
 
@@ -159,7 +173,24 @@
   [center addObserver:self selector:@selector(sceneDidActivate:) name:UISceneDidActivateNotification object:nil];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
+  [center addObserver:self selector:@selector(uiAreaDidChange:) name:uiAreaDidChange object:nil];
+  [center addObserver:self selector:@selector(uiAreaPlayModeWillChange:) name:uiAreaPlayModeWillChange object:nil];
+  [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
+  [center addObserver:self selector:@selector(territoryStatisticsGenerationWillBegin:) name:territoryStatisticsGenerationWillBegin object:nil];
+  [center addObserver:self selector:@selector(territoryStatisticsGenerationDidEnd:) name:territoryStatisticsGenerationDidEnd object:nil];
+  [center addObserver:self selector:@selector(moreGameActionsPopupWillAppear:) name:moreGameActionsPopupWillAppear object:nil];
+  [center addObserver:self selector:@selector(moreGameActionsPopupDidDisappear:) name:moreGameActionsPopupDidDisappear object:nil];
+  [center addObserver:self selector:@selector(gameInfoScreenWillAppear:) name:gameInfoScreenWillAppear object:nil];
+  [center addObserver:self selector:@selector(gameInfoScreenDidDisappear:) name:gameInfoScreenDidDisappear object:nil];
+  [center addObserver:self selector:@selector(newGameScreenWillAppear:) name:newGameScreenWillAppear object:nil];
+  [center addObserver:self selector:@selector(newGameScreenDidDisappear:) name:newGameScreenDidDisappear object:nil];
+  [center addObserver:self selector:@selector(saveGameScreenWillAppear:) name:saveGameScreenWillAppear object:nil];
+  [center addObserver:self selector:@selector(saveGameScreenDidDisappear:) name:saveGameScreenDidDisappear object:nil];
+
+  // TODO xxx consider enhancing UIViewControllerAdditions with general support
+  // for interaction indication
 }
 
 // -----------------------------------------------------------------------------
@@ -200,39 +231,6 @@
 
   self.isSceneActive = false;
   [self updateIsBoardInteractive];
-
-  if (! self.arePlayerClocksManaged)
-    return;
-
-  [self invalidateTimerForNextMovePlayerIfOneIsScheduled];
-
-  GoPlayerTimeData* playerTimeData = [self nextMovePlayerTimeData];
-  switch (playerTimeData.clockState)
-  {
-    case GoClockStateStarted:
-    {
-      DDLogVerbose(@"sceneWillDeactivate: Suspending clock");
-      // TODO xxx Can we merge GoClockSuspendedReasonSceneDeactivated with
-      // GoClockSuspendedReasonBoardNotInteractive?
-      [self suspendClock:playerTimeData reason:GoClockSuspendedReasonSceneDeactivated];
-      break;
-    }
-    case GoClockStateStopped:
-    {
-      DDLogVerbose(@"sceneWillDeactivate: Clock is stopped");
-      break;
-    }
-    case GoClockStateSuspended:
-    {
-      DDLogVerbose(@"sceneWillDeactivate: Clock is already suspended with reason %d", playerTimeData.clockSuspendedReason);
-      break;
-    }
-    default:
-    {
-      DDLogError(@"sceneWillDeactivate: Unexpected clock state %d", playerTimeData.clockState);
-      break;
-    }
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -260,87 +258,6 @@
 
   self.isSceneActive = true;
   [self updateIsBoardInteractive];
-
-  // If no game exists, then the scene is activated for the first time after
-  // application launch and application setup has not finished yet. In that
-  // case, delay the main part of of the scene activation handling, it will be
-  // executed later when the game is created.
-  if (! self.game)
-    return;
-
-  [self handleSceneDidActivateAfterFirstGameWasSeen];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Extension of sceneDidActivate:().
-// -----------------------------------------------------------------------------
-- (void) handleSceneDidActivateAfterFirstGameWasSeen
-{
-  if (! self.arePlayerClocksManaged)
-    return;
-
-  GoPlayerTimeData* playerTimeData = [self nextMovePlayerTimeData];
-  switch (playerTimeData.clockState)
-  {
-    case GoClockStateStarted:
-    {
-      // This should not be possible. If the scene was deactivated properly the
-      // clock should be suspended. If the app crashed then GoPlayerTimeData
-      // should have suspended the clock with reason = RestoredFromArchive
-      // during unarchiving.
-      DDLogError(@"sceneDidActivate: Clock is started");
-      break;
-    }
-    case GoClockStateStopped:
-    {
-      DDLogVerbose(@"sceneDidActivate: Clock is stopped");
-      break;
-    }
-    case GoClockStateSuspended: // Fallthrough intentional
-    default: // no defensive programming special handling
-    {
-      switch (playerTimeData.clockSuspendedReason)
-      {
-        case GoClockSuspendedReasonHandleTimer:
-          DDLogWarn(@"sceneDidActivate: App has crashed while timerFired was executing");
-          // Fallthrough intentional
-        case GoClockSuspendedReasonRestoredFromArchive:
-          DDLogWarn(@"sceneDidActivate: App has crashed while clock was started");
-          // Bring clock into a sane state that can be handled by the other
-          // parts of this controller. We could start the clock (to more closely
-          // resemble the app state before the crash), but stopping the clock
-          // is more appropriate after a crash, so the user can investigate the
-          // situation without time pressure. If this handling is changed,
-          // update the GoClockSuspendedReasonRestoredFromArchive documentation.
-          [self stopClockIfNotStopped:playerTimeData];
-          break;
-        case GoClockSuspendedReasonSceneDeactivated:
-          // The only way how this suspend reason can be set is when the clock
-          // was started during scene deactivation
-          DDLogVerbose(@"sceneDidActivate: Starting clock");
-          [self startClock:playerTimeData];
-          break;
-        case GoClockSuspendedReasonUserAction:
-          // The clock was suspended by the user when the scene was deactivated
-          break;
-        case GoClockSuspendedReasonBoardNotInteractive:
-          // We can't be 100% sure that when the scene activates it is restored
-          // to the exact same "board is not interactive" state than when it
-          // was deactivated, therefore it is best to stop the clock now to
-          // avoid any problems with the other parts of this controller.
-          //
-          // TODO xxx Revisit this when self.isBoardInteractive is properly
-          // managed. We may then be able to keep the clock suspended.
-          DDLogVerbose(@"sceneDidActivate: Stopping clock that was suspended because board is not interactive");
-          [self stopClockIfNotStopped:playerTimeData];
-          break;
-        case GoClockSuspendedReasonNotSuspended:
-        default: // no defensive programming special handling
-          break;
-      }
-      break;
-    }
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -361,7 +278,8 @@
   if (! self.game)
     return;
 
-  [self invalidateTimerForNextMovePlayerIfOneIsScheduled];
+  // Clock should already have been stopped, but let's play it safe
+  [self stopClockIfNotStoppedAndInvalidateTimer:[self nextMovePlayerTimeData]];
 
   self.game = nil;
   self.blackPlayerTimeData = nil;
@@ -369,7 +287,6 @@
 
   self.isGameUsingTimedPlay = false;
   self.isTimeDataValid = false;
-  self.isGameEnded = false;
 
   [self updateArePlayerClocksManaged];
 }
@@ -398,43 +315,281 @@
 
   self.isGameUsingTimedPlay = game.timeSettings.isGameUsingTimedPlay;
   self.isTimeDataValid = true; // TODO xxx set default to false once time data validity is checked
-  self.isGameEnded = (game.state == GoGameStateGameHasEnded);
 
   [self updateArePlayerClocksManaged];
 
-  if (self.haveSeenFirstGame)
-    return;
-  self.haveSeenFirstGame = true;
-
-  // isSceneActive is true if sceneDidActivate:() already ran for the first
-  // time. In that case sceneDidActivate:() skipped
-  // handleSceneDidActivateAfterFirstGameWasSeen because the game was not yet
-  // there, so we have to invoke it now.
-  if (self.isSceneActive)
-    [self handleSceneDidActivateAfterFirstGameWasSeen];
+  // Clock state changes will be triggered via PlayerClockService requests
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameStateChanged notification.
+/// @brief Responds to the #uiAreaDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) goGameStateChanged:(NSNotification*)notification
+- (void) uiAreaDidChange:(NSNotification*)notification
 {
   if ([NSThread currentThread] != [NSThread mainThread])
   {
-    [self performSelectorOnMainThread:@selector(goGameStateChanged:)
+    [self performSelectorOnMainThread:@selector(uiAreaDidChange:)
                            withObject:notification
                         waitUntilDone:YES];
     return;
   }
 
-  self.isGameEnded = (self.game.state == GoGameStateGameHasEnded);
+  NSNumber* uiAreaAsNumber = notification.object;
+  self.uiArea = [uiAreaAsNumber intValue];
 
-  // No other updates necessary. Regardless of whether the game ended or if
-  // play is resumed, any clock changes will be triggered via PlayerClockService
-  // requests, and those request handlers will then check self.isGameEnded.
+  [self updateIsBoardInteractive];
+}
 
-  // TODO xxx Consider making isGameEnded into a calculated property, because
-  // we do have self.game that can be queried.
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #uiAreaPlayModeWillChange notification.
+// -----------------------------------------------------------------------------
+- (void) uiAreaPlayModeWillChange:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(uiAreaPlayModeWillChange:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  // In this notification handler we only care about the change if the user
+  // leaves Play mode => in that case we want to suspend the clock as soon as
+  // possible because the change to the new mode may take substantial time
+  // (e.g. when scoring mode is enabled the score calculation may take some
+  // time, in particular when a GTP command is sent).
+  if (self.uiAreaPlayMode != UIAreaPlayModePlay)
+    return;
+
+  NSArray* oldAndNewModes = notification.object;
+  NSNumber* newMode = oldAndNewModes.lastObject;
+  self.uiAreaPlayMode = [newMode intValue];
+
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #uiAreaPlayModeDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) uiAreaPlayModeDidChange:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(uiAreaPlayModeDidChange:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  NSArray* oldAndNewModes = notification.object;
+  NSNumber* newMode = oldAndNewModes.lastObject;
+  self.uiAreaPlayMode = [newMode intValue];
+
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationWillBegin notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationWillBegin:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(boardViewAnimationWillBegin:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions++;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationDidEnd notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationDidEnd:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(boardViewAnimationDidEnd:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions--;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #territoryStatisticsGenerationWillBegin notification.
+// -----------------------------------------------------------------------------
+- (void) territoryStatisticsGenerationWillBegin:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(territoryStatisticsGenerationWillBegin:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions++;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #territoryStatisticsGenerationDidEnd notification.
+// -----------------------------------------------------------------------------
+- (void) territoryStatisticsGenerationDidEnd:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(territoryStatisticsGenerationDidEnd:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions--;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #moreGameActionsPopupWillAppear notification.
+// -----------------------------------------------------------------------------
+- (void) moreGameActionsPopupWillAppear:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(moreGameActionsPopupWillAppear:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions++;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #moreGameActionsPopupDidDisappear notification.
+// -----------------------------------------------------------------------------
+- (void) moreGameActionsPopupDidDisappear:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(moreGameActionsPopupDidDisappear:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions--;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #gameInfoScreenWillAppear notification.
+// -----------------------------------------------------------------------------
+- (void) gameInfoScreenWillAppear:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(gameInfoScreenWillAppear:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions++;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #gameInfoScreenDidDisappear notification.
+// -----------------------------------------------------------------------------
+- (void) gameInfoScreenDidDisappear:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(gameInfoScreenDidDisappear:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions--;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #newGameScreenWillAppear notification.
+// -----------------------------------------------------------------------------
+- (void) newGameScreenWillAppear:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(newGameScreenWillAppear:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions++;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #newGameScreenDidDisappear notification.
+// -----------------------------------------------------------------------------
+- (void) newGameScreenDidDisappear:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(newGameScreenDidDisappear:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions--;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #saveGameScreenWillAppear notification.
+// -----------------------------------------------------------------------------
+- (void) saveGameScreenWillAppear:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(saveGameScreenWillAppear:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions++;
+  [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #saveGameScreenDidDisappear notification.
+// -----------------------------------------------------------------------------
+- (void) saveGameScreenDidDisappear:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(saveGameScreenDidDisappear:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.numberOfThingsBlockingBoardInteractions--;
+  [self updateIsBoardInteractive];
 }
 
 #pragma mark - PlayerClockService implementation
@@ -442,9 +597,16 @@
 // -----------------------------------------------------------------------------
 /// @brief PlayerClockService method.
 // -----------------------------------------------------------------------------
-- (void) startClockOfPlayer:(GoPlayer*)player reason:(enum PlayerClockStartReason)startReason
+- (void) startClockOfPlayer:(GoPlayer*)player
+                     reason:(enum PlayerClockStartReason)startReason
 {
-  // TODO xxx Is this guaranteed to execute on the main thread?
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      [self startClockOfPlayer:player reason:startReason];
+    });
+    return;
+  }
 
   if (! self.arePlayerClocksManaged)
     return;
@@ -459,13 +621,15 @@
       // Fallthrough intentional
     case PlayerClockStartReasonComputerPlayerTurnBegins:
     {
-      // If the the board is not interactive, we don't care about the human
-      // player's clock state. If the clock is stopped we don't want to start
-      // it, and if it is suspended there is no GoClockSuspendedReason that
-      // would convince us to start it, either.
+      // If the the board is not interactive, and the clock is stopped, then
+      // we "almost start" the clock - we suspend it. This has the same result
+      // as if the clock were started and the board became non-interactive.
       if (startReason == PlayerClockStartReasonHumanPlayerTurnBegins &&
-          ! self.isBoardInteractive)
+          ! self.isBoardInteractive &&
+          playerTimeData.clockState == GoClockStateStopped)
       {
+        [self suspendClockIfNotSuspendedAndInvalidateTimer:playerTimeData
+                                                    reason:GoClockSuspendedReasonBoardNotInteractive];
         return;
       }
 
@@ -483,7 +647,7 @@
       // The clock is expected to be never started: Before the player's turn
       // began, nobody can have started the clock because it was not that
       // player's turn.
-      [self startClock:playerTimeData];
+      [self startClockAndScheduleTimer:playerTimeData];
       return;
     }
     case PlayerClockStartReasonComputerPlayerStartsThinkingOnBehalfOfHumanPlayer:
@@ -514,18 +678,27 @@
       if (self.isGameEnded)
         return;
 
+      // Avoid starting the clock accidentally if the user cannot interact with
+      // the board to play a move. Example: If the "Play" UI area is not in
+      // play mode (#UIAreaPlayModePlay).
+      if (playerTimeData.clockSuspendedReason == GoClockSuspendedReasonBoardNotInteractive)
+        return;
+
       // The clock is expected to be never started. If it is, the controller
       // handling user interactions with the user interface clock made a mistake
       // => we let the app crash because we want to know about it.
       // Note that the user may also start a suspended computer player's clock.
       // The only way how a computer player's clock can be suspended is by user
       // request.
-      [self startClock:playerTimeData];
+      [self startClockAndScheduleTimer:playerTimeData];
       return;
     }
     default:
     {
-      // TODO xxx error handling
+      NSString* errorMessage = [NSString stringWithFormat:@"startClockOfPlayer failed, unknown startReason = %d", startReason];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
       return;
     }
   }
@@ -537,7 +710,14 @@
 - (enum PlayerClockServiceOperationResult) stopClockOfPlayer:(GoPlayer*)player
                                                       reason:(enum PlayerClockStopReason)stopReason
 {
-  // TODO xxx Is this guaranteed to execute on the main thread?
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    __block enum PlayerClockServiceOperationResult result;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      result = [self stopClockOfPlayer:player reason:stopReason];
+    });
+    return result;
+  }
 
   if (! self.arePlayerClocksManaged)
     return PlayerClockServiceOperationResultGameContinues;
@@ -549,11 +729,12 @@
   switch (stopReason)
   {
     case PlayerClockStopReasonPlayerTurnEnds:
+    case PlayerClockStopReasonNewGameWillBeCreated:
     {
       switch (playerTimeData.clockState)
       {
         case GoClockStateStarted:
-          [self stopClockIfNotStopped:playerTimeData];
+          [self stopClockIfNotStoppedAndInvalidateTimer:playerTimeData];
           if (playerTimeData.didPlayerLoseOnTime)
             return PlayerClockServiceOperationResultGameLostOnTime;
           else
@@ -563,15 +744,23 @@
           // but if it is we don't have to do anything.
           return PlayerClockServiceOperationResultGameContinues;
         case GoClockStateSuspended:
-          // Clock remains suspended - the only thing that's important is that
-          // the clock is not started when the move is submitted to GoGame, so
-          // that GoGame can perform time keeping operations.
+          // Clock remains suspended
+          // - For PlayerClockStopReasonPlayerTurnEnds the only thing that's
+          //   important is that the clock is not started when the move is
+          //   submitted to GoGame, so that GoGame can perform time keeping
+          //   operations.
+          // - For PlayerClockStopReasonNewGameWillBeCreated the only thing
+          //   that matters is that the clock is not started. The game data
+          //   is discarded soon.
           return PlayerClockServiceOperationResultGameContinues;
       }
     }
     default:
     {
-      // TODO xxx error handling
+      NSString* errorMessage = [NSString stringWithFormat:@"stopClockOfPlayer failed, unknown stopReason = %d", stopReason];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
       return PlayerClockServiceOperationResultGameContinues;
     }
   }
@@ -583,7 +772,14 @@
 - (enum PlayerClockServiceOperationResult) suspendClockOfPlayer:(GoPlayer*)player
                                                          reason:(enum PlayerClockSuspendReason)suspendReason
 {
-  // TODO xxx Is this guaranteed to execute on the main thread?
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    __block enum PlayerClockServiceOperationResult result;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      result = [self suspendClockOfPlayer:player reason:suspendReason];
+    });
+    return result;
+  }
 
   if (! self.arePlayerClocksManaged)
     return PlayerClockServiceOperationResultGameContinues;
@@ -605,7 +801,8 @@
       // handling user interactions with the user interface clock made a mistake
       // => we let the app crash because we want to know about it.
       // Note that the user may also suspend a computer player's clock.
-      [self suspendClock:playerTimeData reason:GoClockSuspendedReasonUserAction];
+      [self suspendClockIfNotSuspendedAndInvalidateTimer:playerTimeData
+                                                  reason:GoClockSuspendedReasonUserAction];
       if (playerTimeData.didPlayerLoseOnTime)
         return PlayerClockServiceOperationResultGameLostOnTime;
       else
@@ -613,7 +810,10 @@
     }
     default:
     {
-      // TODO xxx error handling
+      NSString* errorMessage = [NSString stringWithFormat:@"suspendClockOfPlayer failed, unknown suspendReason = %d", suspendReason];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
       return PlayerClockServiceOperationResultGameContinues;
     }
   }
@@ -647,7 +847,7 @@
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
-  [playerTimeData suspendClock:GoClockSuspendedReasonHandleTimer];
+  [playerTimeData suspendClockIfNotSuspended:GoClockSuspendedReasonHandleTimer];
 
   // Marks the application state as "dirty" so that time data is saved if the
   // scene deactivates. We could also save immediately, but doing that every
@@ -670,9 +870,14 @@
 #pragma mark - Internal handling of clocks/timers
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Starts the clock encapsulated by @a playerTimeData and schedules a
+/// timer to trigger future clock countdowns.
+///
+/// This is an internal helper method. It does not perform any kind of
+/// validation (e.g. clock state) - this is the responsibility of the caller.
+/// If the validation is performed poorly, this method may raise an exception.
 // -----------------------------------------------------------------------------
-- (void) startClock:(GoPlayerTimeData*)playerTimeData
+- (void) startClockAndScheduleTimer:(GoPlayerTimeData*)playerTimeData
 {
   [playerTimeData startClock];
   [[ApplicationStateManager sharedManager] applicationStateDidChange];
@@ -684,20 +889,31 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Suspends the clock encapsulated by @a playerTimeData and invalidates
+/// a timer if one is scheduled.
+///
+/// This is an internal helper method. It does not perform any kind of
+/// validation (e.g. clock state) - this is the responsibility of the caller.
+/// If the validation is performed poorly, this method may raise an exception.
 // -----------------------------------------------------------------------------
-- (void) suspendClock:(GoPlayerTimeData*)playerTimeData reason:(enum GoClockSuspendedReason)reason
+- (void) suspendClockIfNotSuspendedAndInvalidateTimer:(GoPlayerTimeData*)playerTimeData
+                                               reason:(enum GoClockSuspendedReason)reason
 {
   [self invalidateTimerIfOneIsScheduled:playerTimeData];
 
-  [playerTimeData suspendClock:reason];
+  [playerTimeData suspendClockIfNotSuspended:reason];
   [[ApplicationStateManager sharedManager] applicationStateDidChange];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Stops the clock encapsulated by @a playerTimeData and invalidates
+/// a timer if one is scheduled.
+///
+/// This is an internal helper method. It does not perform any kind of
+/// validation (e.g. clock state) - this is the responsibility of the caller.
+/// If the validation is performed poorly, this method may raise an exception.
 // -----------------------------------------------------------------------------
-- (void) stopClockIfNotStopped:(GoPlayerTimeData*)playerTimeData
+- (void) stopClockIfNotStoppedAndInvalidateTimer:(GoPlayerTimeData*)playerTimeData
 {
   [self invalidateTimerIfOneIsScheduled:playerTimeData];
 
@@ -706,6 +922,17 @@
 }
 
 #pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the current game has ended, false if not.
+// -----------------------------------------------------------------------------
+- (bool) isGameEnded
+{
+  if (self.game)
+    return (self.game.state == GoGameStateGameHasEnded);
+  else
+    return false;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoPlayerTimeData object for the player who will make the
@@ -790,24 +1017,79 @@
 // -----------------------------------------------------------------------------
 - (void) updateArePlayerClocksManaged
 {
-  // TODO xxx consider implementing setters for the properties that
-  // arePlayerClocksManaged is depending on, and invoking this updater from
-  // these setters. makes sure that rest of implementation cannot make any
-  // mistakes
-  self.arePlayerClocksManaged = (self.isGameUsingTimedPlay && self.isTimeDataValid);
+  bool newArePlayerClocksManaged = (self.isGameUsingTimedPlay && self.isTimeDataValid);
+  if (self.arePlayerClocksManaged == newArePlayerClocksManaged)
+    return;
+
+  self.arePlayerClocksManaged = newArePlayerClocksManaged;
+
+  // TODO xxx implement a reaction
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the internal property @e isBoardInteractive based on
-/// other states. See the documentation of @e isBoardInteractive.
+/// other states. See the documentation of @e isBoardInteractive. Updates the
+/// human player's clock if it is their turn and if the property value changes.
 // -----------------------------------------------------------------------------
 - (void) updateIsBoardInteractive
 {
-  // TODO xxx consider implementing setters for the properties that
-  // isBoardInteractive is depending on, and invoking this updater from
-  // these setters. makes sure that rest of implementation cannot make any
-  // mistakes
-  self.isBoardInteractive = (self.isSceneActive && self.canUserPlayMove);
+  bool newIsBoardInteractive = (self.isSceneActive &&
+                                self.uiArea == UIAreaPlay &&
+                                self.uiAreaPlayMode == UIAreaPlayModePlay &&
+                                self.numberOfThingsBlockingBoardInteractions == 0);
+  if (self.isBoardInteractive == newIsBoardInteractive)
+    return;
+
+  self.isBoardInteractive = newIsBoardInteractive;
+
+  if (! self.arePlayerClocksManaged)
+    return;
+
+  GoPlayer* nextMovePlayer = self.game.nextMovePlayer;
+  if (! nextMovePlayer.player.isHuman)
+    return;
+
+  GoPlayerTimeData* playerTimeData = nextMovePlayer.timeData;
+  if (self.isBoardInteractive)
+  {
+    switch (playerTimeData.clockSuspendedReason)
+    {
+      case GoClockSuspendedReasonHandleTimer:
+        DDLogWarn(@"updateIsBoardInteractive: App has crashed while timerFired was executing");
+        // Fallthrough intentional
+      case GoClockSuspendedReasonRestoredFromArchive:
+        DDLogWarn(@"updateIsBoardInteractive: App has crashed while clock was started");
+        // Bring clock into a sane state that can be handled by the other
+        // parts of this controller. We could start the clock (to more closely
+        // resemble the app state before the crash), but stopping the clock
+        // is more appropriate after a crash, so the user can investigate the
+        // situation without time pressure. If this handling is changed,
+        // update the GoClockSuspendedReasonRestoredFromArchive documentation.
+        [self stopClockIfNotStoppedAndInvalidateTimer:playerTimeData];
+        break;
+      case GoClockSuspendedReasonBoardNotInteractive:
+        DDLogVerbose(@"updateIsBoardInteractive: Starting clock that was suspended because board is not interactive");
+        [self startClockAndScheduleTimer:playerTimeData];
+        break;
+      case GoClockSuspendedReasonUserAction:
+        break;
+      case GoClockSuspendedReasonNotSuspended:
+        // Either clock is already started (should not be possible, but if it
+        // is we leave it started), or it is stopped (we don't want to start
+        // it).
+        break;
+      default: // no defensive programming special handling
+        break;
+    }
+  }
+  else
+  {
+    if (playerTimeData.clockState == GoClockStateStarted)
+    {
+      [self suspendClockIfNotSuspendedAndInvalidateTimer:playerTimeData
+                                                  reason:GoClockSuspendedReasonBoardNotInteractive];
+    }
+  }
 }
 
 @end

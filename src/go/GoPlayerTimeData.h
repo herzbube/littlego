@@ -43,7 +43,7 @@
    isTimeDataForBlackPlayer:(bool)isTimeDataForBlackPlayer;
 
 - (void) startClock;
-- (void) suspendClock:(enum GoClockSuspendedReason)reason;
+- (void) suspendClockIfNotSuspended:(enum GoClockSuspendedReason)reason;
 - (void) stopClockIfNotStopped;
 
 - (bool) didPlayerLoseOnTime;

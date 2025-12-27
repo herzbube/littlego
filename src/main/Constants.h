@@ -931,11 +931,6 @@ enum GoClockSuspendedReason
   /// when the scene activates to let the user investigate the situation
   /// without time pressure.
   GoClockSuspendedReasonRestoredFromArchive,
-  /// @brief The clock is suspended because the scene was deactivated (e.g.
-  /// because the user sent the app to the background, or because an
-  /// interruption such as a phone call occurred). When the scene becomes active
-  /// again, the app will automatically set the clock to #GoClockStateStarted.
-  GoClockSuspendedReasonSceneDeactivated,
   /// @brief The clock is suspended because the user explicitly requested it
   /// via interaction with the user interface clock. The user can manually
   /// start the clock again via interaction with the user interface clock.
@@ -946,9 +941,12 @@ enum GoClockSuspendedReason
   /// cannot interact with the Go board to play a move (e.g. the board is not
   /// visible at all, or it is partially covered by a popup, or an animation of
   /// long duration is blocking interaction, or the board is not in
-  /// #UIAreaPlayModePlay) and may therefore lose on time because they cannot
-  /// play their move on time. The app will automatically set the clock back
-  /// to #GoClockStateStarted when the user can interact with the board again.
+  /// #UIAreaPlayModePlay, or the scene is deactivated) and may therefore lose
+  /// on time because they cannot play their move on time. The app will
+  /// automatically set the clock back to #GoClockStateStarted when the user
+  /// can interact with the board again. Note: Scene deactivation occurs when
+  /// the user sends the app to the background, but also when there is a phone
+  /// call or other interruption.
   GoClockSuspendedReasonBoardNotInteractive,
   /// @brief The clock is not suspended. The clock is set to either
   /// #GoClockStateStopped or #GoClockStateStarted.
@@ -1484,7 +1482,7 @@ extern NSString* nodeTreeViewNodeSymbolDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Time-based play notifications
+/// @name Time based play notifications
 // -----------------------------------------------------------------------------
 //@{
 /// @brief Is sent to indicate that the state of the clock of one of the
@@ -1526,48 +1524,136 @@ extern NSString* playerLostOnTime;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Other notifications
+/// @name Play area / board view notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent when the first of a nested series of long-running actions
-/// starts. See LongRunningActionCounter for a detailed discussion of the
-/// concept.
-extern NSString* longRunningActionStarts;
-/// @brief Is sent when the last of a nested series of long-running actions
-/// ends. See LongRunningActionCounter for a detailed discussion of the concept.
-extern NSString* longRunningActionEnds;
-/// @brief Is sent to indicate that players and profiles are about to be reset
-/// to their factory defaults. Is sent before #goGameWillCreate.
-extern NSString* playersAndProfilesWillReset;
-/// @brief Is sent to indicate that players and profiles have been reset to
-/// their factory defaults. Is sent after #goGameDidCreate.
-extern NSString* playersAndProfilesDidReset;
-/// @brief Is sent to indicate that territory statistics in GoPoint objects have
-/// been updated.
-extern NSString* territoryStatisticsChanged;
 /// @brief Is sent to indicate that the mode of the UI area "Play" is about
 /// to change. An NSArray object containing two NSNumber objects is associated
 /// with the notification. The first NSNumber object contains the old
-/// UIAreaPlayMode value, the second NSNumber object the new UIAreaPlayMode
+/// #UIAreaPlayMode value, the second NSNumber object the new #UIAreaPlayMode
 /// value. Receivers of the notification must process the NSArray immediately
 /// because the NSArray may be deallocated, or its content changed, after the
 /// notification has been delivered.
+///
+/// This notification is sent during application startup to indicate the initial
+/// #UIAreaPlayMode value. In that case, both NSNumber objects contain the
+/// same #UIAreaPlayMode value.
+///
+/// This notification is guaranteed to be delivered in the main thread.
 extern NSString* uiAreaPlayModeWillChange;
 /// @brief Is sent to indicate that the mode of the UI area "Play" has changed.
 /// An NSArray object containing two NSNumber objects is associated with the
-/// notification. The first NSNumber object contains the old UIAreaPlayMode
-/// value, the second NSNumber object the new UIAreaPlayMode value. Receivers
+/// notification. The first NSNumber object contains the old #UIAreaPlayMode
+/// value, the second NSNumber object the new #UIAreaPlayMode value. Receivers
 /// of the notification must process the NSArray immediately because the NSArray
 /// may be deallocated, or its content changed, after the notification has been
 /// delivered.
+///
+/// This notification is sent during application startup to indicate the initial
+/// #UIAreaPlayMode value. In that case, both NSNumber objects contain the
+/// same #UIAreaPlayMode value.
+///
+/// This notification is guaranteed to be delivered in the main thread.
 extern NSString* uiAreaPlayModeDidChange;
 /// @brief Is sent before an animation is started on the board view. As a
 /// response user interaction should be suspended until the balancing
 /// #boardAnimationDidEnd is sent.
+///
+/// This notification is guaranteed to be delivered in the main thread.
 extern NSString* boardViewAnimationWillBegin;
 /// @brief Is sent after an animation has ended on the board view. This is the
 /// balancing notification to #boardAnimationWillBegin.
+///
+/// This notification is guaranteed to be delivered in the main thread.
 extern NSString* boardViewAnimationDidEnd;
+/// @brief Is sent when the "More Game Actions" popup is about to appear.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* moreGameActionsPopupWillAppear;
+/// @brief Is sent when the "More Game Actions" popup has disappeared.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* moreGameActionsPopupDidDisappear;
+/// @brief Is sent when the "Game Info" screen is about to appear.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* gameInfoScreenWillAppear;
+/// @brief Is sent when the "Game Info" screen has disappeared.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* gameInfoScreenDidDisappear;
+/// @brief Is sent when the "New Game" screen is about to appear, or in the
+/// "rematch" use case when a new game is about to be started.
+///
+/// The "rematch" use case has the potential to be fully non-interactive, but
+/// if the current game has unsaved changes there will be a popup asking for
+/// confirmation that these changes can be discarded.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* newGameScreenWillAppear;
+/// @brief Is sent when the "New Game" screen has disappeared, or in the
+/// "rematch" use case when there is no further user interaction.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* newGameScreenDidDisappear;
+/// @brief Is sent when the "Save Game" screen is about to appear.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* saveGameScreenWillAppear;
+/// @brief Is sent when the "Save Game" screen has disappeared and there is
+/// no further user interaction.
+///
+/// If the popup is displayed that asks for the overwrite confirmation, this
+/// notification is sent after the popup has disappeared.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* saveGameScreenDidDisappear;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Territory statistics notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that territory statistics in GoPoint objects have
+/// been updated.
+extern NSString* territoryStatisticsChanged;
+/// @brief Is sent before generation of territory statistics begins. The
+/// generation occurs because the user requested it.
+///
+/// Before this notification is posted, the GoGame property
+/// @e reasonForComputerIsThinking is set to
+/// #GoGameComputerIsThinkingReasonPlayerInfluence (from the previous value
+/// #GoGameComputerIsThinkingReasonIsNotThinking).
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* territoryStatisticsGenerationWillBegin;
+/// @brief Is sent after generation of territory statistics has ended. The
+/// generation occurred because the user requested it.
+///
+/// Before this notification is posted, the GoGame property
+/// @e reasonForComputerIsThinking is set to
+/// #GoGameComputerIsThinkingReasonIsNotThinking (from the previous value
+/// #GoGameComputerIsThinkingReasonPlayerInfluence).
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* territoryStatisticsGenerationDidEnd;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name General UI notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the UI area has changed. An NSNumber object
+/// is associated with the notification that contains the new #UIArea value.
+/// Receivers of the notification must process the NSNumber immediately because
+/// the NSNumber may be deallocated, or its content changed, after the
+/// notification has been delivered.
+///
+/// This notification is sent during application startup to indicate the initial
+/// #UIArea value.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* uiAreaDidChange;
 /// @brief Is sent when the user interface layout is about to change
 /// orientation from Portrait to Landscape, or from Landscape to Portrait.
 ///
@@ -1583,6 +1669,41 @@ extern NSString* uiWillChangeLayoutOrientation;
 /// notification and instead override
 /// viewWillTransitionToSize:withTransitionCoordinator().
 extern NSString* uiWillChangeInterfaceOrientation;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Other notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent when the app setup process during the initial app launch
+/// is about to begin.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* applicationSetupWillStart;
+/// @brief Is sent when the app setup process during the initial app launch
+/// has ended. A function GoGame instance is now present, either restored from
+/// the previous state, or an entirely new game if the restore failed or was not
+/// possible (e.g. first app launch after installation on the device).
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* applicationSetupDidEnd;
+/// @brief Is sent when the first of a nested series of long-running actions
+/// starts. See LongRunningActionCounter for a detailed discussion of the
+/// concept.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* longRunningActionStarts;
+/// @brief Is sent when the last of a nested series of long-running actions
+/// ends. See LongRunningActionCounter for a detailed discussion of the concept.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* longRunningActionEnds;
+/// @brief Is sent to indicate that players and profiles are about to be reset
+/// to their factory defaults. Is sent before #goGameWillCreate.
+extern NSString* playersAndProfilesWillReset;
+/// @brief Is sent to indicate that players and profiles have been reset to
+/// their factory defaults. Is sent after #goGameDidCreate.
+extern NSString* playersAndProfilesDidReset;
 //@}
 
 // -----------------------------------------------------------------------------

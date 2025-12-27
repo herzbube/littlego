@@ -42,6 +42,7 @@
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../newgame/NewGameModel.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../sgf/SgfUtilities.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -238,8 +239,10 @@ static const int maxStepsForCreateNodes = 9;
     [self notifyGoGameDocument];
     [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
   }
+
   [GtpUtilities setupComputerPlayer];
-  [self performSelector:@selector(triggerComputerPlayerOnMainThread)
+
+  [self performSelector:@selector(triggerComputerPlayerOrStartHumanPlayerClockOnMainThread)
                onThread:[NSThread mainThread]
              withObject:nil
           waitUntilDone:YES];
@@ -289,8 +292,10 @@ static const int maxStepsForCreateNodes = 9;
   command.shouldHonorAutoEnableBoardSetupMode = false;
   // Handicap and komi will later be set up by SyncGTPEngineCommand
   command.shouldSetupGtpHandicapAndKomi = false;
-  // We have to do this ourselves, after setting up handicap + moves
+  // We have to trigger the computer player and/or start the human player's
+  // clock ourselves, after setting up handicap + moves
   command.shouldTriggerComputerPlayerIfItIsTheirTurn = false;
+  command.shouldStartHumanPlayerClockIfItIsTheirTurn = false;
   // We want the load game command to proceed as quickly as possible, therefore
   // we set up the computer player ourselves, at the very end just before we
   // trigger the computer player. If we would allow the computer player to be
@@ -304,7 +309,7 @@ static const int maxStepsForCreateNodes = 9;
     *errorMessage = @"Internal error: Starting a new game failed";
   }
 
-  // Restore the original board size (is a user preference which should should
+  // Restore the original board size (is a user preference which should
   // not be overwritten by the loaded game's setting)
   model.boardSize = oldBoardSize;
 
@@ -1658,7 +1663,20 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Triggers the computer player to make a move, if it is his turn.
+/// @brief Triggers the computer player to make a move, or starts the human
+/// player's clock, depending on which player's turn it is.
+// -----------------------------------------------------------------------------
+- (void) triggerComputerPlayerOrStartHumanPlayerClockOnMainThread
+{
+  GoGame* game = [GoGame sharedGame];
+  if (game.nextMovePlayerIsComputerPlayer)
+    [self triggerComputerPlayerOnMainThread:game];
+  else
+    [self startHumanPlayerClockOnMainThread:game];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Triggers the computer player to make a move.
 ///
 /// This method, and with it ComputerPlayMoveCommand, must be executed on the
 /// main thread. Reason:
@@ -1676,27 +1694,35 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 /// GTP response, LoadGameCommand has long since terminated its long-running
 /// action.
 // -----------------------------------------------------------------------------
-- (void) triggerComputerPlayerOnMainThread
+- (void) triggerComputerPlayerOnMainThread:(GoGame*)game
 {
-  GoGame* game = [GoGame sharedGame];
-  if (game.nextMovePlayerIsComputerPlayer)
+  if (self.restoreMode)
   {
-    if (self.restoreMode)
+    if (GoGameTypeComputerVsComputer == game.type)
     {
-      if (GoGameTypeComputerVsComputer == game.type)
-      {
-        // The game may already have ended, in which case there is no need to
-        // pause (in fact, we must not pause, otherwise we trigger an exception)
-        if (GoGameStateGameHasEnded != game.state)
-          [game pause];
-      }
-    }
-    else
-    {
-      [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
-      self.didTriggerComputerPlayer = true;
+      // The game may already have ended, in which case there is no need to
+      // pause (in fact, we must not pause, otherwise we trigger an exception)
+      if (GoGameStateGameHasEnded != game.state)
+        [game pause];
     }
   }
+  else
+  {
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+    self.didTriggerComputerPlayer = true;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Starts the human player's clock.
+///
+/// This method must be executed on the main thread, because PlayerClockService
+/// expects requests to be submitted on the main thread.
+// -----------------------------------------------------------------------------
+- (void) startHumanPlayerClockOnMainThread:(GoGame*)game
+{
+  [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                            reason:PlayerClockStartReasonHumanPlayerTurnBegins];
 }
 
 // -----------------------------------------------------------------------------

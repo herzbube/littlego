@@ -17,14 +17,14 @@
 
 // Project includes
 #import "ToggleTerritoryStatisticsCommand.h"
-#import "../../main/ModelProvider.h"
-#import "../../main/Registry.h"
-#import "../../play/model/BoardViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
+#import "../../play/model/BoardViewModel.h"
 
 
 @implementation ToggleTerritoryStatisticsCommand

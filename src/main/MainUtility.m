@@ -211,12 +211,35 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Synchronizes user defaults in response to a different UI area being
-/// displayed by the main application view controller.
+/// displayed by the main application view controller. Also posts the
+/// notification uiAreaDidChange.
 // -----------------------------------------------------------------------------
 + (void) mainApplicationViewController:(UIViewController*)viewController didDisplayUIArea:(enum UIArea)uiArea
 {
   [Registry sharedRegistry].modelProvider.uiSettingsModel.visibleUIArea = uiArea;
   [[ApplicationDelegate sharedDelegate] writeUserDefaults];
+
+  [MainUtility postNotificationOnMainThread:uiAreaDidChange];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
++ (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+
+  enum UIArea uiArea = [Registry sharedRegistry].modelProvider.uiSettingsModel.visibleUIArea;
+  NSNumber* uiAreaAsNumber = [NSNumber numberWithInt:uiArea];
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:uiAreaAsNumber];
 }
 
 @end

@@ -49,6 +49,9 @@ enum PlayerClockStopReason
   /// @brief The clock is requested to be stopped because the turn of a player
   /// ends.
   PlayerClockStopReasonPlayerTurnEnds,
+  /// @brief The clock is requested to be stopped because a new game is about
+  /// to be created.
+  PlayerClockStopReasonNewGameWillBeCreated,
 };
 
 // -----------------------------------------------------------------------------
@@ -93,7 +96,8 @@ enum PlayerClockServiceOperationResult
 ///
 /// TODO xxx provide at least one example why the request may not be honored.
 // -----------------------------------------------------------------------------
-- (void) startClockOfPlayer:(GoPlayer*)player reason:(enum PlayerClockStartReason)startReason;
+- (void) startClockOfPlayer:(GoPlayer*)player
+                     reason:(enum PlayerClockStartReason)startReason;
 
 // -----------------------------------------------------------------------------
 /// @brief Requests that the clock of @a player be stopped, because of

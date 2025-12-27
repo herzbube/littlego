@@ -35,6 +35,7 @@
 #import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
 #import "../../play/model/BoardSetupModel.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../player/Player.h"
 #import "../../player/PlayerModel.h"
 #import "../../newgame/NewGameModel.h"
@@ -72,12 +73,15 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.prefabricatedGame = game;
   self.shouldResetUIAreaPlayMode = true;
   self.shouldHonorAutoEnableBoardSetupMode = true;
   self.shouldSetupGtpHandicapAndKomi = true;
   self.shouldSetupComputerPlayer = true;
   self.shouldTriggerComputerPlayerIfItIsTheirTurn = true;
+  self.shouldStartHumanPlayerClockIfItIsTheirTurn = true;
+
   return self;
 }
 
@@ -100,10 +104,12 @@
   if (self.shouldSetupComputerPlayer)
     [GtpUtilities setupComputerPlayer];
 
+  GoGame* game = [GoGame sharedGame];
+  bool nextMovePlayerIsComputerPlayer = game.nextMovePlayerIsComputerPlayer;
   bool shouldTriggerComputerPlayer = (self.shouldTriggerComputerPlayerIfItIsTheirTurn &&
-                                      [GoGame sharedGame].nextMovePlayerIsComputerPlayer);
-  if (shouldTriggerComputerPlayer)
-    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+                                      nextMovePlayerIsComputerPlayer);
+  bool shouldStartHumanPlayerClock = (self.shouldStartHumanPlayerClockIfItIsTheirTurn &&
+                                      ! nextMovePlayerIsComputerPlayer);
 
   bool shouldConsiderAutoEnablingBoardSetupMode = (self.shouldResetUIAreaPlayMode &&
                                                    self.shouldHonorAutoEnableBoardSetupMode &&
@@ -112,6 +118,17 @@
   {
     if ([Registry sharedRegistry].modelProvider.boardSetupModel.autoEnableBoardSetupMode)
       [self setUIAreaPlayMode:UIAreaPlayModeBoardSetup];
+  }
+
+  if (shouldTriggerComputerPlayer)
+  {
+    // The command will start the computer player's clock
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+  }
+  else if (shouldStartHumanPlayerClock)
+  {
+    [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                              reason:PlayerClockStartReasonHumanPlayerTurnBegins];
   }
 
   return true;
@@ -133,9 +150,17 @@
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
-  // Send this while the old GoGame object is still around and fully functional
-  // (the old game is nil if this happens during application startup)
   GoGame* oldGame = [GoGame sharedGame];
+  if (oldGame)
+  {
+    // We can ignore the return value because the game will be deallocated
+    [[Registry sharedRegistry].playerClockService stopClockOfPlayer:oldGame.nextMovePlayer
+                                                             reason:PlayerClockStopReasonPlayerTurnEnds];
+  }
+
+  // Send goGameWillCreate while the old GoGame object is still around and
+  // fully functional (the old game is nil if this happens during application
+  // startup)
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameWillCreate object:oldGame];
 
   // Create the new GoGame object (unless a pre-fabricated object was supplied)
@@ -154,6 +179,7 @@
   }
 
   // Replace the delegate's reference; an old GoGame object is now deallocated
+  // unless something still has a strong reference to it
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   appDelegate.game = newGame;
   DDLogVerbose(@"%@: Assigned game object to app delegate", [self shortDescription]);

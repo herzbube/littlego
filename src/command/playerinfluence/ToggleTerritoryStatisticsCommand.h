@@ -30,9 +30,16 @@
 /// statistics collection must be enabled or disabled. Statistics collection is
 /// enabled if the property is true, disabled if the property is false.
 ///
-/// ToggleTerritoryStatisticsCommand also initializes the territory statistics
+/// ToggleTerritoryStatisticsCommand initializes the territory statistics
 /// in all GoPoint objects with the value zero and triggers a drawing update
-/// of the Go board.
+/// of the Go board. As a result, if the collection of territory statistics is
+/// disabled, all the currently collected statistics are forgotten.
+///
+/// @note If the collection of territory statistics is enabled, this does not
+/// cause territory statistics to be immediately collected - the collecting
+/// occurs only when the next GTP command that generates a move is executed.
+/// GenerateTerritoryStatisticsCommand can be executed to generate and collect
+/// territory statistics without actually generating a move.
 ///
 /// ToggleTerritoryStatisticsCommand is executed asynchronously (unless the
 /// executor is another asynchronous command). The reason is that

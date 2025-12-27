@@ -30,7 +30,7 @@
 //@{
 @property(nonatomic, assign, readwrite) enum GoTimeSystemType goTimeSystemType;
 @property(nonatomic, assign, readwrite) bool supportsTimedPlay;
-@property(nonatomic, assign, readwrite) NSString* customTimeSystemDescription;
+@property(nonatomic, retain, readwrite) NSString* customTimeSystemDescription;
 @property(nonatomic, assign, readwrite) unsigned int numberOfPeriods;
 @property(nonatomic, assign, readwrite) double periodDurationInSeconds;
 @property(nonatomic, assign, readwrite) bool hasMinimumNumberOfMovesPerPeriod;
@@ -282,6 +282,16 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
 + (BOOL) supportsSecureCoding
 {
   return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoTimeSystem object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.customTimeSystemDescription = nil;
+
+  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------

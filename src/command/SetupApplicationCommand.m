@@ -60,6 +60,8 @@
   if (! self)
     return nil;
 
+  [self postNotificationOnMainThread:applicationSetupWillStart];
+
   self.showProgressHUD = true;
   self.totalSteps = 1;
   self.stepIncrease = 1.0 / self.totalSteps;
@@ -73,6 +75,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self postNotificationOnMainThread:applicationSetupDidEnd];
+
   [super dealloc];
 }
 
@@ -119,6 +123,14 @@
       [[ApplicationStateManager sharedManager] restoreApplicationState];
 
       UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
+
+      // Post notifications for initial state
+      // TODO xx consider moving the special UIAreaPlayMode handling below into
+      // ChangeUIAreaPlayModeCommand (possible now that the command has
+      // knowledge about applicationSetupIsInProgress)
+      ChangeUIAreaPlayModeCommand* changeUIAreaPlayModeCommand = [[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease];
+      changeUIAreaPlayModeCommand.applicationSetupIsInProgress = true;
+      [changeUIAreaPlayModeCommand submit];
 
       // Board position vs. UIAreaPlayMode
       // - The documentation block below describes, with relevance to scoring,
@@ -194,5 +206,24 @@
   self.progress += self.stepIncrease;
   [self.asynchronousCommandDelegate asynchronousCommand:self didProgress:self.progress nextStepMessage:nil];
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
+- (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+}
+
 
 @end

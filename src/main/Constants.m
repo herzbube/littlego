@@ -112,22 +112,38 @@ NSString* nodeTreeViewNodeSelectionStyleDidChange = @"NodeTreeViewNodeSelectionS
 NSString* nodeTreeViewSelectedGameVariationDidChange = @"NodeTreeViewSelectedGameVariationDidChange";
 NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChange";
 NSString* nodeTreeViewNodeSymbolDidChange = @"NodeTreeViewNodeSymbolDidChange";
-// Time-based play notifications
+// Time based play notifications
 NSString* playerClockStateHasChanged = @"PlayerClockStateHasChanged";
 NSString* playerTimeDataHasChanged = @"PlayerTimeDataHasChanged";
 NSString* playerLostOnTime = @"PlayerLostOnTime";
-// Other notifications
-NSString* longRunningActionStarts = @"LongRunningActionStarts";
-NSString* longRunningActionEnds = @"LongRunningActionEnds";
-NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
-NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
-NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
+// Play area / board view notifications
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
 NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
+NSString* moreGameActionsPopupWillAppear = @"MoreGameActionsPopupWillAppear";
+NSString* moreGameActionsPopupDidDisappear = @"MoreGameActionsPopupDidDisappear";
+NSString* gameInfoScreenWillAppear = @"GameInfoScreenWillAppear";
+NSString* gameInfoScreenDidDisappear = @"GameInfoScreenDidDisappear";
+NSString* newGameScreenWillAppear = @"NewGameScreenWillAppear";
+NSString* newGameScreenDidDisappear = @"NewGameScreenDidDisappear";
+NSString* saveGameScreenWillAppear = @"SaveGameScreenWillAppear";
+NSString* saveGameScreenDidDisappear = @"SaveGameScreenDidDisappear";
+// @Territory statistics notifications
+NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
+NSString* territoryStatisticsGenerationWillBegin = @"TerritoryStatisticsGenerationWillBegin";
+NSString* territoryStatisticsGenerationDidEnd = @"TerritoryStatisticsGenerationDidEnd";
+// General UI notifications
+NSString* uiAreaDidChange = @"UiAreaDidChange";
 NSString* uiWillChangeLayoutOrientation = @"UiWillChangeLayoutOrientation";
 NSString* uiWillChangeInterfaceOrientation = @"UiWillChangeInterfaceOrientation";
+// Other notifications
+NSString* applicationSetupWillStart = @"ApplicationSetupWillStart";
+NSString* applicationSetupDidEnd = @"ApplicationSetupDidEnd";
+NSString* longRunningActionStarts = @"LongRunningActionStarts";
+NSString* longRunningActionEnds = @"LongRunningActionEnds";
+NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
+NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;

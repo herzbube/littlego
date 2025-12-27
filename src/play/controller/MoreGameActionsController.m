@@ -65,8 +65,12 @@
   self = [super init];
   if (! self)
     return nil;
+
+  [MoreGameActionsController postNotificationOnMainThread:moreGameActionsPopupWillAppear];
+
   self.delegate = aDelegate;
   self.modalMaster = aController;
+
   return self;
 }
 
@@ -76,8 +80,11 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [MoreGameActionsController postNotificationOnMainThread:moreGameActionsPopupDidDisappear];
+
   self.delegate = nil;
   self.modalMaster = nil;
+
   [super dealloc];
 }
 
@@ -580,6 +587,8 @@
 // -----------------------------------------------------------------------------
 - (void) saveGame
 {
+  [MoreGameActionsController postNotificationOnMainThread:saveGameScreenWillAppear];
+
   ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
   NSString* defaultGameName = [model uniqueGameNameForGame:[GoGame sharedGame]];
   EditTextController* editTextController = [[EditTextController controllerWithText:defaultGameName
@@ -666,12 +675,16 @@
     {
       void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
+        [MoreGameActionsController postNotificationOnMainThread:saveGameScreenDidDisappear];
+
         [self doSaveGame:editTextController.text gameAlreadyExists:true];
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
 
       void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
+        [MoreGameActionsController postNotificationOnMainThread:saveGameScreenDidDisappear];
+
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
 
@@ -690,7 +703,11 @@
   }
 
   if (moreGameActionsControllerDidFinish)
+  {
+    [MoreGameActionsController postNotificationOnMainThread:saveGameScreenDidDisappear];
+
     [self.delegate moreGameActionsControllerDidFinish:self];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -722,6 +739,26 @@
   }
 
   [self.delegate moreGameActionsControllerDidFinish:self];
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
++ (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

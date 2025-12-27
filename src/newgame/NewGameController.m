@@ -172,6 +172,8 @@ enum CellID
 + (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
                                      loadGame:(bool)loadGame
 {
+  [NewGameController postNotificationOnMainThread:newGameScreenWillAppear];
+
   NewGameController* controller = [[NewGameController alloc] initWithNibName:nil bundle:nil];
   if (controller)
   {
@@ -239,9 +241,12 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [NewGameController postNotificationOnMainThread:newGameScreenDidDisappear];
+
   self.delegate = nil;
   self.theNewGameModel = nil;
   self.playerModel = nil;
+  
   [super dealloc];
 }
 
@@ -1445,6 +1450,24 @@ enum CellID
       @throw exception;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
++ (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

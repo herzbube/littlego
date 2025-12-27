@@ -47,7 +47,7 @@
 ///
 /// This property corresponds to the SGF time property OT. It is used when the
 /// app fails to parse the value of the OT property.
-@property(nonatomic, assign, readonly) NSString* customTimeSystemDescription;
+@property(nonatomic, retain, readonly) NSString* customTimeSystemDescription;
 /// @brief True if the app supports timed play with the time system represented
 /// by this GoTimeSystem object. False if not.
 ///

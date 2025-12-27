@@ -186,10 +186,14 @@ enum BoardPositionSectionItem
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
+  [GameInfoViewController postNotificationOnMainThread:gameInfoScreenWillAppear];
+
   self.gameInfoViewControllerCreator = nil;
   self.tableView = nil;
   self.boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
   self.kvoNotificationRespondersAreInstalled = false;
+
   return self;
 }
 
@@ -198,11 +202,14 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [GameInfoViewController postNotificationOnMainThread:gameInfoScreenDidDisappear];
+
   [self removeNotificationResponders];
   self.tableView = nil;
   self.boardViewModel = nil;
   [self.gameInfoViewControllerCreator gameInfoViewControllerWillDeallocate:self];
   self.gameInfoViewControllerCreator = nil;
+
   [super dealloc];
 }
 
@@ -1287,6 +1294,24 @@ enum BoardPositionSectionItem
     [self setupKVONotificationResponders];
   else
     [self removeKVONotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
++ (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

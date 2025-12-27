@@ -117,7 +117,7 @@
 
   // TODO xxx do we still need this?
   if (self.clockState == GoClockStateStarted)
-    [self suspendClock:GoClockSuspendedReasonRestoredFromArchive];
+    [self suspendClockIfNotSuspended:GoClockSuspendedReasonRestoredFromArchive];
 
   return self;
 }
@@ -400,17 +400,29 @@
 // -----------------------------------------------------------------------------
 /// @brief TODO xxx document
 // -----------------------------------------------------------------------------
-- (void) suspendClock:(enum GoClockSuspendedReason)reason
+- (void) suspendClockIfNotSuspended:(enum GoClockSuspendedReason)reason
 {
   @synchronized(self)
   {
-    if (self.goClock.state != GoClockStateStarted)
+    if (self.goClock.state == GoClockStateSuspended)
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Failed to suspend clock for %d, clock is not started, state = %d", self.isTimeDataForBlackPlayer, self.goClock.state];
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to suspend clock for %d, clock is already suspended", self.isTimeDataForBlackPlayer];
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     }
 
-    double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock suspend:reason];
+    double elapsedTimeInSecondsSinceClockWasStarted;
+    if (self.goClock.state == GoClockStateStarted)
+    {
+      elapsedTimeInSecondsSinceClockWasStarted = [self.goClock suspend:reason];
+    }
+    else
+    {
+      // GoClock doesn't allow going directly from stopped to suspended. Instead
+      // it forces us to first start the clock, and then suspend it.
+      [self.goClock start];
+      [self.goClock suspend:reason];
+      elapsedTimeInSecondsSinceClockWasStarted = 0.0;
+    }
 
     [self postNotificationOnMainThread:playerClockStateHasChanged];
 
