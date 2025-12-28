@@ -38,6 +38,7 @@
 #import "../../main/Registry.h"
 #import "../../play/model/BoardViewModel.h"
 #import "../../play/model/ScoringModel.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
@@ -533,8 +534,16 @@
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
+
     GoGame* game = [GoGame sharedGame];
     DDLogInfo(@"%@ resigns", [NSString stringWithGoColor:game.nextMoveColor]);
+
+    if (! game.nextMovePlayerIsComputerPlayer)
+    {
+      [[Registry sharedRegistry].playerClockService stopClockOfPlayer:game.nextMovePlayer
+                                                                reason:PlayerClockStopReasonPlayerResigns];
+    }
+
     [game resign];
   }
   @finally
@@ -562,15 +571,26 @@
 /// @brief Reacts to a tap gesture on the "Undo resign", "Undo timeout" or
 /// "Undo forfeit" button. Causes the state of the game to revert from
 /// "has ended" to one of the various "in progress" states.
+///
+/// In a computer vs. computer game, the game is paused after this method
+/// returns. In a human vs. computer game it may be the computer player's turn.
+/// The computer player is not triggered, though, to give the user the
+/// flexibility to do further changes of the game.
 // -----------------------------------------------------------------------------
 - (void) revertGameStateFromEndedToInProgress
 {
   @try
   {
+    DDLogInfo(@"Revert game state from 'ended' to 'in progress'");
     [[ApplicationStateManager sharedManager] beginSavePoint];
     GoGame* game = [GoGame sharedGame];
     [game revertStateFromEndedToInProgress];
-    DDLogInfo(@"Revert game state from 'ended' to 'in progress'");
+
+    if (! game.nextMovePlayerIsComputerPlayer)
+    {
+      [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                                reason:PlayerClockStartReasonHumanPlayerTurnBegins];
+    }
   }
   @finally
   {

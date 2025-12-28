@@ -43,6 +43,16 @@
 #import "../../ui/UIViewControllerAdditions.h"
 
 
+/// @brief Enumerates the types of moves that the computer player can generate
+enum GtpResponseType
+{
+  GtpResponseTypePlayStone,
+  GtpResponseTypePass,
+  GtpResponseTypeResign,
+  GtpResponseTypeGtpCommandFailed,
+  GtpResponseTypePlayStoneInvalidVertex,
+};
+
 /// @brief Enumerates the types of alerts presented by this command.
 enum AlertType
 {
@@ -162,22 +172,31 @@ enum AlertType
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
 
+    GoPoint* point;
+    enum GtpResponseType responseType = [self evaluateGtpResponse:response point:&point];
+
     // Abort and don't try to play the move if the player has lost on time. We
     // expect that someone else reacts to the notification that is posted when
     // a player loses on time.
-    bool success = [self stopPlayerClockIfGameUsesTimedPlay];
-    if (! success)
+    bool gameContinues = [self stopPlayerClockIfGameUsesTimedPlay:responseType];
+    if (! gameContinues)
       return;
 
-    if (! response.status)
+    if (responseType == GtpResponseTypeGtpCommandFailed)
     {
       DDLogError(@"%@: Aborting due to failed GTP command", [self shortDescription]);
       assert(0);
       [self handleComputerFailedToPlay:response.parsedResponse];
       return;
     }
+    else if (responseType == GtpResponseTypePlayStoneInvalidVertex)
+    {
+      DDLogError(@"%@: Invalid vertex %@", [self shortDescription], response.parsedResponse);
+      assert(0);
+      return;
+    }
 
-    success = [self playMoveInsideResponse:response];
+    bool success = [self playMoveForResponseType:responseType point:point];
     if (! success)
       return;
 
@@ -202,6 +221,46 @@ enum AlertType
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Evaluates the content of @a response and returns the result. If
+/// the result is #GtpResponseTypePlayStone, then the out parameter @a point is
+/// filled with a reference to the GoPoint object where the stone should be
+/// played. If the result is not #GtpResponseTypePlayStone, then the value of
+/// the out parameter @a point is @e nil.
+///
+/// This is a private helper for gtpResponseReceived.
+// -----------------------------------------------------------------------------
+- (enum GtpResponseType) evaluateGtpResponse:(GtpResponse*)response point:(GoPoint**)point
+{
+  *point = nil;
+
+  if (! response.status)
+    return GtpResponseTypeGtpCommandFailed;
+
+  NSString* responseString = [response.parsedResponse lowercaseString];
+  if ([responseString isEqualToString:@"pass"])
+  {
+    return GtpResponseTypePass;
+  }
+  else if ([responseString isEqualToString:@"resign"])
+  {
+    return GtpResponseTypeResign;
+  }
+  else
+  {
+    GoPoint* pointAtVertex = [self.game.board pointAtVertex:responseString];
+    if (pointAtVertex)
+    {
+      *point = pointAtVertex;
+      return GtpResponseTypePlayStone;
+    }
+    else
+    {
+      return GtpResponseTypePlayStoneInvalidVertex;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief If the game uses timed play, stops the clock of the player on whose
 /// behalf the computer played a move. Returns false if the player lost on time,
 /// otherwise returns true. Does not do anything and returns true if the game
@@ -214,21 +273,27 @@ enum AlertType
 ///
 /// This is a private helper for gtpResponseReceived.
 // -----------------------------------------------------------------------------
-- (bool) stopPlayerClockIfGameUsesTimedPlay
+- (bool) stopPlayerClockIfGameUsesTimedPlay:(enum GtpResponseType)responseType
 {
+  enum PlayerClockStopReason stopReason = (responseType == GtpResponseTypeResign
+                                           ? PlayerClockStopReasonPlayerResigns
+                                           : PlayerClockStopReasonPlayerTurnEnds);
+
   id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
   enum PlayerClockServiceOperationResult result = [playerClockService stopClockOfPlayer:self.game.nextMovePlayer
-                                                                                 reason:PlayerClockStopReasonPlayerTurnEnds];
+                                                                                 reason:stopReason];
   return (result == PlayerClockServiceOperationResultGameContinues);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Instructs GoGame to play the move that is inside @a response. Returns
-/// true on success, false on failure (e.g. if move was illegal).
+/// @brief Instructs GoGame to play the move that corresponds to
+/// @a responseType. If @a responseType is #GtpResponseTypePlayStone, then
+/// @a point is expected to contain the intersection on which to place the
+/// stone. Returns true on success, false on failure (e.g. if move was illegal).
 ///
 /// This is a private helper for gtpResponseReceived.
 // -----------------------------------------------------------------------------
-- (bool) playMoveInsideResponse:(GtpResponse*)response
+- (bool) playMoveForResponseType:(enum GtpResponseType)responseType point:(GoPoint*)point
 {
   GoMoveNodeCreationOptions* options;
   GameVariationModel* gameVariationModel = [Registry sharedRegistry].modelProvider.gameVariationModel;
@@ -237,8 +302,7 @@ enum AlertType
   else
     options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
 
-  NSString* responseString = [response.parsedResponse lowercaseString];
-  if ([responseString isEqualToString:@"pass"])
+  if (responseType == GtpResponseTypePass)
   {
     enum GoMoveIsIllegalReason illegalReason;
     if ([self.game isLegalPassMoveIllegalReason:&illegalReason])
@@ -251,31 +315,21 @@ enum AlertType
       return false;
     }
   }
-  else if ([responseString isEqualToString:@"resign"])
+  else if (responseType == GtpResponseTypeResign)
   {
     [self.game resign];
   }
   else
   {
-    GoPoint* point = [self.game.board pointAtVertex:responseString];
-    if (point)
+    enum GoMoveIsIllegalReason illegalReason;
+    if ([self.game isLegalMove:point isIllegalReason:&illegalReason])
     {
-      enum GoMoveIsIllegalReason illegalReason;
-      if ([self.game isLegalMove:point isIllegalReason:&illegalReason])
-      {
-        [self.game play:point withMoveNodeCreationOptions:options];
-      }
-      else
-      {
-        self.illegalMove = point;
-        [self handleComputerPlayedIllegalMove1:illegalReason];
-        return false;
-      }
+      [self.game play:point withMoveNodeCreationOptions:options];
     }
     else
     {
-      DDLogError(@"%@: Invalid vertex %@", [self shortDescription], responseString);
-      assert(0);
+      self.illegalMove = point;
+      [self handleComputerPlayedIllegalMove1:illegalReason];
       return false;
     }
   }

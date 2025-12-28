@@ -671,11 +671,22 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
       if (player != self.game.nextMovePlayer)
         return;
 
-      // User may not start the clock if the game has ended. If such a request
-      // is made, the controller handling user interactions with the user
-      // interface clock is lazily implemented and does not check the game
-      // state. We gracefully handle this.
+      // User may not start the clock if the game has ended => game must be
+      // resumed first
       if (self.isGameEnded)
+        return;
+
+      // If it's a computer vs. computer game and it is paused, then the user
+      // may still manipulate the clock of the computer player whose turn it is,
+      // as long as the computer is still thinking on behalf of that player.
+      // Once the computer has stopped thinking, it technically is the other
+      // computer player's turn, but because the game is paused that player's
+      // clock is not started yet. Letting the user start the clock even though
+      // the computer is not thinking would not be correct, so we prevent it
+      // here. Also, in the current implementation, continuing a paused game
+      // will attempt to start the clock, which would lead to a crash if the
+      // clock were already started.
+      if (self.isComputerVsComputerGamePaused && ! self.isComputerThinking)
         return;
 
       // Avoid starting the clock accidentally if the user cannot interact with
@@ -729,6 +740,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   switch (stopReason)
   {
     case PlayerClockStopReasonPlayerTurnEnds:
+    case PlayerClockStopReasonPlayerResigns:
     case PlayerClockStopReasonNewGameWillBeCreated:
     {
       switch (playerTimeData.clockState)
@@ -744,14 +756,25 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
           // but if it is we don't have to do anything.
           return PlayerClockServiceOperationResultGameContinues;
         case GoClockStateSuspended:
-          // Clock remains suspended
+          // If a player resigns, then game ends and a suspended clock must be
+          // stopped, because the user must not be able to start the clock
+          // manually (PlayerClockSuspendReasonUserRequest case), and the clock
+          // must not be started again automatically (case
+          // GoClockSuspendedReasonBoardNotInteractive).
+          //
+          // For the other stop reaons, the clock remains suspended:
           // - For PlayerClockStopReasonPlayerTurnEnds the only thing that's
           //   important is that the clock is not started when the move is
           //   submitted to GoGame, so that GoGame can perform time keeping
           //   operations.
           // - For PlayerClockStopReasonNewGameWillBeCreated the only thing
           //   that matters is that the clock is not started. The game data
-          //   is discarded soon.
+          //   is discarded "soon" ("soon" being before a clock that was
+          //   suspended because of GoClockSuspendedReasonBoardNotInteractive
+          //   is started again).
+          if (stopReason == PlayerClockStopReasonPlayerResigns)
+            [self stopClockIfNotStoppedAndInvalidateTimer:playerTimeData];
+
           return PlayerClockServiceOperationResultGameContinues;
       }
     }
@@ -930,6 +953,32 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 {
   if (self.game)
     return (self.game.state == GoGameStateGameHasEnded);
+  else
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the current game is a computer vs. computer game
+/// that is paused. Returns false if the current game is a computer vs.
+/// computer game that is not paused, or if the current game is not a computer
+/// vs. computer game.
+// -----------------------------------------------------------------------------
+- (bool) isComputerVsComputerGamePaused
+{
+  if (self.game)
+    return (self.game.state == GoGameStateGameIsPaused);
+  else
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the computer player is currently thinking, false if
+/// not.
+// -----------------------------------------------------------------------------
+- (bool) isComputerThinking
+{
+  if (self.game)
+    return (self.game.isComputerThinking);
   else
     return false;
 }

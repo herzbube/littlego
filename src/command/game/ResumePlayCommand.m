@@ -22,6 +22,7 @@
 #import "../../go/GoGameRules.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -55,6 +56,12 @@
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [game revertStateFromEndedToInProgress];
+
+    if (! game.nextMovePlayerIsComputerPlayer)
+    {
+      [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                                reason:PlayerClockStartReasonHumanPlayerTurnBegins];
+    }
   }
   @finally
   {

@@ -41,10 +41,10 @@
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizerTimeViewBlackPlayer;
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizerTimeViewWhitePlayer;
 @property(nonatomic, assign) bool timeDataNeedsUpdate;
-@property(nonatomic, assign) bool playerClockStateNeedsUpdate;
-@property(nonatomic, retain) NSMutableArray* playerTimeDataObjectsWithClockStateUpdates;
-@property(nonatomic, assign) bool playerTimeDataNeedsUpdate;
-@property(nonatomic, retain) NSMutableArray* playerTimeDataObjectsWithTimeDataUpdates;
+@property(nonatomic, assign) bool blackPlayerClockStateNeedsUpdate;
+@property(nonatomic, assign) bool whitePlayerClockStateNeedsUpdate;
+@property(nonatomic, assign) bool blackPlayerTimeDataNeedsUpdate;
+@property(nonatomic, assign) bool whitePlayerTimeDataNeedsUpdate;
 @end
 
 
@@ -70,10 +70,10 @@
   self.tapRecognizerTimeViewWhitePlayer = nil;
 
   self.timeDataNeedsUpdate = false;
-  self.playerClockStateNeedsUpdate = false;
-  self.playerTimeDataObjectsWithClockStateUpdates = [NSMutableArray array];
-  self.playerTimeDataNeedsUpdate = false;
-  self.playerTimeDataObjectsWithTimeDataUpdates = [NSMutableArray array];
+  self.blackPlayerClockStateNeedsUpdate = false;
+  self.whitePlayerClockStateNeedsUpdate = false;
+  self.blackPlayerTimeDataNeedsUpdate = false;
+  self.whitePlayerTimeDataNeedsUpdate = false;
 
   [self setupNotificationResponders];
 
@@ -91,9 +91,6 @@
   self.timeViewWhitePlayer = nil;
   self.tapRecognizerTimeViewBlackPlayer = nil;
   self.tapRecognizerTimeViewWhitePlayer = nil;
-
-  self.playerTimeDataObjectsWithClockStateUpdates = nil;
-  self.playerTimeDataObjectsWithTimeDataUpdates = nil;
 
   [super dealloc];
 }
@@ -265,8 +262,11 @@
 // -----------------------------------------------------------------------------
 - (void) playerClockStateHasChanged:(NSNotification*)notification
 {
-  self.playerClockStateNeedsUpdate = true;
-  [self.playerTimeDataObjectsWithClockStateUpdates addObject:notification.object];
+  GoPlayerTimeData* playerTimeData = notification.object;
+  if (playerTimeData.isTimeDataForBlackPlayer)
+    self.blackPlayerClockStateNeedsUpdate = true;
+  else
+    self.whitePlayerClockStateNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -275,8 +275,11 @@
 // -----------------------------------------------------------------------------
 - (void) playerTimeDataHasChanged:(NSNotification*)notification
 {
-  self.playerTimeDataNeedsUpdate = true;
-  [self.playerTimeDataObjectsWithTimeDataUpdates addObject:notification.object];
+  GoPlayerTimeData* playerTimeData = notification.object;
+  if (playerTimeData.isTimeDataForBlackPlayer)
+    self.blackPlayerTimeDataNeedsUpdate = true;
+  else
+    self.whitePlayerTimeDataNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -305,8 +308,10 @@
   }
 
   [self updateTimeData];
-  [self updatePlayerClockState];
-  [self updatePlayerTimeData];
+  [self updateBlackPlayerClockState];
+  [self updateWhitePlayerClockState];
+  [self updateBlackPlayerTimeData];
+  [self updateWhitePlayerTimeData];
 }
 
 // -----------------------------------------------------------------------------
@@ -328,51 +333,65 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates TimeView objects to display each player's current clock
-/// state.
+/// @brief Updates the TimeView for the black player to display the black
+/// player's current clock state.
 // -----------------------------------------------------------------------------
-- (void) updatePlayerClockState
+- (void) updateBlackPlayerClockState
 {
-  if (! self.playerClockStateNeedsUpdate)
+  if (! self.blackPlayerClockStateNeedsUpdate)
     return;
-  self.playerClockStateNeedsUpdate = false;
+  self.blackPlayerClockStateNeedsUpdate = false;
 
-  // Grab a local copy so that we can be sure that nobody updates the array
-  // while we iterate over it
-  NSMutableArray* playerTimeDataObjectsWithClockStateUpdates = [[self.playerTimeDataObjectsWithClockStateUpdates retain] autorelease];
-  self.playerTimeDataObjectsWithClockStateUpdates = [NSMutableArray array];
-
-  for (GoPlayerTimeData* playerTimeData in playerTimeDataObjectsWithClockStateUpdates)
-  {
-    TimeView* timeView = (playerTimeData.isTimeDataForBlackPlayer
-                          ? self.timeViewBlackPlayer
-                          : self.timeViewWhitePlayer);
-    [self updateClockStateInTimeView:timeView withPlayerTimeData:playerTimeData];
-  }
+  GoGame* game = [GoGame sharedGame];
+  GoPlayerTimeData* playerTimeData = game.playerBlack.timeData;
+  [self updateClockStateInTimeView:self.timeViewBlackPlayer withPlayerTimeData:playerTimeData];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates TimeView objects to display each player's current time data.
+/// @brief Updates the TimeView for the white player to display the white
+/// player's current clock state.
 // -----------------------------------------------------------------------------
-- (void) updatePlayerTimeData
+- (void) updateWhitePlayerClockState
 {
-  if (! self.playerTimeDataNeedsUpdate)
+  if (! self.whitePlayerClockStateNeedsUpdate)
     return;
-  self.playerTimeDataNeedsUpdate = false;
+  self.whitePlayerClockStateNeedsUpdate = false;
 
-  // Grab a local copy so that we can be sure that nobody updates the array
-  // while we iterate over it
-  NSMutableArray* playerTimeDataObjectsWithTimeDataUpdates = [[self.playerTimeDataObjectsWithTimeDataUpdates retain] autorelease];
-  self.playerTimeDataObjectsWithTimeDataUpdates = [NSMutableArray array];
-
-  for (GoPlayerTimeData* playerTimeData in playerTimeDataObjectsWithTimeDataUpdates)
-  {
-    TimeView* timeView = (playerTimeData.isTimeDataForBlackPlayer
-                          ? self.timeViewBlackPlayer
-                          : self.timeViewWhitePlayer);
-    [self updateTimeDataInTimeView:timeView withPlayerTimeData:playerTimeData];
-  }
+  GoGame* game = [GoGame sharedGame];
+  GoPlayerTimeData* playerTimeData = game.playerWhite.timeData;
+  [self updateClockStateInTimeView:self.timeViewWhitePlayer withPlayerTimeData:playerTimeData];
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the TimeView for the black player to display the black
+/// player's current time data.
+// -----------------------------------------------------------------------------
+- (void) updateBlackPlayerTimeData
+{
+  if (! self.blackPlayerTimeDataNeedsUpdate)
+    return;
+  self.blackPlayerTimeDataNeedsUpdate = false;
+
+  GoGame* game = [GoGame sharedGame];
+  GoPlayerTimeData* playerTimeData = game.playerBlack.timeData;
+  [self updateTimeDataInTimeView:self.timeViewBlackPlayer withPlayerTimeData:playerTimeData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the TimeView for the white player to display the white
+/// player's current time data.
+// -----------------------------------------------------------------------------
+- (void) updateWhitePlayerTimeData
+{
+  if (! self.whitePlayerTimeDataNeedsUpdate)
+    return;
+  self.whitePlayerTimeDataNeedsUpdate = false;
+
+  GoGame* game = [GoGame sharedGame];
+  GoPlayerTimeData* playerTimeData = game.playerWhite.timeData;
+  [self updateTimeDataInTimeView:self.timeViewWhitePlayer withPlayerTimeData:playerTimeData];
+}
+
 
 // -----------------------------------------------------------------------------
 /// @brief Updates @a timeView to display the clock state taken from

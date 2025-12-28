@@ -1664,11 +1664,15 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 
 // -----------------------------------------------------------------------------
 /// @brief Triggers the computer player to make a move, or starts the human
-/// player's clock, depending on which player's turn it is.
+/// player's clock, depending on which player's turn it is. Does nothing if
+/// the game has already ended.
 // -----------------------------------------------------------------------------
 - (void) triggerComputerPlayerOrStartHumanPlayerClockOnMainThread
 {
   GoGame* game = [GoGame sharedGame];
+  if (GoGameStateGameHasEnded == game.state)
+    return;
+
   if (game.nextMovePlayerIsComputerPlayer)
     [self triggerComputerPlayerOnMainThread:game];
   else
