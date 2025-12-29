@@ -42,7 +42,7 @@
 /// @a color is the color of the player for which a move suggestion should be
 /// generated. @a color must not be @e GoColorNone.
 ///
-/// @exception NSInvalidArgumentException Is raised if @a color i
+/// @exception NSInvalidArgumentException Is raised if @a color is
 /// @e GoColorNone.
 ///
 /// @note This is the designated initializer of ComputerSuggestMoveCommand.

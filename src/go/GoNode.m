@@ -492,8 +492,8 @@
 /// trees dangling from all of these nodes, are discarded once no one holds
 /// a reference to them anymore.
 ///
-/// @exception InvalidArgumentException Is thrown if @a child is an ancestor of
-/// the receiver node, or if @a child is equal to the receiver node.
+/// @exception NSInvalidArgumentException Is thrown if @a child is an ancestor
+/// of the receiver node, or if @a child is equal to the receiver node.
 // -----------------------------------------------------------------------------
 - (void) setFirstChild:(GoNode*)child
 {
@@ -543,7 +543,7 @@
 /// be achieved by invoking insertChild:beforeReferenceChild:() and specifying
 /// @e nil as the @a referenceChild argument.
 ///
-/// @exception InvalidArgumentException Is thrown if @a child is @e nil, if
+/// @exception NSInvalidArgumentException Is thrown if @a child is @e nil, if
 /// @a child is an ancestor of the receiver node, or if @a child is equal to
 /// the receiver node.
 // -----------------------------------------------------------------------------
@@ -582,7 +582,7 @@
 /// moved, together with the entire sub tree dangling from it, from its current
 /// location to the new location.
 ///
-/// @exception InvalidArgumentException Is thrown if @a child is @e nil, if
+/// @exception NSInvalidArgumentException Is thrown if @a child is @e nil, if
 /// @a referenceChild is not @e nil but it's not a child of the node, if
 /// @a child is an ancestor of the receiver node, or if @a child is equal to
 /// the receiver node.
@@ -620,7 +620,7 @@
 /// @a child and the entire sub tree dangling from it, is discarded once no one
 /// holds a reference to it anymore.
 ///
-/// @exception InvalidArgumentException Is thrown if @a child is @e nil, or if
+/// @exception NSInvalidArgumentException Is thrown if @a child is @e nil, or if
 /// @a child is not a child of the receiver node.
 // -----------------------------------------------------------------------------
 - (void) removeChild:(GoNode*)child
@@ -645,10 +645,10 @@
 /// @a oldChild and the entire sub tree dangling from it, is discarded once no
 /// one holds a reference to it anymore.
 ///
-/// @exception InvalidArgumentException Is thrown if @a oldChild or @a newChild
-/// are @e nil, if @a oldChild is not a child of the receiver node, if
-/// @a newChild is an ancestor of the receiver node, or if @a newChild is equal
-/// to the receiver node.
+/// @exception NSInvalidArgumentException Is thrown if @a oldChild or
+/// @a newChild are @e nil, if @a oldChild is not a child of the receiver node,
+/// if @a newChild is an ancestor of the receiver node, or if @a newChild is
+/// equal to the receiver node.
 // -----------------------------------------------------------------------------
 - (void) replaceChild:(GoNode*)oldChild withNewChild:(GoNode*)newChild
 {
@@ -697,7 +697,7 @@
 /// trees dangling from all of these siblings, are discarded once no one
 /// holds a reference to them anymore.
 ///
-/// @exception InvalidArgumentException Is thrown if the receiver node is the
+/// @exception NSInvalidArgumentException Is thrown if the receiver node is the
 /// root node of a game tree, if @a nextSibling is not @e nil and an ancestor
 /// of the receiver node, or if @a nextSibling is equal to the receiver node.
 // -----------------------------------------------------------------------------
@@ -764,7 +764,7 @@
 /// same as if removeChild:() had been invoked on the node's parent with
 /// the receiver node as the argument.
 ///
-/// @exception InvalidArgumentException Is thrown if @a parent is a descendant
+/// @exception NSInvalidArgumentException Is thrown if @a parent is a descendant
 /// of the receiver node, or if @a parent is equal to the receiver node.
 // -----------------------------------------------------------------------------
 - (void) setParent:(GoNode*)parent

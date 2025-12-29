@@ -108,11 +108,11 @@
 ///
 /// @par Application foreground and background
 ///
-/// The application delegate notifies ApplicationStateManager when the
+/// The scene delegate notifies ApplicationStateManager when the
 /// application goes to the background or comes back to the foreground.
 ///
 /// If the application goes to the background while ApplicationStateManager is
-/// in the process of saving the application state, the notifying application
+/// in the process of saving the application state, the notifying scene
 /// delegate is blocked until ApplicationStateManager completes the process.
 ///
 /// If the application goes to the background while ApplicationStateManager is
@@ -128,7 +128,7 @@
 /// unfinished save points, but some agent has previously invoked
 /// applicationStateDidChange (with the intent to delay state saving),
 /// ApplicationStateManager now invokes saveApplicationState. The notifying
-/// application delegate is blocked until the state saving process completes.
+/// scene delegate is blocked until the state saving process completes.
 ///
 /// When the application comes back to the foreground, everything continues as
 /// normal: A thread that was blocked because it tried to save the application
@@ -141,7 +141,7 @@
 ///
 /// @par Application launch
 ///
-/// The application delegate notifies ApplicationStateManager when the
+/// The scene delegate notifies ApplicationStateManager when the
 /// application launches.
 ///
 /// If ApplicationStateManager detects an NSCoding archive that represents the

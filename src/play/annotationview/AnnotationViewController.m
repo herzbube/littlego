@@ -113,7 +113,7 @@ static const int spacerBottomTag = 2;
 // -----------------------------------------------------------------------------
 - (id) initWithUiType:(enum UIType)uiType sizeOrientation:(enum SizeOrientation)sizeOrientation
 {
-  // Call designated initializer of superclass (AnnotationViewController)
+  // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;

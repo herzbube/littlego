@@ -3,10 +3,37 @@ Purpose of this document
 This document contains design notes on a variety of subjects.
 
 
-.xib design notes
------------------
-None. This project creates the entire UI programmatically and does not use any
-.xib files.
+Programmatic vs. configurative approach
+---------------------------------------
+This project prefers doing things programmatically, over doing things in a
+configurative way. One major instance of this preference is that this project
+does not use storyboard or xib files at all, but instead creates the entire
+UI programmatically.
+
+The main reasons for not using storyboards and xibs:
+- The content of a storyboard or xib file is XML. For a human programmer,
+  analyzing this XML content is at least difficult, if not impossible. In
+  contrast, analyzing code written in a programming language such as Objective-C
+  is much more feasible.
+- Modifying a storyboard or xib file requires a visual interface design tool
+  (e.g. Interface Builder). This can become a problem when such a tool is no
+  longer available. In particular, with the pace that Apple is continuously
+  evolving and changing their development environment, it may suddenly become
+  difficult to access a previously designed UI and/or convert it to a new
+  format. A programmatically created UI, in contrast, can always be accessed
+  and modified with a simple text editor.
+- Last, but definitely not least, is tracking the changes made to an existing
+  UI design in the version control system. Changes to source code are relatively
+  easy to read, whereas changes to XML content can quickly become
+  incomprehensible, in particular if the visual interface design tool does not
+  take great care in minimizing such changes. When the XML format changes,
+  minimizing changes to the actual content may not even be possible, leaving
+  the observer with just blobs of data changing in an opaque way.
+
+A general danger of the configurative approach is hiding how things work.
+Sometimes this is unavoidable (e.g. when Apple designs for an app capability to
+be defined via Info.plist), but can be mitigated if the configuration file is
+well known (Info.plist).
 
 
 UI elements design notes

@@ -1283,16 +1283,22 @@ OT
 - Experimentation with existing systems that allow you to generate SGF files
   showed that many of them don't even include time-related properties in the
   SGF content they write. Notably this includes IGS/Pandanet.
-- I found that KGS and online-go.com do write time-related SGF properties, and
-  they seem to use the same notation:
-  - OT[5x20 byo-yomi] - Japanese Timinig, 5 periods with 20 seconds duration
-  - OT[25/300 Canadian] - Canadian timing, 25 moves per period with 300 seconds
-    duration
+- I found that KGS and online-go.com do write time-related SGF properties
+  - For Japanese and Canadian Timing they use the same notation:
+    - OT[5x20 byo-yomi] - Japanese Timing, 5 periods with 20 seconds duration
+    - OT[25/300 Canadian] - Canadian Timing, 25 moves per period with 300
+      seconds duration
+  - For Fischer Timing online-go.com writes the following:
+    - TM[180]OT[6 fischer] - Fischer Timing, initial time 180 seconds, 6 seconds
+      extra time. On the platform players also choose a cap at which no more
+      time can be accumulated, but this is not recorded in SGF.
 - Decision: Little Go shall use the following notation for the OT property
   value:
   - OT[period-duration/number-of-moves Canadian]
   - OT[number-of-periodsxperiod-duration byo-yomi]
   - OT[initial-time-duration/extra-time-duration Fischer]
+    (unlike online-go.com, this allows to combine Fischer Timing with Absolute
+    Timing)
   - OT[period-duration/number-of-moves SteadyAverageTiming]
   - OT[period-duration/number-of-moves TotalAverageTiming]
 - Decision: Little Go shall not support the IGS Byoyomi Style time system.

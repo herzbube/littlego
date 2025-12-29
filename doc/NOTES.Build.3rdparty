@@ -101,9 +101,11 @@ Preconditions
 - Install the Autotools system-wide (e.g. through Homebrew)
 
 These are the commands to build/install Fuego:
+  export LDFLAGS="-L$(brew --prefix)/lib"
+  export CPPFLAGS="-I$(brew --prefix)/include"
   cd /path/to/littlego/3rdparty/src/fuego-on-ios
   autoreconf -i
-  ./configure --prefix="$(pwd)/../../install/fuego-macos"
+  ./configure --prefix="$(pwd)/fuego-macos" --with-boost=/opt/homebrew
   make
   make install
 

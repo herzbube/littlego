@@ -82,7 +82,7 @@ NSString* askGtpEngineForDeadStonesStarts = @"AskGtpEngineForDeadStonesStarts";
 NSString* askGtpEngineForDeadStonesEnds = @"AskGtpEngineForDeadStonesEnds";
 // Panning gesture related notifications
 NSString* boardViewPanningGestureWillStart = @"BoardViewPanningGestureWillStart";
-NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";;
+NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";
 NSString* boardViewStoneLocationDidChange = @"BoardViewStoneLocationDidChange";
 NSString* boardViewMarkupLocationDidChange = @"BoardViewMarkupLocationDidChange";
 NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDidChange";
@@ -163,7 +163,7 @@ const CGFloat defaultMagnifyingGlassMagnification = 1.25f;
 
 // Computer assistance constants
 NSString* moveSuggestionColorKey = @"moveSuggestionColor";
-NSString* moveSuggestionTypeKey = @"moveSuggestionType";;
+NSString* moveSuggestionTypeKey = @"moveSuggestionType";
 NSString* moveSuggestionPointKey = @"moveSuggestionPoint";
 NSString* moveSuggestionErrorMessageKey = @"moveSuggestionErrorMessage";
 const int moveSuggestionAnimationRepeatCount = 3;

@@ -22,8 +22,8 @@
 // -----------------------------------------------------------------------------
 /// @brief The ChangeBoardPositionCommand class is responsible for changing the
 /// current board position to a new value within the current game variation.
-/// Use ChangeNodeSelectionCommand to change the current board position @b and
-/// also the current game variation.
+/// Use ChangeNodeSelectionAsyncCommand to change the current board position
+/// @b and also the current game variation.
 ///
 /// ChangeBoardPositionCommand is executed synchronously if the new board
 /// position is not more than a given maximum number of positions away from

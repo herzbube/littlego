@@ -405,7 +405,7 @@
 /// an UIInterfaceOrientationMask value and returns the mapped value. Raises an
 /// exception if mapping is not possible.
 ///
-/// @exception InvalidArgumentException Is thrown if @a interfaceOrientation
+/// @exception NSInvalidArgumentException Is thrown if @a interfaceOrientation
 /// cannot be mapped. Only UIInterfaceOrientationUnknown cannot be mapped.
 // -----------------------------------------------------------------------------
 + (UIInterfaceOrientationMask) interfaceOrientationMaskForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
