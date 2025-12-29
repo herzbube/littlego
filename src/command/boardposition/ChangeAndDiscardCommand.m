@@ -52,18 +52,9 @@
 
     bool success;
 
-    // Before we discard, first change to a node that will be valid even after
-    // the discard.
-    if (shouldDiscardNodes)
-    {
-      success = [self changeCurrentNodeIfNecessary];
-      if (! success)
-      {
-        DDLogError(@"%@: Aborting because changeCurrentNodeIfNecessary failed", [self shortDescription]);
-        return false;
-      }
-    }
-
+    // Revert game state before we change the node, because this allows
+    // ChangeBoardPositionCommand to start the clock of the player whose turn
+    // it is
     if (shouldRevertGameStateToInProgress)
     {
       success = [self revertGameStateIfNecessary];
@@ -76,6 +67,15 @@
 
     if (shouldDiscardNodes)
     {
+      // Before we discard, first change to a node that will be valid even after
+      // the discard.
+      success = [self changeCurrentNodeIfNecessary];
+      if (! success)
+      {
+        DDLogError(@"%@: Aborting because changeCurrentNodeIfNecessary failed", [self shortDescription]);
+        return false;
+      }
+
       success = [self discardNodesIfNecessary];
       if (! success)
       {

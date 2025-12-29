@@ -231,11 +231,11 @@
       [game.score calculateWaitUntilDone:false];
     }
 
-    enum PlayerClockStartReason startReason = (game.nextMovePlayerIsComputerPlayer
-                                               ? PlayerClockStartReasonComputerPlayerTurnBegins
-                                               : PlayerClockStartReasonHumanPlayerTurnBegins);
-    [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
-                                                              reason:startReason];
+    if (! game.nextMovePlayerIsComputerPlayer)
+    {
+      [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                                reason:PlayerClockStartReasonHumanPlayerTurnBegins];
+    }
 
     return true;
   }

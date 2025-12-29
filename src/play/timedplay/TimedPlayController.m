@@ -190,6 +190,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [center addObserver:self selector:@selector(saveGameScreenWillAppear:) name:saveGameScreenWillAppear object:nil];
   [center addObserver:self selector:@selector(saveGameScreenDidDisappear:) name:saveGameScreenDidDisappear object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
 
   // TODO xxx consider enhancing UIViewControllerAdditions with general support
   // for interaction indication
@@ -625,6 +626,36 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [whitePlayerTimeData updateAfterNodeChanged:currentNode];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameStateChanged notification.
+// -----------------------------------------------------------------------------
+- (void) goGameStateChanged:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(goGameStateChanged:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  if (! self.isGameEnded)
+    return;
+
+  // If the game ends for any reason we want to stop all suspended clocks, to
+  // avoid any risk of them being started accidentally. A start by the user is
+  // impossible (see handling of PlayerClockStartReasonUserRequest), but there
+  // might be edge cases where the "board not interactive" handling in this
+  // controller could lead to a clock being started again.
+  // Also, the user interface clock rendering of a suspended clock is plain
+  // counter-intuitive once a game has ended.
+  GoPlayerTimeData* blackPlayerTimeData = self.game.playerBlack.timeData;
+  [self stopClockIfNotStoppedAndInvalidateTimer:blackPlayerTimeData];
+
+  GoPlayerTimeData* whitePlayerTimeData = self.game.playerWhite.timeData;
+  [self stopClockIfNotStoppedAndInvalidateTimer:whitePlayerTimeData];
+}
+
 #pragma mark - PlayerClockService implementation
 
 // -----------------------------------------------------------------------------
@@ -654,6 +685,13 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
       // Fallthrough intentional
     case PlayerClockStartReasonComputerPlayerTurnBegins:
     {
+      // When the user is navigating back and forth inside a game variation
+      // where the game has ended, we will receive requests for starting the
+      // human player's clock when the user selects an appropriate node.
+      // Starting a clock when the game has ended must be prevented.
+      if (self.isGameEnded)
+        return;
+
       // If the the board is not interactive, and the clock is stopped, then
       // we "almost start" the clock - we suspend it. This has the same result
       // as if the clock were started and the board became non-interactive.
@@ -704,22 +742,26 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
       if (player != self.game.nextMovePlayer)
         return;
 
-      // User may not start the clock if the game has ended => game must be
+      // User may not start any clock if the game has ended => game must be
       // resumed first
       if (self.isGameEnded)
         return;
 
-      // If it's a computer vs. computer game and it is paused, then the user
-      // may still manipulate the clock of the computer player whose turn it is,
-      // as long as the computer is still thinking on behalf of that player.
-      // Once the computer has stopped thinking, it technically is the other
-      // computer player's turn, but because the game is paused that player's
-      // clock is not started yet. Letting the user start the clock even though
-      // the computer is not thinking would not be correct, so we prevent it
-      // here. Also, in the current implementation, continuing a paused game
-      // will attempt to start the clock, which would lead to a crash if the
-      // clock were already started.
-      if (self.isComputerVsComputerGamePaused && ! self.isComputerThinking)
+      // User may not start the clock of a computer player who is not thinking.
+      //
+      // Two reasons:
+      // - It would simply not be correct to let the computer player's time run
+      //   out without it being able to think.
+      // - Also, the app would crash if we were to start the clock here, and the
+      //   user would then trigger the computer player afterwards (starting an
+      //   already started clock).
+      //
+      // This covers (at least) two cases:
+      // - Computer vs. computer game that is paused.
+      // - Human vs. computer game, when the user has selected a node that
+      //   is not the leaf node where the next player to move would be the
+      //   computer player, but thinking has not triggered yet.
+      if (self.game.nextMovePlayerIsComputerPlayer && ! self.isComputerThinking)
         return;
 
       // Avoid starting the clock accidentally if the user cannot interact with
