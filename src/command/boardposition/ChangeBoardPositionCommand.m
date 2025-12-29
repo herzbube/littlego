@@ -25,6 +25,7 @@
 #import "../../go/GoScore.h"
 #import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiSettingsModel.h"
@@ -184,6 +185,9 @@
   {
     [[LongRunningActionCounter sharedCounter] increment];
 
+    [[Registry sharedRegistry].playerClockService stopClockOfPlayer:game.nextMovePlayer
+                                                             reason:PlayerClockStopReasonSelectedNodeChanges];
+
     UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
 
     if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
@@ -226,6 +230,12 @@
       [game.score didChangeBoardPosition];  // re-enable GoBoardRegion caching
       [game.score calculateWaitUntilDone:false];
     }
+
+    enum PlayerClockStartReason startReason = (game.nextMovePlayerIsComputerPlayer
+                                               ? PlayerClockStartReasonComputerPlayerTurnBegins
+                                               : PlayerClockStartReasonHumanPlayerTurnBegins);
+    [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                              reason:startReason];
 
     return true;
   }

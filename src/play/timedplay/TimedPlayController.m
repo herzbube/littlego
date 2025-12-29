@@ -17,6 +17,7 @@
 
 // Project includes
 #import "TimedPlayController.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
@@ -188,6 +189,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [center addObserver:self selector:@selector(newGameScreenDidDisappear:) name:newGameScreenDidDisappear object:nil];
   [center addObserver:self selector:@selector(saveGameScreenWillAppear:) name:saveGameScreenWillAppear object:nil];
   [center addObserver:self selector:@selector(saveGameScreenDidDisappear:) name:saveGameScreenDidDisappear object:nil];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
 
   // TODO xxx consider enhancing UIViewControllerAdditions with general support
   // for interaction indication
@@ -592,6 +594,37 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [self updateIsBoardInteractive];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(currentBoardPositionDidChange:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  // TODO xxx currentBoardPositionDidChange is also sent when a new move is
+  // being played => in that case the following update handling is taking place
+  // unnecessarily (but we "know" that the clock is stopped or suspended in that
+  // case because GoGame also needs to perform time keeping operations).
+  // The other two cases where currentBoardPositionDidChange is sent are when
+  // LoadGameCommand finishes (LoadGameCommand triggers the clock start) and
+  // when ChangeBoardPositionCommand does its thing (ChangeBoardPositionCommand
+  // stops/starts the clock).
+  GoBoardPosition* boardPosition = self.game.boardPosition;
+  GoNode* currentNode = boardPosition.currentNode;
+
+  GoPlayerTimeData* blackPlayerTimeData = self.game.playerBlack.timeData;
+  [blackPlayerTimeData updateAfterNodeChanged:currentNode];
+
+  GoPlayerTimeData* whitePlayerTimeData = self.game.playerWhite.timeData;
+  [whitePlayerTimeData updateAfterNodeChanged:currentNode];
+}
+
 #pragma mark - PlayerClockService implementation
 
 // -----------------------------------------------------------------------------
@@ -741,6 +774,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   {
     case PlayerClockStopReasonPlayerTurnEnds:
     case PlayerClockStopReasonPlayerResigns:
+    case PlayerClockStopReasonSelectedNodeChanges:
     case PlayerClockStopReasonNewGameWillBeCreated:
     {
       switch (playerTimeData.clockState)
@@ -763,10 +797,15 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
           // GoClockSuspendedReasonBoardNotInteractive).
           //
           // For the other stop reaons, the clock remains suspended:
-          // - For PlayerClockStopReasonPlayerTurnEnds the only thing that's
+          // - For PlayerClockStopReasonPlayerTurnEnds the only thing that is
           //   important is that the clock is not started when the move is
           //   submitted to GoGame, so that GoGame can perform time keeping
           //   operations.
+          // - For PlayerClockStopReasonSelectedNodeChanges the only thing
+          //   that is important is that the clock is not started when the node
+          //   change completes, so that TimedPlayController can update the
+          //   players' time data to match the newly selected node (see
+          //   currentBoardPositionDidChange:).
           // - For PlayerClockStopReasonNewGameWillBeCreated the only thing
           //   that matters is that the clock is not started. The game data
           //   is discarded "soon" ("soon" being before a clock that was

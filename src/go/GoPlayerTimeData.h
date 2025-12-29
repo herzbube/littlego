@@ -48,10 +48,8 @@
 
 - (bool) didPlayerLoseOnTime;
 
-- (enum GoPeriodDurationElapsedResultType) updateAfterNodeChanged:(GoNode*)Node
-                                                        forPlayer:(enum GoColor)goColor;
-- (void) updateAfterMoveWasPlayed:(GoNodeTimeData*)goNodeTimeData;
-- (double) timeWithoutMoveUntilGameIsLostOnTime;
+- (void) updateAfterMoveWasPlayed:(GoNodeTimeData*)nodeTimeData;
+- (void) updateAfterNodeChanged:(GoNode*)node;
 - (int) remainingNumberOfMovesOrPeriods;
 - (enum GoClockState) clockState;
 - (enum GoClockSuspendedReason) clockSuspendedReason;

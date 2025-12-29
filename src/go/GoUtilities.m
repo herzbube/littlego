@@ -857,6 +857,19 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains a move played by the player indicated by @a color. Returns @a node
+/// if it contains a move. Returns @e nil if no move can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentMove:(GoNode*)node playedBy:(enum GoColor)color
+{
+  node = [GoUtilities nodeWithMostRecentMove:node];
+  while (node && node.goMove.player.color != color)
+    node = [GoUtilities nodeWithMostRecentMove:node.parent];
+  return node;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Examines the successors of @a node (excluding @a node) in the current
 /// game variation available from @a game. Returns the first node found that
 /// contains a move. Returns @e nil if no move can be found.

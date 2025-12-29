@@ -65,6 +65,9 @@
 /// @brief Initializes a GoTimeSystem object with #GoTimeSystemTypeCustom,
 /// the time system's string description @a customTimeSystemDescription and
 /// default values for the remaining time system parameters.
+///
+/// @exception NSInvalidArgumentException Is raised if
+/// @a customTimeSystemDescription is @e nil.
 // -----------------------------------------------------------------------------
 - (id) initWithCustomTimeSystemDescription:(NSString*)customTimeSystemDescription
 {
@@ -81,6 +84,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GoTimeSystem object with #GoTimeSystemTypeAbsolute and
 /// @a absoluteTimeDurationInSeconds.
+///
+/// @exception NSInvalidArgumentException Is raised if
+/// @a absoluteTimeDurationInSeconds is 0 (zero) or less.
 // -----------------------------------------------------------------------------
 - (id) initWithAbsoluteTimeDurationInSeconds:(double)absoluteTimeDurationInSeconds
 {
@@ -97,24 +103,33 @@
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GoTimeSystem object with the time system
 /// @a goTimeSystemType, which has a single time period with duration
-/// @a periodDurationInSeconds and @a minimumNumberOfMovesPerPeriod. The time
-/// system handles unused time with @a goUnusedTimeHandling.
+/// @a periodDurationInSeconds and @a minimumNumberOfMovesPerPeriod. The unused
+/// time handling is derived from @a goTimeSystemType.
 ///
-/// Raises an @e NSInternalInconsistencyException if @a goTimeSystemType is not
-/// one of #GoTimeSystemTypeCanadian, #GoTimeSystemTypeSteadyAverage or
+/// @exception NSInvalidArgumentException Is raised if
+/// @a periodDurationInSeconds is 0 (zero) or less, or if
+/// @a minimumNumberOfMovesPerPeriod is 0 (zero), or if @a goTimeSystemType is
+/// not one of #GoTimeSystemTypeCanadian, #GoTimeSystemTypeSteadyAverage or
 /// #GoTimeSystemTypeTotalAverage.
 // -----------------------------------------------------------------------------
 - (id) initWithGoTimeSystemType:(enum GoTimeSystemType)goTimeSystemType
         periodDurationInSeconds:(double)periodDurationInSeconds
   minimumNumberOfMovesPerPeriod:(unsigned int)minimumNumberOfMovesPerPeriod
-           goUnusedTimeHandling:(enum GoUnusedTimeHandling)goUnusedTimeHandling
 {
-  if (goTimeSystemType != GoTimeSystemTypeCanadian &&
-      goTimeSystemType != GoTimeSystemTypeSteadyAverage &&
-      goTimeSystemType != GoTimeSystemTypeTotalAverage)
+  enum GoUnusedTimeHandling unusedTimeHandling;
+  if (goTimeSystemType == GoTimeSystemTypeCanadian)
+    unusedTimeHandling = GoUnusedTimeHandlingRoundDown;
+  else if (goTimeSystemType == GoTimeSystemTypeSteadyAverage)
+    unusedTimeHandling = GoUnusedTimeHandlingUseForExtraMoves;
+  else if (goTimeSystemType == GoTimeSystemTypeTotalAverage)
+    unusedTimeHandling = GoUnusedTimeHandlingAddPeriodDuration;
+  else
   {
-    [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"Failed to initialize GoTimeSystem object, invalid time system %ld"
-                                                      argumentValue:goTimeSystemType];
+    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"Failed to initialize GoTimeSystem object, invalid time system %ld"
+                                                argumentValue:goTimeSystemType];
+    // Dummy assign to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    unusedTimeHandling = GoUnusedTimeHandlingNone;
   }
 
   return [self initWithGoTimeSystemType:goTimeSystemType
@@ -123,7 +138,7 @@
                 periodDurationInSeconds:periodDurationInSeconds
        hasMinimumNumberOfMovesPerPeriod:true
           minimumNumberOfMovesPerPeriod:minimumNumberOfMovesPerPeriod
-                   goUnusedTimeHandling:goUnusedTimeHandling
+                   goUnusedTimeHandling:unusedTimeHandling
              extraTimeDurationInSeconds:0.0];
 }
 
@@ -131,6 +146,10 @@
 /// @brief Initializes a GoTimeSystem object with #GoTimeSystemTypeJapanese,
 /// which has the number of periods @a numberOfPeriods with duration
 /// @a periodDurationInSeconds.
+///
+/// @exception NSInvalidArgumentException Is raised if
+/// @a periodDurationInSeconds is 0 (zero) or less, or if
+/// @a numberOfPeriods is 0 (zero).
 // -----------------------------------------------------------------------------
 - (id) initWithJapaneseTimeNumberOfPeriods:(unsigned int)numberOfPeriods
                    periodDurationInSeconds:(double)periodDurationInSeconds
@@ -141,7 +160,7 @@
                 periodDurationInSeconds:periodDurationInSeconds
        hasMinimumNumberOfMovesPerPeriod:true
           minimumNumberOfMovesPerPeriod:1
-                   goUnusedTimeHandling:GoUnusedTimeHandlingNone
+                   goUnusedTimeHandling:GoUnusedTimeHandlingRoundDown
              extraTimeDurationInSeconds:0.0];
 }
 
@@ -149,6 +168,10 @@
 /// @brief Initializes a GoTimeSystem object with #GoTimeSystemTypeFischer,
 /// which has an initial period duration @a initialDurationInSeconds and extra
 /// time duration @a extraTimeDurationInSeconds.
+///
+/// @exception NSInvalidArgumentException Is raised if
+/// @a initialDurationInSeconds is 0 (zero) or less, or if
+/// @a extraTimeDurationInSeconds is 0 (zero) or less.
 // -----------------------------------------------------------------------------
 - (id) initWithFischerTimeInitialDurationInSeconds:(double)initialDurationInSeconds
                         extraTimeDurationInSeconds:(double)extraTimeDurationInSeconds
@@ -167,7 +190,7 @@
 /// @brief Initializes a GoTimeSystem object with the provided time system
 /// parameters.
 ///
-/// Raises an @e NSInternalInconsistencyException in the following cases:
+/// @exception NSInvalidArgumentException Is raised in the following cases:
 /// - If @a numberOfPeriods is 0 (zero) and @a goTimeSystemType is not
 ///   #GoTimeSystemTypeNone or #GoTimeSystemTypeCustom
 /// - If @a periodDurationInSeconds is 0 (zero) or less and @a goTimeSystemType
@@ -204,13 +227,13 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
     if (numberOfPeriods == 0)
     {
       NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, invalid number of periods %d for time system %u", numberOfPeriods, goTimeSystemType];
-      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+      [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
     }
 
     if (periodDurationInSeconds <= 0)
     {
       NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, invalid period duration %f for time system %u", periodDurationInSeconds, goTimeSystemType];
-      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+      [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
     }
   }
 
@@ -218,24 +241,24 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
       (! hasMinimumNumberOfMovesPerPeriod && minimumNumberOfMovesPerPeriod != 0))
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, invalid minimum number of moves per period %d for time system %u", minimumNumberOfMovesPerPeriod, goTimeSystemType];
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
   if (goUnusedTimeHandling == GoUnusedTimeHandlingAddExtraTime && extraTimeDurationInSeconds <= 0)
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, invalid extra time duration %f for time system %u", extraTimeDurationInSeconds, goTimeSystemType];
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
   if (goTimeSystemType == GoTimeSystemTypeCustom && ! customTimeSystemDescription)
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, custom time system description is missing"];
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
   else if (goTimeSystemType != GoTimeSystemTypeCustom && customTimeSystemDescription != nil)
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, custom time system description is present although time system %u is not GoTimeSystemTypeCustom", goTimeSystemType];
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
   self.goTimeSystemType = goTimeSystemType;

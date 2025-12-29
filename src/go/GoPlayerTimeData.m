@@ -18,9 +18,11 @@
 // Project includes
 #import "GoPlayerTimeData.h"
 #import "GoClock.h"
+#import "GoNode.h"
 #import "GoNodeTimeData.h"
 #import "GoTimeSettings.h"
 #import "GoTimeSystem.h"
+#import "GoUtilities.h"
 #import "../utility/ExceptionUtility.h"
 
 
@@ -74,7 +76,7 @@
   self.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
 
   // Initializes the remaining properties
-  [self updateWithTimeSettings];
+  [self updateWithTimeSettingsTimeData];
 
   return self;
 }
@@ -159,63 +161,27 @@
 #pragma mark - Public API
 
 // -----------------------------------------------------------------------------
-/// @brief Updates this GoPlayerTimeData object after the current node changed
-/// to @a node. @a goColor indicates which player's time data the updating logic
-/// should use. When this method returns, the time data in this GoPlayerTimeData
-/// object reflects the player's situation at @a node.
-///
-/// The updating logic goes through all nodes on the path between the game's
-/// root node and @a node and searches for nodes that contain a GoMove object
-/// representing a move made by the player identified by @a goColor, and a
-/// GoNodeTimeData object. For every such node, the time data in the
-/// GoNodeTimeData object is processed according to the parameters in the
-/// GoTimeSettings object that was supplied to the GoPlayerTimeData initializer.
-///
-/// A few scenarios for which this method is intended:
-/// - A new game is started. In that scenario @a node is the leaf node of the
-///   new game's main variation. Because it's a new game, the leaf node is
-///   likely the game's root node.
-/// - A new game is loaded from the archive. In that scenario @a node is the
-///   leaf node of the loaded game's main variation.
-/// - The user navigates between nodes within the current game variation.
-///   In that scenario @a node is the node that the user navigates to.
-/// - The user changes the current game variation. In that scenario @a node is
-///   the node that the user navigates to.
-// -----------------------------------------------------------------------------
-- (enum GoPeriodDurationElapsedResultType) updateAfterNodeChanged:(GoNode*)node
-                                                        forPlayer:(enum GoColor)goColor
-{
-  // TODO xxx implement. difficulties:
-  // - recognizing the switch from absolute time to overtime => in SGF we would
-  //   see this via presence of OB/OW, but GoNodeTimeData has no "presence"
-  //   indicator at the moment => maybe need to add it?
-  // - when the clock was suspended, elapsed time is stored internally. this
-  //   data is either lost upon a node change, or we need to record it in
-  //   GoNodeTimeData; in the latter case, the design of GoClock may need to be
-  //   changed.
-  return GoPeriodDurationElapsedResultTypeGameContinues;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Updates the time data in this GoPlayerTimeData object and in
 /// @a goNodeTimeData after a move was played. Updating is performed according
 /// to the parameters in the GoTimeSettings object that was supplied to the
 /// GoPlayerTimeData initializer.
 ///
-/// Raises an @e NSInternalInconsistencyException in the following cases:
+/// @exception NSInternalInconsistencyException Is raised in the following
+/// cases:
 /// - If the clock is started. The caller needs to suspend or stop the clock
 ///   before invoking this method, to guarantee consistent data.
 /// - If the player has already lost on time. The caller needs to make sure
 ///   the player still has some time left before invoking this method. Invoke
 ///   didPlayerLoseOnTime() to check.
 ///
-/// Raises @e NSInvalidArgumentException if @a goNodeTimeData is @e nil.
+/// @exception NSInvalidArgumentException Is raised if @a nodeTimeData is
+/// @e nil.
 // -----------------------------------------------------------------------------
-- (void) updateAfterMoveWasPlayed:(GoNodeTimeData*)goNodeTimeData
+- (void) updateAfterMoveWasPlayed:(GoNodeTimeData*)nodeTimeData
 {
-  if (! goNodeTimeData)
+  if (! nodeTimeData)
   {
-    NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: goNodeTimeData is nil";
+    NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: nodeTimeData is nil";
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
@@ -231,102 +197,97 @@
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
-  GoTimeSystem* timeSystem = self.effectiveTimeSystem;
-  __block bool isRemainingTimeAbsoluteTime = self.isRemainingTimeAbsoluteTime;
-  __block double remainingTimeInSeconds = self.remainingTimeInSeconds;
-  __block unsigned int remainingNumberOfMoves = self.remainingNumberOfMoves;
-  __block unsigned int remainingNumberOfPeriods = self.remainingNumberOfPeriods;
-
-  void (^updateGoNodeTimeData) (void) = ^ void ()
-  {
-    goNodeTimeData.isRemainingTimeAbsoluteTime = isRemainingTimeAbsoluteTime;
-    goNodeTimeData.remainingTimeInSeconds = remainingTimeInSeconds;
-    goNodeTimeData.remainingNumberOfMoves = remainingNumberOfMoves;
-    goNodeTimeData.remainingNumberOfPeriods = remainingNumberOfPeriods;
-  };
-
-  void (^updateSelf) (void) = ^ void ()
-  {
-    self.remainingTimeInSeconds = remainingTimeInSeconds;
-    self.remainingNumberOfMoves = remainingNumberOfMoves;
-
-    [self postNotificationOnMainThread:playerTimeDataHasChanged];
-  };
+  bool dataHasChanged = false;
 
   // If the time system does not have a requirement for minimum number of moves,
   // we don't have to modify remainingNumberOfMoves, and therefore also don't
   // have to do a period reset. The typical case for this is Absolute Timing.
-  if (! timeSystem.hasMinimumNumberOfMovesPerPeriod)
+  GoTimeSystem* timeSystem = self.effectiveTimeSystem;
+  if (timeSystem.hasMinimumNumberOfMovesPerPeriod)
   {
-    updateGoNodeTimeData();
-    return;
-  }
-
-  if (remainingNumberOfMoves > 0)
-  {
-    remainingNumberOfMoves--;
-
-    if (remainingNumberOfMoves > 0)
+    if (self.remainingNumberOfMoves > 0)
     {
-      // No reset needed
-      updateGoNodeTimeData();
-      updateSelf();
-      return;
+      self.remainingNumberOfMoves--;
+      dataHasChanged = true;
     }
-  }
-  else
-  {
-    if (timeSystem.goUnusedTimeHandling != GoUnusedTimeHandlingUseForExtraMoves)
+    else
     {
-      NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: time system has unexpected unused time handling %ld";
-      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:errorMessage
-                                                        argumentValue:timeSystem.goUnusedTimeHandling];
+      if (timeSystem.goUnusedTimeHandling != GoUnusedTimeHandlingUseForExtraMoves)
+      {
+        NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: time system has unexpected unused time handling %ld";
+        [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:errorMessage
+                                                          argumentValue:timeSystem.goUnusedTimeHandling];
+      }
     }
   }
 
-  // Important: Update the node time data before the period reset => We want to
-  // record how much time and how many moves remained when the move ended, not
-  // how much time and how many moves remain when playing the next move will
-  // start
-  updateGoNodeTimeData();
+  // Important: Set the node time data with values before the period reset. We
+  // want to record how much time and how many moves remained when the move
+  // ended, not how much time and how many moves remain when playing the next
+  // move will start.
+  nodeTimeData.isRemainingTimeAbsoluteTime = self.isRemainingTimeAbsoluteTime;
+  nodeTimeData.remainingTimeInSeconds = self.remainingTimeInSeconds;
+  nodeTimeData.remainingNumberOfMoves = self.remainingNumberOfMoves;
+  nodeTimeData.remainingNumberOfPeriods = self.remainingNumberOfPeriods;
 
-  // Perform period reset if necessary
-  switch (timeSystem.goUnusedTimeHandling)
-  {
-    case GoUnusedTimeHandlingRoundDown:
-      remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
-      remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
-      break;
-    case GoUnusedTimeHandlingUseForExtraMoves:
-      break;
-    case GoUnusedTimeHandlingAddPeriodDuration:
-      remainingTimeInSeconds = timeSystem.periodDurationInSeconds + remainingTimeInSeconds;
-      remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
-      break;
-    case GoUnusedTimeHandlingAddExtraTime:
-      remainingTimeInSeconds = timeSystem.extraTimeDurationInSeconds + remainingTimeInSeconds;
-      remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
-      break;
-    case GoUnusedTimeHandlingNone:
-    default:
-    {
-      NSString* errorMessage = @"updateAfterMoveWasPlayed: failed (period reset): time system has unexpected unused time handling %ld";
-      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:errorMessage
-                                                        argumentValue:timeSystem.goUnusedTimeHandling];
-      break;
-    }
-  }
+  dataHasChanged |= [self performPeriodResetIfNecessary:timeSystem];
 
-  updateSelf();
+  if (dataHasChanged)
+    [self postNotificationOnMainThread:playerTimeDataHasChanged];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document; idea is that we need to know when to trigger the game loss; player can think until then
+/// @brief Updates this GoPlayerTimeData object after the currently selected
+/// node changed to @a node. When this method returns, the time data in this
+/// GoPlayerTimeData object reflects the player's situation at @a node.
+///
+/// The updating logic searches backwards through the path between @a node
+/// (including @a node) and the game's root node and looks for a node that
+/// contains a move made by the player whose time data is stored by this
+/// GoPlayerTimeData.
+/// - If such a node can be found, the time data in this GoPlayerTimeData is
+///   updated to equal the data in the GoNodeTimeData object that is expected
+///   to exist in the same node that contains the move.
+/// - If no such node can be found, the time data in this GoPlayerTimeData is
+///   updated to equal the initial time settings after the game was started.
+///
+/// @exception NSInvalidArgumentException Is raised if @a node is @e nil.
+/// @exception NSInternalInconsistencyException Is raised if a node with a move
+///            is found, but that node does not contain a GoNodeTimeData object.
 // -----------------------------------------------------------------------------
-- (double) timeWithoutMoveUntilGameIsLostOnTime
+- (void) updateAfterNodeChanged:(GoNode*)node
 {
-  // TODO xxx implement
-  return 0.0;
+  if (! node)
+  {
+    NSString* errorMessage = @"updateAfterNodeChanged: failed: node is nil";
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+  }
+
+  enum GoColor color = (self.isTimeDataForBlackPlayer
+                        ? GoColorBlack
+                        : GoColorWhite);
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:node
+                                                              playedBy:color];
+
+  bool dataHasChanged;
+  if (nodeWithMostRecentMove)
+  {
+    GoNodeTimeData* nodeTimeData = nodeWithMostRecentMove.goNodeTimeData;
+    if (! nodeTimeData)
+    {
+      NSString* errorMessage = @"updateAfterNodeChanged: failed: node contains move, but does not contain";
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+
+    dataHasChanged = [self updateWithNodeTimeData:nodeTimeData];
+  }
+  else
+  {
+    dataHasChanged = [self updateWithTimeSettingsTimeData];
+  }
+
+  if (dataHasChanged)
+    [self postNotificationOnMainThread:playerTimeDataHasChanged];
 }
 
 // -----------------------------------------------------------------------------
@@ -496,22 +457,45 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the time data in this GoPlayerTimeData object to match the
 /// the parameters in the GoTimeSettings object that was supplied to the
-/// GoPlayerTimeData initializer.
+/// GoPlayerTimeData initializer. Returns true if any properties of this
+/// GoPlayerTimeData changed their values. Returns false if no properties
+/// changed their values.
 // -----------------------------------------------------------------------------
-- (void) updateWithTimeSettings
+- (bool) updateWithTimeSettingsTimeData
 {
-  self.isRemainingTimeAbsoluteTime = (self.goTimeSettings.absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute);
+  bool dataHasChanged = false;
+
+  bool isRemainingTimeAbsoluteTime = (self.goTimeSettings.absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute);
+  if (self.isRemainingTimeAbsoluteTime != isRemainingTimeAbsoluteTime)
+  {
+    self.isRemainingTimeAbsoluteTime = isRemainingTimeAbsoluteTime;
+    dataHasChanged = true;
+  }
 
   GoTimeSystem* timeSystem = self.effectiveTimeSystem;
 
-  self.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
+  if (self.remainingTimeInSeconds != timeSystem.periodDurationInSeconds)
+  {
+    self.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
+    dataHasChanged = true;
+  }
 
-  if (timeSystem.hasMinimumNumberOfMovesPerPeriod)
-    self.remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
-  else
-    self.remainingNumberOfMoves = 0;
+  unsigned int remainingNumberOfMoves = (timeSystem.hasMinimumNumberOfMovesPerPeriod
+                                         ? timeSystem.minimumNumberOfMovesPerPeriod
+                                         : 0);
+  if (self.remainingNumberOfMoves != remainingNumberOfMoves)
+  {
+    self.remainingNumberOfMoves = remainingNumberOfMoves;
+    dataHasChanged = true;
+  }
 
-  self.remainingNumberOfPeriods = timeSystem.numberOfPeriods;
+  if (self.remainingNumberOfPeriods != timeSystem.numberOfPeriods)
+  {
+    self.remainingNumberOfPeriods = timeSystem.numberOfPeriods;
+    dataHasChanged = true;
+  }
+
+  return dataHasChanged;
 }
 
 // -----------------------------------------------------------------------------
@@ -523,6 +507,46 @@
     return self.goTimeSettings.absoluteTimeSystem;
   else
     return self.goTimeSettings.periodBasedTimeSystem;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the time data in this GoPlayerTimeData object to be equal to
+/// the time data in @a nodeTimeData.
+// -----------------------------------------------------------------------------
+- (bool) updateWithNodeTimeData:(GoNodeTimeData*)nodeTimeData
+{
+  bool dataHasChanged = false;
+
+  if (self.isRemainingTimeAbsoluteTime != nodeTimeData.isRemainingTimeAbsoluteTime)
+  {
+    self.isRemainingTimeAbsoluteTime = nodeTimeData.isRemainingTimeAbsoluteTime;
+    dataHasChanged = true;
+  }
+
+  if (self.remainingTimeInSeconds != nodeTimeData.remainingTimeInSeconds)
+  {
+    self.remainingTimeInSeconds = nodeTimeData.remainingTimeInSeconds;
+    dataHasChanged = true;
+  }
+
+  if (self.remainingNumberOfMoves != nodeTimeData.remainingNumberOfMoves)
+  {
+    self.remainingNumberOfMoves = nodeTimeData.remainingNumberOfMoves;
+    dataHasChanged = true;
+  }
+
+  if (self.remainingNumberOfPeriods != nodeTimeData.remainingNumberOfPeriods)
+  {
+    self.remainingNumberOfPeriods = nodeTimeData.remainingNumberOfPeriods;
+    dataHasChanged = true;
+  }
+
+  // Determine the effective time system after isRemainingTimeAbsoluteTime has
+  // been updated
+  GoTimeSystem* timeSystem = [self effectiveTimeSystem];
+  dataHasChanged |= [self performPeriodResetIfNecessary:timeSystem];
+
+  return dataHasChanged;
 }
 
 // -----------------------------------------------------------------------------
@@ -576,6 +600,49 @@
   }
 
   return GoPeriodDurationElapsedResultTypeGameContinues;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs a period reset based on the values in @a timeSystem, but
+/// only if such a reset is necessary. Returns true if any properties of this
+/// GoPlayerTimeData changed their values. Returns false if no properties
+/// changed their values (e.g. because no period reset was necessary).
+// -----------------------------------------------------------------------------
+- (bool) performPeriodResetIfNecessary:(GoTimeSystem*)timeSystem
+{
+  if (! timeSystem.hasMinimumNumberOfMovesPerPeriod ||
+      self.remainingNumberOfMoves > 0)
+  {
+    return false;
+  }
+
+  switch (timeSystem.goUnusedTimeHandling)
+  {
+    case GoUnusedTimeHandlingRoundDown:
+      self.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
+      self.remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
+      return true;
+    case GoUnusedTimeHandlingUseForExtraMoves:
+      return false;
+    case GoUnusedTimeHandlingAddPeriodDuration:
+      self.remainingTimeInSeconds += timeSystem.periodDurationInSeconds;
+      self.remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
+      return true;
+    case GoUnusedTimeHandlingAddExtraTime:
+      self.remainingTimeInSeconds += timeSystem.extraTimeDurationInSeconds;
+      self.remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
+      return true;
+    case GoUnusedTimeHandlingNone:
+    default:
+    {
+      NSString* errorMessage = @"performPeriodResetIfNecessary: failed: time system has unexpected unused time handling %ld";
+      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:errorMessage
+                                                        argumentValue:timeSystem.goUnusedTimeHandling];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
+      return false;
+    }
+  }
 }
 
 @end

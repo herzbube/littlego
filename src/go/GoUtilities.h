@@ -59,6 +59,7 @@
 + (void) recalculateZobristHashes:(GoGame*)game;
 + (void) relinkMoves:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentMove:(GoNode*)node;
++ (GoNode*) nodeWithMostRecentMove:(GoNode*)node playedBy:(enum GoColor)color;
 + (GoNode*) nodeWithNextMove:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (bool) nodeWithNextMoveExists:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (int) numberOfMovesBeforeNode:(GoNode*)node;

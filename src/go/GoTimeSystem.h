@@ -32,8 +32,7 @@
 - (id) initWithAbsoluteTimeDurationInSeconds:(double)absoluteTimeDurationInSeconds;
 - (id) initWithGoTimeSystemType:(enum GoTimeSystemType)goTimeSystemType
         periodDurationInSeconds:(double)periodDurationInSeconds
-  minimumNumberOfMovesPerPeriod:(unsigned int)minimumNumberOfMovesPerPeriod
-           goUnusedTimeHandling:(enum GoUnusedTimeHandling)goUnusedTimeHandling;
+  minimumNumberOfMovesPerPeriod:(unsigned int)minimumNumberOfMovesPerPeriod;
 - (id) initWithJapaneseTimeNumberOfPeriods:(unsigned int)numberOfPeriods
                    periodDurationInSeconds:(double)periodDurationInSeconds;
 - (id) initWithFischerTimeInitialDurationInSeconds:(double)initialDurationInSeconds

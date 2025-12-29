@@ -51,6 +51,9 @@ enum PlayerClockStopReason
   PlayerClockStopReasonPlayerTurnEnds,
   /// @brief The clock is requested to be stopped because the player resigns.
   PlayerClockStopReasonPlayerResigns,
+  /// @brief The clock is requested to be stopped because the selected node
+  /// changes.
+  PlayerClockStopReasonSelectedNodeChanges,
   /// @brief The clock is requested to be stopped because a new game is about
   /// to be created.
   PlayerClockStopReasonNewGameWillBeCreated,

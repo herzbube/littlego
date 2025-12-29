@@ -60,7 +60,7 @@
 /// The time system type of @a periodBasedTimeSystem must not be
 /// #GoTimeSystemTypeAbsolute.
 ///
-/// Raises an @e NSInternalInconsistencyException in the following cases:
+/// @exception NSInvalidArgumentException Is raised in the following cases:
 /// - If either @a absoluteTimeSystem or @a periodBasedTimeSystem or both are
 ///   @e nil.
 /// - If the time system type of @a absoluteTimeSystem is neither
@@ -81,21 +81,21 @@
   if (! absoluteTimeSystem || ! periodBasedTimeSystem)
   {
     NSString* errorMessage = @"Failed to initialize GoTimeSettings object, one or both time systems are nil";
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
   if (absoluteTimeSystem.goTimeSystemType != GoTimeSystemTypeNone &&
       absoluteTimeSystem.goTimeSystemType != GoTimeSystemTypeAbsolute)
   {
     NSString* errorMessage = @"Failed to initialize GoTimeSettings object, absoluteTimeSystem has unexpected time system type %ld";
-    [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:errorMessage
-                                                      argumentValue:absoluteTimeSystem.goTimeSystemType];
+    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:errorMessage
+                                                argumentValue:absoluteTimeSystem.goTimeSystemType];
   }
 
   if (periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute)
   {
     NSString* errorMessage = @"Failed to initialize GoTimeSettings object, periodBasedTimeSystem has unexpected time system type GoTimeSystemTypeAbsolute";
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
   self.absoluteTimeSystem = absoluteTimeSystem;
