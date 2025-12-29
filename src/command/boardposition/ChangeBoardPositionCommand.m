@@ -167,10 +167,11 @@
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
+  int oldCurrentBoardPosition = boardPosition.currentBoardPosition;
   DDLogVerbose(@"%@: newBoardPosition = %d, currentBoardPosition = %d, numberOfBoardPositions = %d",
                [self shortDescription],
                self.newBoardPosition,
-               boardPosition.currentBoardPosition,
+               oldCurrentBoardPosition,
                boardPosition.numberOfBoardPositions);
 
   if (self.newBoardPosition < 0 || self.newBoardPosition >= boardPosition.numberOfBoardPositions)
@@ -199,11 +200,14 @@
       [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
     }
 
-    int oldCurrentBoardPosition = boardPosition.currentBoardPosition;
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    NSArray* notificationObject = @[[NSNumber numberWithInt:oldCurrentBoardPosition],
+                                    [NSNumber numberWithInt:self.newBoardPosition]];
+    [center postNotificationName:currentBoardPositionWillChange object:notificationObject];
+
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:self.newBoardPosition]]];
+    [center postNotificationName:currentBoardPositionDidChange object:notificationObject];
 
     SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
     bool syncSuccess = [syncCommand submit];

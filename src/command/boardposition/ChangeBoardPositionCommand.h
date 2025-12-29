@@ -48,6 +48,10 @@
 /// the result is a valid board position (i.e. either the first or the last
 /// board position of the game).
 ///
+/// ChangeBoardPositionCommand posts #currentBoardPositionWillChange before it
+/// actually changes the board position. Other changes to some Go model objects
+/// may already have happened.
+///
 /// After it has changed the board position, ChangeBoardPositionCommand performs
 /// the following additional operations:
 /// - Posts #currentBoardPositionDidChange to the default notification center

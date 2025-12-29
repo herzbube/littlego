@@ -53,7 +53,8 @@
 ///
 /// ChangeAndDiscardCommand posts a number of notifications to the default
 /// notification center. This is the sequence
-/// - 0-n times #currentBoardPositionDidChange (via ChangeBoardPositionCommand).
+/// - 0-n times #currentBoardPositionWillChange and
+///   #currentBoardPositionDidChange (via ChangeBoardPositionCommand).
 ///   The notification is never posted if the current node is the root node.
 ///   The notification is posted once if the number of nodes that need to be
 ///   discarded is below a certain threshold and the board position change can

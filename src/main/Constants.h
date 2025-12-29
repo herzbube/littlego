@@ -1378,17 +1378,29 @@ extern NSString* nodeMarkupDataDidChange;
 /// If board positions are discarded from the current game variation, and the
 /// current board position is among the discarded board positions, then the
 /// current board position is changed before the discard takes place.
-/// #currentBoardPositionDidChange is therefore sent before this notification.
+/// #currentBoardPositionWillChange and #currentBoardPositionDidChange are
+/// therefore sent before this notification.
 ///
 /// If new board positions are added to the current game variation, and the
 /// current board position changes to one of the new board positions, then this
-/// notification is sent first and #currentBoardPositionDidChange is sent
-/// afterwards.
+/// notification is sent first and #currentBoardPositionWillChange and
+/// #currentBoardPositionDidChange are sent afterwards.
 ///
 /// If the number of board positions changes because the current game variation
 /// in GoNodeModel changes, then this notification is sent first and
 /// #currentGameVariationDidChange is sent afterwards.
 extern NSString* numberOfBoardPositionsDidChange;
+/// @brief Is sent to indicate that the current board position is about to
+/// change. This notification is sent before the state of any Go model objects
+/// has been updated.
+///
+/// An NSArray object containing two NSNumber objects is associated with the
+/// notification. The two NSNumber objects each wrap an integer value: The first
+/// value is the old current board position, the second value is the new
+/// current board position.
+///
+/// This notification is sent before the the first #boardPositionChangeProgress.
+extern NSString* currentBoardPositionWillChange;
 /// @brief Is sent to indicate that the current board position has changed.
 /// This notification is sent only after the state of all Go model objects
 /// has been updated.
@@ -1421,9 +1433,10 @@ extern NSString* currentGameVariationWillChange;
 /// - Before the game variation is changed, the current board position must be
 ///   made to match a node that is present in both the old and the new game
 ///   variation. This notification may therefore be preceded by
-///   #currentBoardPositionDidChange. The current board position change can
-///   take place even before #currentGameVariationWillChange is sent, because
-///   the operation is not strictly related to the game variation change.
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange. The
+///   current board position change can take place even before
+///   #currentGameVariationWillChange is sent, because the operation is not
+///   strictly related to the game variation change.
 /// - After the game variation is changed, GoBoardPosition must be updated with
 ///   the number of board positions in the new game variation. The notification
 ///   #numberOfBoardPositionsDidChange must be sent @b after

@@ -99,6 +99,7 @@ NSString* nodeMarkupDataDidChange = @"NodeMarkupDataDidChange";
 NSString* allMarkupDidDiscard = @"AllMarkupDidDiscard";
 // Game variation notifications
 NSString* numberOfBoardPositionsDidChange = @"NumberOfBoardPositionsDidChange";
+NSString* currentBoardPositionWillChange = @"CurrentBoardPositionWillChange";
 NSString* currentBoardPositionDidChange = @"CurrentBoardPositionDidChange";
 NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 NSString* currentGameVariationWillChange = @"CurrentGameVariationWillChange";

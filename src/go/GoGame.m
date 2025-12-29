@@ -232,9 +232,10 @@
 ///   time.
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
-///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center. If
-///   the insert policy in @a moveNodeCreationOptions is
+///   the move was played. Posts first #numberOfBoardPositionsDidChange, then
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange, to
+///   the default notification center. If the insert policy in
+///   @a moveNodeCreationOptions is
 ///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
 ///   #currentGameVariationWillChange and #currentGameVariationDidChange before
 ///   and after the board position notifications.
@@ -284,9 +285,10 @@
 ///   time.
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
-///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center. If
-///   the insert policy in @a moveNodeCreationOptions is
+///   the move was played. Posts first #numberOfBoardPositionsDidChange, then
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange, to
+///   the default notification center. If the insert policy in
+///   @a moveNodeCreationOptions is
 ///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
 ///   #currentGameVariationWillChange and #currentGameVariationDidChange before
 ///   and after the board position notifications.
@@ -417,9 +419,10 @@
 ///   time.
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
-///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center. If
-///   the insert policy in @a moveNodeCreationOptions is
+///   the move was played. Posts first #numberOfBoardPositionsDidChange, then
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange, to
+///   the default notification center. If the insert policy in
+///   @a moveNodeCreationOptions is
 ///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
 ///   #currentGameVariationWillChange and #currentGameVariationDidChange before
 ///   and after the board position notifications.
@@ -467,9 +470,10 @@
 ///   time.
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
-///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center. If
-///   the insert policy in @a moveNodeCreationOptions is
+///   the move was played. Posts first #numberOfBoardPositionsDidChange, then
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange, to
+///   the default notification center. If the insert policy in
+///   @a moveNodeCreationOptions is
 ///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
 ///   #currentGameVariationWillChange and #currentGameVariationDidChange before
 ///   and after the board position notifications.
@@ -716,6 +720,11 @@
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     return;
   }
+
+  NSArray* currentBoardPositionNotificationObject = @[[NSNumber numberWithInt:oldCurrentBoardPosition],
+                                                      [NSNumber numberWithInt:newCurrentBoardPosition]];
+  [center postNotificationName:currentBoardPositionWillChange object:currentBoardPositionNotificationObject];
+
   self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
 
   // The Zobrist hash can be calculated only AFTER GoNode modifyBoard was
@@ -725,7 +734,7 @@
   // the notification about the board position change.
   [newNode calculateZobristHash:self];
 
-  [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
+  [center postNotificationName:currentBoardPositionDidChange object:currentBoardPositionNotificationObject];
 
   if (shouldChangeCurrentGameVariation)
   {

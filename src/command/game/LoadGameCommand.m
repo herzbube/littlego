@@ -1586,7 +1586,12 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
     [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
 
   if (oldCurrentBoardPosition != newCurrentBoardPosition)
-    [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
+  {
+    NSArray* notificationObject = @[[NSNumber numberWithInt:oldCurrentBoardPosition],
+                                    [NSNumber numberWithInt:newCurrentBoardPosition]];
+    [center postNotificationName:currentBoardPositionWillChange object:notificationObject];
+    [center postNotificationName:currentBoardPositionDidChange object:notificationObject];
+  }
 
   return true;
 }

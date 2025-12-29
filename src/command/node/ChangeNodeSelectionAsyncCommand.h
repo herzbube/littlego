@@ -44,8 +44,9 @@
 ///   current and new game variations differ.
 /// - Invoke ChangeBoardPositionCommand, to change the current board position
 ///   to match the branching GoNode (rewind). This causes the notification
-///   #boardPositionChangeProgress to be sent <n> times, and the notification
-///   #currentBoardPositionDidChange to be sent once.
+///   #boardPositionChangeProgress to be sent <n> times, and the notifications
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange to be
+///   sent once.
 /// - Invoke ChangeGameVariationCommand, to change the currently configured game
 ///   variation in GoNodeModel to the new game variation. This causes the
 ///   notifications #currentGameVariationWillChange and
@@ -56,8 +57,9 @@
 ///   game variation.
 /// - Invoke ChangeBoardPositionCommand, to change the current board position
 ///   to match the GoNode to be selected (forward). This causes the notification
-///   #boardPositionChangeProgress to be posted <n> times, and the notification
-///   #currentBoardPositionDidChange to be posted once.
+///   #boardPositionChangeProgress to be posted <n> times, and the notifications
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange to be
+///   posted once.
 /// - Mark the application state as having changed, so that the board position
 ///   and game variation can be restored when the application launches the next
 ///   time. Whoever executes ChangeNodeSelectionAsyncCommand is responsible for
