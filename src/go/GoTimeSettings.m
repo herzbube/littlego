@@ -157,13 +157,16 @@
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if either @e absoluteTimeSystem or
-/// @e periodBasedTimeSystem or both have a time system for which the app
-/// supports timed play.
+/// @brief Returns true if @e periodBasedTimeSystem is not a custom time system,
+/// and either @e absoluteTimeSystem or @e periodBasedTimeSystem or both have a
+/// time system for which the app supports timed play.
 // -----------------------------------------------------------------------------
 - (bool) doTimeSystemsSupportTimedPlay
 {
-  return (self.absoluteTimeSystem.supportsTimedPlay || self.periodBasedTimeSystem.supportsTimedPlay);
+  if (self.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeCustom)
+    return false;
+  else
+    return (self.absoluteTimeSystem.supportsTimedPlay || self.periodBasedTimeSystem.supportsTimedPlay);
 }
 
 @end

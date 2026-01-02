@@ -67,6 +67,12 @@
 {
 }
 
+- (id) initWithIsTimeDataForBlackPlayer:(bool)isTimeDataForBlackPlayer;
+
+/// @brief True if this GoNodeTimeData object holds time data for the black
+/// player, false if it holds time data for the white player.
+@property(nonatomic, assign, readonly) bool isTimeDataForBlackPlayer;
+
 /// @brief True if @e remainingTimeInSeconds refers to absolute time, false if
 /// not.
 ///

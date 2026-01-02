@@ -24,11 +24,12 @@
 #import "GoNodeMarkup.h"
 #import "GoNodeSetup.h"
 #import "GoNodeTimeData.h"
+#import "GoTimeDataValidator.h"
 #import "GoZobristTable.h"
 #import "../utility/ExceptionUtility.h"
 
 
-// TODO xxx update unit tests for new property goNodeTimeData
+// TODO xxx update unit tests for new property goNodeTimeData and time data validity
 
 
 // -----------------------------------------------------------------------------
@@ -81,6 +82,9 @@
 
   self.zobristHash = 0;
 
+  self.isTimeDataValid = GoTimeDataValidationResultInvalid.isTimeDataValid;
+  self.timeDataInvalidReason = GoTimeDataValidationResultInvalid.timeDataInvalidReason;
+
   self.nodeID = gNoObjectReferenceNodeID;
   self.firstChildNodeID = gNoObjectReferenceNodeID;
   self.nextSiblingNodeID = gNoObjectReferenceNodeID;
@@ -131,13 +135,14 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@, %@",
+  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@, %@, isTimeDataValid = %d, timeDataInvalidReason = %d",
           self,
           _goNodeSetup ? _goNodeSetup : @"No setup",
           _goMove ? _goMove : @"No move",
           _goNodeAnnotation ? _goNodeAnnotation : @"No annotation",
           _goNodeMarkup ? _goNodeMarkup : @"No markup",
-          _goNodeTimeData ? _goNodeTimeData : @"No time data"];
+          _goNodeTimeData ? _goNodeTimeData : @"No time data",
+          _isTimeDataValid, _timeDataInvalidReason];
 }
 
 #pragma mark - NSCoding overrides
@@ -179,6 +184,11 @@
   // The hash was not archived. Whoever is unarchiving this GoNode is
   // responsible for re-calculating the hash.
   self.zobristHash = 0;
+
+  // Time validity properties were not archived. Whoever is unarchiving this
+  // GoNodeTimeData is responsible for re-calculating the properties.
+  self.isTimeDataValid = GoTimeDataValidationResultInvalid.isTimeDataValid;
+  self.timeDataInvalidReason = GoTimeDataValidationResultInvalid.timeDataInvalidReason;
 
   return self;
 }
@@ -230,6 +240,9 @@
   // This is the reason why we don't archive self.zobristHash here - it doesn't
   // make sense to archive an invalid value. A side effect of not archiving
   // self.zobristHash is that the overall archive becomes smaller.
+
+  // Time validity property values are not archived to reduce the size of the
+  // archive. The property values can be recalculated upon unarchiving.
 }
 
 #pragma mark - Public API - Node tree navigation

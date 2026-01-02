@@ -23,6 +23,7 @@
 #import "../playerinfluence/ToggleTerritoryStatisticsCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoTimeDataValidator.h"
 #import "../../go/GoUtilities.h"
 #import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
@@ -49,6 +50,7 @@
 
   [GoUtilities relinkMoves:unarchivedGame];
   [GoUtilities recalculateZobristHashes:unarchivedGame];
+  [GoTimeDataValidator validateTimeDataInNodeTree:unarchivedGame];
 
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];
   // We want to keep the mode of the UI area "Play" from the previous session

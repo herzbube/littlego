@@ -963,6 +963,99 @@ enum GoPeriodDurationElapsedResultType
   GoPeriodDurationElapsedResultTypeGameContinues,    ///< @brief There is still time left (e.g. switching from absolute time to overtime, the player has more periods (aka "lifes") left) and the game continues.
 };
 
+/// @brief Enumerates the possible reasons why validating the time data in a
+/// given game variation resulted in #GoTimeDataValidationResultInvalid.
+///
+/// @ingroup go
+enum GoTimeDataInvalidReason
+{
+  /// @brief The game does not use timed play, i.e. it does not use any time
+  /// systems. If the game was loaded from an .sgf file, nodes may contain time
+  /// data, but that time data is not validated at all because without time
+  /// systems there is no way to interpret the data.
+  GoTimeDataInvalidReasonGameDoesNotUseTimedPlay,
+  /// @brief The game uses a custom time system that the app does not
+  /// understand. If the game was loaded from an .sgf file, nodes may contain
+  /// time data, but that time data is not validated at all because the app
+  /// does not know how to interpret the data.
+  GoTimeDataInvalidReasonCustomTimeSystem,
+  /// @brief A move node does not contain time data.
+  GoTimeDataInvalidReasonMoveNodeHasNoTimeData,
+  /// @brief A non-move node contains time data.
+  GoTimeDataInvalidReasonNonMoveNodeHasTimeData,
+  /// @brief The player who made a move is not the same player for which the
+  /// time data in that move is.
+  GoTimeDataInvalidReasonMoveAndTimeDataPlayerMismatch,
+  /// @brief A node's time data refers to absolute time, but the time settings
+  /// do not define an absolute time system.
+  GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem,
+  /// @brief A node's time data refers to period-based time, but the time
+  /// settings do not define a period-based time system.
+  GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem,
+  /// @brief A node's time data has a negative remaining time.
+  GoTimeDataInvalidReasonRemainingTimeNegative,
+  /// @brief A node's time data has a negative remaining number of moves.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesNegative,
+  /// @brief A node's time data has a negative remaining number of periods.
+  GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative,
+  /// @brief A node's time data refers to absolute time although a previous
+  /// node's time data referred to the period-based time system.
+  GoTimeDataInvalidReasonAbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData,
+  /// @brief A node's time data has a remaining absolute time that is higher
+  /// than the remaining absolute time in the predecessor node's time data.
+  GoTimeDataInvalidReasonRemainingAbsoluteTimeIsIncreasing,
+  /// @brief A node's time data has a remaining time that is higher than what
+  /// is allowed by the time system.
+  GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows,
+  /// @brief A node's time data has a remaining number of moves that is higher
+  /// than what is allowed by the period-based time system.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows,
+  /// @brief A node's time data has a remaining number of periods that is higher
+  /// than what is allowed by the period-based time system.
+  ///
+  /// This can occur only for #GoTimeSystemTypeJapanese.
+  GoTimeDataInvalidReasonRemainingNumberOfPeriodsHigherThanPeriodBasedTimeSystemAllows,
+  /// @brief A node's time data has a remaining number of moves that is not
+  /// constant, i.e. that differs from the remaining number of moves in the
+  /// predecessor node's time data.
+  ///
+  /// This occurs in time systems where the minimum number of moves per period
+  /// is 1 (one). Consequently the remaining number of moves should always be
+  /// either 0 (zero) or 1 (one). The latter is the case if the SGF writer
+  /// records values after a period reset (known case: KGS).
+  GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant,
+  /// @brief A node's time data has a remaining number of moves that is
+  /// constant, i.e. that does not differ from the remaining number of moves in
+  /// the predecessor node's time data.
+  ///
+  /// This occurs in time systems where the minimum number of moves per period
+  /// is greater than 1 (one) and that does not use
+  /// #GoUnusedTimeHandlingUseForExtraMoves. Consequently the remaining number
+  /// of moves should always either decrease (before the period reset), or
+  /// increase (after the period reset).
+  GoTimeDataInvalidReasonRemainingNumberOfMovesConstant,
+  /// @brief A node's time data has a remaining number of moves that is less
+  /// (or equal) than the remaining number of moves in the predecessor node's
+  /// time data, but at the same time the remaining time increased.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesDecreasedButRemainingTimeIncreased,
+  /// @brief A node's time data has a remaining number of moves that is greater
+  /// than the remaining number of moves in the predecessor node's time data,
+  /// but at the same time the remaining time decreased.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased,
+  /// @brief A node's time data has a remaining number of periods that is higher
+  /// than the remaining number of periods in the predecessor node's time data.
+  ///
+  /// This can occur only for #GoTimeSystemTypeJapanese.
+  GoTimeDataInvalidReasonRemainingNumberOfPeriodsIsIncreasing,
+  /// @brief A node's time data has a remaining time that is higher than what
+  /// is allowed after adding extra time to the remaining time in the
+  /// predecessor node's time data.
+  ///
+  /// This can occur only for #GoTimeSystemTypeFischer and
+  /// #GoTimeSystemTypeTotalAverage.
+  GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows,
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -1400,6 +1493,9 @@ extern NSString* numberOfBoardPositionsDidChange;
 /// current board position.
 ///
 /// This notification is sent before the the first #boardPositionChangeProgress.
+///
+/// @see #currentGameVariationDidChange for details about board position
+/// changes that occur when the current game variation changes.
 extern NSString* currentBoardPositionWillChange;
 /// @brief Is sent to indicate that the current board position has changed.
 /// This notification is sent only after the state of all Go model objects
@@ -1411,6 +1507,9 @@ extern NSString* currentBoardPositionWillChange;
 /// current board position.
 ///
 /// This notification is sent after the last #boardPositionChangeProgress.
+///
+/// @see #currentGameVariationDidChange for details about board position
+/// changes that occur when the current game variation changes.
 extern NSString* currentBoardPositionDidChange;
 /// @brief Is sent (B-A) times while the current board position in
 /// GoBoardPosition changes from A to B. Observers can use this notification to
@@ -1421,6 +1520,9 @@ extern NSString* boardPositionChangeProgress;
 ///
 /// This notification is followed by #currentGameVariationDidChange. In between
 /// #numberOfBoardPositionsDidChange may also be sent.
+///
+/// @see #currentGameVariationDidChange for details about board position
+/// changes.
 extern NSString* currentGameVariationWillChange;
 /// @brief Is sent to indicate that the current game variation in GoNodeModel
 /// has changed.
@@ -1432,19 +1534,24 @@ extern NSString* currentGameVariationWillChange;
 /// taken before this notification is sent:
 /// - Before the game variation is changed, the current board position must be
 ///   made to match a node that is present in both the old and the new game
-///   variation. This notification may therefore be preceded by
-///   #currentBoardPositionWillChange and #currentBoardPositionDidChange. The
-///   current board position change can take place even before
-///   #currentGameVariationWillChange is sent, because the operation is not
-///   strictly related to the game variation change.
+///   variation. #currentGameVariationWillChange is therefore usually preceded
+///   by #currentBoardPositionWillChange and #currentBoardPositionDidChange.
+///   It does @b not happen, though, if the current board position node is
+///   already present in both game variations.
 /// - After the game variation is changed, GoBoardPosition must be updated with
 ///   the number of board positions in the new game variation. The notification
 ///   #numberOfBoardPositionsDidChange must be sent @b after
-///   #currentGameVariationWillChange is sent, because the game variation change
-///   and the number of board positions change can be seen as belonging to the
-///   same "transaction" that is bounded by the willChange/didChange
-///   notifications. #numberOfBoardPositionsDidChange may not be sent if the
-///   new game variation has the same number of board positions as the old one.
+///   #currentGameVariationWillChange is sent, but before this notification
+///   is sent, because the game variation change and the number of board
+///   positions change can be seen as belonging to the same "transaction" that
+///   is bounded by the willChange/didChange notifications.
+///   #numberOfBoardPositionsDidChange is not sent if the new game variation
+///   has the same number of board positions as the old one.
+///
+/// This notification is followed by another pair of
+/// #currentBoardPositionWillChange and #currentBoardPositionDidChange if the
+/// game variation was changed because of a node selection change and the newly
+/// selected node is not part of the new game variation.
 extern NSString* currentGameVariationDidChange;
 //@}
 
@@ -1534,6 +1641,19 @@ extern NSString* playerTimeDataHasChanged;
 ///
 /// TODO xxx notify ApplicationStateManager that data is dirty
 extern NSString* playerLostOnTime;
+/// @brief Is sent to indicate that the time data of the current game variation
+/// has become valid.
+///
+/// This notification is guaranteed to be posted on the main thread.
+extern NSString* timeDataDidBecomeValid;
+/// @brief Is sent to indicate that the time data of the current game variation
+/// has become invalid.  An NSNumber object is associated with the notification
+/// that contains the #GoTimeDataInvalidReason value. Receivers of the
+/// notification must process the NSNumber immediately because the NSNumber may
+/// be deallocated after the notification has been delivered.
+///
+/// This notification is guaranteed to be posted on the main thread.
+extern NSString* timeDataDidBecomeInvalid;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1659,8 +1779,7 @@ extern NSString* territoryStatisticsGenerationDidEnd;
 /// @brief Is sent to indicate that the UI area has changed. An NSNumber object
 /// is associated with the notification that contains the new #UIArea value.
 /// Receivers of the notification must process the NSNumber immediately because
-/// the NSNumber may be deallocated, or its content changed, after the
-/// notification has been delivered.
+/// the NSNumber may be deallocated after the notification has been delivered.
 ///
 /// This notification is sent during application startup to indicate the initial
 /// #UIArea value.
@@ -2578,6 +2697,7 @@ extern NSString* goNodeMarkupConnectionsKey;
 extern NSString* goNodeMarkupLabelsKey;
 extern NSString* goNodeMarkupDimmingsKey;
 // GoNodeTimeData keys
+extern NSString* goNodeTimeDataIsTimeDataForBlackPlayerKey;
 extern NSString* goNodeTimeDataIsRemainingTimeAbsoluteTimeKey;
 extern NSString* goNodeTimeDataRemainingTimeInSecondsKey;
 extern NSString* goNodeTimeDataRemainingNumberOfMovesKey;

@@ -35,6 +35,12 @@
 /// @brief True if this TimeView displays the time for the black player, false
 /// if it displays the time for the white player.
 @property(nonatomic, assign, readonly) bool isTimeForBlackPlayer;
+/// @brief True if time data is valid and the player's time data can be
+/// displayed. False if time data is not valid and the player's time data cannot
+/// be displayed.
+///
+/// The default value after initialization is false.
+@property(nonatomic, assign) bool isTimeDataValid;
 /// @brief True if @e remainingTimeInSeconds refers to absolute time, false if
 /// not.
 ///

@@ -31,6 +31,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoTimeDataValidator.h"
 #import "../../go/GoTimeSettings.h"
 #import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
@@ -234,6 +235,9 @@
     newGame.timeSettings = timeSettings;
     newGame.playerBlack.timeData = blackPlayerTimeData;
     newGame.playerWhite.timeData = whitePlayerTimeData;
+
+    if (newGame.timeSettings.isGameUsingTimedPlay)
+      [GoTimeDataValidator validateTimeDataInNodeTree:newGame];
   }
   DDLogVerbose((@"%@: Game object configuration: board = %@, "
                 "komi = %.1f, handicapPoints = %@, "

@@ -39,8 +39,9 @@
 /// @brief The period-based time system that is in effect. The GoTimeSystem object
 /// has #GoTimeSystemNone if no period-based time system is in effect.
 @property(nonatomic, retain, readonly) GoTimeSystem* periodBasedTimeSystem;
-/// @brief True if either @e absoluteTimeSystem or @e periodBasedTimeSystem or
-/// both have a time system for which the app supports timed play.
+/// @brief True if @e periodBasedTimeSystem is not a custom time system,
+/// and either @e absoluteTimeSystem or @e periodBasedTimeSystem or both have a
+/// time system for which the app supports timed play.
 @property(nonatomic, assign, readonly) bool isGameUsingTimedPlay;
 
 @end

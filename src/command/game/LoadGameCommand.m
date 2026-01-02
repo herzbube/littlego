@@ -35,6 +35,8 @@
 #import "../../go/GoNodeSetup.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoTimeDataValidator.h"
+#import "../../go/GoTimeSettings.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpUtilities.h"
@@ -230,7 +232,7 @@ static const int maxStepsForCreateNodes = 9;
     // flag remains set (which will cause a warning when the next new game is
     // started), and the document name remains uninitialized (which will make
     // it appear to anybody who evaluates the document name as if the game has
-    // has never been saved before).
+    // never been saved before).
 
     // No need to create a backup, we already have the one we are restoring from
   }
@@ -547,6 +549,10 @@ static const int maxStepsForCreateNodes = 9;
       return false;
 
     success = [self validateSetupAndMoveNodes:numberOfNodesInGameTree errorMessage:errorMessage];
+    if (! success)
+      return false;
+
+    success = [self validateTimeDataIfGameUsesTimedPlay:errorMessage];
     if (! success)
       return false;
 
@@ -1507,6 +1513,31 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Validates the time data in the entire node tree, but only if the game
+/// uses timed play.
+///
+/// Although the validation traverses the entire node tree, this is a much
+/// faster operation than validateSetupAndMoveNodes:() and therefore does not
+/// need to provide progress feedback.
+///
+/// This is a helper function for setupNodes:().
+// -----------------------------------------------------------------------------
+- (bool) validateTimeDataIfGameUsesTimedPlay:(NSString**)errorMessage
+{
+  GoGame* game = [GoGame sharedGame];
+  if (! game.timeSettings.isGameUsingTimedPlay)
+    return true;
+
+  // TODO xxx consider evaluating the return value => if user wanted to start a
+  // timed play game, but we detect invalid time data, then the user may not
+  // get what they wished. however, the return value is for the entire tree, not
+  // only for the current game variation...
+  [GoTimeDataValidator validateTimeDataInNodeTree:game];
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Adjusts the state of various model objects so that everything is set
 /// up for the app to display the last board position of the main game
 /// variation.
@@ -1581,6 +1612,11 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   // Needs to be posted because the node tree does not consist of only the root
   // node
   [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
+
+  // Needs to be posted so that observers who examine a game variation's content
+  // as a whole are triggered
+  [center postNotificationName:currentGameVariationWillChange object:nil];
+  [center postNotificationName:currentGameVariationDidChange object:nil];
 
   if (oldNumberOfBoardPositions != newNumberOfBoardPositions)
     [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];

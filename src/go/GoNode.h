@@ -42,6 +42,57 @@
 /// @e children) and methods (e.g. isDescendantOfNode:(), isAncestorOfNode:())
 /// are in some way or other based on the three primitive properties and require
 /// a certain amount of processing time for calculation.
+///
+///
+/// @par Time data validity
+///
+/// The properties @e isTimeDataValid and @e timeDataInvalidReason store
+/// information about the validity of time data in the node and all of its
+/// @b predecessor nodes on the path back to the root node. Time validity is
+/// stored on the node level, and not in GoNodeTimeData as one might expect,
+/// because one of the reasons why time data can be invalid is that
+/// GoNodeTimeData is missing.
+///
+/// The reason why time data is not valid applies to the first node on the path
+/// @b from the root node whose @e isTimeDataValid property has value false.
+/// Note that there are a few invalid reasons that refer to a problem with the
+/// game's time system(s) - in these cases the invalidity is not caused by the
+/// time data in the node. In these cases, already the root node will indicate
+/// that time data is invalid. Because the root node never has a GoNodeTimeData
+/// object, this is another reason why time validity is not stored in
+/// GoNodeTimeData.
+///
+/// Time data validity information is important when new moves are played.
+/// If time data is valid up to the currently selected node at the time when a
+/// move is played, then it makes sense to continue recording time data for the
+/// new move. To optimize decisions in various places whether or not to record
+/// time data, the validity information is stored per node. The information is
+/// not archived, because it can be easily recalculated upon unarchiving.
+///
+/// Time data is considered valid if it allows the app to support timed play.
+/// Specifically this means all of the following conditions must be met:
+/// - There is at least one time system that is supported by the app.
+/// - And there is no time system that the app does not support.
+/// - And the time data in a node and all of its predecessor nodes is
+///   consistent.
+/// - And the time data in a node and all of its predecessor nodes does not
+///   contradict the rules of the time system(s).
+///
+/// Time data is considered invalid if it prevents the app from supporting
+/// timed play. Specifically this means one or more of the following
+/// conditions are met:
+/// - There is no time system.
+/// - Or there is a custom time system that the app does not understand.
+/// - Or the time data in a node, or in one of its predecessor nodes, is
+///   inconsistent.
+/// - Or the time data in a node, or in one of its predecessor nodes,
+///   contradicts the rules of the time system(s).
+///
+/// After initialization, the time data in a GoNode object is considered
+/// invalid. The properties @e isTimeDataValid and @e invalidReason hold the
+/// values @e true and -1, respectively, which corresponds to the values of the
+/// constant #GoTimeDataValidationResultInvalid. Once the time data in a node
+/// has been validated, the two properties receive their actual values.
 // -----------------------------------------------------------------------------
 @interface GoNode : NSObject <NSSecureCoding>
 {
@@ -177,6 +228,28 @@
 /// @brief Zobrist hash that identifies the board position created by this node.
 /// Zobrist hashes are used to detect ko, and especially superko.
 @property(nonatomic, assign) long long zobristHash;
+
+/// @name Time data validity
+//@{
+/// @brief True if the time data in this node and all of its predecessor nodes
+/// is valid. False if time data is not valid. In the latter case, the value of
+/// property @e timeDataInvalidReason indicates the reason why the time data is
+/// not valid.
+///
+/// The default value after initialization is false.
+///
+/// See the class documentation for details about time (in)validity.
+@property(nonatomic, assign) bool isTimeDataValid;
+
+/// @brief If property @e isTimeDataValid is false, indicates the reason why
+/// the time data is not valid. If property @e isTimeDataValid is true, this
+/// property has value -1.
+///
+/// The default value after initialization is -1.
+///
+/// See the class documentation for details about time (in)validity.
+@property(nonatomic, assign) enum GoTimeDataInvalidReason timeDataInvalidReason;
+//@}
 
 /// @name Changing the board based upon the node's data
 //@{

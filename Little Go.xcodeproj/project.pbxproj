@@ -897,6 +897,8 @@
 		D70D7A232EEF345600648CBB /* TimeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D70D7A212EEF345600648CBB /* TimeView.m */; };
 		D72FC0452EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
 		D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
+		D73B0D392F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
+		D73B0D3A2F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
 		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74980BB2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D79B28082ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
@@ -1934,6 +1936,8 @@
 		D70D7A212EEF345600648CBB /* TimeView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeView.m; sourceTree = "<group>"; };
 		D72FC0432EB66E0C00092C0F /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
 		D72FC0442EB66E0C00092C0F /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		D73B0D372F000D57000C4A8F /* GoTimeDataValidator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoTimeDataValidator.h; sourceTree = "<group>"; };
+		D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoTimeDataValidator.m; sourceTree = "<group>"; };
 		D74980B82EBF87BD00BD595D /* Registry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Registry.h; sourceTree = "<group>"; };
 		D74980B92EBF87BD00BD595D /* Registry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Registry.m; sourceTree = "<group>"; };
 		D74980BC2EBF902500BD595D /* ModelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelProvider.h; sourceTree = "<group>"; };
@@ -2245,6 +2249,8 @@
 				CD10882413255AA600E83543 /* GoPoint.m */,
 				CD8EFD021466DA7200A700B1 /* GoScore.h */,
 				CD8EFD031466DA7200A700B1 /* GoScore.m */,
+				D73B0D372F000D57000C4A8F /* GoTimeDataValidator.h */,
+				D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */,
 				D701A86F2EEC32B80006A962 /* GoTimeSettings.h */,
 				D701A8702EEC32B80006A962 /* GoTimeSettings.m */,
 				D701A86B2EEC32970006A962 /* GoTimeSystem.h */,
@@ -4673,6 +4679,7 @@
 				CDAF17111967FAF100271396 /* BoardViewIntersection.m in Sources */,
 				CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */,
 				CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
+				D73B0D392F000D57000C4A8F /* GoTimeDataValidator.m in Sources */,
 				CD1A7EE0293A5E8100013D80 /* NodeTreeViewDrawingHelper.m in Sources */,
 				CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */,
 				CDD85B03290EF6840069A761 /* NSArrayAdditions.m in Sources */,
@@ -4811,6 +4818,7 @@
 				CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */,
 				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
 				CDB3ECDB2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */,
+				D73B0D3A2F000D57000C4A8F /* GoTimeDataValidator.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CD63309729B4F86900287A73 /* NodeTreeViewIntegration.m in Sources */,
 				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,

@@ -29,6 +29,7 @@
 #import "GoNodeModel.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
+#import "GoNodeTimeData.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
 
@@ -1025,6 +1026,35 @@
     node = node.parent;
   }
   return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains time data. Returns @e nil if no time data can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentTimeData:(GoNode*)node
+{
+  while (node)
+  {
+    if (node.goNodeTimeData)
+      return node;
+    node = node.parent;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains time data for the player indicated by @a color. Returns @e nil if
+/// no time data can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentTimeData:(GoNode*)node forPlayer:(enum GoColor)color
+{
+  bool isTimeDataForBlackPlayer = (color == GoColorBlack ? true : false);
+  node = [GoUtilities nodeWithMostRecentTimeData:node];
+  while (node && node.goNodeTimeData.isTimeDataForBlackPlayer != isTimeDataForBlackPlayer)
+    node = [GoUtilities nodeWithMostRecentTimeData:node.parent];
+  return node;
 }
 
 // -----------------------------------------------------------------------------

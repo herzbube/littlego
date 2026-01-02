@@ -117,6 +117,8 @@ NSString* nodeTreeViewNodeSymbolDidChange = @"NodeTreeViewNodeSymbolDidChange";
 NSString* playerClockStateHasChanged = @"PlayerClockStateHasChanged";
 NSString* playerTimeDataHasChanged = @"PlayerTimeDataHasChanged";
 NSString* playerLostOnTime = @"PlayerLostOnTime";
+NSString* timeDataDidBecomeValid = @"TimeDataDidBecomeValid";
+NSString* timeDataDidBecomeInvalid = @"TimeDataDidBecomeInvalid";
 // Play area / board view notifications
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
@@ -580,6 +582,7 @@ NSString* goNodeMarkupConnectionsKey = @"Connections";
 NSString* goNodeMarkupLabelsKey = @"Labels";
 NSString* goNodeMarkupDimmingsKey = @"Dimmings";
 // GoNodeTimeData keys
+NSString* goNodeTimeDataIsTimeDataForBlackPlayerKey = @"IsTimeDataForBlackPlayerKey";
 NSString* goNodeTimeDataIsRemainingTimeAbsoluteTimeKey = @"IsRemainingTimeAbsoluteTime";
 NSString* goNodeTimeDataRemainingTimeInSecondsKey = @"RemainingTimeInSeconds";
 NSString* goNodeTimeDataRemainingNumberOfMovesKey = @"RemainingNumberOfMoves";

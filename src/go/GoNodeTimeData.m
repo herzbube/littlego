@@ -21,22 +21,36 @@
 // TODO xxx Add unit tests
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for GoNodeTimeData.
+// -----------------------------------------------------------------------------
+@interface GoNodeTimeData()
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) bool isTimeDataForBlackPlayer;
+//@}
+@end
+
+
 @implementation GoNodeTimeData
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GoNodeTimeData object with zero values.
+/// @a isTimeDataForBlackPlayer indicates whether the object holds data for the
+/// black or the white player.
 ///
 /// @note This is the designated initializer of GoNodeTimeData.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithIsTimeDataForBlackPlayer:(bool)isTimeDataForBlackPlayer
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
+  self.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
   self.isRemainingTimeAbsoluteTime = false;
   self.remainingTimeInSeconds = 0;
   self.remainingNumberOfMoves = 0;
@@ -57,6 +71,7 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
+  self.isTimeDataForBlackPlayer = [decoder decodeBoolForKey:goNodeTimeDataIsTimeDataForBlackPlayerKey];
   self.isRemainingTimeAbsoluteTime = [decoder decodeBoolForKey:goNodeTimeDataIsRemainingTimeAbsoluteTimeKey];
   self.remainingTimeInSeconds = [decoder decodeDoubleForKey:goNodeTimeDataRemainingTimeInSecondsKey];
   self.remainingNumberOfMoves = [decoder decodeIntForKey:goNodeTimeDataRemainingNumberOfMovesKey];
@@ -79,6 +94,7 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeBool:self.isTimeDataForBlackPlayer forKey:goNodeTimeDataIsTimeDataForBlackPlayerKey];
   [encoder encodeBool:self.isRemainingTimeAbsoluteTime forKey:goNodeTimeDataIsRemainingTimeAbsoluteTimeKey];
   [encoder encodeDouble:self.remainingTimeInSeconds forKey:goNodeTimeDataRemainingTimeInSecondsKey];
   [encoder encodeInt:self.remainingNumberOfMoves forKey:goNodeTimeDataRemainingNumberOfMovesKey];
@@ -98,7 +114,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoNodeTimeData(%p): isRemainingTimeAbsoluteTime = %d, remainingTimeInSeconds = %f, remainingNumberOfMoves = %d, remainingNumberOfPeriods = %d", self, _isRemainingTimeAbsoluteTime, _remainingTimeInSeconds, _remainingNumberOfMoves, _remainingNumberOfPeriods];
+  return [NSString stringWithFormat:@"GoNodeTimeData(%p): isTimeDataForBlackPlayer = %d, isRemainingTimeAbsoluteTime = %d, remainingTimeInSeconds = %f, remainingNumberOfMoves = %d, remainingNumberOfPeriods = %d", self, _isTimeDataForBlackPlayer, _isRemainingTimeAbsoluteTime, _remainingTimeInSeconds, _remainingNumberOfMoves, _remainingNumberOfPeriods];
 }
 
 @end

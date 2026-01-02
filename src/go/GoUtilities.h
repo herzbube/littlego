@@ -66,6 +66,8 @@
 + (int) numberOfMovesAfterNode:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentSetup:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentBoardStateChange:(GoNode*)node;
++ (GoNode*) nodeWithMostRecentTimeData:(GoNode*)node;
++ (GoNode*) nodeWithMostRecentTimeData:(GoNode*)node forPlayer:(enum GoColor)color;
 + (bool) showInfoIndicatorForNode:(GoNode*)node;
 + (bool) showHotspotIndicatorForNode:(GoNode*)node;
 + (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node inGame:(GoGame*)game;

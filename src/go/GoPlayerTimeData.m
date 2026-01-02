@@ -243,17 +243,14 @@
 ///
 /// The updating logic searches backwards through the path between @a node
 /// (including @a node) and the game's root node and looks for a node that
-/// contains a move made by the player whose time data is stored by this
+/// contains time data for the player whose time data is stored by this
 /// GoPlayerTimeData.
 /// - If such a node can be found, the time data in this GoPlayerTimeData is
-///   updated to equal the data in the GoNodeTimeData object that is expected
-///   to exist in the same node that contains the move.
+///   updated to equal the data in the GoNodeTimeData object.
 /// - If no such node can be found, the time data in this GoPlayerTimeData is
 ///   updated to equal the initial time settings after the game was started.
 ///
 /// @exception NSInvalidArgumentException Is raised if @a node is @e nil.
-/// @exception NSInternalInconsistencyException Is raised if a node with a move
-///            is found, but that node does not contain a GoNodeTimeData object.
 // -----------------------------------------------------------------------------
 - (void) updateAfterNodeChanged:(GoNode*)node
 {
@@ -266,19 +263,13 @@
   enum GoColor color = (self.isTimeDataForBlackPlayer
                         ? GoColorBlack
                         : GoColorWhite);
-  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:node
-                                                              playedBy:color];
+  GoNode* nodeWithMostRecentTimeData = [GoUtilities nodeWithMostRecentTimeData:node
+                                                                 forPlayer:color];
 
   bool dataHasChanged;
-  if (nodeWithMostRecentMove)
+  if (nodeWithMostRecentTimeData)
   {
-    GoNodeTimeData* nodeTimeData = nodeWithMostRecentMove.goNodeTimeData;
-    if (! nodeTimeData)
-    {
-      NSString* errorMessage = @"updateAfterNodeChanged: failed: node contains move, but does not contain";
-      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
-    }
-
+    GoNodeTimeData* nodeTimeData = nodeWithMostRecentTimeData.goNodeTimeData;
     dataHasChanged = [self updateWithNodeTimeData:nodeTimeData];
   }
   else

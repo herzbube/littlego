@@ -389,12 +389,9 @@
   GoNode* node = [GoNode node];
   node.goMove = move;
 
-  // Add time data to node before adding it to the tree, so that the node data
-  // is complete when observers are notified
-  if (playerTimeData)
-    [self updatePlayerTimeData:playerTimeData andAddTimeDataToNode:node];
-
-  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];
+  [self addNodeToTreeAndUpdateBoardPosition:node
+                withMoveNodeCreationOptions:moveNodeCreationOptions
+                         withPlayerTimeData:playerTimeData];
 }
 
 // -----------------------------------------------------------------------------
@@ -549,12 +546,9 @@
   GoNode* node = [GoNode node];
   node.goMove = move;
 
-  // Add time data to node before adding it to the tree, so that the node data
-  // is complete when observers are notified
-  if (playerTimeData)
-    [self updatePlayerTimeData:playerTimeData andAddTimeDataToNode:node];
-
-  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];
+  [self addNodeToTreeAndUpdateBoardPosition:node
+                withMoveNodeCreationOptions:moveNodeCreationOptions
+                         withPlayerTimeData:playerTimeData];
 
   // This may change the game state. Such a change must occur after the move was
   // generated; this order is important for observer notifications.
@@ -562,22 +556,12 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
-// -----------------------------------------------------------------------------
-- (void) updatePlayerTimeData:(GoPlayerTimeData*)playerTimeData andAddTimeDataToNode:(GoNode*)newNode
-{
-  GoNodeTimeData* goNodeTimeData = [[[GoNodeTimeData alloc] init] autorelease];
-  newNode.goNodeTimeData = goNodeTimeData;
-
-  [playerTimeData updateAfterMoveWasPlayed:goNodeTimeData];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Adds @a newNode to the game tree (possibly also discarding other
-/// nodes), possibly changes the current game variation, updates properties in
-/// GoBoardPosition to match the new state in the current game variation, and
-/// posts the notifications to the default notification center that are required
-/// to inform the rest of the system about the changes that took place.
+/// nodes), performs time handling using @a playerTimeData, possibly changes the
+/// current game variation, updates properties in GoBoardPosition to match the
+/// new state in the current game variation, and posts the notifications to the
+/// default notification center that are required to inform the rest of the
+/// system about the changes that took place.
 ///
 /// This is a private helper for play:withMoveNodeCreationOptions:() and
 /// passWithMoveNodeCreationOptions:(). See the documentation of these methods
@@ -587,6 +571,7 @@
 // -----------------------------------------------------------------------------
 - (void) addNodeToTreeAndUpdateBoardPosition:(GoNode*)newNode
                  withMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions
+                          withPlayerTimeData:(GoPlayerTimeData*)playerTimeData
 {
   bool shouldChangeCurrentGameVariation;
 
@@ -605,7 +590,7 @@
     if (nextBoardPosition >= self.nodeModel.numberOfNodes)
     {
       assert(0);
-      NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: nextBoardPosition = %d, numberOfNodes = %d", nextBoardPosition, self.nodeModel.numberOfNodes];
+      NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: nextBoardPosition = %d, numberOfNodes = %d", nextBoardPosition, self.nodeModel.numberOfNodes];
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
       return;
     }
@@ -646,7 +631,7 @@
           default:
           {
             assert(0);
-            NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unexpected insert position for GoNewMoveInsertPolicyRetainFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
+            NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: unexpected insert position for GoNewMoveInsertPolicyRetainFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
             [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
             return;
           }
@@ -669,7 +654,7 @@
         else
         {
           assert(0);
-          NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unexpected insert position for GoNewMoveInsertPolicyReplaceFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
+          NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: unexpected insert position for GoNewMoveInsertPolicyReplaceFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
           [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
           return;
         }
@@ -678,12 +663,17 @@
       default:
       {
         assert(0);
-        NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unknown insert policy, newMoveInsertPolicy = %d", newMoveInsertPolicy];
+        NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: unknown insert policy, newMoveInsertPolicy = %d", newMoveInsertPolicy];
         [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
         return;
       }
     }
   }
+
+  // Add time data to node before posting notifications, so that the node data
+  // is complete when observers are notified
+  [self updatePlayerTimeDataIfTimeDataIsValid:playerTimeData
+                         andAddTimeDataToNode:newNode];
 
   // At this point the new node exists in the node tree, but it is still missing
   // the Zobrist hash.
@@ -716,7 +706,7 @@
   if (newCurrentBoardPosition != newNumberOfBoardPositions - 1)
   {
     assert(0);
-    NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: board position mismatch, newCurrentBoardPosition  = %d, newNumberOfBoardPositions = %d", newCurrentBoardPosition, newNumberOfBoardPositions];
+    NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: board position mismatch, newCurrentBoardPosition  = %d, newNumberOfBoardPositions = %d", newCurrentBoardPosition, newNumberOfBoardPositions];
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     return;
   }
@@ -740,6 +730,49 @@
   {
     [center postNotificationName:currentGameVariationDidChange object:nil];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Does nothing if @a playerTimeData is @e nil (assuming that the game
+/// does not use timed play). Performs time data handling if @a playerTimeData
+/// is not @e nil. @a newNode must have already been added to the node tree.
+///
+/// Time data handling consists of the following:
+/// - Check whether time data is valid at the place in the game tree where
+///   @a newNode is located.
+/// - If time data is not valid: No further actions.
+/// - If time data is valid: Adds a GoNodeTimeData object to @a newNode that
+///   captures time data from @a playerTimeData (e.g. how much time is
+///   remainining), and updates @a playerTimeData to prepare it for the next
+///   move by the player.
+// -----------------------------------------------------------------------------
+- (void) updatePlayerTimeDataIfTimeDataIsValid:(GoPlayerTimeData*)playerTimeData
+                          andAddTimeDataToNode:(GoNode*)newNode
+{
+  if (! playerTimeData)
+    return;
+
+  GoNode* parentNode = newNode.parent;
+  if (! parentNode.isTimeDataValid)
+  {
+    // The new node inherits the invalidReason from its parent => same logic as
+    // when time data validation is performed
+    newNode.isTimeDataValid = false;
+    newNode.timeDataInvalidReason = parentNode.timeDataInvalidReason;
+
+    // If time data is not valid, then we expect that the clock in
+    // playerTimeData was not running => we don't need to update the time data
+    // in playerTimeData and we don't need to create a GoNodeTimeData object.
+    return;
+  }
+
+  GoNodeTimeData* nodeTimeData = [[[GoNodeTimeData alloc] initWithIsTimeDataForBlackPlayer:playerTimeData.isTimeDataForBlackPlayer] autorelease];
+  newNode.goNodeTimeData = nodeTimeData;
+
+  [playerTimeData updateAfterMoveWasPlayed:nodeTimeData];
+
+  newNode.isTimeDataValid = true;
+  newNode.timeDataInvalidReason = -1;
 }
 
 // -----------------------------------------------------------------------------
@@ -2007,8 +2040,12 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 - (void) addEmptyNodeToCurrentGameVariation
 {
   GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+  GoPlayerTimeData* playerTimeData = self.nextMovePlayer.timeData;
+
   GoNode* node = [GoNode node];
-  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:options];
+  [self addNodeToTreeAndUpdateBoardPosition:node
+                withMoveNodeCreationOptions:options
+                         withPlayerTimeData:playerTimeData];
 }
 
 // -----------------------------------------------------------------------------

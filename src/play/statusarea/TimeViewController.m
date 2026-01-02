@@ -45,6 +45,8 @@
 @property(nonatomic, assign) bool whitePlayerClockStateNeedsUpdate;
 @property(nonatomic, assign) bool blackPlayerTimeDataNeedsUpdate;
 @property(nonatomic, assign) bool whitePlayerTimeDataNeedsUpdate;
+@property(nonatomic, assign) bool isTimeDataValid;
+@property(nonatomic, assign) bool timeDataValidityNeedsUpdate;
 @end
 
 
@@ -74,6 +76,8 @@
   self.whitePlayerClockStateNeedsUpdate = false;
   self.blackPlayerTimeDataNeedsUpdate = false;
   self.whitePlayerTimeDataNeedsUpdate = false;
+  self.isTimeDataValid = false;
+  self.timeDataValidityNeedsUpdate = false;
 
   [self setupNotificationResponders];
 
@@ -106,6 +110,8 @@
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(playerClockStateHasChanged:) name:playerClockStateHasChanged object:nil];
   [center addObserver:self selector:@selector(playerTimeDataHasChanged:) name:playerTimeDataHasChanged object:nil];
+  [center addObserver:self selector:@selector(timeDataDidBecomeValid:) name:timeDataDidBecomeValid object:nil];
+  [center addObserver:self selector:@selector(timeDataDidBecomeInvalid:) name:timeDataDidBecomeInvalid object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 }
 
@@ -284,6 +290,26 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #timeDataDidBecomeValid notification.
+// -----------------------------------------------------------------------------
+- (void) timeDataDidBecomeValid:(NSNotification*)notification
+{
+  self.isTimeDataValid = true;
+  self.timeDataValidityNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #timeDataDidBecomeInvalid notification.
+// -----------------------------------------------------------------------------
+- (void) timeDataDidBecomeInvalid:(NSNotification*)notification
+{
+  self.isTimeDataValid = false;
+  self.timeDataValidityNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -312,6 +338,7 @@
   [self updateWhitePlayerClockState];
   [self updateBlackPlayerTimeData];
   [self updateWhitePlayerTimeData];
+  [self updateTimeDataValidity];
 }
 
 // -----------------------------------------------------------------------------
@@ -392,6 +419,20 @@
   [self updateTimeDataInTimeView:self.timeViewWhitePlayer withPlayerTimeData:playerTimeData];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Updates TimeView objects to display each player's current time data
+/// (if time data is valid), or a special string indicating that time data is
+/// invalid.
+// -----------------------------------------------------------------------------
+- (void) updateTimeDataValidity
+{
+  if (! self.timeDataValidityNeedsUpdate)
+    return;
+  self.timeDataValidityNeedsUpdate = false;
+
+  self.timeViewBlackPlayer.isTimeDataValid = self.isTimeDataValid;
+  self.timeViewWhitePlayer.isTimeDataValid = self.isTimeDataValid;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Updates @a timeView to display the clock state taken from

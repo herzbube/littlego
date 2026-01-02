@@ -21,6 +21,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
+#import "../../go/GoTimeDataValidator.h"
 #import "../../go/GoTimeSettings.h"
 #import "../../player/Player.h"
 #import "../../main/Registry.h"
@@ -42,13 +43,9 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 /// @brief The timer object that, when active, periodically triggers a decrease
 /// of the black player's remaining time.
 @property(nonatomic, retain) PlayerClockTimer* blackPlayerClockTimer;
-/// @brief The object that holds the black player's time data.
-@property(nonatomic, assign) GoPlayerTimeData* blackPlayerTimeData;
 /// @brief The timer object that, when active, periodically triggers a decrease
 /// of the white player's remaining time.
 @property(nonatomic, retain) PlayerClockTimer* whitePlayerClockTimer;
-/// @brief The object that holds the white player's time data.
-@property(nonatomic, assign) GoPlayerTimeData* whitePlayerTimeData;
 /// @brief The GoGame object representing the current game.
 @property(nonatomic, assign) GoGame* game;
 /// @brief Is true if player's clocks are currently managed, false if not.
@@ -60,10 +57,11 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 /// - If the current game uses timed play (implies that there @b IS a current
 ///   game), i.e. if property @e isGameUsingTimedPlay has value true.
 /// - And if the current game variation has valid time data, i.e. if property
-///   @e isTimeDataValid has value true.
+///   @e timeDataValidationResult has value true in its member
+///   @e isTimeDataValid.
 @property(nonatomic, assign) bool arePlayerClocksManaged;
 @property(nonatomic, assign) bool isGameUsingTimedPlay;
-@property(nonatomic, assign) bool isTimeDataValid;
+@property(nonatomic, assign) GoTimeDataValidationResult timeDataValidationResult;
 /// @brief Is true to indicate that the Go board is interactive and the user
 /// (representing a human player) can currently play a move. Is false to
 /// indicate that the Go board is not interactive and the user can currently
@@ -119,14 +117,12 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 
   self.registry = registry;
   self.blackPlayerClockTimer = [[[PlayerClockTimer alloc] initWithDelegate:self] autorelease];
-  self.blackPlayerTimeData = nil;
   self.whitePlayerClockTimer = [[[PlayerClockTimer alloc] initWithDelegate:self] autorelease];
-  self.whitePlayerTimeData = nil;
   self.game = nil;
 
   self.arePlayerClocksManaged = false;
   self.isGameUsingTimedPlay = false;
-  self.isTimeDataValid = true; // TODO xxx set default to false once time data validity is checked
+  self.timeDataValidationResult = GoTimeDataValidationResultInvalid;
   self.isBoardInteractive = false;
   self.isSceneActive = false;
   self.uiArea = UIAreaUnknown;
@@ -150,11 +146,9 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   self.registry.playerClockService = nil;
 
   [self.blackPlayerClockTimer invalidateTimerIfOneIsScheduled];
-  self.blackPlayerTimeData = nil;
   self.blackPlayerClockTimer = nil;
 
   [self.whitePlayerClockTimer invalidateTimerIfOneIsScheduled];
-  self.whitePlayerTimeData = nil;
   self.whitePlayerClockTimer = nil;
 
   self.game = nil;
@@ -285,11 +279,9 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [self stopClockIfNotStoppedAndInvalidateTimer:[self nextMovePlayerTimeData]];
 
   self.game = nil;
-  self.blackPlayerTimeData = nil;
-  self.whitePlayerTimeData = nil;
 
   self.isGameUsingTimedPlay = false;
-  self.isTimeDataValid = false;
+  self.timeDataValidationResult = GoTimeDataValidationResultInvalid;
 
   [self updateArePlayerClocksManaged];
 }
@@ -313,11 +305,22 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   GoGame* game = notification.object;
 
   self.game = game;
-  self.blackPlayerTimeData = game.playerBlack.timeData;
-  self.whitePlayerTimeData = game.playerWhite.timeData;
-
   self.isGameUsingTimedPlay = game.timeSettings.isGameUsingTimedPlay;
-  self.isTimeDataValid = true; // TODO xxx set default to false once time data validity is checked
+
+  // Time data existence at the moment when we receive the notification:
+  // - User creates a new game from scratch: The game contains no nodes besides
+  //   the root node.
+  // - User loads a game from the archive, or the app restores the game by
+  //   loading it from the backup .sgf: The game contains no nodes besides
+  //   the root node. Later on, when the node tree has been created based on
+  //   the .sgf file content, the notification currentBoardPositionDidChange
+  //   will be posted.
+  // - The app restores the game from an NSCoding archive: The game contains
+  //   a fully established node tree.
+  if (self.isGameUsingTimedPlay)
+    self.timeDataValidationResult = [GoTimeDataValidator validationStateOfCurrentNode:self.game];
+  else
+    self.timeDataValidationResult = GoTimeDataValidationResultInvalid;
 
   [self updateArePlayerClocksManaged];
 
@@ -608,22 +611,28 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
     return;
   }
 
-  // TODO xxx currentBoardPositionDidChange is also sent when a new move is
-  // being played => in that case the following update handling is taking place
-  // unnecessarily (but we "know" that the clock is stopped or suspended in that
-  // case because GoGame also needs to perform time keeping operations).
-  // The other two cases where currentBoardPositionDidChange is sent are when
-  // LoadGameCommand finishes (LoadGameCommand triggers the clock start) and
-  // when ChangeBoardPositionCommand does its thing (ChangeBoardPositionCommand
-  // stops/starts the clock).
-  GoBoardPosition* boardPosition = self.game.boardPosition;
-  GoNode* currentNode = boardPosition.currentNode;
+  if (! self.isGameUsingTimedPlay)
+    return;
 
-  GoPlayerTimeData* blackPlayerTimeData = self.game.playerBlack.timeData;
-  [blackPlayerTimeData updateAfterNodeChanged:currentNode];
+  // When do we receive this notification?
+  // - When the user selects a different node (= changes the board position)
+  //   within the same game variation.
+  // - When the user selects a different node in a different game variation.
+  //   In this case we receive the notification twice: First when an internal
+  //   board position change is performed to select the branching node where
+  //   the old and new game variations differ. Then, after the game variation
+  //   has been changed, when the board position of the new game variation is
+  //   changed to the target node selected by the user.
+  //
+  // We don't receive this notification if the current game variation changes
+  // but the current node does not change. In that case the time validity does
+  // not change, because that is tied to the situation at the current node.
+  self.timeDataValidationResult = [GoTimeDataValidator validationStateOfCurrentNode:self.game];
 
-  GoPlayerTimeData* whitePlayerTimeData = self.game.playerWhite.timeData;
-  [whitePlayerTimeData updateAfterNodeChanged:currentNode];
+  [self updateArePlayerClocksManaged];
+
+  if (self.arePlayerClocksManaged)
+    [self updateAllPlayerTimeDataToMatchCurrentlySelectedNode];
 }
 
 // -----------------------------------------------------------------------------
@@ -649,11 +658,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   // controller could lead to a clock being started again.
   // Also, the user interface clock rendering of a suspended clock is plain
   // counter-intuitive once a game has ended.
-  GoPlayerTimeData* blackPlayerTimeData = self.game.playerBlack.timeData;
-  [self stopClockIfNotStoppedAndInvalidateTimer:blackPlayerTimeData];
-
-  GoPlayerTimeData* whitePlayerTimeData = self.game.playerWhite.timeData;
-  [self stopClockIfNotStoppedAndInvalidateTimer:whitePlayerTimeData];
+  [self stopAllClocksIfNotStoppedAndInvalidateTimers];
 }
 
 #pragma mark - PlayerClockService implementation
@@ -1025,6 +1030,23 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [[ApplicationStateManager sharedManager] applicationStateDidChange];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Stops both players' clocks and invalidates any timers that may be
+/// scheduled.
+///
+/// This is an internal helper method. It does not perform any kind of
+/// validation (e.g. clock state) - this is the responsibility of the caller.
+/// If the validation is performed poorly, this method may raise an exception.
+// -----------------------------------------------------------------------------
+- (void) stopAllClocksIfNotStoppedAndInvalidateTimers
+{
+  GoPlayerTimeData* blackPlayerTimeData = self.game.playerBlack.timeData;
+  [self stopClockIfNotStoppedAndInvalidateTimer:blackPlayerTimeData];
+
+  GoPlayerTimeData* whitePlayerTimeData = self.game.playerWhite.timeData;
+  [self stopClockIfNotStoppedAndInvalidateTimer:whitePlayerTimeData];
+}
+
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
@@ -1086,8 +1108,8 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 - (GoPlayerTimeData*) playerTimeDataForPlayerClockTimer:(PlayerClockTimer*)playerClockTimer
 {
   return (self.blackPlayerClockTimer == playerClockTimer
-          ? self.blackPlayerTimeData
-          : self.whitePlayerTimeData);
+          ? self.game.playerBlack.timeData
+          : self.game.playerWhite.timeData);
 }
 
 // -----------------------------------------------------------------------------
@@ -1142,18 +1164,53 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Updates the PlayerTimeData objects for both players to match their
+/// respective situation at the currently selected node in the current game
+/// variation.
+// -----------------------------------------------------------------------------
+- (void) updateAllPlayerTimeDataToMatchCurrentlySelectedNode
+{
+  GoBoardPosition* boardPosition = self.game.boardPosition;
+  GoNode* currentNode = boardPosition.currentNode;
+
+  GoPlayerTimeData* blackPlayerTimeData = self.game.playerBlack.timeData;
+  [blackPlayerTimeData updateAfterNodeChanged:currentNode];
+
+  GoPlayerTimeData* whitePlayerTimeData = self.game.playerWhite.timeData;
+  [whitePlayerTimeData updateAfterNodeChanged:currentNode];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the internal property @e arePlayerClocksManaged based on
 /// other states. See the documentation of @e arePlayerClocksManaged.
 // -----------------------------------------------------------------------------
 - (void) updateArePlayerClocksManaged
 {
-  bool newArePlayerClocksManaged = (self.isGameUsingTimedPlay && self.isTimeDataValid);
+  // self.isGameUsingTimedPlay only changes when a new game is created. If it
+  // has value false then there are no player clocks at all.
+  //
+  // self.timeDataValidationResult changes when a new game is created, and when
+  // the current node selection changes.
+  bool newArePlayerClocksManaged = (self.isGameUsingTimedPlay &&
+                                    self.timeDataValidationResult.isTimeDataValid);
   if (self.arePlayerClocksManaged == newArePlayerClocksManaged)
     return;
 
   self.arePlayerClocksManaged = newArePlayerClocksManaged;
 
-  // TODO xxx implement a reaction
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  if (self.timeDataValidationResult.isTimeDataValid)
+  {
+    [center postNotificationName:timeDataDidBecomeValid object:nil];
+  }
+  else
+  {
+    if (self.isGameUsingTimedPlay)
+      [self stopAllClocksIfNotStoppedAndInvalidateTimers];
+
+    NSNumber* invalidReasonAsNumber = @(self.timeDataValidationResult.timeDataInvalidReason);
+    [center postNotificationName:timeDataDidBecomeInvalid object:invalidReasonAsNumber];
+  }
 }
 
 // -----------------------------------------------------------------------------

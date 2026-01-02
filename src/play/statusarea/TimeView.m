@@ -68,6 +68,7 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
   self.remainingTimeInSecondsRoundedUp = 0;
 
   self.isTimeForBlackPlayer = isTimeForBlackPlayer;
+  self.isTimeDataValid = false;
   self.isRemainingTimeAbsoluteTime = false;
   self.remainingTimeInSeconds = 0.0;
   self.remainingNumberOfMovesOrPeriods = 0;
@@ -181,17 +182,24 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
   else
     colorString = (isLightUserInterfaceStyle ? @"○" : @"●");
 
-  int remainingMinutes = self.remainingTimeInSecondsRoundedUp / 60;
-  int remainingSeconds = self.remainingTimeInSecondsRoundedUp - (remainingMinutes * 60);
-  NSString* remainingTimeString = [NSString stringWithFormat:@"%@ %d:%02d", colorString, remainingMinutes, remainingSeconds];
+  if (self.isTimeDataValid)
+  {
+    int remainingMinutes = self.remainingTimeInSecondsRoundedUp / 60;
+    int remainingSeconds = self.remainingTimeInSecondsRoundedUp - (remainingMinutes * 60);
+    NSString* remainingTimeString = [NSString stringWithFormat:@"%@ %d:%02d", colorString, remainingMinutes, remainingSeconds];
 
-  NSString* remainingNumberOfMovesOrPeriodsString;
-  if (self.isRemainingTimeAbsoluteTime)
-    remainingNumberOfMovesOrPeriodsString = @"Main time";
+    NSString* remainingNumberOfMovesOrPeriodsString;
+    if (self.isRemainingTimeAbsoluteTime)
+      remainingNumberOfMovesOrPeriodsString = @"Main time";
+    else
+      remainingNumberOfMovesOrPeriodsString = [NSString stringWithFormat:@"(%d)", self.remainingNumberOfMovesOrPeriods];
+
+    self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@\n%@", remainingTimeString, remainingNumberOfMovesOrPeriodsString];
+  }
   else
-    remainingNumberOfMovesOrPeriodsString = [NSString stringWithFormat:@"(%d)", self.remainingNumberOfMovesOrPeriods];
-
-  self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@\n%@", remainingTimeString, remainingNumberOfMovesOrPeriodsString];
+  {
+    self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@ Invalid time data", colorString];
+  }
 
   UIColor* textColor;
   UIColor* borderColor;
@@ -232,6 +240,19 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 }
 
 #pragma mark - Property setters
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setIsTimeDataValid:(bool)newValue
+{
+  if (_isTimeDataValid == newValue)
+    return;
+  _isTimeDataValid = newValue;
+
+  self.viewContentNeedsUpdate = true;
+  [self setNeedsLayout];
+}
 
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
@@ -308,6 +329,7 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 {
   TimeView* offscreenView = [[[TimeView alloc] initWithFrame:CGRectZero isTimeForBlackPlayer:false] autorelease];
 
+  offscreenView.isTimeDataValid = true;
   // "W" is wider than "B"
   offscreenView.isTimeForBlackPlayer = false;
   // Widest time we support:
