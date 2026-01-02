@@ -46,6 +46,18 @@
 // TODO xxx update unit tests for new property timeSettings
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for GoGame.
+// -----------------------------------------------------------------------------
+@interface GoGame()
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) enum GoGameState state;
+@property(nonatomic, assign, readwrite) enum GoGameHasEndedReason reasonForGameHasEnded;
+//@}
+@end
+
+
 @implementation GoGame
 
 // -----------------------------------------------------------------------------
@@ -797,13 +809,10 @@
     @throw exception;
   }
 
-  self.document.dirty = true;
-
   if (self.nextMoveColor == GoColorBlack)
-    self.reasonForGameHasEnded = GoGameHasEndedReasonWhiteWinsByResignation;
+    [self endGameWithReason:GoGameHasEndedReasonWhiteWinsByResignation];
   else
-    self.reasonForGameHasEnded = GoGameHasEndedReasonBlackWinsByResignation;
-  self.state = GoGameStateGameHasEnded;
+    [self endGameWithReason:GoGameHasEndedReasonBlackWinsByResignation];
 }
 
 // -----------------------------------------------------------------------------
@@ -1765,8 +1774,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// Invoking this method sets the document dirty flag if the game state changes.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasStarted or
-/// #GoGameStateGameIsPaused.
+/// while this GoGame object is already in state #GoGameStateGameHasEnded.
 ///
 /// @note Invoking this method should not be necessary under normal
 /// circumstances. Specifically, pass() already invokes this method, so invoking
@@ -1774,14 +1782,10 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 // -----------------------------------------------------------------------------
 - (void) endGameDueToPassMovesIfGameRulesRequireIt
 {
-  if (GoGameStateGameHasStarted != self.state && GoGameStateGameIsPaused != self.state)
+  if (GoGameStateGameHasEnded == self.state)
   {
-    NSString* errorMessage = @"Pass is possible only while GoGame object is either in state GoGameStateGameHasStarted or GoGameStateGameIsPaused";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
+    NSString* errorMessage = @"endGameDueToPassMovesIfGameRulesRequireIt: Game is already in state GoGameStateGameHasEnded";
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
   int numberOfConsecutivePassMoves = 0;
@@ -1792,32 +1796,47 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     potentialPassMove = potentialPassMove.previous;
   }
 
-  bool didEndGame = true;
-
   // GoFourPassesRuleFourPassesEndTheGame has precedence over
   // GoLifeAndDeathSettlingRuleTwoPasses
   if (4 == numberOfConsecutivePassMoves && GoFourPassesRuleFourPassesEndTheGame == self.rules.fourPassesRule)
-  {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonFourPasses;
-    self.state = GoGameStateGameHasEnded;
-  }
+    [self endGameWithReason:GoGameHasEndedReasonFourPasses];
   else if (3 == numberOfConsecutivePassMoves && GoLifeAndDeathSettlingRuleThreePasses == self.rules.lifeAndDeathSettlingRule)
-  {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonThreePasses;
-    self.state = GoGameStateGameHasEnded;
-  }
+    [self endGameWithReason:GoGameHasEndedReasonThreePasses];
   else if (numberOfConsecutivePassMoves >= 2 && 0 == (numberOfConsecutivePassMoves % 2) && GoLifeAndDeathSettlingRuleTwoPasses == self.rules.lifeAndDeathSettlingRule)
+    [self endGameWithReason:GoGameHasEndedReasonTwoPasses];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Ends the game (i.e. sets it to state #GoGameStateGameHasEnded) with
+/// @a reason.
+///
+/// Invoking this method sets the document dirty flag.
+///
+/// @exception NSInvalidArgumentException is raised if @a reason is
+/// #GoGameHasEndedReasonNotYetEnded.
+///
+/// @exception NSInternalInconsistencyException is raised if this method is
+/// invoked while this GoGame object is already in state
+/// #GoGameStateGameHasEnded.
+// -----------------------------------------------------------------------------
+- (void) endGameWithReason:(enum GoGameHasEndedReason)reason
+{
+  if (GoGameStateGameHasEnded == self.state)
   {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
-    self.state = GoGameStateGameHasEnded;
-  }
-  else
-  {
-    didEndGame = false;
+    NSString* errorMessage = @"endGameWithReason: Game is already in state GoGameStateGameHasEnded";
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
-  if (didEndGame)
-    self.document.dirty = true;
+  if (reason == GoGameHasEndedReasonNotYetEnded)
+  {
+    NSString* errorMessage = @"endGameWithReason: cannot end game with reason GoGameHasEndedReasonNotYetEnded";
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+  }
+
+  self.document.dirty = true;
+
+  self.reasonForGameHasEnded = reason;
+  self.state = GoGameStateGameHasEnded;
 }
 
 // -----------------------------------------------------------------------------

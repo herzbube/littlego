@@ -46,7 +46,9 @@
 /// the submitter of ComputerPlayMoveCommand before the computer player's move
 /// has actually been generated. This allows the GUI to remain responsive. When
 /// the GTP response finally arrives, it triggers a callback to the code in
-/// ComputerPlayMoveCommand.
+/// ComputerPlayMoveCommand. The callback is executed in the context of the
+/// thread in which ComputerPlayMoveCommand was submitted (expected to be the
+/// main thread).
 // -----------------------------------------------------------------------------
 @interface ComputerPlayMoveCommand : CommandBase <SendBugReportControllerDelegate>
 {

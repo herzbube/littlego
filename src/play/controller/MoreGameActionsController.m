@@ -588,6 +588,12 @@
 
     if (! game.nextMovePlayerIsComputerPlayer)
     {
+      // TODO xxx This does not work for GoGameHasEndedReasonBlackWinsOnTime
+      // and GoGameHasEndedReasonWhiteWinsOnTime if the game actually uses
+      // timed play => the clock will be suspended (intermediate on the way to
+      // being started) but GoPlayerTimeData will recognize immediately that
+      // no time is remaining and post playerLostOnTime, which will cause the
+      // game to end again.
       [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
                                                                 reason:PlayerClockStartReasonHumanPlayerTurnBegins];
     }

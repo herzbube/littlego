@@ -180,7 +180,10 @@ enum AlertType
     // a player loses on time.
     bool gameContinues = [self stopPlayerClockIfGameUsesTimedPlay:responseType];
     if (! gameContinues)
+    {
+      self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
       return;
+    }
 
     if (responseType == GtpResponseTypeGtpCommandFailed)
     {

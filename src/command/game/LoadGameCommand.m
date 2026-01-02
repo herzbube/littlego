@@ -1651,15 +1651,14 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   if (sgfGameResult.IsValid)
   {
     enum GoGameHasEndedReason reasonForGameHasEnded = [SgfUtilities goGameHasEndedReasonForGameResult:sgfGameResult];
-    
+
     // Some SGFCGameResult values actually cannot be mapped to a corresponding
     // GoGameHasEndedReason value
     if (reasonForGameHasEnded != GoGameHasEndedReasonNotYetEnded)
     {
       if (game.state == GoGameStateGameHasEnded)
         [game revertStateFromEndedToInProgress];
-      game.reasonForGameHasEnded = reasonForGameHasEnded;
-      game.state = GoGameStateGameHasEnded;
+      [game endGameWithReason:reasonForGameHasEnded];
     }
   }
 

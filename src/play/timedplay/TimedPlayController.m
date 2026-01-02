@@ -23,6 +23,7 @@
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeDataValidator.h"
 #import "../../go/GoTimeSettings.h"
+#import "../../play/gameaction/GameActionManager.h"
 #import "../../player/Player.h"
 #import "../../main/Registry.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -185,6 +186,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [center addObserver:self selector:@selector(saveGameScreenDidDisappear:) name:saveGameScreenDidDisappear object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
+  [center addObserver:self selector:@selector(playerLostOnTime:) name:playerLostOnTime object:nil];
 
   // TODO xxx consider enhancing UIViewControllerAdditions with general support
   // for interaction indication
@@ -661,6 +663,47 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [self stopAllClocksIfNotStoppedAndInvalidateTimers];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #playerLostOnTime notification.
+// -----------------------------------------------------------------------------
+- (void) playerLostOnTime:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(playerLostOnTime:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  // The GTP engine may have already stopped thinking and is now waiting to
+  // deliver the GTP response on the main thread (which is blocked by this
+  // method). If that is the case, the interrupt GTP command will be queued,
+  // and when it will eventually be processed it will simply have no effect.
+  // After this method returns the GTP engine will be unblocked and deliver its
+  // response on the main thread. Whoever submitted the GTP command must then
+  // be able to cope with the game having ended.
+  if (self.game.isComputerThinking)
+    [[GameActionManager sharedGameActionManager] interrupt:self];
+
+  // Defensive programming here! It should be impossible for the game to have
+  // ended, because all the possible actions that could end the game should
+  // have already stopped the player clock BEFORE ending the game. Meaning that
+  // the playerLostOnTime notification cannot be sent AFTER ending the game by
+  // any other reason.
+  if (self.isGameEnded)
+  {
+    DDLogWarn(@"%@: Received playerLostOnTime notification, but game has already ended with reason %d", self, self.game.reasonForGameHasEnded);
+    [self.game revertStateFromEndedToInProgress];
+  }
+
+  GoPlayerTimeData* playerTimeData = notification.object;
+  enum GoGameHasEndedReason reason = (playerTimeData.isTimeDataForBlackPlayer
+                                      ? GoGameHasEndedReasonWhiteWinsOnTime
+                                      : GoGameHasEndedReasonBlackWinsOnTime);
+  [self.game endGameWithReason:reason];
+}
+
 #pragma mark - PlayerClockService implementation
 
 // -----------------------------------------------------------------------------
@@ -833,9 +876,11 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
           else
             return PlayerClockServiceOperationResultGameContinues;
         case GoClockStateStopped:
-          // There is no known scenario how the player's clock could be stopped,
-          // but if it is we don't have to do anything.
-          return PlayerClockServiceOperationResultGameContinues;
+          // Known scenario: The computer player took too long to play a move
+          if (playerTimeData.didPlayerLoseOnTime)
+            return PlayerClockServiceOperationResultGameLostOnTime;
+          else
+            return PlayerClockServiceOperationResultGameContinues;
         case GoClockStateSuspended:
           // If a player resigns, then game ends and a suspended clock must be
           // stopped, because the user must not be able to start the clock
