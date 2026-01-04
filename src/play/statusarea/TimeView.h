@@ -72,7 +72,10 @@
 /// @e isRemainingTimeAbsoluteTime is true.
 ///
 /// The default value after initialization is 0 (zero).
-@property(nonatomic, assign) unsigned int remainingNumberOfMovesOrPeriods;
+///
+/// The property type must be able to hold an SGFCNumber, to avoid mismatches
+/// with the type of property @e remainingNumberOfMoves in GoNodeTimeData.
+@property(nonatomic, assign) unsigned long remainingNumberOfMovesOrPeriods;
 /// @brief The state of the TimeView clock (e.g. stopped, running, etc.).
 ///
 /// The default value after initialization is #GoClockStateStopped.

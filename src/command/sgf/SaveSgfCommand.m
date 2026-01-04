@@ -25,8 +25,11 @@
 #import "../../go/GoNodeMarkup.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoNodeSetup.h"
+#import "../../go/GoNodeTimeData.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoTimeSettings.h"
+#import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../player/Player.h"
@@ -125,6 +128,8 @@
                                          boardSize:boardSize];
   [self addPlayerNamesToGameInfoNode:gameInfoNode
                 withValuesFromGoGame:goGame];
+  [self addTimeDataToGameInfoNode:gameInfoNode
+                withValuesFromGoGame:goGame];
 
   [self addRemainingPropertiesStartingAtGameInfoNode:gameInfoNode
                                 withValuesFromGoGame:goGame
@@ -213,6 +218,32 @@
   [gameInfoNode setProperty:pwProperty];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper for createSgfDocument:errorMessage:()
+// -----------------------------------------------------------------------------
+- (void) addTimeDataToGameInfoNode:(SGFCNode*)gameInfoNode
+                 withValuesFromGoGame:(GoGame*)goGame
+{
+  GoTimeSettings* timeSettings = goGame.timeSettings;
+
+  GoTimeSystem* absoluteTimeSystem = timeSettings.absoluteTimeSystem;
+  if (absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute)
+  {
+    SGFCRealPropertyValue* tmPropertyValue = [SGFCPropertyValueFactory propertyValueWithReal:absoluteTimeSystem.periodDurationInSeconds];
+    SGFCProperty* tmProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeTM value:tmPropertyValue];
+    [gameInfoNode setProperty:tmProperty];
+  }
+
+  GoTimeSystem* periodBasedTimeSystem = timeSettings.periodBasedTimeSystem;
+  if (periodBasedTimeSystem.supportsTimedPlay && periodBasedTimeSystem.goTimeSystemType != GoTimeSystemTypeAbsolute)
+  {
+    NSString* otPropertyValueAsString = [SgfUtilities sgfOvertimeStringForPeriodBasedTimeSystem:periodBasedTimeSystem];
+    SGFCSimpleTextPropertyValue* otPropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:otPropertyValueAsString];
+    SGFCProperty* otProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeOT value:otPropertyValue];
+    [gameInfoNode setProperty:otProperty];
+  }
+}
+
 #pragma mark - Create SGF document - All other nodes
 
 // -----------------------------------------------------------------------------
@@ -251,10 +282,11 @@
         // in-memory model and the saved data, which could cause trouble or at
         // least irritation later on (e.g. user saves a game, then loads it in
         // some other application => where the heck did the empty node go?).
-        // Note 1: Loading an SGF file in this app will result in empty nodes
-        // being discarded.
-        // Note 2: SGFC has an option to skip empty nodes (-n), but by default
+        // Note 1: SGFC has an option to skip empty nodes (-n), but by default
         // it retains them.
+        // Note 2: Loading an SGF file in this app will result in empty nodes
+        // being discarded because SGFC is run with option "-n". See
+        // LoadSgfCommand.
         [treeBuilder appendChild:sgfNode toNode:parentSgfNode];
       }
 
@@ -284,6 +316,16 @@
         [self addSgfPropertiesToNode:sgfNode
               withGoNodeMarkupValues:currentGoNode.goNodeMarkup
                            boardSize:boardSize];
+      }
+
+      if (currentGoNode.goNodeTimeData)
+      {
+        // We don't care about time data validity at this point. If time data
+        // exists, we write it. This makes sure that we preserve data that were
+        // previously loaded from an .sgf file.
+        [self addSgfPropertiesToNode:sgfNode
+            withGoNodeTimeDataValues:currentGoNode.goNodeTimeData
+                        timeSettings:goGame.timeSettings];
       }
 
       [stack addObject:@[currentGoNode, parentSgfNode]];
@@ -685,6 +727,55 @@
                                                                                        boardSize:boardSize];
       [property appendPropertyValue:propertyValue];
     }
+  }
+}
+
+#pragma mark - Create SGF document - Time data
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// addRemainingNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
+// -----------------------------------------------------------------------------
+- (void) addSgfPropertiesToNode:(SGFCNode*)node
+       withGoNodeTimeDataValues:(GoNodeTimeData*)goNodeTimeData
+                   timeSettings:(GoTimeSettings*)timeSettings
+{
+  SGFCPropertyType remainingTimePropertyType;
+  SGFCPropertyType remainingNumberOfMovesPropertyType;
+  if (goNodeTimeData.isTimeDataForBlackPlayer)
+  {
+    remainingTimePropertyType = SGFCPropertyTypeBL;
+    remainingNumberOfMovesPropertyType = SGFCPropertyTypeOB;
+  }
+  else
+  {
+    remainingTimePropertyType = SGFCPropertyTypeWL;
+    remainingNumberOfMovesPropertyType = SGFCPropertyTypeOW;
+  }
+
+  // We always write remaining time. The value can refer to any time system
+  // (absolute or period-based).
+  SGFCRealPropertyValue* remainingTimePropertyValue = [SGFCPropertyValueFactory propertyValueWithReal:goNodeTimeData.remainingTimeInSeconds];
+  SGFCProperty* remainingTimeProperty = [SGFCPropertyFactory propertyWithType:remainingTimePropertyType
+                                                                        value:remainingTimePropertyValue];
+  [node setProperty:remainingTimeProperty];
+
+  // We only write remaining number of moves/periods if the time data refers to
+  // a period-based time system, because in absolute time moves/periods are
+  // meaningless. This is in sync with when we load data from .sgf: there the
+  // presence of the OB/OW properties causes isRemainingTimeAbsoluteTime to be
+  // set to false.
+  if (! goNodeTimeData.isRemainingTimeAbsoluteTime)
+  {
+    // If we have a custom time system, then we use the remainingNumberOfMoves
+    // property - same as when we loaded the data from .sgf
+    SGFCNumber propertyValueAsNumber = (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeJapanese
+                                        ? goNodeTimeData.remainingNumberOfPeriods
+                                        : goNodeTimeData.remainingNumberOfMoves);
+    SGFCNumberPropertyValue* remainingNumberOfMovesPropertyValue = [SGFCPropertyValueFactory propertyValueWithNumber:propertyValueAsNumber];
+    SGFCProperty* remainingNumberOfMovesProperty = [SGFCPropertyFactory propertyWithType:remainingNumberOfMovesPropertyType
+                                                                                   value:remainingNumberOfMovesPropertyValue];
+    [node setProperty:remainingNumberOfMovesProperty];
   }
 }
 

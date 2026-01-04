@@ -33,10 +33,13 @@
 #import "../../go/GoNodeMarkup.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoNodeSetup.h"
+#import "../../go/GoNodeTimeData.h"
 #import "../../go/GoPlayer.h"
+#import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoTimeDataValidator.h"
 #import "../../go/GoTimeSettings.h"
+#import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpUtilities.h"
@@ -304,7 +307,13 @@ static const int maxStepsForCreateNodes = 9;
   // set up earlier, it might start pondering, taking away precious CPU cycles
   // from the already slow load game command.
   command.shouldSetupComputerPlayer = false;
-  bool success = [command submit];
+
+  // TODO xxx should the time settings data not also go into NewGameModel?
+  bool success = [self setupTimeSettingsInCommand:command errorMessage:errorMessage];
+  if (! success)
+    return false;
+
+  success = [command submit];
   if (! success)
   {
     assert(0);
@@ -316,6 +325,56 @@ static const int maxStepsForCreateNodes = 9;
   model.boardSize = oldBoardSize;
 
   return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Populates @a command with the time settings for the new game.
+// -----------------------------------------------------------------------------
+- (bool) setupTimeSettingsInCommand:(NewGameCommand*)command errorMessage:(NSString**)errorMessage
+{
+  GoTimeSystem* absoluteTimeSystem = nil;
+  GoTimeSystem* periodBasedTimeSystem = nil;
+
+  SGFCProperty* tmProperty = [self.sgfGameInfoNode propertyWithType:SGFCPropertyTypeTM];
+  if (tmProperty)
+  {
+    SGFCReal tmPropertyValue = tmProperty.propertyValue.toSingleValue.toRealValue.realValue;
+    if (tmPropertyValue > 0)
+      absoluteTimeSystem = [[[GoTimeSystem alloc] initWithAbsoluteTimeDurationInSeconds:tmPropertyValue] autorelease];
+  }
+
+  if (! absoluteTimeSystem)
+    absoluteTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
+
+  SGFCProperty* otProperty = [self.sgfGameInfoNode propertyWithType:SGFCPropertyTypeOT];
+  if (otProperty)
+  {
+    NSString* sgfOvertimeString = otProperty.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
+
+    double absoluteTimeDuration;
+    double* absoluteTimeDurationPointer = nil;
+    if (absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute)
+    {
+      absoluteTimeDuration = absoluteTimeSystem.periodDurationInSeconds;
+      absoluteTimeDurationPointer = &absoluteTimeDuration;
+    }
+
+    bool didConsumeAbsoluteTimeDuration;
+    periodBasedTimeSystem = [SgfUtilities periodBasedTimeSystemForSgfOvertimeString:sgfOvertimeString
+                                                               absoluteTimeDuration:absoluteTimeDurationPointer
+                                                     didConsumeAbsoluteTimeDuration:&didConsumeAbsoluteTimeDuration];
+    if (didConsumeAbsoluteTimeDuration)
+      absoluteTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
+  }
+
+  if (! periodBasedTimeSystem)
+    periodBasedTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
+
+  GoTimeSettings* timeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:absoluteTimeSystem
+                                                               periodBasedTimeSystem:periodBasedTimeSystem] autorelease];
+  command.timeSettings = timeSettings;
+
+  return true;
 }
 
 #pragma mark - Step 2: Prune node tree
@@ -514,7 +573,7 @@ static const int maxStepsForCreateNodes = 9;
   return true;
 }
 
-#pragma mark - Step 5: Setup nodes + content (annotations, markup, setup, moves)
+#pragma mark - Step 5: Setup nodes + content (annotations, markup, setup, moves, time data)
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the nodes for the new game.
@@ -763,6 +822,7 @@ static const int maxStepsForCreateNodes = 9;
 /// - All node annotation properties: C, N, GB, GW, DM, UC, V, HO.
 /// - All move annotation properties: TE, DO, BM, IT.
 /// - All markup properties: CR, SQ, TR, MA, SL, AR, LN, LB, DD
+/// - All time data properties: BL, WL, OB, OW
 ///
 /// This is a helper function for createNodes:errorMessage:().
 // -----------------------------------------------------------------------------
@@ -780,6 +840,8 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   GoNodeAnnotation* goNodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
   bool atLeastOneAnnotationPropertyWasFound = false;
   GoNodeMarkup* goNodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
+  GoNodeTimeData* goNodeTimeData = [[[GoNodeTimeData alloc] init] autorelease];
+  bool atLeastOneTimeDataPropertyWasFound = false;
 
   for (SGFCProperty* sgfProperty in sgfNode.properties)
   {
@@ -947,6 +1009,18 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       if (! success)
         return nil;
     }
+    else if (sgfProperty.propertyCategory == SGFCPropertyCategoryTiming)
+    {
+      bool success = [self populateGoNodeTimeData:goNodeTimeData
+                             withTimeDataProperty:sgfProperty
+               atLeastOneTimeDataPropertyWasFound:atLeastOneTimeDataPropertyWasFound
+                                     timeSettings:game.timeSettings
+                                     errorMessage:errorMessage];
+      if (! success)
+        return false;
+
+      atLeastOneTimeDataPropertyWasFound = true;
+    }
   }
 
   if (goMoveValuation != GoMoveValuationNone)
@@ -974,6 +1048,9 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 
   if (goNodeMarkup.hasMarkup)
     goNode.goNodeMarkup = goNodeMarkup;
+
+  if (atLeastOneTimeDataPropertyWasFound)
+    goNode.goNodeTimeData = goNodeTimeData;
 
   return true;
 }
@@ -1244,6 +1321,110 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   }
 
   return move;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Populates @a goNodeTimeData with data found in
+/// @a sgfTimeDataProperty, which is expected to be either the SGF property BL,
+/// WL, OB or OW. @a atLeastOneTimeDataPropertyWasFound indicates whether
+/// another time data property was already found in the same node.
+///
+/// Before setting any data in @a goNodeTimeData, this method checks if time
+/// data properties for contradicting player colors exist in the same node. The
+/// first time data property encountered determines which player color is
+/// considered valid. Contradicting time data properties are discarded, similar
+/// to how SGFC operates. The following contradictions are found by this method:
+/// - BL and WL in the same node
+/// - BL and OW in the same node
+/// - OB and WL in the same node
+/// - OB and OW in the same node
+///
+/// @note SGFC does not perform @e any kind of time data validation! This method
+/// also has only minimal time data validation (described above), but accepts
+/// the majority of time data, even if it is invalid, so that it can be written
+/// back to an .sgf file later on. Further time data validation is performed
+/// later on once the node tree has been created (see GoTimeDataValidator). The
+/// validation performed by this method only checks for issues that can no
+/// longer be found later on because of the way the app's data is modeled.
+///
+/// This is a helper function for
+/// populateGoNodeSetup:withSetupProperty:foundInGameInfoNode:mostRecentMove:errorMessage:().
+// -----------------------------------------------------------------------------
+   - (bool) populateGoNodeTimeData:(GoNodeTimeData*)goNodeTimeData
+              withTimeDataProperty:(SGFCProperty*)sgfTimeDataProperty
+atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
+                      timeSettings:(GoTimeSettings*)timeSettings
+                      errorMessage:(NSString**)errorMessage
+{
+  bool (^tryUpdateIsTimeDataForBlackPlayer)(bool) = ^ bool (bool isTimeDataForBlackPlayer)
+  {
+    if (! atLeastOneTimeDataPropertyWasFound)
+    {
+      goNodeTimeData.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
+      return true;
+    }
+
+    if (goNodeTimeData.isTimeDataForBlackPlayer == isTimeDataForBlackPlayer)
+      return true;
+
+    DDLogWarn(@"Found time data properties for different players in the same node, discarding data of later property %@", sgfTimeDataProperty.propertyName);
+    return false;
+  };
+
+  void (^updateRemainingNumberOfMovesOrPeriods)(void) = ^ void ()
+  {
+    unsigned long remainingNumberOfMovesOrPeriods;
+    SGFCNumber sgfTimeDataPropertyValue = sgfTimeDataProperty.propertyValue.toSingleValue.toNumberValue.numberValue;
+    if (sgfTimeDataPropertyValue < 0)
+    {
+      DDLogWarn(@"Found time data property with negative value, will use 0 (zero) instead: %@", sgfTimeDataProperty.propertyName);
+      remainingNumberOfMovesOrPeriods = 0;
+    }
+    else
+    {
+      remainingNumberOfMovesOrPeriods = sgfTimeDataPropertyValue;
+    }
+
+    if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeJapanese)
+      goNodeTimeData.remainingNumberOfPeriods = remainingNumberOfMovesOrPeriods;
+    else
+      goNodeTimeData.remainingNumberOfMoves = remainingNumberOfMovesOrPeriods;
+
+    goNodeTimeData.isRemainingTimeAbsoluteTime = false;
+  };
+
+  SGFCPropertyType propertyType = sgfTimeDataProperty.propertyType;
+  if (propertyType == SGFCPropertyTypeBL)
+  {
+    bool success = tryUpdateIsTimeDataForBlackPlayer(true);
+    if (success)
+      goNodeTimeData.remainingTimeInSeconds = sgfTimeDataProperty.propertyValue.toSingleValue.toRealValue.realValue;
+  }
+  else if (propertyType == SGFCPropertyTypeWL)
+  {
+    bool success = tryUpdateIsTimeDataForBlackPlayer(false);
+    if (success)
+      goNodeTimeData.remainingTimeInSeconds = sgfTimeDataProperty.propertyValue.toSingleValue.toRealValue.realValue;
+  }
+  else if (propertyType == SGFCPropertyTypeOB)
+  {
+    bool success = tryUpdateIsTimeDataForBlackPlayer(true);
+    if (success)
+      updateRemainingNumberOfMovesOrPeriods();
+  }
+  else if (propertyType == SGFCPropertyTypeOW)
+  {
+    bool success = tryUpdateIsTimeDataForBlackPlayer(false);
+    if (success)
+      updateRemainingNumberOfMovesOrPeriods();
+  }
+  else
+  {
+    *errorMessage = [NSString stringWithFormat:@"Unknown time data property found: %@", sgfTimeDataProperty.propertyName];
+    return false;
+  }
+
+  return true;
 }
 
 // -----------------------------------------------------------------------------

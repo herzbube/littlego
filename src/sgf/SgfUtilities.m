@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SgfUtilities.h"
+#import "../go/GoTimeSystem.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
 
@@ -491,6 +492,311 @@
     default:
       return GoGameHasEndedReasonNotYetEnded;
   }  
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that identifies @a timeSystemType when used as part
+/// of the value of the SGF property OT. Returns @e nil if there is no such
+/// identifier. This is notably the case for #GoTimeSystemTypeCustom - the
+/// SGF property value here must be the entire description.
+// -----------------------------------------------------------------------------
++ (NSString*) sgfTimeSystemIdentifierForTimeSystemType:(enum GoTimeSystemType)timeSystemType
+{
+  switch (timeSystemType)
+  {
+    case GoTimeSystemTypeCanadian:
+      return @"Canadian";
+    case GoTimeSystemTypeJapanese:
+      return @"byo-yomi";
+    case GoTimeSystemTypeFischer:
+      return @"Fischer";
+    case GoTimeSystemTypeSteadyAverage:
+      return @"SteadyAverage";
+    case GoTimeSystemTypeTotalAverage:
+      return @"TotalAverage";
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Attempts to detect a time system type in @a sgfTimeSystemIdentifier.
+/// @a sgfTimeSystemIdentifier is a part of the value of the SGF property OT.
+/// Returns #GoTimeSystemTypeCustom if the time system type cannot be detected.
+///
+/// The detection logic performs a case-insensitive search for certain keywords
+/// in @a sgfTimeSystemIdentifier.
+// -----------------------------------------------------------------------------
++ (enum GoTimeSystemType) timeSystemTypeForSgfTimeSystemIdentifier:(NSString*)sgfTimeSystemIdentifier
+{
+  NSString* sgfTimeSystemIdentifierLowerCase = [sgfTimeSystemIdentifier lowercaseString];
+
+  if ([sgfTimeSystemIdentifierLowerCase containsString:@"canadian"] ||
+      [sgfTimeSystemIdentifierLowerCase containsString:@"canada"])
+  {
+    return GoTimeSystemTypeCanadian;
+  }
+  else if ([sgfTimeSystemIdentifierLowerCase containsString:@"byo-yomi"] ||
+           [sgfTimeSystemIdentifierLowerCase containsString:@"byoyomi"] ||
+           [sgfTimeSystemIdentifierLowerCase containsString:@"byo yomi"] ||
+           [sgfTimeSystemIdentifierLowerCase containsString:@"japanese"] ||
+           [sgfTimeSystemIdentifierLowerCase containsString:@"japan"])
+  {
+    return GoTimeSystemTypeJapanese;
+  }
+  else if ([sgfTimeSystemIdentifierLowerCase containsString:@"fischer"])
+  {
+    return GoTimeSystemTypeFischer;
+  }
+  else if ([sgfTimeSystemIdentifierLowerCase containsString:@"steadyaverage"] ||
+           [sgfTimeSystemIdentifierLowerCase containsString:@"steady average"] ||
+           [sgfTimeSystemIdentifierLowerCase containsString:@"steady"])
+  {
+    return GoTimeSystemTypeSteadyAverage;
+  }
+  else if ([sgfTimeSystemIdentifierLowerCase containsString:@"totalaverage"] ||
+           [sgfTimeSystemIdentifierLowerCase containsString:@"total average"] ||
+           [sgfTimeSystemIdentifierLowerCase containsString:@"total"])
+  {
+    return GoTimeSystemTypeTotalAverage;
+  }
+  else
+  {
+    return GoTimeSystemTypeCustom;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Converts the data in @a periodBasedTimeSystem to a string that can
+/// be stored in the SGF property OT. Returns @e nil if @a periodBasedTimeSystem
+/// has a time system type that cannot be encoded in the SGF property OT.
+// -----------------------------------------------------------------------------
++ (NSString*) sgfOvertimeStringForPeriodBasedTimeSystem:(GoTimeSystem*)periodBasedTimeSystem
+{
+  NSString* sgfTimeSystemIdentifier = [SgfUtilities sgfTimeSystemIdentifierForTimeSystemType:periodBasedTimeSystem.goTimeSystemType];
+
+  switch (periodBasedTimeSystem.goTimeSystemType)
+  {
+    case GoTimeSystemTypeCustom:
+      return periodBasedTimeSystem.customTimeSystemDescription;
+    case GoTimeSystemTypeCanadian:
+      // Both KGS and online-go.com use "/" as separator
+      return [NSString stringWithFormat:@"%lu/%@ %@",
+              periodBasedTimeSystem.minimumNumberOfMovesPerPeriod,
+              [SgfUtilities sgfDurationStringForDurationValue:periodBasedTimeSystem.periodDurationInSeconds],
+              sgfTimeSystemIdentifier];
+    case GoTimeSystemTypeJapanese:
+      // Both KGS and online-go.com use "x" as separator
+      return [NSString stringWithFormat:@"%lux%@ %@",
+              periodBasedTimeSystem.numberOfPeriods,
+              [SgfUtilities sgfDurationStringForDurationValue:periodBasedTimeSystem.periodDurationInSeconds],
+              sgfTimeSystemIdentifier];
+    case GoTimeSystemTypeFischer:
+      // Only online-go.com supports Fischer Timing. Unlike online-go.com we
+      // encode the initial duration in the SGF property OT, not in TM, because
+      // we want to be able to combine Fischer Timing with Absolute Timing.
+      return [NSString stringWithFormat:@"%@/%@ %@",
+              [SgfUtilities sgfDurationStringForDurationValue:periodBasedTimeSystem.extraTimeDurationInSeconds],
+              [SgfUtilities sgfDurationStringForDurationValue:periodBasedTimeSystem.periodDurationInSeconds],
+              sgfTimeSystemIdentifier];
+    case GoTimeSystemTypeSteadyAverage:
+      // Neither KGS nor online-go.com support Steady Average Timing
+      return [NSString stringWithFormat:@"%lu/%@ %@",
+              periodBasedTimeSystem.minimumNumberOfMovesPerPeriod,
+              [SgfUtilities sgfDurationStringForDurationValue:periodBasedTimeSystem.periodDurationInSeconds],
+              sgfTimeSystemIdentifier];
+    case GoTimeSystemTypeTotalAverage:
+      // Neither KGS nor online-go.com support Total Average Timing
+      return [NSString stringWithFormat:@"%lu/%@ %@",
+              periodBasedTimeSystem.minimumNumberOfMovesPerPeriod,
+              [SgfUtilities sgfDurationStringForDurationValue:periodBasedTimeSystem.periodDurationInSeconds],
+              sgfTimeSystemIdentifier];
+    case GoTimeSystemTypeAbsolute:
+    case GoTimeSystemTypeNone:
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Parses @a sgfOvertimeString (assumed to be the value of the SGF
+/// property OT) and returns the result as GoTimeSystem object.
+///
+/// The returned object has #GoTimeSystemTypeCustom if @a sgfOvertimeString is
+/// not recognized as a time system that the app supports, or if the values
+/// that result from parsing are invalid (e.g. period duration zero).
+///
+/// In some cases, if this method is unable to find a duration in
+/// @a sgfOvertimeString, it will try to use the value of
+/// @a absoluteTimeDuration as a substitute. If the caller passes @e nil for
+/// @a absoluteTimeDuration then this method will not attempt a substitution.
+///
+/// This method sets @a didConsumeAbsoluteTimeDuration to indicate whether or
+/// not it performed substitution. The caller may pass @e nil for
+/// @a didConsumeAbsoluteTimeDuration if it is not interested in whether
+/// or not substitution takes place.
+///
+/// @note This method attempts substitution only if it identifies the time
+/// system as #GoTimeSystemTypeFischer. This is to support SGF content
+/// produced by online-go.com: that platform encodes the initial duration in
+/// the SGF property TM, even though that property is intended to be used for
+/// absolute time.
+///
+/// @note The notations provided as examples in the SGF specification
+/// ("5 mins Japanese style, 1 move / min", "25 moves / 10 min") are currently
+/// not supported because they are poorly structured. Ignoring the fact that
+/// they are also incomplete (the first example does not specify the number of
+/// periods/lifes, the second example does not specify the time system), an
+/// attempt to recognize data in poorly structured @a sgfOvertimeString might
+/// look for regex patterns like these:
+/// - "[0-9\.]+ min(s)?" => indicates a period duration
+/// - "[0-9]+ move(s)?" => indicates a minimum number of moves
+/// - "[0-9]+ period(s)?" => indicates a number of periods
+/// - "[0-9]+ extra" => indicates an extra time duration
+/// - The time system could be derived if a keywords is found anywhere in the
+///   string.
+// -----------------------------------------------------------------------------
++ (GoTimeSystem*) periodBasedTimeSystemForSgfOvertimeString:(NSString*)sgfOvertimeString
+                                       absoluteTimeDuration:(double*)absoluteTimeDuration
+                             didConsumeAbsoluteTimeDuration:(bool*)didConsumeAbsoluteTimeDuration
+{
+  if (didConsumeAbsoluteTimeDuration)
+    *didConsumeAbsoluteTimeDuration = false;
+
+  NSString* pattern = @"^([0-9\\.]+)(([/x])([0-9\\.]+))?(\\s+)(.+)$";
+  //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  //                     |          ||     |            |     +-- Time system identifier, minimum 1 character
+  //                     |          ||     |            +-- Whitespace separator, minimum 1 character
+  //                     |          ||     +-- Second number
+  //                     |          |+-- Separator between first and second number
+  //                     |          +-- Separator + second number are optional
+  //                     +-- First number
+  //
+  // Notes:
+  // - The first and second number patterns don't accept negative numbers.
+  // - The first and second number patterns accept fractional values. Below we
+  //   make sure that fractional values are only allowed for durations.
+  // - The first and second number patterns match on ".", i.e. no digits. Below
+  //   this will be converted into the double value 0.0.
+  // - Separator characters between the first and second number are restricted
+  //   to "/" and "x". Japanese Timing is expected to use "x", while the other
+  //   time systems are expected to use "/". Below we're not validating this,
+  //   though.
+  NSError* error = nil;
+  NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                         options:0
+                                                                           error:&error];
+  NSRange entireString = NSMakeRange(0, sgfOvertimeString.length);
+  NSArray* matches = [regex matchesInString:sgfOvertimeString
+                                    options:0
+                                      range:entireString];
+  if (matches.count == 0)
+    return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+
+  NSTextCheckingResult* theMatch = matches[0];
+
+  NSRange timeSystemIdentifierRange = [theMatch rangeAtIndex:6];
+  NSString* timeSystemIdentifier = [sgfOvertimeString substringWithRange:timeSystemIdentifierRange];
+  enum GoTimeSystemType timeSystemType = [SgfUtilities timeSystemTypeForSgfTimeSystemIdentifier:timeSystemIdentifier];
+  if (timeSystemType == GoTimeSystemTypeCustom)
+    return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+
+  NSRange firstNumberRange = [theMatch rangeAtIndex:1];
+  NSString* firstNumberString = [sgfOvertimeString substringWithRange:firstNumberRange];
+  double firstNumber = [firstNumberString doubleValue];
+  if (firstNumber == 0.0)
+    return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+
+  NSRange secondNumberRange = [theMatch rangeAtIndex:4];
+  NSRange notFoundRange = NSMakeRange(NSNotFound, 0);
+  if (NSEqualRanges(secondNumberRange, notFoundRange))
+  {
+    if (timeSystemType != GoTimeSystemTypeFischer ||
+        ! absoluteTimeDuration ||
+        *absoluteTimeDuration <= 0)
+    {
+      return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+    }
+
+    if (didConsumeAbsoluteTimeDuration)
+      *didConsumeAbsoluteTimeDuration = true;
+
+    return [[[GoTimeSystem alloc] initWithFischerTimeInitialDurationInSeconds:*absoluteTimeDuration
+                                                   extraTimeDurationInSeconds:firstNumber] autorelease];
+  }
+
+  NSString* secondNumberString = [sgfOvertimeString substringWithRange:secondNumberRange];
+  double secondNumber = [secondNumberString doubleValue];
+  if (secondNumber == 0)
+    return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+
+  if (timeSystemType == GoTimeSystemTypeFischer)
+  {
+    return [[[GoTimeSystem alloc] initWithFischerTimeInitialDurationInSeconds:secondNumber
+                                                   extraTimeDurationInSeconds:firstNumber] autorelease];
+  }
+
+  bool firstNumberHasFractionalValue = (firstNumber != trunc(firstNumber));
+  if (firstNumberHasFractionalValue)
+    return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+
+  if (timeSystemType == GoTimeSystemTypeJapanese)
+  {
+    return [[[GoTimeSystem alloc] initWithJapaneseTimeNumberOfPeriods:firstNumber
+                                              periodDurationInSeconds:secondNumber] autorelease];
+  }
+
+  return [[[GoTimeSystem alloc] initWithGoTimeSystemType:timeSystemType
+                                 periodDurationInSeconds:secondNumber
+                           minimumNumberOfMovesPerPeriod:firstNumber] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Converts @a durationValue to a string that can be incorporated into
+/// an SGF text property. The counterpart of this method is
+/// durationValueFromSgfDurationString:().
+///
+/// A precision of 2 digits after the decimal point is used for the conversion.
+/// @a durationValue is rounded to the nearest 2 digits. Any trailing "0" (zero)
+/// and "." (decimal point) characters are removed. Examples:
+/// - Double value 2.0 is converted to "2"
+/// - Double value 2.5 is converted to "2.5"
+/// - Double value 2.50 is converted to "2.5"
+/// - Double value 2.555 is converted to "2.56"
+// -----------------------------------------------------------------------------
++ (NSString*) sgfDurationStringForDurationValue:(double)durationValue
+{
+  static NSRegularExpression* regex = nil;
+  if (! regex)
+  {
+    NSString* pattern = @"^([0-9]+)(\\.0*)$";
+    NSError* error = nil;
+    regex = [[NSRegularExpression regularExpressionWithPattern:pattern
+                                                       options:0
+                                                         error:&error] retain];
+  }
+
+  NSString* durationValueAsString = [NSString stringWithFormat:@"%.2f", durationValue];
+
+  // Remove a sole trailing decimal point (".") without digits, or a decimal
+  // point (".") with one or more 0 (zero) digits
+  return [regex stringByReplacingMatchesInString:durationValueAsString
+                                         options:0
+                                           range:NSMakeRange(0, durationValueAsString.length)
+                                    withTemplate:@"$1"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Converts @a sgfDurationString to a double value. The counterpart of
+/// this method is sgfDurationStringForDurationValue:().
+///
+/// To remain in sync with sgfDurationStringForDurationValue:(), the value
+/// returned is rounded to the nearest 2 digits after the decimal point.
+// -----------------------------------------------------------------------------
++ (double) durationValueFromSgfDurationString:(NSString*)sgfDurationString
+{
+  double durationValue = [sgfDurationString doubleValue];
+  return round(durationValue * 100.0) / 100.0;
 }
 
 @end

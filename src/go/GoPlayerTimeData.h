@@ -50,7 +50,7 @@
 
 - (void) updateAfterMoveWasPlayed:(GoNodeTimeData*)nodeTimeData;
 - (void) updateAfterNodeChanged:(GoNode*)node;
-- (int) remainingNumberOfMovesOrPeriods;
+- (unsigned long) remainingNumberOfMovesOrPeriods;
 - (enum GoClockState) clockState;
 - (enum GoClockSuspendedReason) clockSuspendedReason;
 
@@ -74,12 +74,18 @@
 ///
 /// The default value after initialization depends on the parameters in the
 /// GoTimeSettings object that is supplied to the initializer.
-@property(nonatomic, assign, readonly) unsigned int remainingNumberOfMoves;
+///
+/// The property type must be able to hold an SGFCNumber, to avoid mismatches
+/// with the type of property @e remainingNumberOfMoves in GoNodeTimeData.
+@property(nonatomic, assign, readonly) unsigned long remainingNumberOfMoves;
 /// @brief The number of periods that the player has left after they played
 /// their most recent move.
 ///
 /// The default value after initialization depends on the parameters in the
 /// GoTimeSettings object that is supplied to the initializer.
-@property(nonatomic, assign, readonly) unsigned int remainingNumberOfPeriods;
+///
+/// The property type must be able to hold an SGFCNumber, to avoid mismatches
+/// with the type of property @e remainingNumberOfPeriods in GoNodeTimeData.
+@property(nonatomic, assign, readonly) unsigned long remainingNumberOfPeriods;
 
 @end

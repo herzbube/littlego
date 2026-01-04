@@ -82,6 +82,7 @@
   self.shouldSetupComputerPlayer = true;
   self.shouldTriggerComputerPlayerIfItIsTheirTurn = true;
   self.shouldStartHumanPlayerClockIfItIsTheirTurn = true;
+  self.timeSettings = nil;
 
   return self;
 }
@@ -221,18 +222,31 @@
       newGame.rules.fourPassesRule = newGameModel.fourPassesRule;
     }
     // TODO xxx replace with values chosen by the user
-    GoTimeSystem* absoluteTimeSystem = [[[GoTimeSystem alloc] initWithAbsoluteTimeDurationInSeconds:30.0] autorelease];
-    GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithGoTimeSystemType:GoTimeSystemTypeCanadian
-                                                                  periodDurationInSeconds:60.0
-                                                            minimumNumberOfMovesPerPeriod:3
-                                                                     goUnusedTimeHandling:GoUnusedTimeHandlingRoundDown] autorelease];
-    GoTimeSettings* timeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:absoluteTimeSystem
-                                                                 periodBasedTimeSystem:periodBasedTimeSystem] autorelease];
-    GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:timeSettings
+    if (self.timeSettings)
+    {
+      newGame.timeSettings = self.timeSettings;
+    }
+    else
+    {
+      GoTimeSystem* absoluteTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
+//      GoTimeSystem* absoluteTimeSystem = [[[GoTimeSystem alloc] initWithAbsoluteTimeDurationInSeconds:30.0] autorelease];
+//      GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
+//      GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithFischerTimeInitialDurationInSeconds:5.0
+//                                                                                    extraTimeDurationInSeconds:3.0] autorelease];
+//      GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithJapaneseTimeNumberOfPeriods:5
+//                                                                               periodDurationInSeconds:5.0] autorelease];
+      GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithGoTimeSystemType:GoTimeSystemTypeCanadian
+                                                                    periodDurationInSeconds:60.0
+                                                              minimumNumberOfMovesPerPeriod:3] autorelease];
+      GoTimeSettings* timeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:absoluteTimeSystem
+                                                                   periodBasedTimeSystem:periodBasedTimeSystem] autorelease];
+      newGame.timeSettings = timeSettings;
+    }
+
+    GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
                                                                    isTimeDataForBlackPlayer:true] autorelease];
-    GoPlayerTimeData* whitePlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:timeSettings
+    GoPlayerTimeData* whitePlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
                                                                    isTimeDataForBlackPlayer:false] autorelease];
-    newGame.timeSettings = timeSettings;
     newGame.playerBlack.timeData = blackPlayerTimeData;
     newGame.playerWhite.timeData = whitePlayerTimeData;
 

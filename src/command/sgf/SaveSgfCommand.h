@@ -54,14 +54,15 @@
 ///   CR, AR, LB) if the user for some reason decided to define these things for
 ///   board position 0.
 /// - Game info node (same as root node): Contains game info properties, e.g.
-///   KM, HA, PB, PW. Also contains the board setup property AB to place
+///   KM, HA, PB, PW, TM, OT. Also contains the board setup property AB to place
 ///   handicap stones. Note that LoadGameCommand requires the node that contains
 ///   the HA property to also have an AB property.
 /// - If board position 0 contains setup, this data is written to the game info
 ///   node (same as root node).
 /// - 0-n remaining nodes with setup properties (AB, AW, AE, PL), move
 ///   properties (e.g. B, W), node and move annotation properties
-///   (e.g. C, N, GB, TE), and/or markup properties (e.g. CR, AR, LB).
+///   (e.g. C, N, GB, TE), markup properties (e.g. CR, AR, LB), and/or time
+///   data properties (BL, WL, OB, OW).
 // -----------------------------------------------------------------------------
 @interface SaveSgfCommand : CommandBase
 {

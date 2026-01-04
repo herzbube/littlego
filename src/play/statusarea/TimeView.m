@@ -36,7 +36,7 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 /// @name Private properties
 //@{
 @property(nonatomic, assign) bool viewContentNeedsUpdate;
-@property(nonatomic, assign) int remainingTimeInSecondsRoundedUp;
+@property(nonatomic, assign) unsigned long remainingTimeInSecondsRoundedUp;
 @property(nonatomic, assign) UILabel* remainingTimeMovesPeriodsLabel;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
@@ -184,15 +184,15 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 
   if (self.isTimeDataValid)
   {
-    int remainingMinutes = self.remainingTimeInSecondsRoundedUp / 60;
-    int remainingSeconds = self.remainingTimeInSecondsRoundedUp - (remainingMinutes * 60);
-    NSString* remainingTimeString = [NSString stringWithFormat:@"%@ %d:%02d", colorString, remainingMinutes, remainingSeconds];
+    unsigned long remainingMinutes = self.remainingTimeInSecondsRoundedUp / 60;
+    unsigned long remainingSeconds = self.remainingTimeInSecondsRoundedUp - (remainingMinutes * 60);
+    NSString* remainingTimeString = [NSString stringWithFormat:@"%@ %lu:%02lu", colorString, remainingMinutes, remainingSeconds];
 
     NSString* remainingNumberOfMovesOrPeriodsString;
     if (self.isRemainingTimeAbsoluteTime)
       remainingNumberOfMovesOrPeriodsString = @"Main time";
     else
-      remainingNumberOfMovesOrPeriodsString = [NSString stringWithFormat:@"(%d)", self.remainingNumberOfMovesOrPeriods];
+      remainingNumberOfMovesOrPeriodsString = [NSString stringWithFormat:@"(%lu)", self.remainingNumberOfMovesOrPeriods];
 
     self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@\n%@", remainingTimeString, remainingNumberOfMovesOrPeriodsString];
   }
@@ -287,7 +287,7 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) setRemainingNumberOfMovesOrPeriods:(unsigned int)newValue
+- (void) setRemainingNumberOfMovesOrPeriods:(unsigned long)newValue
 {
   if (_remainingNumberOfMovesOrPeriods == newValue)
     return;

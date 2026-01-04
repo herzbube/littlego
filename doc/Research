@@ -1294,13 +1294,13 @@ OT
       time can be accumulated, but this is not recorded in SGF.
 - Decision: Little Go shall use the following notation for the OT property
   value:
-  - OT[period-duration/number-of-moves Canadian]
+  - OT[number-of-moves/period-duration Canadian]
   - OT[number-of-periodsxperiod-duration byo-yomi]
-  - OT[initial-time-duration/extra-time-duration Fischer]
+  - OT[extra-time-duration/initial-time-duration Fischer]
     (unlike online-go.com, this allows to combine Fischer Timing with Absolute
     Timing)
-  - OT[period-duration/number-of-moves SteadyAverageTiming]
-  - OT[period-duration/number-of-moves TotalAverageTiming]
+  - OT[number-of-moves/period-duration SteadyAverage]
+  - OT[number-of-moves/period-duration TotalAverage]
 - Decision: Little Go shall not support the IGS Byoyomi Style time system.
   Rationale: Supporting this time system would require extra effort (e.g. it
   has more parameters than the others). Taking this extra effort does not seem

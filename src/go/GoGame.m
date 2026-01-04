@@ -778,7 +778,9 @@
     return;
   }
 
-  GoNodeTimeData* nodeTimeData = [[[GoNodeTimeData alloc] initWithIsTimeDataForBlackPlayer:playerTimeData.isTimeDataForBlackPlayer] autorelease];
+  GoNodeTimeData* nodeTimeData = [[[GoNodeTimeData alloc] init] autorelease];
+  nodeTimeData.isTimeDataForBlackPlayer = playerTimeData.isTimeDataForBlackPlayer;
+
   newNode.goNodeTimeData = nodeTimeData;
 
   [playerTimeData updateAfterMoveWasPlayed:nodeTimeData];

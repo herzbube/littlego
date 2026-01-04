@@ -45,8 +45,8 @@
 @property(nonatomic, assign, readwrite) bool isTimeDataForBlackPlayer;
 @property(nonatomic, assign, readwrite) bool isRemainingTimeAbsoluteTime;
 @property(nonatomic, assign, readwrite) double remainingTimeInSeconds;
-@property(nonatomic, assign, readwrite) unsigned int remainingNumberOfMoves;
-@property(nonatomic, assign, readwrite) unsigned int remainingNumberOfPeriods;
+@property(nonatomic, assign, readwrite) unsigned long remainingNumberOfMoves;
+@property(nonatomic, assign, readwrite) unsigned long remainingNumberOfPeriods;
 //@}
 @end
 
@@ -98,8 +98,8 @@
   self.isTimeDataForBlackPlayer = [decoder decodeBoolForKey:goPlayerTimeDataIsTimeDataForBlackPlayerKey];
   self.isRemainingTimeAbsoluteTime = [decoder decodeBoolForKey:goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey];
   self.remainingTimeInSeconds = [decoder decodeDoubleForKey:goPlayerTimeDataRemainingTimeInSecondsKey];
-  self.remainingNumberOfMoves = [decoder decodeIntForKey:goPlayerTimeDataRemainingNumberOfMovesKey];
-  self.remainingNumberOfPeriods = [decoder decodeIntForKey:goPlayerTimeDataRemainingNumberOfPeriodsKey];
+  self.remainingNumberOfMoves = [decoder decodeInt64ForKey:goPlayerTimeDataRemainingNumberOfMovesKey];
+  self.remainingNumberOfPeriods = [decoder decodeInt64ForKey:goPlayerTimeDataRemainingNumberOfPeriodsKey];
 
   // If all goes well we should restore into the suspended clock state (because
   // when it is suspended the app is supposed to suspend clocks). However, if
@@ -154,8 +154,8 @@
   [encoder encodeBool:self.isTimeDataForBlackPlayer forKey:goPlayerTimeDataIsTimeDataForBlackPlayerKey];
   [encoder encodeBool:self.isRemainingTimeAbsoluteTime forKey:goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey];
   [encoder encodeDouble:self.remainingTimeInSeconds forKey:goPlayerTimeDataRemainingTimeInSecondsKey];
-  [encoder encodeInt:self.remainingNumberOfMoves forKey:goPlayerTimeDataRemainingNumberOfMovesKey];
-  [encoder encodeInt:self.remainingNumberOfPeriods forKey:goPlayerTimeDataRemainingNumberOfPeriodsKey];
+  [encoder encodeInt64:self.remainingNumberOfMoves forKey:goPlayerTimeDataRemainingNumberOfMovesKey];
+  [encoder encodeInt64:self.remainingNumberOfPeriods forKey:goPlayerTimeDataRemainingNumberOfPeriodsKey];
 }
 
 #pragma mark - Public API
@@ -284,7 +284,7 @@
 // -----------------------------------------------------------------------------
 /// @brief TODO xxx document
 // -----------------------------------------------------------------------------
-- (int) remainingNumberOfMovesOrPeriods
+- (unsigned long) remainingNumberOfMovesOrPeriods
 {
   if (self.isRemainingTimeAbsoluteTime)
     return self.goTimeSettings.absoluteTimeSystem.numberOfPeriods;
@@ -447,7 +447,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the time data in this GoPlayerTimeData object to match the
-/// the parameters in the GoTimeSettings object that was supplied to the
+/// parameters in the GoTimeSettings object that was supplied to the
 /// GoPlayerTimeData initializer. Returns true if any properties of this
 /// GoPlayerTimeData changed their values. Returns false if no properties
 /// changed their values.
@@ -471,9 +471,9 @@
     dataHasChanged = true;
   }
 
-  unsigned int remainingNumberOfMoves = (timeSystem.hasMinimumNumberOfMovesPerPeriod
-                                         ? timeSystem.minimumNumberOfMovesPerPeriod
-                                         : 0);
+  unsigned long remainingNumberOfMoves = (timeSystem.hasMinimumNumberOfMovesPerPeriod
+                                          ? timeSystem.minimumNumberOfMovesPerPeriod
+                                          : 0);
   if (self.remainingNumberOfMoves != remainingNumberOfMoves)
   {
     self.remainingNumberOfMoves = remainingNumberOfMoves;

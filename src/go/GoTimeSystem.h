@@ -32,8 +32,8 @@
 - (id) initWithAbsoluteTimeDurationInSeconds:(double)absoluteTimeDurationInSeconds;
 - (id) initWithGoTimeSystemType:(enum GoTimeSystemType)goTimeSystemType
         periodDurationInSeconds:(double)periodDurationInSeconds
-  minimumNumberOfMovesPerPeriod:(unsigned int)minimumNumberOfMovesPerPeriod;
-- (id) initWithJapaneseTimeNumberOfPeriods:(unsigned int)numberOfPeriods
+  minimumNumberOfMovesPerPeriod:(unsigned long)minimumNumberOfMovesPerPeriod;
+- (id) initWithJapaneseTimeNumberOfPeriods:(unsigned long)numberOfPeriods
                    periodDurationInSeconds:(double)periodDurationInSeconds;
 - (id) initWithFischerTimeInitialDurationInSeconds:(double)initialDurationInSeconds
                         extraTimeDurationInSeconds:(double)extraTimeDurationInSeconds;
@@ -55,7 +55,10 @@
 /// systems.
 @property(nonatomic, assign, readonly) bool supportsTimedPlay;
 /// @brief The number of time periods the time system has.
-@property(nonatomic, assign, readonly) unsigned int numberOfPeriods;
+///
+/// The property type must be able to hold an SGFCNumber, to avoid mismatches
+/// with the type of property @e remainingNumberOfPeriods in GoNodeTimeData.
+@property(nonatomic, assign, readonly) unsigned long numberOfPeriods;
 /// @brief The duration of each time period in seconds.
 @property(nonatomic, assign, readonly) double periodDurationInSeconds;
 /// @brief Whether or not the time system requires the player to play a minimum
@@ -66,7 +69,10 @@
 ///
 /// This property can be ignored if @e hasMinimumNumberOfMovesPerPeriod is
 /// false.
-@property(nonatomic, assign, readonly) unsigned int minimumNumberOfMovesPerPeriod;
+///
+/// The property type must be able to hold an SGFCNumber, to avoid mismatches
+/// with the type of property @e remainingNumberOfMoves in GoNodeTimeData.
+@property(nonatomic, assign, readonly) unsigned long minimumNumberOfMovesPerPeriod;
 /// @brief Indicates what to do with the remaining unused time
 /// after @e minimumNumberOfMovesPerPeriod have been played.
 ///

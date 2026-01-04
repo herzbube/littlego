@@ -357,7 +357,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   context->currentNode = nil;
   context->nodeTimeData = nil;
   context->absoluteTimeSystem = timeSettings.absoluteTimeSystem;
-  context->absoluteTimeSystemIsPresent = (context->absoluteTimeSystem.goTimeSystemType != GoTimeSystemTypeAbsolute);
+  context->absoluteTimeSystemIsPresent = (context->absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute);
   context->periodBasedTimeSystem = timeSettings.periodBasedTimeSystem;
   context->periodBasedTimeSystemIsPresent = (context->periodBasedTimeSystem.goTimeSystemType != GoTimeSystemTypeNone);
   context->absoluteNodeTimeDataValidator = [GoTimeDataValidator getValidator:context->absoluteTimeSystem.goTimeSystemType];

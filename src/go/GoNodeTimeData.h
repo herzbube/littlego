@@ -46,7 +46,7 @@
 ///
 /// The data model represented by GoNodeTimeData is capable of storing values
 /// for both @e remainingNumberOfMoves and @e remainingNumberOfPeriods at the
-/// same time. So in theory the app is able to support an custom time system
+/// same time. So in theory the app is able to support a custom time system
 /// that resembles Japanese Timing, i.e. has a variable number of time periods,
 /// but at the same time also has a variable minimum number of moves per period.
 ///
@@ -67,11 +67,9 @@
 {
 }
 
-- (id) initWithIsTimeDataForBlackPlayer:(bool)isTimeDataForBlackPlayer;
-
 /// @brief True if this GoNodeTimeData object holds time data for the black
 /// player, false if it holds time data for the white player.
-@property(nonatomic, assign, readonly) bool isTimeDataForBlackPlayer;
+@property(nonatomic, assign) bool isTimeDataForBlackPlayer;
 
 /// @brief True if @e remainingTimeInSeconds refers to absolute time, false if
 /// not.
@@ -93,9 +91,10 @@
 ///
 /// The default value after initialization is 0 (zero).
 ///
-/// This property corresponds to the SGF time properties OB and OW. See the
-/// GoNodeTimeData class documentation for details.
-@property(nonatomic, assign) unsigned int remainingNumberOfMoves;
+/// This property corresponds to the SGF time properties OB and OW. The property
+/// type must be able to hold an SGFCNumber. See the GoNodeTimeData class
+/// documentation for details.
+@property(nonatomic, assign) unsigned long remainingNumberOfMoves;
 /// @brief The number of time periods that the player has left after they played
 /// the move in the game tree node that this GoNodeTimeData is associated with.
 ///
@@ -103,8 +102,9 @@
 ///
 /// The default value after initialization is 0 (zero).
 ///
-/// This property corresponds to the SGF time properties OB and OW. See the
-/// GoNodeTimeData class documentation for details.
-@property(nonatomic, assign) unsigned int remainingNumberOfPeriods;
+/// This property corresponds to the SGF time properties OB and OW. The property
+/// type must be able to hold an SGFCNumber. See the GoNodeTimeData class
+/// documentation for details.
+@property(nonatomic, assign) unsigned long remainingNumberOfPeriods;
 
 @end

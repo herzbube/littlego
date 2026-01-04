@@ -31,10 +31,10 @@
 @property(nonatomic, assign, readwrite) enum GoTimeSystemType goTimeSystemType;
 @property(nonatomic, assign, readwrite) bool supportsTimedPlay;
 @property(nonatomic, retain, readwrite) NSString* customTimeSystemDescription;
-@property(nonatomic, assign, readwrite) unsigned int numberOfPeriods;
+@property(nonatomic, assign, readwrite) unsigned long numberOfPeriods;
 @property(nonatomic, assign, readwrite) double periodDurationInSeconds;
 @property(nonatomic, assign, readwrite) bool hasMinimumNumberOfMovesPerPeriod;
-@property(nonatomic, assign, readwrite) unsigned int minimumNumberOfMovesPerPeriod;
+@property(nonatomic, assign, readwrite) unsigned long minimumNumberOfMovesPerPeriod;
 @property(nonatomic, assign, readwrite) enum GoUnusedTimeHandling goUnusedTimeHandling;
 @property(nonatomic, assign, readwrite) double extraTimeDurationInSeconds;
 //@}
@@ -114,7 +114,7 @@
 // -----------------------------------------------------------------------------
 - (id) initWithGoTimeSystemType:(enum GoTimeSystemType)goTimeSystemType
         periodDurationInSeconds:(double)periodDurationInSeconds
-  minimumNumberOfMovesPerPeriod:(unsigned int)minimumNumberOfMovesPerPeriod
+  minimumNumberOfMovesPerPeriod:(unsigned long)minimumNumberOfMovesPerPeriod
 {
   enum GoUnusedTimeHandling unusedTimeHandling;
   if (goTimeSystemType == GoTimeSystemTypeCanadian)
@@ -151,7 +151,7 @@
 /// @a periodDurationInSeconds is 0 (zero) or less, or if
 /// @a numberOfPeriods is 0 (zero).
 // -----------------------------------------------------------------------------
-- (id) initWithJapaneseTimeNumberOfPeriods:(unsigned int)numberOfPeriods
+- (id) initWithJapaneseTimeNumberOfPeriods:(unsigned long)numberOfPeriods
                    periodDurationInSeconds:(double)periodDurationInSeconds
 {
   return [self initWithGoTimeSystemType:GoTimeSystemTypeJapanese
@@ -210,10 +210,10 @@
 // -----------------------------------------------------------------------------
  - (id) initWithGoTimeSystemType:(enum GoTimeSystemType)goTimeSystemType
      customTimeSystemDescription:(NSString*)customTimeSystemDescription
-                 numberOfPeriods:(unsigned int)numberOfPeriods
+                 numberOfPeriods:(unsigned long)numberOfPeriods
          periodDurationInSeconds:(double)periodDurationInSeconds
 hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
-   minimumNumberOfMovesPerPeriod:(unsigned int)minimumNumberOfMovesPerPeriod
+   minimumNumberOfMovesPerPeriod:(unsigned long)minimumNumberOfMovesPerPeriod
             goUnusedTimeHandling:(enum GoUnusedTimeHandling)goUnusedTimeHandling
       extraTimeDurationInSeconds:(double)extraTimeDurationInSeconds
 {
@@ -226,7 +226,7 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
   {
     if (numberOfPeriods == 0)
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, invalid number of periods %d for time system %u", numberOfPeriods, goTimeSystemType];
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, invalid number of periods %lu for time system %u", numberOfPeriods, goTimeSystemType];
       [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
     }
 
@@ -240,7 +240,7 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
   if ((hasMinimumNumberOfMovesPerPeriod && minimumNumberOfMovesPerPeriod == 0) ||
       (! hasMinimumNumberOfMovesPerPeriod && minimumNumberOfMovesPerPeriod != 0))
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, invalid minimum number of moves per period %d for time system %u", minimumNumberOfMovesPerPeriod, goTimeSystemType];
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoTimeSystem object, invalid minimum number of moves per period %lu for time system %u", minimumNumberOfMovesPerPeriod, goTimeSystemType];
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
@@ -289,10 +289,10 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
   self.goTimeSystemType = [decoder decodeIntForKey:goTimeSystemGoTimeSystemTypeKey];
   self.customTimeSystemDescription = [decoder decodeObjectOfClass:[NSString class] forKey:goTimeSystemCustomTimeSystemDescriptionKey];
   self.supportsTimedPlay = [GoTimeSystem doesTimeSystemTypeSupportTimedPlay:self.goTimeSystemType];
-  self.numberOfPeriods = [decoder decodeIntForKey:goTimeSystemNumberOfPeriodsKey];
+  self.numberOfPeriods = [decoder decodeInt64ForKey:goTimeSystemNumberOfPeriodsKey];
   self.periodDurationInSeconds = [decoder decodeDoubleForKey:goTimeSystemPeriodDurationInSecondsKey];
   self.hasMinimumNumberOfMovesPerPeriod = [decoder decodeBoolForKey:goTimeSystemHasMinimumNumberOfMovesPerPeriodKey];
-  self.minimumNumberOfMovesPerPeriod = [decoder decodeIntForKey:goTimeSystemMinimumNumberOfMovesPerPeriodKey];
+  self.minimumNumberOfMovesPerPeriod = [decoder decodeInt64ForKey:goTimeSystemMinimumNumberOfMovesPerPeriodKey];
   self.goUnusedTimeHandling = [decoder decodeIntForKey:goTimeSystemGoUnusedTimeHandlingKey];
   self.extraTimeDurationInSeconds = [decoder decodeDoubleForKey:goTimeSystemExtraTimeDurationInSecondsKey];
 
@@ -326,10 +326,10 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
   [encoder encodeInt:self.goTimeSystemType forKey:goTimeSystemGoTimeSystemTypeKey];
   [encoder encodeObject:self.customTimeSystemDescription forKey:goTimeSystemCustomTimeSystemDescriptionKey];
   // No need to encode supportsTimedPlay, property value is calculated by the initializer
-  [encoder encodeInt:self.numberOfPeriods forKey:goTimeSystemNumberOfPeriodsKey];
+  [encoder encodeInt64:self.numberOfPeriods forKey:goTimeSystemNumberOfPeriodsKey];
   [encoder encodeDouble:self.periodDurationInSeconds forKey:goTimeSystemPeriodDurationInSecondsKey];
   [encoder encodeBool:self.hasMinimumNumberOfMovesPerPeriod forKey:goTimeSystemHasMinimumNumberOfMovesPerPeriodKey];
-  [encoder encodeInt:self.minimumNumberOfMovesPerPeriod forKey:goTimeSystemMinimumNumberOfMovesPerPeriodKey];
+  [encoder encodeInt64:self.minimumNumberOfMovesPerPeriod forKey:goTimeSystemMinimumNumberOfMovesPerPeriodKey];
   [encoder encodeInt:self.goUnusedTimeHandling forKey:goTimeSystemGoUnusedTimeHandlingKey];
   [encoder encodeDouble:self.extraTimeDurationInSeconds forKey:goTimeSystemExtraTimeDurationInSecondsKey];
 }
@@ -352,15 +352,15 @@ hasMinimumNumberOfMovesPerPeriod:(bool)hasMinimumNumberOfMovesPerPeriod
     case GoTimeSystemTypeAbsolute:
       return [NSString stringWithFormat:@"GoTimeSystem(%p): Absolute Timing, duration = %f", self, _periodDurationInSeconds];
     case GoTimeSystemTypeCanadian:
-      return [NSString stringWithFormat:@"GoTimeSystem(%p): Canadian Timing, duration = %f, moves = %d", self, _periodDurationInSeconds, _minimumNumberOfMovesPerPeriod];
+      return [NSString stringWithFormat:@"GoTimeSystem(%p): Canadian Timing, duration = %f, moves = %lu", self, _periodDurationInSeconds, _minimumNumberOfMovesPerPeriod];
     case GoTimeSystemTypeJapanese:
-      return [NSString stringWithFormat:@"GoTimeSystem(%p): Japanese Timing, duration = %f, periods = %d", self, _periodDurationInSeconds, _numberOfPeriods];
+      return [NSString stringWithFormat:@"GoTimeSystem(%p): Japanese Timing, duration = %f, periods = %lu", self, _periodDurationInSeconds, _numberOfPeriods];
     case GoTimeSystemTypeFischer:
       return [NSString stringWithFormat:@"GoTimeSystem(%p): Fischer Timing, initial duration = %f, extra time = %f", self, _periodDurationInSeconds, _extraTimeDurationInSeconds];
     case GoTimeSystemTypeSteadyAverage:
-      return [NSString stringWithFormat:@"GoTimeSystem(%p): Steady Average Timing, duration = %f, moves = %d", self, _periodDurationInSeconds, _minimumNumberOfMovesPerPeriod];
+      return [NSString stringWithFormat:@"GoTimeSystem(%p): Steady Average Timing, duration = %f, moves = %lu", self, _periodDurationInSeconds, _minimumNumberOfMovesPerPeriod];
     case GoTimeSystemTypeTotalAverage:
-      return [NSString stringWithFormat:@"GoTimeSystem(%p): Total Average Timing, duration = %f, moves = %d", self, _periodDurationInSeconds, _minimumNumberOfMovesPerPeriod];
+      return [NSString stringWithFormat:@"GoTimeSystem(%p): Total Average Timing, duration = %f, moves = %lu", self, _periodDurationInSeconds, _minimumNumberOfMovesPerPeriod];
     case GoTimeSystemTypeCustom:
       return [NSString stringWithFormat:@"GoTimeSystem(%p): Custom time system, description = %@", self, self.customTimeSystemDescription];
     case GoTimeSystemTypeNone:
