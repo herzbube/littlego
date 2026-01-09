@@ -565,12 +565,25 @@
       self.remainingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
     else
       self.remainingNumberOfMoves = 0;
-    return [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
+
+    if (self.remainingTimeInSeconds > 0)
+      return GoPeriodDurationElapsedResultTypeGameContinues;
   }
-  else
+
+  // At this point self.remainingTimeInSeconds is guaranteed to be <= 0
+
+  if (periodBasedTimeSystem.hasMinimumNumberOfMovesPerPeriod &&
+      self.remainingNumberOfMoves == 0 &&
+      periodBasedTimeSystem.goUnusedTimeHandling == GoUnusedTimeHandlingUseForExtraMoves)
   {
-    return [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
+    self.remainingTimeInSeconds += periodBasedTimeSystem.periodDurationInSeconds;
+    self.remainingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
+
+    if (self.remainingTimeInSeconds > 0)
+      return GoPeriodDurationElapsedResultTypeGameContinues;
   }
+
+  return [self countDownPeriodsWithTimeSystem:periodBasedTimeSystem];
 }
 
 // -----------------------------------------------------------------------------
