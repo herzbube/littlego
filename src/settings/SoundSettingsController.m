@@ -149,11 +149,13 @@ enum FeedbackSectionItem
         case PlaySoundItem:
           cell.textLabel.text = @"Play sound";
           accessoryView.on = self.boardViewModel.playSound;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(togglePlaySound:) forControlEvents:UIControlEventValueChanged];
           break;
         case VibrateItem:
           cell.textLabel.text = @"Vibrate";
           accessoryView.on = self.boardViewModel.vibrate;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleVibrate:) forControlEvents:UIControlEventValueChanged];
           break;
         default:

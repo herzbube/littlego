@@ -244,6 +244,7 @@ enum MaxGamesCategory
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Pondering";
           accessoryView.on = self.profile.fuegoPondering;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(togglePondering:) forControlEvents:UIControlEventValueChanged];
           break;
         }
@@ -275,6 +276,7 @@ enum MaxGamesCategory
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Reuse subtree";
       accessoryView.on = self.profile.fuegoReuseSubtree;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleReuseSubtree:) forControlEvents:UIControlEventValueChanged];
       // If pondering is on, the default value of reuse subtree ("on") must
       // not be changed by the user

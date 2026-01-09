@@ -191,6 +191,7 @@ enum TryNotToPlaceIllegalStonesSectionItem
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.boardSetupModel.doubleTapToZoom;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleDoubleTapToZoom:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -200,6 +201,7 @@ enum TryNotToPlaceIllegalStonesSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Auto-enable board setup";
       accessoryView.on = self.boardSetupModel.autoEnableBoardSetupMode;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleAutoEnableBoardSetupMode:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -209,6 +211,7 @@ enum TryNotToPlaceIllegalStonesSectionItem
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.boardSetupModel.changeHandicapAlert;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleChangeHandicapAlert:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -218,6 +221,7 @@ enum TryNotToPlaceIllegalStonesSectionItem
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.boardSetupModel.tryNotToPlaceIllegalStones;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleTryNotToPlaceIllegalStones:) forControlEvents:UIControlEventValueChanged];
       break;
     }

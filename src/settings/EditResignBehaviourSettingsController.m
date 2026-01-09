@@ -221,6 +221,7 @@ enum ResignMinGamesCategory
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Auto-select";
           accessoryView.on = self.profile.autoSelectFuegoResignMinGames;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleAutoSelect:) forControlEvents:UIControlEventValueChanged];
           break;
         }

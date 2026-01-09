@@ -602,6 +602,7 @@ enum CellID
       cell.textLabel.text = @"Computer plays white";
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.on = self.theNewGameModel.computerPlaysWhite ? YES : NO;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleComputerPlaysWhite:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -645,6 +646,7 @@ enum CellID
       cell.textLabel.text = @"Even game";
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.on = [self isEvenGame];
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleEvenGame:) forControlEvents:UIControlEventValueChanged];
       break;
     }

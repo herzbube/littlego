@@ -24,6 +24,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 
+
 // Constants
 static const float sliderValueFactorForMoveNumbersPercentage = 100.0;
 NSString* displayPlayerInfluenceText = @"Display player influence";
@@ -186,6 +187,7 @@ enum DisplayPlayerInfluenceSectionItem
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Mark last move";
           accessoryView.on = self.boardViewModel.markLastMove;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
           break;
         }
@@ -195,6 +197,7 @@ enum DisplayPlayerInfluenceSectionItem
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Display coordinates";
           accessoryView.on = self.boardViewModel.displayCoordinates;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
           break;
         }
@@ -243,6 +246,7 @@ enum DisplayPlayerInfluenceSectionItem
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.boardViewModel.displayPlayerInfluence;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleDisplayPlayerInfluence:) forControlEvents:UIControlEventValueChanged];
       break;
     }

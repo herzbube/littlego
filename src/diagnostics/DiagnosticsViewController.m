@@ -304,6 +304,7 @@ enum BugReportSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Collect logging data";
       accessoryView.on = [Registry sharedRegistry].modelProvider.loggingModel.loggingEnabled;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleLoggingEnabled:) forControlEvents:UIControlEventValueChanged];
       break;
     }

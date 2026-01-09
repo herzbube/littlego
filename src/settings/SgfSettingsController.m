@@ -261,6 +261,7 @@ enum OtherSectionItem
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Reverse variation ordering";
           accessoryView.on = self.sgfSettingsModel.reverseVariationOrdering;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleReverseVariationOrdering:) forControlEvents:UIControlEventValueChanged];
           break;
         }

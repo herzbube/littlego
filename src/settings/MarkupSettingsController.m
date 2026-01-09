@@ -223,6 +223,7 @@ enum FillMarkerGapsSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Unique symbols";
       accessoryView.on = self.markupModel.uniqueSymbols;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleUniqueSymbols:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -232,6 +233,7 @@ enum FillMarkerGapsSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Connection tool allows delete";
       accessoryView.on = self.markupModel.connectionToolAllowsDelete;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleConnectionToolAllowsDelete:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -241,6 +243,7 @@ enum FillMarkerGapsSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Fill marker gaps";
       accessoryView.on = self.markupModel.fillMarkerGaps;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleFillMarkerGaps:) forControlEvents:UIControlEventValueChanged];
       break;
     }
