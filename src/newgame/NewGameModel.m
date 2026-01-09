@@ -17,6 +17,7 @@
 
 // Project includes
 #import "NewGameModel.h"
+#import "../play/model/TimeSettingsModel.h"
 
 
 @implementation NewGameModel
@@ -32,6 +33,7 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.gameType = gDefaultGameType;
   self.gameTypeLastSelected = gDefaultGameType;
   self.humanPlayerUUID = @"";
@@ -51,6 +53,8 @@
   self.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleDefault;
   self.disputeResolutionRule = GoDisputeResolutionRuleDefault;
   self.fourPassesRule = GoFourPassesRuleDefault;
+  self.timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
+
   return self;
 }
 
@@ -64,6 +68,8 @@
   self.humanBlackPlayerUUID = nil;
   self.humanWhitePlayerUUID = nil;
   self.computerPlayerSelfPlayUUID = nil;
+  self.timeSettingsModel = nil;
+
   [super dealloc];
 }
 
@@ -74,6 +80,7 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:newGameKey];
+
   self.gameType = [[dictionary valueForKey:gameTypeKey] intValue];
   self.gameTypeLastSelected = [[dictionary valueForKey:gameTypeLastSelectedKey] intValue];
   self.humanPlayerUUID = (NSString*)[dictionary valueForKey:humanPlayerKey];
@@ -84,13 +91,14 @@
   self.computerPlayerSelfPlayUUID = (NSString*)[dictionary valueForKey:computerPlayerSelfPlayKey];
   self.boardSize = [[dictionary valueForKey:boardSizeKey] intValue];
   self.handicap = [[dictionary valueForKey:handicapKey] intValue];
-  NSNumber* komiAsNumber = [dictionary valueForKey:komiKey];
-  self.komi = [komiAsNumber doubleValue];
+  self.komi = [(NSNumber*)[dictionary valueForKey:komiKey] doubleValue];
   self.koRule = [[dictionary valueForKey:koRuleKey] intValue];
   self.scoringSystem = [[dictionary valueForKey:scoringSystemKey] intValue];
   self.lifeAndDeathSettlingRule = [[dictionary valueForKey:lifeAndDeathSettlingRuleKey] intValue];
   self.disputeResolutionRule = [[dictionary valueForKey:disputeResolutionRuleKey] intValue];
   self.fourPassesRule = [[dictionary valueForKey:fourPassesRuleKey] intValue];
+
+  [self.timeSettingsModel readFromDictionary:dictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -100,10 +108,11 @@
 - (void) writeUserDefaults
 {
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+
   // setValue:forKey:() allows for nil values, so we use that instead of
   // setObject:forKey:() which is less forgiving and would force us to check
   // for nil values.
-  // Note: Use NSNumber to represent int and bool values as an object.
+  // Note: Use NSNumber to represent numeric and bool values as an object.
   [dictionary setValue:[NSNumber numberWithInt:self.gameType] forKey:gameTypeKey];
   [dictionary setValue:[NSNumber numberWithInt:self.gameTypeLastSelected] forKey:gameTypeLastSelectedKey];
   [dictionary setValue:self.humanPlayerUUID forKey:humanPlayerKey];
@@ -120,6 +129,9 @@
   [dictionary setValue:[NSNumber numberWithInt:self.lifeAndDeathSettlingRule] forKey:lifeAndDeathSettlingRuleKey];
   [dictionary setValue:[NSNumber numberWithInt:self.disputeResolutionRule] forKey:disputeResolutionRuleKey];
   [dictionary setValue:[NSNumber numberWithInt:self.fourPassesRule] forKey:fourPassesRuleKey];
+
+  [self.timeSettingsModel writeToDictionary:dictionary];
+
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:newGameKey];
 }

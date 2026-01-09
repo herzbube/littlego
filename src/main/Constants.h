@@ -2340,8 +2340,9 @@ enum TableViewCellType
   Value2CellType,        ///< @brief Cell with style @e UITableViewCellStyleValue2
   SubtitleCellType,      ///< @brief Cell with style @e UITableViewCellStyleSubtitle
   SwitchCellType,        ///< @brief Cell with a UISwitch in the accessory view
-  SliderWithValueLabelCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value. Displays the value label.
-  SliderWithoutValueLabelCellType,     ///< @brief ditto, but does not display the value label.
+  SliderWithValueLabelAndStepperCellType,  ///< @brief Similar to Value1CellType, but with a slider and a stepper that allow to adjust the value. Displays the value label.
+  SliderWithValueLabelCellType,            ///< @brief ditto, but does not display the stepper.
+  SliderWithoutValueLabelCellType,         ///< @brief ditto, but displays neither the stepper nor the value label.
   GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
   ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
   DeleteTextCellType,     ///< @brief Cell that displays a "delete" text. Style and color are similar to the delete cell in Apple's address book or calendar apps.
@@ -2484,6 +2485,22 @@ extern NSString* scoringSystemKey;
 extern NSString* lifeAndDeathSettlingRuleKey;
 extern NSString* disputeResolutionRuleKey;
 extern NSString* fourPassesRuleKey;
+// Time settings (part of new game settings)
+extern NSString* timedPlayEnabledKey;
+extern NSString* absoluteTimingEnabledKey;
+extern NSString* absoluteTimingDurationInSecondsKey;
+extern NSString* periodBasedTimeSystemEnabledKey;
+extern NSString* periodBasedTimeSystemTypeKey;
+extern NSString* canadianTimingPeriodDurationInSecondsKey;
+extern NSString* canadianTimingNumberOfMovesKey;
+extern NSString* japaneseTimingPeriodDurationInSecondsKey;
+extern NSString* japaneseTimingNumberOfPeriodsKey;
+extern NSString* fischerTimingInitialTimeDurationInSecondsKey;
+extern NSString* fischerTimingExtraTimeDurationInSecondsKey;
+extern NSString* steadyAverageTimingPeriodDurationInSecondsKey;
+extern NSString* steadyAverageTimingNumberOfMovesKey;
+extern NSString* totalAverageTimingPeriodDurationInSecondsKey;
+extern NSString* totalAverageTimingNumberOfMovesKey;
 // Players
 extern NSString* playerListKey;
 extern NSString* playerUUIDKey;

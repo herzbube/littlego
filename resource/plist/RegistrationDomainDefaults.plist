@@ -5,7 +5,7 @@
 	<key>UseFloatingTabBar</key>
 	<false/>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>13</integer>
+	<integer>14</integer>
 	<key>BoardView</key>
 	<dict>
 		<key>MarkLastMove</key>
@@ -57,6 +57,36 @@
 		<integer>0</integer>
 		<key>FourPassesRule</key>
 		<integer>0</integer>
+		<key>TimedPlayEnabled</key>
+		<false/>
+		<key>AbsoluteTimingEnabled</key>
+		<true/>
+		<key>AbsoluteTimingDurationInSeconds</key>
+		<integer>600</integer>
+		<key>PeriodBasedTimeSystemEnabled</key>
+		<true/>
+		<key>PeriodBasedTimeSystemType</key>
+		<integer>1</integer>
+		<key>CanadianTimingPeriodDurationInSeconds</key>
+		<integer>600</integer>
+		<key>CanadianTimingNumberOfMoves</key>
+		<integer>25</integer>
+		<key>JapaneseTimingPeriodDurationInSeconds</key>
+		<integer>60</integer>
+		<key>JapaneseTimingNumberOfPeriods</key>
+		<integer>30</integer>
+		<key>FischerTimingInitialTimeDurationInSeconds</key>
+		<integer>300</integer>
+		<key>FischerTimingExtraTimeDurationInSeconds</key>
+		<integer>15</integer>
+		<key>SteadyAverageTimingPeriodDurationInSeconds</key>
+		<integer>600</integer>
+		<key>SteadyAverageTimingNumberOfMoves</key>
+		<integer>25</integer>
+		<key>TotalAverageTimingPeriodDurationInSeconds</key>
+		<integer>600</integer>
+		<key>TotalAverageTimingNumberOfMoves</key>
+		<integer>25</integer>
 	</dict>
 	<key>PlayerList</key>
 	<array>

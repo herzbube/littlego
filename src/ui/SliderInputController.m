@@ -117,11 +117,13 @@
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
   TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-  [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(sliderValueDidChange:)];
   sliderCell.descriptionLabel.text = self.descriptionLabelText;
   sliderCell.slider.minimumValue = self.minimumValue;
   sliderCell.slider.maximumValue = self.maximumValue;
   sliderCell.value = self.value;
+  [sliderCell setDelegate:self
+     actionValueDidChange:@selector(sliderValueDidChange:)
+           valueFormatter:nil];
   return cell;
 }
 

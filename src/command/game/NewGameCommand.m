@@ -36,6 +36,7 @@
 #import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
 #import "../../play/model/BoardSetupModel.h"
+#import "../../play/model/TimeSettingsModel.h"
 #import "../../play/timedplay/PlayerClockService.h"
 #import "../../player/Player.h"
 #import "../../player/PlayerModel.h"
@@ -221,37 +222,23 @@
       newGame.rules.disputeResolutionRule = newGameModel.disputeResolutionRule;
       newGame.rules.fourPassesRule = newGameModel.fourPassesRule;
     }
-    // TODO xxx replace with values chosen by the user
-    if (self.timeSettings)
-    {
-      newGame.timeSettings = self.timeSettings;
-    }
-    else
-    {
-      GoTimeSystem* absoluteTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
-//      GoTimeSystem* absoluteTimeSystem = [[[GoTimeSystem alloc] initWithAbsoluteTimeDurationInSeconds:30.0] autorelease];
-//      GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
-//      GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithFischerTimeInitialDurationInSeconds:5.0
-//                                                                                    extraTimeDurationInSeconds:3.0] autorelease];
-//      GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithJapaneseTimeNumberOfPeriods:5
-//                                                                               periodDurationInSeconds:5.0] autorelease];
-      GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithGoTimeSystemType:GoTimeSystemTypeCanadian
-                                                                    periodDurationInSeconds:60.0
-                                                              minimumNumberOfMovesPerPeriod:3] autorelease];
-      GoTimeSettings* timeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:absoluteTimeSystem
-                                                                   periodBasedTimeSystem:periodBasedTimeSystem] autorelease];
-      newGame.timeSettings = timeSettings;
-    }
 
-    GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
-                                                                   isTimeDataForBlackPlayer:true] autorelease];
-    GoPlayerTimeData* whitePlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
-                                                                   isTimeDataForBlackPlayer:false] autorelease];
-    newGame.playerBlack.timeData = blackPlayerTimeData;
-    newGame.playerWhite.timeData = whitePlayerTimeData;
+    if (self.timeSettings)
+      newGame.timeSettings = self.timeSettings;
+    else
+      newGame.timeSettings = [newGameModel.timeSettingsModel goTimeSettingsRepresentation];
 
     if (newGame.timeSettings.isGameUsingTimedPlay)
+    {
+      GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
+                                                                     isTimeDataForBlackPlayer:true] autorelease];
+      GoPlayerTimeData* whitePlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
+                                                                     isTimeDataForBlackPlayer:false] autorelease];
+      newGame.playerBlack.timeData = blackPlayerTimeData;
+      newGame.playerWhite.timeData = whitePlayerTimeData;
+
       [GoTimeDataValidator validateTimeDataInNodeTree:newGame];
+    }
   }
   DDLogVerbose((@"%@: Game object configuration: board = %@, "
                 "komi = %.1f, handicapPoints = %@, "
@@ -445,7 +432,6 @@
   }
   NSString* commandString = [NSString stringWithFormat:@"go_param_rules japanese_scoring %d", japaneseScoring];
   [[GtpCommand command:commandString] submit];
-  
 }
 
 // -----------------------------------------------------------------------------

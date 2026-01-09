@@ -546,4 +546,48 @@
     return string1 == string2;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a periodBasedTimeSystemType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithPeriodBasedTimeSystemType:(enum GoTimeSystemType)periodBasedTimeSystemType
+{
+  switch (periodBasedTimeSystemType)
+  {
+    case GoTimeSystemTypeCanadian:
+      return @"Canadian Timing";
+    case GoTimeSystemTypeJapanese:
+      return @"Japanese Timing";
+    case GoTimeSystemTypeFischer:
+      return @"Fischer Timing";
+    case GoTimeSystemTypeSteadyAverage:
+      return @"Steady Average Timing";
+    case GoTimeSystemTypeTotalAverage:
+      return @"Total Average Timing";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a periodBasedTimeSystemType.
+// -----------------------------------------------------------------------------
++ (NSString*) shortStringWithPeriodBasedTimeSystemType:(enum GoTimeSystemType)periodBasedTimeSystemType
+{
+  switch (periodBasedTimeSystemType)
+  {
+    case GoTimeSystemTypeCanadian:
+      return @"Canadian";
+    case GoTimeSystemTypeJapanese:
+      return @"Japanese";
+    case GoTimeSystemTypeFischer:
+      return @"Fischer";
+    case GoTimeSystemTypeSteadyAverage:
+      return @"Steady Average";
+    case GoTimeSystemTypeTotalAverage:
+      return @"Total Average";
+    default:
+      return @"Unknown";
+  }
+}
+
 @end

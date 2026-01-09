@@ -225,11 +225,13 @@ enum MaxGamesCategory
     {
       cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
       TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
       sliderCell.descriptionLabel.text = @"Number of threads";
       sliderCell.slider.minimumValue = fuegoThreadCountMinimum;
       sliderCell.slider.maximumValue = fuegoThreadCountMaximum;
       sliderCell.value = self.profile.fuegoThreadCount;
+      [sliderCell setDelegate:self
+         actionValueDidChange:@selector(threadCountDidChange:)
+               valueFormatter:nil];
       break;
     }
     case PonderingSection:
@@ -249,11 +251,13 @@ enum MaxGamesCategory
         {
           cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxPonderTimeDidChange:)];
           sliderCell.descriptionLabel.text = @"Ponder time (minutes)";
           sliderCell.slider.minimumValue = fuegoMaxPonderTimeMinimum / 60;
           sliderCell.slider.maximumValue = fuegoMaxPonderTimeMaximum / 60;
           sliderCell.value = self.profile.fuegoMaxPonderTime / 60;
+          [sliderCell setDelegate:self
+             actionValueDidChange:@selector(maxPonderTimeDidChange:)
+                   valueFormatter:nil];
           break;
         }
         default:
@@ -288,11 +292,13 @@ enum MaxGamesCategory
         {
           cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxThinkingTimeDidChange:)];
           sliderCell.descriptionLabel.text = @"Thinking time (seconds)";
           sliderCell.slider.minimumValue = fuegoMaxThinkingTimeMinimum;
           sliderCell.slider.maximumValue = fuegoMaxThinkingTimeMaximum;
           sliderCell.value = self.profile.fuegoMaxThinkingTime;
+          [sliderCell setDelegate:self
+             actionValueDidChange:@selector(maxThinkingTimeDidChange:)
+                   valueFormatter:nil];
           break;
         }
         case FuegoMaxGamesItem:

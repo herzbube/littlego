@@ -373,6 +373,22 @@ NSString* scoringSystemKey = @"ScoringSystem";
 NSString* lifeAndDeathSettlingRuleKey = @"LifeAndDeathSettlingRule";
 NSString* disputeResolutionRuleKey = @"DisputeResolutionRule";
 NSString* fourPassesRuleKey = @"FourPassesRule";
+// Time settings (part of new game settings)
+NSString* timedPlayEnabledKey = @"TimedPlayEnabled";
+NSString* absoluteTimingEnabledKey = @"AbsoluteTimingEnabled";
+NSString* absoluteTimingDurationInSecondsKey = @"AbsoluteTimingDurationInSeconds";
+NSString* periodBasedTimeSystemEnabledKey = @"PeriodBasedTimeSystemEnabled";
+NSString* periodBasedTimeSystemTypeKey = @"PeriodBasedTimeSystemType";
+NSString* canadianTimingPeriodDurationInSecondsKey = @"CanadianTimingPeriodDurationInSeconds";
+NSString* canadianTimingNumberOfMovesKey = @"CanadianTimingNumberOfMoves";
+NSString* japaneseTimingPeriodDurationInSecondsKey = @"JapaneseTimingPeriodDurationInSeconds";
+NSString* japaneseTimingNumberOfPeriodsKey = @"JapaneseTimingNumberOfPeriods";
+NSString* fischerTimingInitialTimeDurationInSecondsKey = @"FischerTimingInitialTimeDurationInSeconds";
+NSString* fischerTimingExtraTimeDurationInSecondsKey = @"FischerTimingExtraTimeDurationInSeconds";
+NSString* steadyAverageTimingPeriodDurationInSecondsKey = @"SteadyAverageTimingPeriodDurationInSeconds";
+NSString* steadyAverageTimingNumberOfMovesKey = @"SteadyAverageTimingNumberOfMoves";
+NSString* totalAverageTimingPeriodDurationInSecondsKey = @"TotalAverageTimingPeriodDurationInSeconds";
+NSString* totalAverageTimingNumberOfMovesKey = @"TotalAverageTimingNumberOfMoves";
 // Players
 NSString* playerListKey = @"PlayerList";
 NSString* playerUUIDKey = @"UUID";

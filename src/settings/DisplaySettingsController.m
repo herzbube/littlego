@@ -215,13 +215,15 @@ enum DisplayPlayerInfluenceSectionItem
         {
           cell = [TableViewCellFactory cellWithType:SliderWithoutValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(moveNumbersPercentageDidChange:)];
           sliderCell.descriptionLabel.text = @"Display move numbers";
           sliderCell.slider.minimumValue = 0;
           sliderCell.slider.maximumValue = (1.0
                                             * sliderValueFactorForMoveNumbersPercentage);
           sliderCell.value = (self.boardViewModel.moveNumbersPercentage
                               * sliderValueFactorForMoveNumbersPercentage);
+          [sliderCell setDelegate:self
+             actionValueDidChange:@selector(moveNumbersPercentageDidChange:)
+                   valueFormatter:nil];
           break;
         }
         default:
