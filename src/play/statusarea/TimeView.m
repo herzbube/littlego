@@ -335,6 +335,7 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
   // Widest time we support:
   // - 3 digits for minutes
   // - 2 digits for seconds
+  // See gMaximumRemainingTimeInSeconds.
   offscreenView.remainingTimeInSeconds = 53338; // clock shows "888:58"
   // Widest number for either remaining moves or remaining periods we support:
   // 3 digits (irrelevant because "Main time" is wider")

@@ -630,10 +630,14 @@
       return false;
     case GoUnusedTimeHandlingAddPeriodDuration:
       self.remainingTimeInSeconds += timeSystem.periodDurationInSeconds;
+      if (self.remainingTimeInSeconds > gMaximumRemainingTimeInSeconds)
+        self.remainingTimeInSeconds = gMaximumRemainingTimeInSeconds;
       self.remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
       return true;
     case GoUnusedTimeHandlingAddExtraTime:
       self.remainingTimeInSeconds += timeSystem.extraTimeDurationInSeconds;
+      if (self.remainingTimeInSeconds > gMaximumRemainingTimeInSeconds)
+        self.remainingTimeInSeconds = gMaximumRemainingTimeInSeconds;
       self.remainingNumberOfMoves = timeSystem.minimumNumberOfMovesPerPeriod;
       return true;
     case GoUnusedTimeHandlingNone:

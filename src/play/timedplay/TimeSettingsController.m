@@ -759,7 +759,16 @@ enum CellId
 {
   static int sliderCellMaximumValue = 0;
   if (sliderCellMaximumValue == 0)
+  {
+    if (maximumDurationInSeconds > gMaximumRemainingTimeInSeconds)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"maximumDurationInSeconds %f exceeds gMaximumRemainingTimeInSeconds %f",
+                                maximumDurationInSeconds,
+                                gMaximumRemainingTimeInSeconds];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
     sliderCellMaximumValue = [self sliderCellValueFromDurationInSeconds:maximumDurationInSeconds];
+  }
 
   return sliderCellMaximumValue;
 }

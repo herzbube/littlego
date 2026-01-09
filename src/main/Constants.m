@@ -46,6 +46,10 @@ const double gDefaultKomiTerritoryScoring = 6.5;
 // value that NSCoder::decodeIntForKey:() returns if an archive does not contain
 // the specified key. See GoNode implementation for details.
 const unsigned int gNoObjectReferenceNodeID = 0;
+// 999 minutes and 59 seconds. The reason for this limit is that the clock
+// shown in the UI supports "only" a maximum of 3 digits for minutes,
+// i.e. "mmm:ss".
+const double gMaximumRemainingTimeInSeconds = 59999;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";

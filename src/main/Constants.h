@@ -979,6 +979,15 @@ enum GoTimeDataInvalidReason
   /// time data, but that time data is not validated at all because the app
   /// does not know how to interpret the data.
   GoTimeDataInvalidReasonCustomTimeSystem,
+  /// @brief The absolute time is greater than the maximum supported by this
+  /// app.
+  GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum,
+  /// @brief The period-based time system has a period duration that is greater
+  /// than the maximum supported by this app.
+  GoTimeDataInvalidReasonPeriodDurationExceedsMaximum,
+  /// @brief The period-based time system has an extra time duration that is
+  /// greater than the maximum supported by this app.
+  GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum,
   /// @brief A move node does not contain time data.
   GoTimeDataInvalidReasonMoveNodeHasNoTimeData,
   /// @brief A non-move node contains time data.
@@ -1065,6 +1074,7 @@ extern const enum GoScoringSystem gDefaultScoringSystem;
 extern const double gDefaultKomiAreaScoring;
 extern const double gDefaultKomiTerritoryScoring;
 extern const unsigned int gNoObjectReferenceNodeID;
+extern const double gMaximumRemainingTimeInSeconds;
 //@}
 
 // -----------------------------------------------------------------------------

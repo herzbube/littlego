@@ -378,15 +378,31 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   // Check for custom time system first, because a custom time system
   // automatically means "no timed play"
   if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeCustom)
+  {
     return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonCustomTimeSystem);
+  }
   else if (! timeSettings.isGameUsingTimedPlay)
+  {
     return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonGameDoesNotUseTimedPlay);
-  else
-    return GoTimeDataValidationResultValid;
+  }
+  else if (timeSettings.absoluteTimeSystem.supportsTimedPlay &&
+           timeSettings.absoluteTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)
+  {
+    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum);
+  }
+  else if (timeSettings.periodBasedTimeSystem.supportsTimedPlay)
+  {
+    if (timeSettings.periodBasedTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodDurationExceedsMaximum);
+    else if (timeSettings.periodBasedTimeSystem.extraTimeDurationInSeconds > gMaximumRemainingTimeInSeconds)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum);
+  }
 
   // No further time system consistency checks needed - initializers of
   // GoTimeSystem and GoTimeSettings prevent combinations that the app does not
   // support.
+
+  return GoTimeDataValidationResultValid;
 }
 
 // -----------------------------------------------------------------------------
