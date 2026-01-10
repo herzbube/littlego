@@ -83,7 +83,6 @@
   self.shouldSetupComputerPlayer = true;
   self.shouldTriggerComputerPlayerIfItIsTheirTurn = true;
   self.shouldStartHumanPlayerClockIfItIsTheirTurn = true;
-  self.timeSettings = nil;
 
   return self;
 }
@@ -223,11 +222,7 @@
       newGame.rules.fourPassesRule = newGameModel.fourPassesRule;
     }
 
-    if (self.timeSettings)
-      newGame.timeSettings = self.timeSettings;
-    else
-      newGame.timeSettings = [newGameModel.timeSettingsModel goTimeSettingsRepresentation];
-
+    newGame.timeSettings = [newGameModel.timeSettingsModel goTimeSettingsRepresentation];
     if (newGame.timeSettings.isGameUsingTimedPlay)
     {
       GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
@@ -240,6 +235,7 @@
       [GoTimeDataValidator validateTimeDataInNodeTree:newGame];
     }
   }
+  
   DDLogVerbose((@"%@: Game object configuration: board = %@, "
                 "komi = %.1f, handicapPoints = %@, "
                 "playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), "

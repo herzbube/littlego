@@ -26,6 +26,17 @@
 /// TimeSettingsModel can read the values of its properties from a dictionary,
 /// or write them to a dictionary, in order to support reading from/writing to
 /// user defaults.
+///
+/// TimeSettingsModel also can convert its data into a GoTimeSettings object,
+/// or populate its data with the values it receives from a GoTimeSettings
+/// object.
+///
+/// @note The property @e customTimeSystemDescription only participates in the
+/// conversion to/from GoTimeSettings, its value is never read from / written to
+/// the user defaults. The reason is that user defaults need to be stored only
+/// for values that the user selects when they start an entirely new game, but
+/// in that scenario they cannot select to use a custom time system. Custom time
+/// systems only come into play when loading a game from an .sgf file.
 // -----------------------------------------------------------------------------
 @interface TimeSettingsModel : NSObject
 {
@@ -54,5 +65,6 @@
 @property(nonatomic, assign) unsigned long steadyAverageTimingNumberOfMoves;
 @property(nonatomic, assign) double totalAverageTimingPeriodDurationInSeconds;
 @property(nonatomic, assign) unsigned long totalAverageTimingNumberOfMoves;
+@property(nonatomic, retain) NSString* customTimeSystemDescription;
 
 @end

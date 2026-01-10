@@ -60,6 +60,5 @@
 @property(nonatomic, assign) bool shouldSetupComputerPlayer;
 @property(nonatomic, assign) bool shouldTriggerComputerPlayerIfItIsTheirTurn;
 @property(nonatomic, assign) bool shouldStartHumanPlayerClockIfItIsTheirTurn;
-@property(nonatomic, assign) GoTimeSettings* timeSettings;
 
 @end

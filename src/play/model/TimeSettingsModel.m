@@ -51,6 +51,7 @@
   self.steadyAverageTimingNumberOfMoves = 25;
   self.totalAverageTimingPeriodDurationInSeconds = 600.0;
   self.totalAverageTimingNumberOfMoves = 25.0;
+  self.customTimeSystemDescription = nil;
 
   return self;
 }
@@ -84,6 +85,10 @@
   self.steadyAverageTimingNumberOfMoves = [[dictionary valueForKey:steadyAverageTimingNumberOfMovesKey] unsignedLongValue];
   self.totalAverageTimingPeriodDurationInSeconds = [(NSNumber*)[dictionary valueForKey:totalAverageTimingPeriodDurationInSecondsKey] doubleValue];
   self.totalAverageTimingNumberOfMoves = [[dictionary valueForKey:totalAverageTimingNumberOfMovesKey] unsignedLongValue];
+
+  // Property is not part of user defaults, it exists only to convert from/to
+  // GoTimeSettings
+  self.customTimeSystemDescription = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -106,12 +111,15 @@
   [dictionary setValue:[NSNumber numberWithUnsignedLong:self.steadyAverageTimingNumberOfMoves] forKey:steadyAverageTimingNumberOfMovesKey];
   [dictionary setValue:[NSNumber numberWithDouble:self.totalAverageTimingPeriodDurationInSeconds] forKey:totalAverageTimingPeriodDurationInSecondsKey];
   [dictionary setValue:[NSNumber numberWithUnsignedLong:self.totalAverageTimingNumberOfMoves] forKey:totalAverageTimingNumberOfMovesKey];
+
+  // Don't write self.customTimeSystemDescription to user defaults. The property
+  // exists only to convert from/to GoTimeSettings
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Sets the values of selected properties with values represented by
-/// @a goTimeSettings. The properties are those that correspond to the time
-/// systems found in @a goTimeSettings.
+/// @a goTimeSettings. Only those properties are touched that correspond to the
+/// time systems found in @a goTimeSettings.
 ///
 /// @exception InvalidArgumentException Is raised if @a goTimeSettings is
 /// @e nil, or if the period-based GoTimeSystem object's time system type has
@@ -123,13 +131,6 @@
 
   GoTimeSystem* absoluteTimeSystem = goTimeSettings.absoluteTimeSystem;
   GoTimeSystem* periodBasedTimeSystem = goTimeSettings.periodBasedTimeSystem;
-
-  if (absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeNone &&
-      periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeNone)
-  {
-    self.timedPlayEnabled = false;
-    return;
-  }
 
   if (absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeNone)
     self.absoluteTimingEnabled = false;
@@ -166,10 +167,16 @@
       self.totalAverageTimingPeriodDurationInSeconds = periodBasedTimeSystem.periodDurationInSeconds;
       self.totalAverageTimingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
       break;
+    case GoTimeSystemTypeCustom:
+      self.customTimeSystemDescription = periodBasedTimeSystem.customTimeSystemDescription;
+      break;
     default:
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:[NSString stringWithFormat:@"updateWithGoTimeSettings: Invalid period-based time system type %d", periodBasedTimeSystem.goTimeSystemType]];
       break;
   }
+
+  self.timedPlayEnabled = (self.absoluteTimingEnabled ||
+                           self.periodBasedTimeSystemEnabled);
 }
 
 // -----------------------------------------------------------------------------
@@ -230,6 +237,11 @@
         periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithGoTimeSystemType:self.periodBasedTimeSystemType
                                                         periodDurationInSeconds:self.totalAverageTimingPeriodDurationInSeconds
                                                   minimumNumberOfMovesPerPeriod:self.totalAverageTimingNumberOfMoves] autorelease];
+        break;
+      }
+      case GoTimeSystemTypeCustom:
+      {
+        periodBasedTimeSystem = [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:self.customTimeSystemDescription] autorelease];
         break;
       }
       default:
