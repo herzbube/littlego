@@ -19,6 +19,8 @@
 #import "StatusAreaViewController.h"
 #import "StatusViewController.h"
 #import "TimeViewController.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoTimeSettings.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
 
@@ -27,8 +29,10 @@
 /// @brief Class extension with private properties for StatusAreaViewController.
 // -----------------------------------------------------------------------------
 @interface StatusAreaViewController()
+@property(nonatomic, retain) UIStackView* stackView;
 @property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) TimeViewController* timeViewController;
+@property(nonatomic, assign) bool timeViewControllerIntegrationNeedsUpdate;
 @end
 
 
@@ -48,7 +52,11 @@
   if (! self)
     return nil;
 
-  [self setupChildControllers];
+  self.stackView = nil;
+  self.statusViewController = [[[StatusViewController alloc] init] autorelease];
+  self.timeViewControllerIntegrationNeedsUpdate = true;
+
+  [self setupNotificationResponders];
 
   return self;
 }
@@ -58,22 +66,54 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeNotificationResponders];
+
+  self.stackView = nil;
   self.statusViewController = nil;
   self.timeViewController = nil;
 
   [super dealloc];
 }
 
-#pragma mark - Container view controller handling
+#pragma mark - Setup/remove notification responders
 
 // -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
-- (void) setupChildControllers
+- (void) setupNotificationResponders
 {
-  self.statusViewController = [[[StatusViewController alloc] init] autorelease];
-  self.timeViewController = [[[TimeViewController alloc] init] autorelease];
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(goGameDidCreate:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  self.timeViewControllerIntegrationNeedsUpdate = true;
+  [self updateTimeViewControllerIntegrationIfNeeded];
+}
+
+#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
@@ -112,6 +152,7 @@
   [self setupViewHierarchy];
   [self configureViews];
   [self setupAutoLayoutConstraints];
+  [self updateTimeViewControllerIntegrationIfNeeded];
 }
 
 // -----------------------------------------------------------------------------
@@ -132,8 +173,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  [self.view addSubview:self.statusViewController.statusView];
-  [self.view addSubview:self.timeViewController.view];
+  self.stackView = [[[UIStackView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.stackView];
+
+  [self.stackView addArrangedSubview:self.statusViewController.statusView];
 }
 
 // -----------------------------------------------------------------------------
@@ -141,6 +184,8 @@
 // -----------------------------------------------------------------------------
 - (void) configureViews
 {
+  self.stackView.spacing = [AutoLayoutUtility horizontalSpacingSiblings];
+
   [self updateColors];
 }
 
@@ -149,20 +194,41 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
+  self.stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.stackView];
+}
 
-  self.statusViewController.statusView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.timeViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+#pragma mark - Setup/remove TimeViewController
 
-  viewsDictionary[@"statusView"] = self.statusViewController.statusView;
-  viewsDictionary[@"timeView"] = self.timeViewController.view;
+// -----------------------------------------------------------------------------
+/// This is an internal helper invoked during initialization.
+// -----------------------------------------------------------------------------
+- (void) updateTimeViewControllerIntegrationIfNeeded
+{
+  if (! self.timeViewControllerIntegrationNeedsUpdate || ! self.isViewLoaded)
+    return;
+  self.timeViewControllerIntegrationNeedsUpdate = false;
 
-  [visualFormats addObject:@"H:|-0-[statusView]-[timeView]-0-|"];
-  [visualFormats addObject:@"V:|-[statusView]-|"];
-  [visualFormats addObject:@"V:|-[timeView]-|"];
+  GoGame* game = [GoGame sharedGame];
+  GoTimeSettings* timeSettings = game.timeSettings;
 
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.statusViewController.statusView.superview];
+  bool timeViewControllerIsCurrentlyIntegrated = self.timeViewController;
+  bool shouldIntegrateTimeViewController = timeSettings.isGameUsingTimedPlay;
+  if (timeViewControllerIsCurrentlyIntegrated == shouldIntegrateTimeViewController)
+    return;
+
+  if (shouldIntegrateTimeViewController)
+  {
+    self.timeViewController = [[[TimeViewController alloc] init] autorelease];
+    // Caues UIStackView to add the view as subview
+    [self.stackView addArrangedSubview:self.timeViewController.view];
+  }
+  else
+  {
+    // Causes UIStackView to remove the view from its arranged subviews
+    [self.timeViewController.view removeFromSuperview];
+    self.timeViewController = nil;
+  }
 }
 
 #pragma mark - User interface style handling (light/dark mode)

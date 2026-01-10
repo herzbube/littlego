@@ -19,7 +19,9 @@
 #import "TimeViewController.h"
 #import "TimeView.h"
 #import "../../go/GoClock.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoNode.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeSettings.h"
@@ -80,6 +82,7 @@
   self.timeDataValidityNeedsUpdate = false;
 
   [self setupNotificationResponders];
+  [self initializeWithGoModelData];
 
   return self;
 }
@@ -135,6 +138,12 @@
   [self setupViewHierarchy];
   [self configureView];
   [self setupAutoLayoutConstraints];
+
+  // This controller can be instantiated in response to goGameDidCreate. In
+  // that case it will miss goGameDidCreate, so to make sure the views are
+  // properly initialized we have to trigger a full update here.
+  self.timeDataNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
@@ -333,7 +342,10 @@
     return;
   }
 
+  // Must be invoked first because it sets "needs update" flags for other
+  // updaters
   [self updateTimeData];
+
   [self updateBlackPlayerClockState];
   [self updateWhitePlayerClockState];
   [self updateBlackPlayerTimeData];
@@ -342,7 +354,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates TimeView objects to display each player's current time data.
+/// @brief Updates TimeView objects to completely refresh the data they display.
 // -----------------------------------------------------------------------------
 - (void) updateTimeData
 {
@@ -350,13 +362,11 @@
     return;
   self.timeDataNeedsUpdate = false;
 
-  GoGame* game = [GoGame sharedGame];
-
-  [self updateClockStateInTimeView:self.timeViewBlackPlayer withPlayerTimeData:game.playerBlack.timeData];
-  [self updateTimeDataInTimeView:self.timeViewBlackPlayer withPlayerTimeData:game.playerBlack.timeData];
-
-  [self updateClockStateInTimeView:self.timeViewWhitePlayer withPlayerTimeData:game.playerWhite.timeData];
-  [self updateTimeDataInTimeView:self.timeViewWhitePlayer withPlayerTimeData:game.playerWhite.timeData];
+  self.blackPlayerClockStateNeedsUpdate = true;
+  self.whitePlayerClockStateNeedsUpdate = true;
+  self.blackPlayerTimeDataNeedsUpdate = true;
+  self.whitePlayerTimeDataNeedsUpdate = true;
+  self.timeDataValidityNeedsUpdate = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -455,6 +465,31 @@
   timeView.remainingTimeInSeconds = playerTimeData.remainingTimeInSeconds;
   // TODO xxx TimeView should not show anything for FischerTiming
   timeView.remainingNumberOfMovesOrPeriods = playerTimeData.remainingNumberOfMovesOrPeriods;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes some properties of this controller with current Go model
+/// data.
+///
+/// There is no permanent instance of this controller, rather it is instantiated
+/// on demand when a game is created that supports timed play. Because of this,
+/// this controller may miss some notifications that have already been sent
+/// before this controller instance was created. This method is a somewhat ugly
+/// hack to initialize properties that may have the wrong values because of the
+/// missed notifications.
+// -----------------------------------------------------------------------------
+- (void) initializeWithGoModelData
+{
+  // We assume that this controller is created in response to goGameDidCreate.
+  // Either the game is created with only a root node (completely new game, or
+  // game loaded from .sgf), or the game is created with a full node tree
+  // (unarchive) with the current board position set up correctly. In all cases
+  // the current board position must hold the correct time data validity. If the
+  // current board position changes later on, we will get a time validity
+  // notification.
+  GoGame* game = [GoGame sharedGame];
+  GoNode* currentNode = game.boardPosition.currentNode;
+  self.isTimeDataValid = currentNode.isTimeDataValid;
 }
 
 @end
