@@ -905,6 +905,10 @@
 		D73B0D3A2F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
 		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74980BB2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
+		D76B0D022F12B33C00032D62 /* TimeDataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */; };
+		D76B0D032F12B33C00032D62 /* TimeDataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */; };
+		D76B0D062F13F8CC00032D62 /* CompositeDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D052F13F8CC00032D62 /* CompositeDuration.m */; };
+		D76B0D072F13F8CC00032D62 /* CompositeDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D052F13F8CC00032D62 /* CompositeDuration.m */; };
 		D79B28082ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
 		D79B28092ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
 		D79B280C2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */ = {isa = PBXBuildFile; fileRef = D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */; };
@@ -1950,6 +1954,10 @@
 		D74980B92EBF87BD00BD595D /* Registry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Registry.m; sourceTree = "<group>"; };
 		D74980BC2EBF902500BD595D /* ModelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelProvider.h; sourceTree = "<group>"; };
 		D74980BD2EBFA19200BD595D /* WindowProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowProvider.h; sourceTree = "<group>"; };
+		D76B0D002F12B33C00032D62 /* TimeDataUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeDataUtilities.h; sourceTree = "<group>"; };
+		D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeDataUtilities.m; sourceTree = "<group>"; };
+		D76B0D042F13F8CC00032D62 /* CompositeDuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CompositeDuration.h; sourceTree = "<group>"; };
+		D76B0D052F13F8CC00032D62 /* CompositeDuration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CompositeDuration.m; sourceTree = "<group>"; };
 		D79B28062ED3CC0700AA71A6 /* FilesystemMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemMonitor.h; sourceTree = "<group>"; };
 		D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FilesystemMonitor.m; sourceTree = "<group>"; };
 		D79B280A2EDB12C900AA71A6 /* FilesystemOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemOperations.h; sourceTree = "<group>"; };
@@ -3608,6 +3616,8 @@
 				CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */,
 				CDFA32A615A0A3E400439B4E /* PathUtilities.h */,
 				CDFA32A715A0A3E400439B4E /* PathUtilities.m */,
+				D76B0D002F12B33C00032D62 /* TimeDataUtilities.h */,
+				D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */,
 				CDE30139135CA7D5005235F2 /* UIColorAdditions.h */,
 				CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */,
 				CDEF3C75140A69A2002D9C1C /* UIDebugging.h */,
@@ -3932,6 +3942,8 @@
 		D7F593DD2EF891EF0031317A /* timedplay */ = {
 			isa = PBXGroup;
 			children = (
+				D76B0D042F13F8CC00032D62 /* CompositeDuration.h */,
+				D76B0D052F13F8CC00032D62 /* CompositeDuration.m */,
 				D7F593DA2EF891EF0031317A /* PlayerClockService.h */,
 				D7F593E02EF951180031317A /* PlayerClockTimer.h */,
 				D7F593E12EF951180031317A /* PlayerClockTimer.m */,
@@ -4603,6 +4615,7 @@
 				CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */,
 				D71F0E0F2F0D8AB000823888 /* TimeSettingsController.m in Sources */,
 				CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */,
+				D76B0D022F12B33C00032D62 /* TimeDataUtilities.m in Sources */,
 				CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */,
 				CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */,
 				CDAF1723196CA81900271396 /* GoVertexNumeric.m in Sources */,
@@ -4686,6 +4699,7 @@
 				CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */,
 				D7F593DE2EF891EF0031317A /* TimedPlayController.m in Sources */,
 				CDB49E3C2220AFE5006DC1A4 /* AccessibilityUtility.m in Sources */,
+				D76B0D062F13F8CC00032D62 /* CompositeDuration.m in Sources */,
 				CD1F4F8025AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */,
 				CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */,
 				CDBEBA3C27B1A218000F9BF5 /* AnnotationViewController.m in Sources */,
@@ -4816,6 +4830,7 @@
 				CD85B5AD1401C23D001715B8 /* GtpClient.mm in Sources */,
 				CDFD9F7A18F1D57B0031CBCF /* ArchiveViewController.m in Sources */,
 				CDB198C82B78E6C600E8512F /* UserManualViewController.m in Sources */,
+				D76B0D072F13F8CC00032D62 /* CompositeDuration.m in Sources */,
 				CD85B5AE1401C23D001715B8 /* GtpEngine.mm in Sources */,
 				CDFD9F6F18F1D34A0031CBCF /* SettingsViewController.m in Sources */,
 				CDAF17121967FAF100271396 /* BoardViewIntersection.m in Sources */,
@@ -5065,6 +5080,7 @@
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDBCF1F9282FB1FD00411CA6 /* EditNodeDescriptionController.m in Sources */,
 				CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
+				D76B0D032F12B33C00032D62 /* TimeDataUtilities.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CDF24626296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m in Sources */,
 				CD07270F180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,

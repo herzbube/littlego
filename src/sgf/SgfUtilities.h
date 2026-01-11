@@ -18,6 +18,7 @@
 // Forward declarations
 @class SGFCDocumentReadResult;
 @class GoTimeSystem;
+@class TimeSettingsModel;
 
 
 // -----------------------------------------------------------------------------
@@ -56,5 +57,7 @@
                              didConsumeAbsoluteTimeDuration:(bool*)didConsumeAbsoluteTimeDuration;
 + (NSString*) sgfDurationStringForDurationValue:(double)durationValue;
 + (double) durationValueFromSgfDurationString:(NSString*)sgfDurationString;
++ (TimeSettingsModel*) timeSettingsFromSgfGameInfoNode:(SGFCNode*)sgfGameInfoNode;
++ (TimeSettingsModel*) timeSettingsFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
 
 @end

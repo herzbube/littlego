@@ -127,7 +127,8 @@
 // -----------------------------------------------------------------------------
 - (void) updateWithGoTimeSettings:(GoTimeSettings*)goTimeSettings
 {
-  [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"updateWithGoTimeSettings: goTimeSettings is nil"];
+  if (! goTimeSettings)
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"updateWithGoTimeSettings: goTimeSettings is nil"];
 
   GoTimeSystem* absoluteTimeSystem = goTimeSettings.absoluteTimeSystem;
   GoTimeSystem* periodBasedTimeSystem = goTimeSettings.periodBasedTimeSystem;

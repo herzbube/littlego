@@ -17,9 +17,12 @@
 
 // Project includes
 #import "GameInfoItem.h"
+#import "../play/model/TimeSettingsModel.h"
+#import "../play/timedplay/CompositeDuration.h"
 #import "../sgf/SgfUtilities.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
+#import "../utility/TimeDataUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -62,6 +65,8 @@ enum SummarySectionItem
   WhitePlayerNameSummaryItem,
   GameResultSummaryItem,
   BoardSizeSummaryItem,
+  TimeLimitSummaryItem,
+  OvertimeInformationSummaryItem,
   MaxSummarySectionItem
 };
 
@@ -553,6 +558,16 @@ enum DataSourceInfoSectionItem
           cell = [self boardSizeCellWithTableView:tableView];
           break;
         }
+        case TimeLimitSummaryItem:
+        {
+          cell = [self timeLimitCellWithTableView:tableView];
+          break;
+        }
+        case OvertimeInformationSummaryItem:
+        {
+          cell = [self overtimeInformationCellWithTableView:tableView];
+          break;
+        }
         default:
         {
           assert(0);
@@ -609,9 +624,9 @@ enum DataSourceInfoSectionItem
           switch (row)
           {
             case TimeLimitInSecondsItem:
-              return [self value1CellWithTableView:tableView itemName:@"Time limit" itemValue:self.timeLimitInSecondsAsString];
+              return [self timeLimitCellWithTableView:tableView];
             case OvertimeInformationItem:
-              return [self variableHeightCellWithTableView:tableView itemName:@"Overtime" itemValue:self.overtimeInformation];
+              return [self overtimeInformationCellWithTableView:tableView];
             case OpeningInformationItem:
               return [self variableHeightCellWithTableView:tableView itemName:@"Opening" itemValue:self.openingInformation];
             default:
@@ -837,16 +852,24 @@ enum DataSourceInfoSectionItem
                                         hasData:&_gameResultHasData];
     self.gameResult = goGameInfo.gameResult;
 
+    TimeSettingsModel* timeSettingsModel = [SgfUtilities timeSettingsFromSgfGameInfo:goGameInfo];
     NSString* formattedTimeLimitInSeconds;
-    if (goGameInfo.timeLimitInSeconds != 0.0)
-      formattedTimeLimitInSeconds = [NSString stringWithFormat:@"%.1f", goGameInfo.timeLimitInSeconds];
+    if (timeSettingsModel.timedPlayEnabled && timeSettingsModel.absoluteTimingEnabled)
+      formattedTimeLimitInSeconds = [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.absoluteTimingDurationInSeconds];
     else
       formattedTimeLimitInSeconds = @"";
     self.timeLimitInSecondsAsString = [self stringValue:formattedTimeLimitInSeconds
                              forMissingDataDisplayStyle:missingDataDisplayStyle
                                                 hasData:&_timeLimitInSecondsHasData];
-    self.timeLimitInSeconds = goGameInfo.timeLimitInSeconds;
-    self.overtimeInformation = [self stringValue:goGameInfo.overtimeInformation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_overtimeInformationHasData];
+    self.timeLimitInSeconds = timeSettingsModel.absoluteTimingDurationInSeconds;
+    NSString* formattedOvertimeInformation;
+    if (timeSettingsModel.timedPlayEnabled && timeSettingsModel.periodBasedTimeSystemEnabled)
+      formattedOvertimeInformation = [TimeDataUtilities periodBasedTimeSystemSummary:timeSettingsModel];
+    else
+      formattedOvertimeInformation = @"";
+    self.overtimeInformation = [self stringValue:formattedOvertimeInformation
+                      forMissingDataDisplayStyle:missingDataDisplayStyle
+                                         hasData:&_overtimeInformationHasData];
     self.openingInformation = [self stringValue:goGameInfo.openingInformation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_openingInformationHasData];
 
     self.blackPlayerName = [self stringValue:goGameInfo.blackPlayerName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerNameHasData];
@@ -922,6 +945,10 @@ enum DataSourceInfoSectionItem
     _summarySectionItems[@(summarySectionRow++)] = @(WhitePlayerNameSummaryItem);
   if (self.gameResultHasData)
     _summarySectionItems[@(summarySectionRow++)] = @(GameResultSummaryItem);
+  if (self.timeLimitInSecondsHasData)
+    _summarySectionItems[@(summarySectionRow++)] = @(TimeLimitSummaryItem);
+  if (self.overtimeInformationHasData)
+    _summarySectionItems[@(summarySectionRow++)] = @(OvertimeInformationSummaryItem);
 
   self.basicInfoSectionItems = [NSMutableDictionary dictionary];
   NSUInteger basicInfoSectionRow = 0;
@@ -1067,6 +1094,16 @@ enum DataSourceInfoSectionItem
 - (UITableViewCell*) gameResultCellWithTableView:(UITableView*)tableView
 {
   return [self variableHeightCellWithTableView:tableView itemName:@"Result" itemValue:self.gameResultAsString];
+}
+
+- (UITableViewCell*) timeLimitCellWithTableView:(UITableView*)tableView
+{
+  return [self value1CellWithTableView:tableView itemName:@"Main time" itemValue:self.timeLimitInSecondsAsString];
+}
+
+- (UITableViewCell*) overtimeInformationCellWithTableView:(UITableView*)tableView
+{
+  return [self variableHeightCellWithTableView:tableView itemName:@"Overtime" itemValue:self.overtimeInformation];
 }
 
 - (UITableViewCell*) value1CellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue

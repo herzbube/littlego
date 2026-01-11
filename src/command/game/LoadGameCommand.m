@@ -273,8 +273,8 @@ static const int maxStepsForCreateNodes = 9;
   NewGameModel* newGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
   enum GoBoardSize oldBoardSize = newGameModel.boardSize;
   newGameModel.boardSize = goBoardSize;
-  TimeSettingsModel* oldTimeSettingsModel = newGameModel.timeSettingsModel;
-  newGameModel.timeSettingsModel = [self timeSettingsFromSgfGameInfoNode:self.sgfGameInfoNode];
+  TimeSettingsModel* oldTimeSettingsModel = [[newGameModel.timeSettingsModel retain] autorelease];
+  newGameModel.timeSettingsModel = [SgfUtilities timeSettingsFromSgfGameInfoNode:self.sgfGameInfoNode];
 
   if (self.restoreMode)
   {
@@ -323,60 +323,6 @@ static const int maxStepsForCreateNodes = 9;
   newGameModel.timeSettingsModel = oldTimeSettingsModel;
 
   return success;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a TimeSettingsModel object that is populated with the time
-/// settings (if any) stored in @a sgfGameInfoNode.
-// -----------------------------------------------------------------------------
-- (TimeSettingsModel*) timeSettingsFromSgfGameInfoNode:(SGFCNode*)sgfGameInfoNode
-{
-  bool absoluteTimingEnabled = false;
-  double absoluteTimingDurationInSeconds = 0;
-  SGFCProperty* tmProperty = [self.sgfGameInfoNode propertyWithType:SGFCPropertyTypeTM];
-  if (tmProperty)
-  {
-    SGFCReal tmPropertyValue = tmProperty.propertyValue.toSingleValue.toRealValue.realValue;
-    if (tmPropertyValue > 0)
-    {
-      absoluteTimingEnabled = true;
-      absoluteTimingDurationInSeconds = tmPropertyValue;
-    }
-  }
-
-  GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
-  SGFCProperty* otProperty = [self.sgfGameInfoNode propertyWithType:SGFCPropertyTypeOT];
-  if (otProperty)
-  {
-    NSString* sgfOvertimeString = otProperty.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
-
-    double* absoluteTimeDurationPointer = (absoluteTimingEnabled
-                                           ? &absoluteTimingDurationInSeconds
-                                           : nil);
-    bool didConsumeAbsoluteTimeDuration;
-    periodBasedTimeSystem = [SgfUtilities periodBasedTimeSystemForSgfOvertimeString:sgfOvertimeString
-                                                               absoluteTimeDuration:absoluteTimeDurationPointer
-                                                     didConsumeAbsoluteTimeDuration:&didConsumeAbsoluteTimeDuration];
-    if (didConsumeAbsoluteTimeDuration)
-    {
-      absoluteTimingEnabled = false;
-      absoluteTimingDurationInSeconds = 0.0;
-    }
-  }
-
-  GoTimeSystem* absoluteTimeSystem = nil;
-  if (absoluteTimingEnabled)
-    absoluteTimeSystem = [[[GoTimeSystem alloc] initWithAbsoluteTimeDurationInSeconds:absoluteTimingDurationInSeconds] autorelease];
-  else
-    absoluteTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
-
-  GoTimeSettings* goTimeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:absoluteTimeSystem
-                                                                 periodBasedTimeSystem:periodBasedTimeSystem] autorelease];
-
-
-  TimeSettingsModel* timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
-  [timeSettingsModel updateWithGoTimeSettings:goTimeSettings];
-  return timeSettingsModel;
 }
 
 #pragma mark - Step 2: Prune node tree

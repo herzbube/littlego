@@ -26,7 +26,6 @@
 #import "../go/GoUtilities.h"
 #import "../main/ModelProvider.h"
 #import "../main/Registry.h"
-#import "../play/model/TimeSettingsModel.h"
 #import "../play/timedplay/TimeSettingsController.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
@@ -37,6 +36,7 @@
 #import "../ui/UIViewControllerAdditions.h"
 #import "../utility/NSObjectAdditions.h"
 #import "../utility/NSStringAdditions.h"
+#import "../utility/TimeDataUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -667,7 +667,7 @@ enum CellID
     {
       TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
       variableHeightCell.descriptionLabel.text = @"Time settings";
-      variableHeightCell.valueLabel.text = [self timeSettingsModelSummary:self.theNewGameModel.timeSettingsModel];
+      variableHeightCell.valueLabel.text = [TimeDataUtilities timeSettingsModelSummary:self.theNewGameModel.timeSettingsModel];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     default:
@@ -1482,26 +1482,6 @@ enum CellID
       @throw exception;
     }
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a string that is a summary of the values found in
-/// @a timeSettingsModel.
-// -----------------------------------------------------------------------------
-- (NSString*) timeSettingsModelSummary:(TimeSettingsModel*)timeSettingsModel
-{
-  if (! timeSettingsModel.timedPlayEnabled)
-    return @"Disabled";
-  else if (! timeSettingsModel.absoluteTimingEnabled && ! timeSettingsModel.periodBasedTimeSystemEnabled)
-    return @"Disabled";
-  else if (timeSettingsModel.absoluteTimingEnabled && timeSettingsModel.periodBasedTimeSystemEnabled)
-    return [NSString stringWithFormat:@"Main time + overtime (%@)", [NSString shortStringWithPeriodBasedTimeSystemType:timeSettingsModel.periodBasedTimeSystemType]];
-  else if (timeSettingsModel.absoluteTimingEnabled)
-    return @"Main time";
-  else if (timeSettingsModel.periodBasedTimeSystemEnabled)
-    return [NSString stringWithFormat:@"Overtime (%@)", [NSString shortStringWithPeriodBasedTimeSystemType:timeSettingsModel.periodBasedTimeSystemType]];
-  else
-    return @"Unsupported values";
 }
 
 // -----------------------------------------------------------------------------

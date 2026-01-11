@@ -17,6 +17,7 @@
 
 // Project includes
 #import "TimeSettingsController.h"
+#import "CompositeDuration.h"
 #import "../model/TimeSettingsModel.h"
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewSliderCell.h"
@@ -28,14 +29,6 @@
 // Arbitrarily chosen maximum values
 static const double maximumDurationInSeconds = 43200; // 12 hours
 static const unsigned long maximumNumberOfMovesOrPeriods = 1000;
-
-struct CompositeDuration
-{
-  int numberOfHours;
-  int numberOfMinutes;
-  int numberOfSeconds;
-};
-typedef struct CompositeDuration CompositeDuration;
 
 
 // -----------------------------------------------------------------------------
@@ -706,39 +699,8 @@ enum CellId
 - (NSString*) stringForSliderCellValue:(NSNumber*)sliderCellValueAsNumber
 {
   int sliderCellValue = [sliderCellValueAsNumber intValue];
-  CompositeDuration compositeDuration = [self compositeDurationFromSliderCellValue:sliderCellValue];
-
-  if (compositeDuration.numberOfHours == 0)
-  {
-    if (compositeDuration.numberOfMinutes == 0)
-      return [self duration:compositeDuration.numberOfSeconds singularUnitName:@"second" pluralUnitName:@"seconds"];
-    else if (compositeDuration.numberOfSeconds == 0)
-      return [self duration:compositeDuration.numberOfMinutes singularUnitName:@"minute" pluralUnitName:@"minutes"];
-    else
-      return [NSString stringWithFormat:@"%d:%02d minutes", compositeDuration.numberOfMinutes, compositeDuration.numberOfSeconds];
-  }
-  else
-  {
-    if (compositeDuration.numberOfMinutes == 0)
-      return [self duration:compositeDuration.numberOfHours singularUnitName:@"hour" pluralUnitName:@"hours"];
-    else
-      return [NSString stringWithFormat:@"%d:%02d hours", compositeDuration.numberOfHours, compositeDuration.numberOfMinutes];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a string representation of @a duration, using either the
-/// singular or plural unit names depending on whether @a duration is 1 or
-/// greater than 1.
-// -----------------------------------------------------------------------------
-- (NSString*) duration:(int)duration
-      singularUnitName:(NSString*)singularUnitName
-        pluralUnitName:(NSString*)pluralUnitName
-{
-  if (duration == 0)
-    return nil;
-  else
-    return [NSString stringWithFormat:@"%d %@", duration, (duration == 1 ? singularUnitName : pluralUnitName)];
+  CompositeDuration* compositeDuration = [self compositeDurationFromSliderCellValue:sliderCellValue];
+  return compositeDuration.humanReadableString;
 }
 
 // -----------------------------------------------------------------------------
@@ -844,18 +806,8 @@ enum CellId
 // -----------------------------------------------------------------------------
 - (double) durationInSecondsFromSliderCellValue:(int)sliderCellValue
 {
-  CompositeDuration compositeDuration = [self compositeDurationFromSliderCellValue:sliderCellValue];
-  return [self durationInSecondsFromCompositeDuration:compositeDuration];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the number of seconds that @a compositeDuration represents.
-// -----------------------------------------------------------------------------
-- (double) durationInSecondsFromCompositeDuration:(CompositeDuration)compositeDuration
-{
-  return (compositeDuration.numberOfSeconds +
-          compositeDuration.numberOfMinutes * 60 +
-          compositeDuration.numberOfHours * 3600);
+  CompositeDuration* compositeDuration = [self compositeDurationFromSliderCellValue:sliderCellValue];
+  return compositeDuration.durationInSeconds;
 }
 
 // -----------------------------------------------------------------------------
@@ -866,15 +818,13 @@ enum CellId
 /// sliderCellValueFromDurationInSeconds:() performs rounding, the reverse
 /// operation will not arrive at the original result.
 // -----------------------------------------------------------------------------
-- (CompositeDuration) compositeDurationFromSliderCellValue:(int)sliderCellValue
+- (CompositeDuration*) compositeDurationFromSliderCellValue:(int)sliderCellValue
 {
-  CompositeDuration compositeDuration;
-
   if (sliderCellValue <= 600)
   {
-    compositeDuration.numberOfHours = 0;
-    compositeDuration.numberOfMinutes = sliderCellValue / 60;
-    compositeDuration.numberOfSeconds = sliderCellValue % 60;
+    return [[[CompositeDuration alloc] initWithHours:0
+                                             minutes:sliderCellValue / 60
+                                           seconds:sliderCellValue % 60] autorelease];
   }
   else
   {
@@ -884,12 +834,10 @@ enum CellId
     else
       durationInMinutes = (sliderCellValue - 950) * 5 + 360;
 
-    compositeDuration.numberOfHours = durationInMinutes / 60;
-    compositeDuration.numberOfMinutes = durationInMinutes % 60;
-    compositeDuration.numberOfSeconds = 0;
+    return [[[CompositeDuration alloc] initWithHours:durationInMinutes / 60
+                                             minutes:durationInMinutes % 60
+                                           seconds:0] autorelease];
   }
-
-  return compositeDuration;
 }
 
 #pragma mark - Private helpers

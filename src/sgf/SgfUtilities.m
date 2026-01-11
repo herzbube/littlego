@@ -17,7 +17,9 @@
 
 // Project includes
 #import "SgfUtilities.h"
+#import "../go/GoTimeSettings.h"
 #import "../go/GoTimeSystem.h"
+#import "../play/model/TimeSettingsModel.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
 
@@ -797,6 +799,118 @@
 {
   double durationValue = [sgfDurationString doubleValue];
   return round(durationValue * 100.0) / 100.0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a TimeSettingsModel object that is populated with the time
+/// settings (if any) stored in @a sgfGameInfoNode.
+// -----------------------------------------------------------------------------
++ (TimeSettingsModel*) timeSettingsFromSgfGameInfoNode:(SGFCNode*)sgfGameInfoNode
+{
+  double tmPropertyValue = 0.0;
+  double* tmPropertyValuePointer = nil;
+  SGFCProperty* tmProperty = [sgfGameInfoNode propertyWithType:SGFCPropertyTypeTM];
+  if (tmProperty)
+  {
+    tmPropertyValue = tmProperty.propertyValue.toSingleValue.toRealValue.realValue;
+    tmPropertyValuePointer = &tmPropertyValue;
+  }
+
+  SGFCProperty* otProperty = [sgfGameInfoNode propertyWithType:SGFCPropertyTypeOT];
+  NSString* otPropertyValue = (otProperty
+                               ? otProperty.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue
+                               : nil);
+
+  return [SgfUtilities timeSettingsFromTmPropertyValue:tmPropertyValuePointer
+                                       otPropertyValue:otPropertyValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a TimeSettingsModel object that is populated with the time
+/// settings (if any) stored in @a sgfGameInfo.
+///
+/// Implementation note: Unfortunately SGFCGameInfo does not unambiguously
+/// indicate the presence or absence of the TM and OT properties. We need to
+/// determine the presence or absence by comparing the values provided by
+/// SGFCGameInfo with conventional defaults, i.e. 0 (zero) duration for TM and
+/// an empty string for OT.
+// -----------------------------------------------------------------------------
++ (TimeSettingsModel*) timeSettingsFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo
+{
+  // The value 0 (zero) conventionally indicates property absence. Strictly
+  // speaking a TM property could be present and have value zero, but it is
+  // unlikely that any Go application which writes SGF would operate with a
+  // zero duration for absolute time. Also, this app is not designed to work
+  // with a zero duration (e.g. the GoTimeSystem initializer would throw an
+  // exception).
+  double tmPropertyValue = sgfGameInfo.timeLimitInSeconds;
+  double* tmPropertyValuePointer = (sgfGameInfo.timeLimitInSeconds != 0.0
+                                    ? &tmPropertyValue
+                                    : nil);
+
+  // An empty string conventionally indicates property absence. Strictly
+  // speaking an OT property could be present and have an empty string value,
+  // but it is unlikely that any Go application which writes SGF would use an
+  // empty string to describe the time system that they used. This app would be
+  // capable of working with an empty description, but from a user perspective
+  // it would not make much sense.
+  NSString* otPropertyValue = (sgfGameInfo.overtimeInformation.length > 0
+                               ? sgfGameInfo.overtimeInformation
+                               : nil);
+
+  return [SgfUtilities timeSettingsFromTmPropertyValue:tmPropertyValuePointer
+                                       otPropertyValue:otPropertyValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a TimeSettingsModel object that is populated with the time
+/// settings taken from the values of @a tmPropertyValue and @a otPropertyValue.
+///
+/// The two parameters refer to the values of the SGF game info properties TM
+/// and OT. The value @e nil indicates that the respective property is not
+/// present.
+// -----------------------------------------------------------------------------
++ (TimeSettingsModel*) timeSettingsFromTmPropertyValue:(double*)tmPropertyValue
+                                       otPropertyValue:(NSString*)otPropertyValue
+{
+  bool absoluteTimingEnabled = false;
+  double absoluteTimingDurationInSeconds = 0;
+  if (tmPropertyValue && *tmPropertyValue > 0)
+  {
+    absoluteTimingEnabled = true;
+    absoluteTimingDurationInSeconds = *tmPropertyValue;
+  }
+
+  GoTimeSystem* periodBasedTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
+  if (otPropertyValue)
+  {
+    double* absoluteTimeDurationPointer = (absoluteTimingEnabled
+                                           ? &absoluteTimingDurationInSeconds
+                                           : nil);
+    bool didConsumeAbsoluteTimeDuration;
+    periodBasedTimeSystem = [SgfUtilities periodBasedTimeSystemForSgfOvertimeString:otPropertyValue
+                                                               absoluteTimeDuration:absoluteTimeDurationPointer
+                                                     didConsumeAbsoluteTimeDuration:&didConsumeAbsoluteTimeDuration];
+    if (didConsumeAbsoluteTimeDuration)
+    {
+      absoluteTimingEnabled = false;
+      absoluteTimingDurationInSeconds = 0.0;
+    }
+  }
+
+  GoTimeSystem* absoluteTimeSystem = nil;
+  if (absoluteTimingEnabled)
+    absoluteTimeSystem = [[[GoTimeSystem alloc] initWithAbsoluteTimeDurationInSeconds:absoluteTimingDurationInSeconds] autorelease];
+  else
+    absoluteTimeSystem = [[[GoTimeSystem alloc] init] autorelease];
+
+  GoTimeSettings* goTimeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:absoluteTimeSystem
+                                                                 periodBasedTimeSystem:periodBasedTimeSystem] autorelease];
+
+
+  TimeSettingsModel* timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
+  [timeSettingsModel updateWithGoTimeSettings:goTimeSettings];
+  return timeSettingsModel;
 }
 
 @end
