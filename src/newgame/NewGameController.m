@@ -26,6 +26,7 @@
 #import "../go/GoUtilities.h"
 #import "../main/ModelProvider.h"
 #import "../main/Registry.h"
+#import "../play/model/TimeSettingsModel.h"
 #import "../play/timedplay/TimeSettingsController.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
@@ -151,6 +152,7 @@ enum CellID
 @interface NewGameController()
 @property(nonatomic, assign) id<NewGameControllerDelegate> delegate;
 @property(nonatomic, assign) bool loadGame;
+@property(nonatomic, retain) TimeSettingsModel* archivedGameTimeSettingsModel;
 @property(nonatomic, assign) NewGameModel* theNewGameModel;
 @property(nonatomic, assign) PlayerModel* playerModel;
 @property(nonatomic, assign) bool advancedScreenWasShown;
@@ -167,6 +169,30 @@ enum CellID
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a NewGameController instance of
+/// grouped style. The intent is to start a new game from scratch.
+// -----------------------------------------------------------------------------
++ (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
+{
+  return [NewGameController controllerWithDelegate:delegate
+                                          loadGame:false
+                                 timeSettingsModel:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a NewGameController instance of
+/// grouped style. The intent is to load an archived game. The archived game
+/// uses time settings stored in @a timeSettingsModel.
+// -----------------------------------------------------------------------------
++ (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
+                loadGameWithTimeSettingsModel:(TimeSettingsModel*)timeSettingsModel
+{
+  return [NewGameController controllerWithDelegate:delegate
+                                          loadGame:true
+                                 timeSettingsModel:timeSettingsModel];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a NewGameController instance of
 /// grouped style.
 ///
 /// @a loadGame is true to indicate that the intent of starting the new game is
@@ -174,9 +200,14 @@ enum CellID
 /// should be started in the regular fashion. The two modes display different
 /// UI elements and trigger different operations when the user finally confirms
 /// starting the new game.
+///
+/// If @a loadgame is @e true then @a timeSettingsModel must be provided and
+/// must represent the time settings of the game to be loaded. If @a loadGame
+/// is @e false then @a timeSettingsModel is ignored.
 // -----------------------------------------------------------------------------
 + (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
                                      loadGame:(bool)loadGame
+                            timeSettingsModel:(TimeSettingsModel*)timeSettingsModel;
 {
   [NewGameController postNotificationOnMainThread:newGameScreenWillAppear];
 
@@ -186,6 +217,8 @@ enum CellID
     [controller autorelease];
     controller.delegate = delegate;
     controller.loadGame = loadGame;
+    controller.archivedGameTimeSettingsModel = timeSettingsModel;
+
     NewGameModel* theNewGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
     controller.theNewGameModel = theNewGameModel;
     PlayerModel* playerModel = [Registry sharedRegistry].modelProvider.playerModel;
@@ -667,8 +700,13 @@ enum CellID
     {
       TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
       variableHeightCell.descriptionLabel.text = @"Time settings";
-      variableHeightCell.valueLabel.text = [TimeDataUtilities timeSettingsModelSummary:self.theNewGameModel.timeSettingsModel];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      TimeSettingsModel* timeSettingsModel = (self.loadGame
+                                              ? self.archivedGameTimeSettingsModel
+                                              : self.theNewGameModel.timeSettingsModel);
+      variableHeightCell.valueLabel.text = [TimeDataUtilities timeSettingsModelSummary:timeSettingsModel];
+      cell.accessoryType = (self.loadGame && ! timeSettingsModel.timedPlayEnabled
+                            ? UITableViewCellAccessoryNone
+                            : UITableViewCellAccessoryDisclosureIndicator);
     }
     default:
     {
@@ -770,7 +808,23 @@ enum CellID
     }
     case TimeSettingsCellID:
     {
-      TimeSettingsController* timeSettingsController = [[[TimeSettingsController alloc] initWithTimeSettingsModel:self.theNewGameModel.timeSettingsModel] autorelease];
+      if (self.loadGame && ! self.archivedGameTimeSettingsModel.timedPlayEnabled)
+        return;
+
+      bool readonlyMode;
+      TimeSettingsModel* timeSettingsModel;
+      if (self.loadGame)
+      {
+        readonlyMode = true;
+        timeSettingsModel = self.archivedGameTimeSettingsModel;
+      }
+      else
+      {
+        readonlyMode = false;
+        timeSettingsModel = self.theNewGameModel.timeSettingsModel;
+      }
+      TimeSettingsController* timeSettingsController = [[[TimeSettingsController alloc] initWithTimeSettingsModel:timeSettingsModel
+                                                                                                     readonlyMode:readonlyMode] autorelease];
       [self.navigationController pushViewController:timeSettingsController animated:YES];
       self.timeSettingsScreenWasShown = true;
       return;

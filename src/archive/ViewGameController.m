@@ -755,7 +755,8 @@ enum LoadResultType
   self.gameInfoItemBeingLoaded = gameInfoItem;
   self.gameInfoNodeBeingLoaded = gameInfoNode;
   self.gameBeingLoaded = game;
-  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:true] retain];
+  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self
+                                                      loadGameWithTimeSettingsModel:gameInfoItem.timeSettingsModel] retain];
   [self presentNavigationControllerWithRootViewController:newGameController];
   [newGameController release];
 }

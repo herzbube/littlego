@@ -32,7 +32,8 @@ static const unsigned long maximumNumberOfMovesOrPeriods = 1000;
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Time Settings" table view.
+/// @brief Enumerates the sections presented in the "Time Settings" table view
+/// in readwrite mode.
 // -----------------------------------------------------------------------------
 enum TimeSettingsTableViewSection
 {
@@ -55,7 +56,7 @@ enum TimedPlayEnabledSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the AbsoluteTimeSystemSection.
+/// @brief Enumerates items in the AbsoluteTimeSystemSection in readwrite mode.
 // -----------------------------------------------------------------------------
 enum AbsoluteTimeSystemSectionItem
 {
@@ -87,29 +88,45 @@ enum PeriodBasedTimeSystemParametersSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates period-based time systems that can be shown in
-/// #CellIdFischerTimingExtraTimeDurationInSeconds.
+/// @brief Enumerates the sections presented in the "Time Settings" table view
+/// in readonly mode.
 // -----------------------------------------------------------------------------
-enum PeriodBasedTimeSystemType
+enum TimeSettingsTableViewSection_Readonly
 {
-  PeriodBasedTimeSystemTypeCanadian,
-  PeriodBasedTimeSystemTypeJapanese,
-  PeriodBasedTimeSystemTypeFischer,
-  PeriodBasedTimeSystemTypeSteadyAverage,
-  PeriodBasedTimeSystemTypeTotalAverage,
-  PeriodBasedTimeSystemTypeMax,
-  PeriodBasedTimeSystemTypeUndefined,
+  MaintimeSection_Readonly,
+  OvertimeSection_Readonly,
+  OvertimeParametersSection_Readonly,
+  MaxSection_Readonly,
+  MaxSection_OvertimeDisabled_Readonly = OvertimeSection_Readonly + 1,
 };
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in MaintimeSection_Readonly.
+// -----------------------------------------------------------------------------
+enum MaintimeSectionItem_Readonly
+{
+  MaintimeDescriptionItem_Readonly,
+  MaxMaintimeSectionItem_Readonly,
+};
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for TimeSettingsController.
+/// @brief Enumerates items in OvertimeSection_Readonly.
 // -----------------------------------------------------------------------------
-@interface TimeSettingsController()
-@property(nonatomic, retain) TimeSettingsModel* timeSettingsModel;
-@property(nonatomic, assign) bool readonlyMode;
-@end
+enum OvertimeSectionItem_Readonly
+{
+  OvertimeDescriptionItem_Readonly,
+  MaxOvertimeSectionItem_Readonly,
+};
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in OvertimeParametersSection_Readonly.
+// -----------------------------------------------------------------------------
+enum OvertimeParametersSectionItem_Readonly
+{
+  PeriodDurationInSecondsItem_Readonly,  // also used for fischerTimingInitialTimeDurationInSeconds
+  NumberOfMovesOrPeriodsItem_Readonly,   // also used for fischerTimingExtraTimeDurationInSeconds
+  MaxPeriodBasedTimeSystemParametersSectionItem_Readonly,
+};
 
 // -----------------------------------------------------------------------------
 /// @brief Enumerates all table view cells that can ever appear in the
@@ -137,19 +154,59 @@ enum CellId
   CellIdSteadyAverageTimingNumberOfMoves,
   CellIdTotalAverageTimingPeriodDurationInSeconds,
   CellIdTotalAverageTimingNumberOfMoves,
+
+  CellIdMaintimeDescription_Readonly,
+  CellIdOvertimeDescription_Readonly,
+  CellIdCanadianTimingPeriodDurationInSeconds_Readonly,
+  CellIdCanadianTimingNumberOfMoves_Readonly,
+  CellIdJapaneseTimingPeriodDurationInSeconds_Readonly,
+  CellIdJapaneseTimingNumberOfPeriods_Readonly,
+  CellIdFischerTimingInitialTimeDurationInSeconds_Readonly,
+  CellIdFischerTimingExtraTimeDurationInSeconds_Readonly,
+  CellIdSteadyAverageTimingPeriodDurationInSeconds_Readonly,
+  CellIdSteadyAverageTimingNumberOfMoves_Readonly,
+  CellIdTotalAverageTimingPeriodDurationInSeconds_Readonly,
+  CellIdTotalAverageTimingNumberOfMoves_Readonly,
 };
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates period-based time systems that can be shown in
+/// #CellIdFischerTimingExtraTimeDurationInSeconds.
+// -----------------------------------------------------------------------------
+enum PeriodBasedTimeSystemType
+{
+  PeriodBasedTimeSystemTypeCanadian,
+  PeriodBasedTimeSystemTypeJapanese,
+  PeriodBasedTimeSystemTypeFischer,
+  PeriodBasedTimeSystemTypeSteadyAverage,
+  PeriodBasedTimeSystemTypeTotalAverage,
+  PeriodBasedTimeSystemTypeMax,
+  PeriodBasedTimeSystemTypeUndefined,
+};
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for TimeSettingsController.
+// -----------------------------------------------------------------------------
+@interface TimeSettingsController()
+@property(nonatomic, retain) TimeSettingsModel* timeSettingsModel;
+@property(nonatomic, assign) bool readonlyMode;
+@end
+
 
 @implementation TimeSettingsController
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a TimeSettingsController object. The user can view and
-/// change the values in @a timeSettingsModel.
+/// @brief Initializes a TimeSettingsController object. The user can view the
+/// values in @a timeSettingsModel. If @a readonlyMode is @e false the user can
+/// also change the values.
 ///
 /// @note This is the designated initializer of TimeSettingsController.
 // -----------------------------------------------------------------------------
 - (id) initWithTimeSettingsModel:(TimeSettingsModel*)timeSettingsModel
+                    readonlyMode:(bool)readonlyMode
 {
   // Call designated initializer of superclass (UITableViewController)
   self = [super initWithStyle:UITableViewStyleGrouped];
@@ -157,8 +214,10 @@ enum CellId
     return nil;
 
   self.timeSettingsModel = timeSettingsModel;
-  self.readonlyMode = false;
-  self.navigationItem.title = @"Select time settings";
+  self.readonlyMode = readonlyMode;
+  self.navigationItem.title = (readonlyMode
+                               ? @"Time settings"
+                               : @"Select time settings");
 
   return self;
 }
@@ -178,12 +237,22 @@ enum CellId
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  if (! self.timeSettingsModel.timedPlayEnabled)
-    return MaxSection_TimedPlayDisabled;
-  else if (! self.timeSettingsModel.periodBasedTimeSystemEnabled)
-    return MaxSection_PeriodBasedTimeSystemDisabled;
+  if (self.readonlyMode)
+  {
+    if (self.timeSettingsModel.periodBasedTimeSystemEnabled)
+      return MaxSection_Readonly;
+    else
+      return MaxSection_OvertimeDisabled_Readonly;
+  }
   else
-    return MaxSection;
+  {
+    if (! self.timeSettingsModel.timedPlayEnabled)
+      return MaxSection_TimedPlayDisabled;
+    else if (! self.timeSettingsModel.periodBasedTimeSystemEnabled)
+      return MaxSection_PeriodBasedTimeSystemDisabled;
+    else
+      return MaxSection;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -191,34 +260,54 @@ enum CellId
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  switch (section)
+  if (self.readonlyMode)
   {
-    case TimedPlayEnabledSection:
+    switch (section)
     {
-      return MaxTimedPlayEnabledSectionItem;
+      case MaintimeSection_Readonly:
+        return MaxMaintimeSectionItem_Readonly;
+      case OvertimeSection_Readonly:
+        return MaxOvertimeSectionItem_Readonly;
+      case OvertimeParametersSection_Readonly:
+        return MaxPeriodBasedTimeSystemParametersSectionItem_Readonly;
+      default:
+      {
+        assert(0);
+        break;
+      }
     }
-    case AbsoluteTimeSystemSection:
+  }
+  else
+  {
+    switch (section)
     {
-      if (self.timeSettingsModel.absoluteTimingEnabled)
-        return MaxAbsoluteTimeSystemSectionItem;
-      else
-        return MaxAbsoluteTimeSystemSectionItem_AbsoluteTimingDisabled;
-    }
-    case PeriodBasedTimeSystemSection:
-    {
-      if (self.timeSettingsModel.periodBasedTimeSystemEnabled)
-        return MaxPeriodBasedTimeSystemSectionItem;
-      else
-        return MaxPeriodBasedTimeSystemSectionItem_PeriodBasedTimeSystemDisabled;
-    }
-    case PeriodBasedTimeSystemParametersSection:
-    {
-      return MaxPeriodBasedTimeSystemParametersSectionItem;
-    }
-    default:
-    {
-      assert(0);
-      break;
+      case TimedPlayEnabledSection:
+      {
+        return MaxTimedPlayEnabledSectionItem;
+      }
+      case AbsoluteTimeSystemSection:
+      {
+        if (self.timeSettingsModel.absoluteTimingEnabled)
+          return MaxAbsoluteTimeSystemSectionItem;
+        else
+          return MaxAbsoluteTimeSystemSectionItem_AbsoluteTimingDisabled;
+      }
+      case PeriodBasedTimeSystemSection:
+      {
+        if (self.timeSettingsModel.periodBasedTimeSystemEnabled)
+          return MaxPeriodBasedTimeSystemSectionItem;
+        else
+          return MaxPeriodBasedTimeSystemSectionItem_PeriodBasedTimeSystemDisabled;
+      }
+      case PeriodBasedTimeSystemParametersSection:
+      {
+        return MaxPeriodBasedTimeSystemParametersSectionItem;
+      }
+      default:
+      {
+        assert(0);
+        break;
+      }
     }
   }
 
@@ -266,6 +355,9 @@ enum CellId
                              forTableView:(UITableView*)tableView
                         forRowAtIndexPath:(NSIndexPath*)indexPath
 {
+  if (self.readonlyMode)
+    return [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+
   UITableViewCell* cell = nil;
 
   switch (cellId)
@@ -310,132 +402,158 @@ enum CellId
   {
     case CellIdTimedPlayEnabled:
     {
-      cell.textLabel.text = @"Use timed play";
-      [self configureSwitchCell:cell
-                      withValue:self.timeSettingsModel.timedPlayEnabled
-                         action:@selector(toggleTimedPlayEnabled:)];
+      [self configureEnabledValueCell:cell
+                             withText:@"Use timed play"
+                         enabledValue:self.timeSettingsModel.timedPlayEnabled
+                               action:@selector(toggleTimedPlayEnabled:)];
       break;
     }
     case CellIdAbsoluteTimingEnabled:
     {
-      cell.textLabel.text = @"Use main time";
-      [self configureSwitchCell:cell
-                      withValue:self.timeSettingsModel.absoluteTimingEnabled
-                         action:@selector(toggleAbsoluteTimingEnabled:)];
+      [self configureEnabledValueCell:cell
+                             withText:@"Use main time"
+                         enabledValue:self.timeSettingsModel.absoluteTimingEnabled
+                               action:@selector(toggleAbsoluteTimingEnabled:)];
       break;
     }
     case CellIdAbsoluteTimingDurationInSeconds:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Main time";
-      [self configureSliderCell:sliderCell
-          withDurationInSeconds:self.timeSettingsModel.absoluteTimingDurationInSeconds
-           actionValueDidChange:@selector(absoluteTimingDurationInSecondsDidChange:)];
+      [self configureDurationValueCell:cell
+                              withText:@"Main time"
+                     durationInSeconds:self.timeSettingsModel.absoluteTimingDurationInSeconds
+                  actionValueDidChange:@selector(absoluteTimingDurationInSecondsDidChange:)];
       break;
     }
     case CellIdPeriodBasedTimeSystemEnabled:
     {
-      cell.textLabel.text = @"Use overtime";
-      [self configureSwitchCell:cell
-                      withValue:self.timeSettingsModel.periodBasedTimeSystemEnabled
-                         action:@selector(togglePeriodBasedTimeSystemEnabled:)];
+      [self configureEnabledValueCell:cell
+                             withText:@"Use overtime"
+                         enabledValue:self.timeSettingsModel.periodBasedTimeSystemEnabled
+                               action:@selector(togglePeriodBasedTimeSystemEnabled:)];
       break;
     }
     case CellIdPeriodBasedTimeSystemType:
     {
       cell.textLabel.text = @"Time system";
       cell.detailTextLabel.text = [NSString stringWithPeriodBasedTimeSystemType:self.timeSettingsModel.periodBasedTimeSystemType];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      cell.accessoryType = (self.readonlyMode
+                            ? UITableViewCellAccessoryNone
+                            : UITableViewCellAccessoryDisclosureIndicator);
       break;
     }
     case CellIdCanadianTimingPeriodDurationInSeconds:
+    case CellIdCanadianTimingPeriodDurationInSeconds_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Overtime";
-      [self configureSliderCell:sliderCell
-          withDurationInSeconds:self.timeSettingsModel.canadianTimingPeriodDurationInSeconds
-           actionValueDidChange:@selector(canadianTimingPeriodDurationInSecondsDidChange:)];
+      [self configureDurationValueCell:cell
+                              withText:@"Overtime"
+                     durationInSeconds:self.timeSettingsModel.canadianTimingPeriodDurationInSeconds
+                  actionValueDidChange:@selector(canadianTimingPeriodDurationInSecondsDidChange:)];
       break;
     }
     case CellIdCanadianTimingNumberOfMoves:
+    case CellIdCanadianTimingNumberOfMoves_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Moves";
-      [self configureSliderCell:sliderCell
-     withNumberOfMovesOrPeriods:self.timeSettingsModel.canadianTimingNumberOfMoves
-           actionValueDidChange:@selector(canadianTimingNumberOfMovesDidChange:)];
+      [self configureNumberOfMovesOrPeriodsValueCell:cell
+                                            withText:@"Moves"
+                              numberOfMovesOrPeriods:self.timeSettingsModel.canadianTimingNumberOfMoves
+                                actionValueDidChange:@selector(canadianTimingNumberOfMovesDidChange:)];
       break;
     }
     case CellIdJapaneseTimingPeriodDurationInSeconds:
+    case CellIdJapaneseTimingPeriodDurationInSeconds_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Period duration";
-      [self configureSliderCell:sliderCell
-          withDurationInSeconds:self.timeSettingsModel.japaneseTimingPeriodDurationInSeconds
-           actionValueDidChange:@selector(japaneseTimingPeriodDurationInSecondsDidChange:)];
+      [self configureDurationValueCell:cell
+                              withText:@"Period duration"
+                     durationInSeconds:self.timeSettingsModel.japaneseTimingPeriodDurationInSeconds
+                  actionValueDidChange:@selector(japaneseTimingPeriodDurationInSecondsDidChange:)];
       break;
     }
     case CellIdJapaneseTimingNumberOfPeriods:
+    case CellIdJapaneseTimingNumberOfPeriods_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Time periods";
-      [self configureSliderCell:sliderCell
-     withNumberOfMovesOrPeriods:self.timeSettingsModel.japaneseTimingNumberOfPeriods
-           actionValueDidChange:@selector(japaneseTimingNumberOfPeriodsDidChange:)];
+      [self configureNumberOfMovesOrPeriodsValueCell:cell
+                                            withText:@"Time periods"
+                              numberOfMovesOrPeriods:self.timeSettingsModel.japaneseTimingNumberOfPeriods
+                                actionValueDidChange:@selector(japaneseTimingNumberOfPeriodsDidChange:)];
       break;
     }
     case CellIdFischerTimingInitialTimeDurationInSeconds:
+    case CellIdFischerTimingInitialTimeDurationInSeconds_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Initial time";
-      [self configureSliderCell:sliderCell
-          withDurationInSeconds:self.timeSettingsModel.fischerTimingInitialTimeDurationInSeconds
-           actionValueDidChange:@selector(fischerTimingInitialTimeDurationInSecondsDidChange:)];
+      [self configureDurationValueCell:cell
+                              withText:@"Initial time"
+                     durationInSeconds:self.timeSettingsModel.fischerTimingInitialTimeDurationInSeconds
+                  actionValueDidChange:@selector(fischerTimingInitialTimeDurationInSecondsDidChange:)];
       break;
     }
     case CellIdFischerTimingExtraTimeDurationInSeconds:
+    case CellIdFischerTimingExtraTimeDurationInSeconds_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Extra time";
-      [self configureSliderCell:sliderCell
-          withDurationInSeconds:self.timeSettingsModel.fischerTimingExtraTimeDurationInSeconds
-           actionValueDidChange:@selector(fischerTimingExtraTimeDurationInSecondsDidChange:)];
+      [self configureDurationValueCell:cell
+                              withText:@"Extra time"
+                     durationInSeconds:self.timeSettingsModel.fischerTimingExtraTimeDurationInSeconds
+                  actionValueDidChange:@selector(fischerTimingExtraTimeDurationInSecondsDidChange:)];
       break;
     }
     case CellIdSteadyAverageTimingPeriodDurationInSeconds:
+    case CellIdSteadyAverageTimingPeriodDurationInSeconds_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Overtime";
-      [self configureSliderCell:sliderCell
-          withDurationInSeconds:self.timeSettingsModel.steadyAverageTimingPeriodDurationInSeconds
-           actionValueDidChange:@selector(steadyAverageTimingPeriodDurationInSecondsDidChange:)];
+      [self configureDurationValueCell:cell
+                              withText:@"Overtime"
+                     durationInSeconds:self.timeSettingsModel.steadyAverageTimingPeriodDurationInSeconds
+                  actionValueDidChange:@selector(steadyAverageTimingPeriodDurationInSecondsDidChange:)];
       break;
     }
     case CellIdSteadyAverageTimingNumberOfMoves:
+    case CellIdSteadyAverageTimingNumberOfMoves_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Moves";
-      [self configureSliderCell:sliderCell
-     withNumberOfMovesOrPeriods:self.timeSettingsModel.steadyAverageTimingNumberOfMoves
-           actionValueDidChange:@selector(steadyAverageTimingNumberOfMovesDidChange:)];
+      [self configureNumberOfMovesOrPeriodsValueCell:cell
+                                            withText:@"Moves"
+                              numberOfMovesOrPeriods:self.timeSettingsModel.steadyAverageTimingNumberOfMoves
+                                actionValueDidChange:@selector(steadyAverageTimingNumberOfMovesDidChange:)];
       break;
     }
     case CellIdTotalAverageTimingPeriodDurationInSeconds:
+    case CellIdTotalAverageTimingPeriodDurationInSeconds_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Overtime";
-      [self configureSliderCell:sliderCell
-          withDurationInSeconds:self.timeSettingsModel.totalAverageTimingPeriodDurationInSeconds
-           actionValueDidChange:@selector(totalAverageTimingPeriodDurationInSecondsDidChange:)];
+      [self configureDurationValueCell:cell
+                              withText:@"Overtime"
+                     durationInSeconds:self.timeSettingsModel.totalAverageTimingPeriodDurationInSeconds
+                  actionValueDidChange:@selector(totalAverageTimingPeriodDurationInSecondsDidChange:)];
       break;
     }
     case CellIdTotalAverageTimingNumberOfMoves:
+    case CellIdTotalAverageTimingNumberOfMoves_Readonly:
     {
-      TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      sliderCell.descriptionLabel.text = @"Moves";
-      [self configureSliderCell:sliderCell
-     withNumberOfMovesOrPeriods:self.timeSettingsModel.totalAverageTimingNumberOfMoves
-           actionValueDidChange:@selector(totalAverageTimingNumberOfMovesDidChange:)];
+      [self configureNumberOfMovesOrPeriodsValueCell:cell
+                                            withText:@"Moves"
+                              numberOfMovesOrPeriods:self.timeSettingsModel.totalAverageTimingNumberOfMoves
+                                actionValueDidChange:@selector(totalAverageTimingNumberOfMovesDidChange:)];
+      break;
+    }
+    case CellIdMaintimeDescription_Readonly:
+    {
+      cell.textLabel.text = @"Main time";
+      if (self.timeSettingsModel.absoluteTimingEnabled)
+        cell.detailTextLabel.text = [CompositeDuration humanReadableStringWithDurationInSeconds:self.timeSettingsModel.absoluteTimingDurationInSeconds];
+      else
+        cell.detailTextLabel.text = @"None";
+      cell.accessoryType = UITableViewCellAccessoryNone;
+      break;
+    }
+    case CellIdOvertimeDescription_Readonly:
+    {
+      if (self.timeSettingsModel.periodBasedTimeSystemEnabled)
+      {
+        cell.textLabel.text = @"Overtime system";
+        cell.detailTextLabel.text = [NSString stringWithPeriodBasedTimeSystemType:self.timeSettingsModel.periodBasedTimeSystemType];
+      }
+      else
+      {
+        cell.textLabel.text = @"Overtime";
+        cell.detailTextLabel.text = @"None";
+      }
+      cell.accessoryType = UITableViewCellAccessoryNone;
       break;
     }
     default:
@@ -449,49 +567,85 @@ enum CellId
 // -----------------------------------------------------------------------------
 /// @brief Private helper for configureCell:withCellId:().
 // -----------------------------------------------------------------------------
-- (void) configureSwitchCell:(UITableViewCell*)switchCell
-                   withValue:(bool)value
-                      action:(SEL)action
+- (void) configureEnabledValueCell:(UITableViewCell*)cell
+                          withText:(NSString*)text
+                      enabledValue:(bool)enabledValue
+                            action:(SEL)action
 {
-  UISwitch* accessoryView = (UISwitch*)switchCell.accessoryView;
-  accessoryView.on = value ? YES : NO;
-  [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
-  [accessoryView addTarget:self action:action forControlEvents:UIControlEventValueChanged];
+  cell.textLabel.text = text;
+  if (self.readonlyMode)
+  {
+    cell.detailTextLabel.text = (enabledValue ? @"Enabled" : @"Disabled");
+    cell.accessoryType = UITableViewCellAccessoryNone;
+  }
+  else
+  {
+    UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+    accessoryView.on = enabledValue ? YES : NO;
+    [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
+    [accessoryView addTarget:self action:action forControlEvents:UIControlEventValueChanged];
+  }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for configureCell:withCellId:().
 // -----------------------------------------------------------------------------
-- (void) configureSliderCell:(TableViewSliderCell*)sliderCell
-       withDurationInSeconds:(double)durationInSeconds
-        actionValueDidChange:(SEL)actionValueDidChange
+- (void) configureDurationValueCell:(UITableViewCell*)cell
+                           withText:(NSString*)text
+                  durationInSeconds:(double)durationInSeconds
+               actionValueDidChange:(SEL)actionValueDidChange
 {
-  [sliderCell setDelegate:self
-     actionValueDidChange:actionValueDidChange
-           valueFormatter:@selector(stringForSliderCellValue:)];
+  if (self.readonlyMode)
+  {
+    cell.textLabel.text = text;
+    cell.detailTextLabel.text = [CompositeDuration humanReadableStringWithDurationInSeconds:durationInSeconds];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+  }
+  else
+  {
+    TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+    sliderCell.descriptionLabel.text = text;
 
-  int sliderCellValue = [self sliderCellValueFromDurationInSeconds:durationInSeconds];
-  int sliderCellMaximumValue = [self sliderCellMaximumValue];
+    [sliderCell setDelegate:self
+       actionValueDidChange:actionValueDidChange
+             valueFormatter:@selector(stringForSliderCellValue:)];
 
-  [sliderCell setValue:sliderCellValue
-          minimumValue:1.0
-          maximumValue:sliderCellMaximumValue];
+    int sliderCellValue = [self sliderCellValueFromDurationInSeconds:durationInSeconds];
+    int sliderCellMaximumValue = [self sliderCellMaximumValue];
+
+    [sliderCell setValue:sliderCellValue
+            minimumValue:1.0
+            maximumValue:sliderCellMaximumValue];
+  }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for configureCell:withCellId:().
 // -----------------------------------------------------------------------------
-- (void) configureSliderCell:(TableViewSliderCell*)sliderCell
-  withNumberOfMovesOrPeriods:(unsigned long)numberOfMovesOrPeriods
-        actionValueDidChange:(SEL)actionValueDidChange
+- (void) configureNumberOfMovesOrPeriodsValueCell:(UITableViewCell*)cell
+                                         withText:(NSString*)text
+                           numberOfMovesOrPeriods:(unsigned long)numberOfMovesOrPeriods
+                             actionValueDidChange:(SEL)actionValueDidChange
 {
-  [sliderCell setDelegate:self
-     actionValueDidChange:actionValueDidChange
-           valueFormatter:@selector(stringForNumberOfMovesOrPeriods:)];
+  if (self.readonlyMode)
+  {
+    cell.textLabel.text = text;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", numberOfMovesOrPeriods];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+  }
+  else
+  {
+    TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
+    sliderCell.descriptionLabel.text = text;
 
-  [sliderCell setValue:(int)numberOfMovesOrPeriods
-          minimumValue:1.0
-          maximumValue:maximumNumberOfMovesOrPeriods];
+    [sliderCell setDelegate:self
+       actionValueDidChange:actionValueDidChange
+             valueFormatter:@selector(stringForNumberOfMovesOrPeriods:)];
+
+    [sliderCell setValue:(int)numberOfMovesOrPeriods
+            minimumValue:1.0
+            maximumValue:maximumNumberOfMovesOrPeriods];
+  }
 }
 
 #pragma mark - UITableViewDelegate overrides
@@ -849,90 +1003,160 @@ enum CellId
 // -----------------------------------------------------------------------------
 - (enum CellId) cellIdForIndexPath:(NSIndexPath*)indexPath
 {
-  switch (indexPath.section)
+  if (self.readonlyMode)
   {
-    case TimedPlayEnabledSection:
+    switch (indexPath.section)
     {
-      return CellIdTimedPlayEnabled;
-    }
-    case AbsoluteTimeSystemSection:
-    {
-      switch (indexPath.row)
+      case MaintimeSection_Readonly:
       {
-        case AbsoluteTimingEnabledItem:
-          return CellIdAbsoluteTimingEnabled;
-        case AbsoluteTimingDurationInSecondsItem:
-          return CellIdAbsoluteTimingDurationInSeconds;
-        default:
-          break;
+        return CellIdMaintimeDescription_Readonly;
       }
-      break;
-    }
-    case PeriodBasedTimeSystemSection:
-    {
-      switch (indexPath.row)
+      case OvertimeSection_Readonly:
       {
-        case PeriodBasedTimeSystemEnabledItem:
-          return CellIdPeriodBasedTimeSystemEnabled;
-        case PeriodBasedTimeSystemTypeItem:
-          return CellIdPeriodBasedTimeSystemType;
-        default:
-          break;
+        return CellIdOvertimeDescription_Readonly;
       }
-      break;
-    }
-    case PeriodBasedTimeSystemParametersSection:
-    {
-      switch (indexPath.row)
+      case OvertimeParametersSection_Readonly:
       {
-        case PeriodDurationInSecondsItem: // FischerInitialTimeDurationInSecondsItem
+        switch (indexPath.row)
         {
-          switch (self.timeSettingsModel.periodBasedTimeSystemType)
+          case PeriodDurationInSecondsItem_Readonly: // FischerInitialTimeDurationInSecondsItem
           {
-            case GoTimeSystemTypeCanadian:
-              return CellIdCanadianTimingPeriodDurationInSeconds;
-            case GoTimeSystemTypeJapanese:
-              return CellIdJapaneseTimingPeriodDurationInSeconds;
-            case GoTimeSystemTypeFischer:
-              return CellIdFischerTimingInitialTimeDurationInSeconds;
-            case GoTimeSystemTypeSteadyAverage:
-              return CellIdSteadyAverageTimingPeriodDurationInSeconds;
-            case GoTimeSystemTypeTotalAverage:
-              return CellIdTotalAverageTimingPeriodDurationInSeconds;
-            default:
-              break;
+            switch (self.timeSettingsModel.periodBasedTimeSystemType)
+            {
+              case GoTimeSystemTypeCanadian:
+                return CellIdCanadianTimingPeriodDurationInSeconds;
+              case GoTimeSystemTypeJapanese:
+                return CellIdJapaneseTimingPeriodDurationInSeconds;
+              case GoTimeSystemTypeFischer:
+                return CellIdFischerTimingInitialTimeDurationInSeconds;
+              case GoTimeSystemTypeSteadyAverage:
+                return CellIdSteadyAverageTimingPeriodDurationInSeconds;
+              case GoTimeSystemTypeTotalAverage:
+                return CellIdTotalAverageTimingPeriodDurationInSeconds;
+              default:
+                break;
+            }
+            break;
           }
-          break;
-        }
-        case NumberOfMovesOrPeriodsItem: // FischerExtraTimeDurationInSeconds
-        {
-          switch (self.timeSettingsModel.periodBasedTimeSystemType)
+          case NumberOfMovesOrPeriodsItem_Readonly: // FischerExtraTimeDurationInSeconds
           {
-            case GoTimeSystemTypeCanadian:
-              return CellIdCanadianTimingNumberOfMoves;
-            case GoTimeSystemTypeJapanese:
-              return CellIdJapaneseTimingNumberOfPeriods;
-            case GoTimeSystemTypeFischer:
-              return CellIdFischerTimingExtraTimeDurationInSeconds;
-            case GoTimeSystemTypeSteadyAverage:
-              return CellIdSteadyAverageTimingNumberOfMoves;
-            case GoTimeSystemTypeTotalAverage:
-              return CellIdTotalAverageTimingNumberOfMoves;
-            default:
-              break;
+            switch (self.timeSettingsModel.periodBasedTimeSystemType)
+            {
+              case GoTimeSystemTypeCanadian:
+                return CellIdCanadianTimingNumberOfMoves;
+              case GoTimeSystemTypeJapanese:
+                return CellIdJapaneseTimingNumberOfPeriods;
+              case GoTimeSystemTypeFischer:
+                return CellIdFischerTimingExtraTimeDurationInSeconds;
+              case GoTimeSystemTypeSteadyAverage:
+                return CellIdSteadyAverageTimingNumberOfMoves;
+              case GoTimeSystemTypeTotalAverage:
+                return CellIdTotalAverageTimingNumberOfMoves;
+              default:
+                break;
+            }
+            break;
           }
-          break;
+          default:
+          {
+            break;
+          }
         }
-        default:
-        {
-          break;
-        }
+        break;
       }
-      break;
+      default:
+      {
+        break;
+      }
     }
-    default:
+  }
+  else
+  {
+    switch (indexPath.section)
     {
-      break;
+      case TimedPlayEnabledSection:
+      {
+        return CellIdTimedPlayEnabled;
+      }
+      case AbsoluteTimeSystemSection:
+      {
+        switch (indexPath.row)
+        {
+          case AbsoluteTimingEnabledItem:
+            return CellIdAbsoluteTimingEnabled;
+          case AbsoluteTimingDurationInSecondsItem:
+            return CellIdAbsoluteTimingDurationInSeconds;
+          default:
+            break;
+        }
+        break;
+      }
+      case PeriodBasedTimeSystemSection:
+      {
+        switch (indexPath.row)
+        {
+          case PeriodBasedTimeSystemEnabledItem:
+            return CellIdPeriodBasedTimeSystemEnabled;
+          case PeriodBasedTimeSystemTypeItem:
+            return CellIdPeriodBasedTimeSystemType;
+          default:
+            break;
+        }
+        break;
+      }
+      case PeriodBasedTimeSystemParametersSection:
+      {
+        switch (indexPath.row)
+        {
+          case PeriodDurationInSecondsItem: // FischerInitialTimeDurationInSecondsItem
+          {
+            switch (self.timeSettingsModel.periodBasedTimeSystemType)
+            {
+              case GoTimeSystemTypeCanadian:
+                return CellIdCanadianTimingPeriodDurationInSeconds;
+              case GoTimeSystemTypeJapanese:
+                return CellIdJapaneseTimingPeriodDurationInSeconds;
+              case GoTimeSystemTypeFischer:
+                return CellIdFischerTimingInitialTimeDurationInSeconds;
+              case GoTimeSystemTypeSteadyAverage:
+                return CellIdSteadyAverageTimingPeriodDurationInSeconds;
+              case GoTimeSystemTypeTotalAverage:
+                return CellIdTotalAverageTimingPeriodDurationInSeconds;
+              default:
+                break;
+            }
+            break;
+          }
+          case NumberOfMovesOrPeriodsItem: // FischerExtraTimeDurationInSeconds
+          {
+            switch (self.timeSettingsModel.periodBasedTimeSystemType)
+            {
+              case GoTimeSystemTypeCanadian:
+                return CellIdCanadianTimingNumberOfMoves;
+              case GoTimeSystemTypeJapanese:
+                return CellIdJapaneseTimingNumberOfPeriods;
+              case GoTimeSystemTypeFischer:
+                return CellIdFischerTimingExtraTimeDurationInSeconds;
+              case GoTimeSystemTypeSteadyAverage:
+                return CellIdSteadyAverageTimingNumberOfMoves;
+              case GoTimeSystemTypeTotalAverage:
+                return CellIdTotalAverageTimingNumberOfMoves;
+              default:
+                break;
+            }
+            break;
+          }
+          default:
+          {
+            break;
+          }
+        }
+        break;
+      }
+      default:
+      {
+        break;
+      }
     }
   }
 

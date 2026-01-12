@@ -169,6 +169,7 @@ enum DataSourceInfoSectionItem
 
 // From here on re-declarations of public properties to make them readwrite
 @property(nonatomic, retain, readwrite) SGFCGoGameInfo* goGameInfo;
+@property(nonatomic, retain, readwrite) TimeSettingsModel* timeSettingsModel;
 @property(nonatomic, retain, readwrite) NSString* descriptiveText;
 @property(nonatomic, retain, readwrite) NSString* titleText;
 
@@ -773,6 +774,7 @@ enum DataSourceInfoSectionItem
     self.gameResult = SGFCGameResultMake(SGFCGameResultTypeUnknownResult, SGFCWinTypeWinWithScore, 0.0, NO);
     self.gameResultHasData = false;
 
+    self.timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
     self.timeLimitInSecondsAsString = missingStringValue;
     self.timeLimitInSeconds = 0.0;
     self.timeLimitInSecondsHasData = false;
@@ -852,19 +854,19 @@ enum DataSourceInfoSectionItem
                                         hasData:&_gameResultHasData];
     self.gameResult = goGameInfo.gameResult;
 
-    TimeSettingsModel* timeSettingsModel = [SgfUtilities timeSettingsFromSgfGameInfo:goGameInfo];
+    self.timeSettingsModel = [SgfUtilities timeSettingsFromSgfGameInfo:goGameInfo];
     NSString* formattedTimeLimitInSeconds;
-    if (timeSettingsModel.timedPlayEnabled && timeSettingsModel.absoluteTimingEnabled)
-      formattedTimeLimitInSeconds = [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.absoluteTimingDurationInSeconds];
+    if (self.timeSettingsModel.timedPlayEnabled && self.timeSettingsModel.absoluteTimingEnabled)
+      formattedTimeLimitInSeconds = [CompositeDuration humanReadableStringWithDurationInSeconds:self.timeSettingsModel.absoluteTimingDurationInSeconds];
     else
       formattedTimeLimitInSeconds = @"";
     self.timeLimitInSecondsAsString = [self stringValue:formattedTimeLimitInSeconds
                              forMissingDataDisplayStyle:missingDataDisplayStyle
                                                 hasData:&_timeLimitInSecondsHasData];
-    self.timeLimitInSeconds = timeSettingsModel.absoluteTimingDurationInSeconds;
+    self.timeLimitInSeconds = self.timeSettingsModel.absoluteTimingDurationInSeconds;
     NSString* formattedOvertimeInformation;
-    if (timeSettingsModel.timedPlayEnabled && timeSettingsModel.periodBasedTimeSystemEnabled)
-      formattedOvertimeInformation = [TimeDataUtilities periodBasedTimeSystemSummary:timeSettingsModel];
+    if (self.timeSettingsModel.timedPlayEnabled && self.timeSettingsModel.periodBasedTimeSystemEnabled)
+      formattedOvertimeInformation = [TimeDataUtilities periodBasedTimeSystemSummary:self.timeSettingsModel];
     else
       formattedOvertimeInformation = @"";
     self.overtimeInformation = [self stringValue:formattedOvertimeInformation

@@ -632,7 +632,7 @@
 - (void) newGame
 {
   // This controller manages the actual "New Game" view
-  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:false] retain];
+  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self] retain];
   [self.modalMaster presentNavigationControllerWithRootViewController:newGameController];
   [newGameController release];
 }
@@ -644,7 +644,7 @@
 // -----------------------------------------------------------------------------
 - (void) newGameRematch
 {
-  NewGameController* newGameController = [[[NewGameController controllerWithDelegate:self loadGame:false] retain] autorelease];
+  NewGameController* newGameController = [[[NewGameController controllerWithDelegate:self] retain] autorelease];
   [newGameController rematchWithAlertPresenter:self.modalMaster];
 }
 

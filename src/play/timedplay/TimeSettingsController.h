@@ -31,6 +31,7 @@
 {
 }
 
-- (id) initWithTimeSettingsModel:(TimeSettingsModel*)timeSettingsModel;
+- (id) initWithTimeSettingsModel:(TimeSettingsModel*)timeSettingsModel
+                    readonlyMode:(bool)readonlyMode;
 
 @end

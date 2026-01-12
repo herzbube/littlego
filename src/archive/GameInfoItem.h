@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class TimeSettingsModel;
+
+
 /// @brief Enumerates the levels of details that can be used to display the data
 /// in a GameInfoItem.
 enum GameInfoItemDetailLevel
@@ -266,6 +270,10 @@ enum GameInfoItemMissingDataDisplayStyle
 
 /// @name Extra game information
 //@{
+/// @brief The time settings of the game. A combination of the SGF properties
+/// TM and OT.
+@property(nonatomic, retain, readonly) TimeSettingsModel* timeSettingsModel;
+
 /// @brief The time limit of the game in seconds, exactly as it appears in the
 /// SGF property TM.
 @property(nonatomic, retain, readonly) NSString* timeLimitInSecondsAsString;
