@@ -18,6 +18,8 @@
 // Project includes
 #import "GameInfoViewController.h"
 #import "../model/BoardViewModel.h"
+#import "../model/TimeSettingsModel.h"
+#import "../timedplay/CompositeDuration.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -27,6 +29,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoTimeSettings.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ModelProvider.h"
@@ -42,6 +45,8 @@
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/NSStringAdditions.h"
+#import "../../utility/TimeDataUtilities.h"
+
 
 // Constants
 NSString* disputeResolutionRuleText_GameInfoViewController = @"Dispute resolution";
@@ -56,6 +61,7 @@ enum GameInfoTableViewSection
   MaxSectionScoreInfoType,
   GameStateSection = 0,
   GameInfoSection,
+  TimeSettingsSection,
   PlayersProfileSection,
   MoveStatisticsSection,
   MaxSectionGameInfoType,
@@ -119,6 +125,19 @@ enum GameInfoSectionItem
   MaxGameInfoSectionItem
 };
 
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the TimeSettingsSection.
+// -----------------------------------------------------------------------------
+enum TimeSettingsSectionItem
+{
+  NoTimedPlayItem,
+  MaxTimeSettingsSectionItem_NoTimedPlay,
+  MaintimeDescriptionItem = NoTimedPlayItem,
+  OvertimeDescriptionItem,
+  MaxTimeSettingsSectionItem_TimedPlay,
+};
+
 // -----------------------------------------------------------------------------
 /// @brief Enumerates items in the PlayersProfileSection.
 // -----------------------------------------------------------------------------
@@ -168,6 +187,7 @@ enum BoardPositionSectionItem
 /// twice (e.g. the first time when #playersAndProfilesWillReset is received,
 /// the second time when GameInfoViewController is deallocated).
 @property(nonatomic, assign) bool kvoNotificationRespondersAreInstalled;
+@property(nonatomic, retain) TimeSettingsModel* timeSettingsModel;
 @end
 
 
@@ -193,6 +213,9 @@ enum BoardPositionSectionItem
   self.tableView = nil;
   self.boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
   self.kvoNotificationRespondersAreInstalled = false;
+  self.timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
+
+  [self.timeSettingsModel updateWithGoTimeSettings:[GoGame sharedGame].timeSettings];
 
   return self;
 }
@@ -207,6 +230,7 @@ enum BoardPositionSectionItem
   [self removeNotificationResponders];
   self.tableView = nil;
   self.boardViewModel = nil;
+  self.timeSettingsModel = nil;
   [self.gameInfoViewControllerCreator gameInfoViewControllerWillDeallocate:self];
   self.gameInfoViewControllerCreator = nil;
 
@@ -363,6 +387,11 @@ enum BoardPositionSectionItem
             return MaxGameStateSectionItem - 1;  // don't need to display whose turn it is
         case GameInfoSection:
           return MaxGameInfoSectionItem;
+        case TimeSettingsSection:
+          if ([GoGame sharedGame].timeSettings.isGameUsingTimedPlay)
+            return MaxTimeSettingsSectionItem_TimedPlay;
+          else
+            return MaxTimeSettingsSectionItem_NoTimedPlay;
         case PlayersProfileSection:
           if ([GoGame sharedGame].type == GoGameTypeHumanVsHuman)
             return MaxPlayersProfileSectionItem;
@@ -409,6 +438,8 @@ enum BoardPositionSectionItem
           return @"Game state";
         case GameInfoSection:
           return @"Game information";
+        case TimeSettingsSection:
+          return @"Time settings";
         case PlayersProfileSection:
           return @"Players";
         case MoveStatisticsSection:
@@ -774,6 +805,40 @@ enum BoardPositionSectionItem
       }
       break;
     }
+    case TimeSettingsSection:
+    {
+      if (game.timeSettings.isGameUsingTimedPlay)
+      {
+        cell = [TableViewCellFactory cellWithType:VariableHeightCellType
+                                        tableView:tableView];
+        TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+
+        if (indexPath.row == MaintimeDescriptionItem)
+        {
+          variableHeightCell.descriptionLabel.text = @"Main time";
+          if (self.timeSettingsModel.absoluteTimingEnabled)
+            variableHeightCell.valueLabel.text = [CompositeDuration humanReadableStringWithDurationInSeconds:self.timeSettingsModel.absoluteTimingDurationInSeconds];
+          else
+            variableHeightCell.valueLabel.text = @"None";
+        }
+        else
+        {
+          variableHeightCell.descriptionLabel.text = @"Overtime";
+          if (self.timeSettingsModel.periodBasedTimeSystemEnabled)
+            variableHeightCell.valueLabel.text = [TimeDataUtilities periodBasedTimeSystemSummary:self.timeSettingsModel];
+          else
+            variableHeightCell.valueLabel.text = @"None";
+        }
+      }
+      else
+      {
+        cell = [TableViewCellFactory cellWithType:Value1CellType
+                                        tableView:tableView];
+        cell.textLabel.text = @"Time settings";
+        cell.detailTextLabel.text = [TimeDataUtilities timeSettingsModelSummary:self.timeSettingsModel];
+      }
+      break;
+    }
     case PlayersProfileSection:
     {
       isCellSelectable = true;
@@ -884,6 +949,7 @@ enum BoardPositionSectionItem
   else
   {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.accessoryType = UITableViewCellAccessoryNone;
   }
   return cell;
 }
