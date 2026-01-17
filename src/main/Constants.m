@@ -48,8 +48,18 @@ const double gDefaultKomiTerritoryScoring = 6.5;
 const unsigned int gNoObjectReferenceNodeID = 0;
 // 999 minutes and 59 seconds. The reason for this limit is that the clock
 // shown in the UI supports "only" a maximum of 3 digits for minutes,
-// i.e. "mmm:ss".
+// i.e. "mmm:ss". If this limit ever goes away, then the next limit would be
+// std::numeric_limits<int>::max(), because the GTP 2.0 specification defines
+// the parameters of the GTP commands "time_settings" and "time_left" to have
+// type int, and Fuego faithfully uses these types in its implementation.
 const double gMaximumRemainingTimeInSeconds = 59999;
+// The reason for this limit is that the clock shown in the UI supports "only"
+// a maximum of 7 digits. If this limit ever goes away, then the next limit
+// would be std::numeric_limits<int>::max(), because the GTP 2.0 specification
+// defines the parameters of the GTP commands "time_settings" and "time_left"
+// to have type int, and Fuego faithfully uses these types in its
+// implementation.
+const unsigned long gMaximumRemainingNumberOfMovesOrPeriods = 9999999;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
@@ -195,8 +205,12 @@ const unsigned int fuegoMaxPonderTimeMaximum = 3600;   // ditto
 const unsigned int fuegoMaxPonderTimeDefault = 300;    // ditto
 const bool fuegoReuseSubtreeDefault = false;
 const unsigned int fuegoMaxThinkingTimeMinimum = 1;
-const unsigned int fuegoMaxThinkingTimeMaximum = 120;  // not too high, user must be able to pick individual values
-                                                       // in the range from 1-10 seconds in the Settings tab
+// Not too high, user must be able to pick individual values in the range from
+// 1-10 seconds in the Settings tab. If this limit ever goes away, then the
+// next limit would be std::numeric_limits<int>::max(), because the GTP 2.0
+// specification defines the parameters of the GTP command "time_left" to have
+// type int, and Fuego faithfully uses these types in its implementation.
+const unsigned int fuegoMaxThinkingTimeMaximum = 120;
 const unsigned int fuegoMaxThinkingTimeDefault = 10;
 const unsigned long long fuegoMaxGamesMinimum = 1;
 const unsigned long long fuegoMaxGamesMaximum = 18446744073709551615ULL;  // std::numeric_limits<unsigned long long>::max();

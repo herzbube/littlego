@@ -18,6 +18,7 @@
 // Project includes
 #import "NewGameCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
+#import "../timedplay/TimeSettingsCommand.h"
 #import "../ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/ModelProvider.h"
@@ -101,6 +102,7 @@
   [self newGame];
   [self setupGtpRules];
   [self setupGtpBoard];
+  [self setupGtpTimeSettings];
   if (self.shouldSetupGtpHandicapAndKomi)
     [self setupGtpHandicapAndKomi];
   if (self.shouldSetupComputerPlayer)
@@ -468,6 +470,15 @@
   GoBoard* board = [GoGame sharedGame].board;
   [[GtpCommand command:@"clear_board"] submit];
   [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.size]] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs time settings setup of the GTP engine.
+// -----------------------------------------------------------------------------
+- (void) setupGtpTimeSettings
+{
+  // Must be invoked before any moves were played. See class documentation.
+  [[[[TimeSettingsCommand alloc] init] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------

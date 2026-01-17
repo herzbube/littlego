@@ -473,6 +473,11 @@
 // -----------------------------------------------------------------------------
 - (void) askGtpEngineForDeadStones
 {
+  // Fuego's handler for the "final_status_list" GTP command ignores the clock
+  // (see GoUctCommands::CmdFinalStatusList()) and also does not seem to obey
+  // any time limits. Because of this, we don't need to submit a
+  // TimeLeftCommand.
+
   if (! [Registry sharedRegistry].modelProvider.scoringModel.askGtpEngineForDeadStones)
     return;
   if (self.didAskGtpEngineForDeadStones)

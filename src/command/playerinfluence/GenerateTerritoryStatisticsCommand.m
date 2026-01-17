@@ -34,6 +34,11 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // Fuego's handler for the "reg_genmove" GTP command ignores the clock (see
+  // GoGtpEngine::CmdRegGenMove()), instead it operates with the
+  // fuegoMaxThinkingTime time limit (see GtpEngineProfile). Because of this,
+  // we don't need to submit a TimeLeftCommand.
+
   BoardViewModel* model = [Registry sharedRegistry].modelProvider.boardViewModel;
   if (! model.displayPlayerInfluence)
   {

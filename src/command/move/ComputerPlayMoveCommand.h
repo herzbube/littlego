@@ -28,6 +28,8 @@
 /// computer player make a move (even if it is not its turn).
 ///
 /// ComputerPlayMoveCommand performs the following operations:
+/// - Submits TimeLeftCommand. That command will determine on its own whether
+///   or not the GTP engine needs to be configured with time/moves left.
 /// - If the game uses timed play: Starts the clock of the player on whose
 ///   behalf the computer will play a move.
 /// - Submits a "genmove" command to the GTP engine (see note below).

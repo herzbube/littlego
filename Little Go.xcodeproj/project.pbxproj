@@ -909,6 +909,10 @@
 		D76B0D032F12B33C00032D62 /* TimeDataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */; };
 		D76B0D062F13F8CC00032D62 /* CompositeDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D052F13F8CC00032D62 /* CompositeDuration.m */; };
 		D76B0D072F13F8CC00032D62 /* CompositeDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D052F13F8CC00032D62 /* CompositeDuration.m */; };
+		D76B0D0B2F1A636300032D62 /* TimeSettingsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D092F1A636300032D62 /* TimeSettingsCommand.m */; };
+		D76B0D0C2F1A636300032D62 /* TimeSettingsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D092F1A636300032D62 /* TimeSettingsCommand.m */; };
+		D76B0D0F2F1A63B500032D62 /* TimeLeftCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */; };
+		D76B0D102F1A63B500032D62 /* TimeLeftCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */; };
 		D79B28082ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
 		D79B28092ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
 		D79B280C2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */ = {isa = PBXBuildFile; fileRef = D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */; };
@@ -1958,6 +1962,10 @@
 		D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeDataUtilities.m; sourceTree = "<group>"; };
 		D76B0D042F13F8CC00032D62 /* CompositeDuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CompositeDuration.h; sourceTree = "<group>"; };
 		D76B0D052F13F8CC00032D62 /* CompositeDuration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CompositeDuration.m; sourceTree = "<group>"; };
+		D76B0D082F1A636300032D62 /* TimeSettingsCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeSettingsCommand.h; sourceTree = "<group>"; };
+		D76B0D092F1A636300032D62 /* TimeSettingsCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeSettingsCommand.m; sourceTree = "<group>"; };
+		D76B0D0D2F1A63B500032D62 /* TimeLeftCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeLeftCommand.h; sourceTree = "<group>"; };
+		D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeLeftCommand.m; sourceTree = "<group>"; };
 		D79B28062ED3CC0700AA71A6 /* FilesystemMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemMonitor.h; sourceTree = "<group>"; };
 		D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FilesystemMonitor.m; sourceTree = "<group>"; };
 		D79B280A2EDB12C900AA71A6 /* FilesystemOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemOperations.h; sourceTree = "<group>"; };
@@ -3479,6 +3487,7 @@
 				CD072705180B292E0083B138 /* playerinfluence */,
 				CD7C57C921FF9E1500694520 /* scoring */,
 				CD9B63EC25AB7804003E032B /* sgf */,
+				D76B0D0A2F1A636300032D62 /* timedplay */,
 				CDF9740316C4082200D01D24 /* AsynchronousCommand.h */,
 				CD7C578521F79C2F00694520 /* ChangeUIAreaPlayModeCommand.h */,
 				CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */,
@@ -3937,6 +3946,17 @@
 				D70D7A102EEF003200648CBB /* TimeViewController.m */,
 			);
 			path = statusarea;
+			sourceTree = "<group>";
+		};
+		D76B0D0A2F1A636300032D62 /* timedplay */ = {
+			isa = PBXGroup;
+			children = (
+				D76B0D0D2F1A63B500032D62 /* TimeLeftCommand.h */,
+				D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */,
+				D76B0D082F1A636300032D62 /* TimeSettingsCommand.h */,
+				D76B0D092F1A636300032D62 /* TimeSettingsCommand.m */,
+			);
+			path = timedplay;
 			sourceTree = "<group>";
 		};
 		D7F593DD2EF891EF0031317A /* timedplay */ = {
@@ -4591,6 +4611,7 @@
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CDB198BE2B77ADBE00E8512F /* SetupUserManualCommand.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
+				D76B0D0F2F1A63B500032D62 /* TimeLeftCommand.m in Sources */,
 				CDF24625296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m in Sources */,
 				CD97FA141AED1BD600148C16 /* ResumePlayCommand.m in Sources */,
 				CDBCF1FC282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */,
@@ -4679,6 +4700,7 @@
 				CD1F4FAC25B055EB0098037A /* LoadSgfCommand.m in Sources */,
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
 				CDEE19F519433EAC00DF2389 /* BoardViewController.m in Sources */,
+				D76B0D0C2F1A636300032D62 /* TimeSettingsCommand.m in Sources */,
 				CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
 				CDB198C22B78D5B400E8512F /* WebBrowserViewController.m in Sources */,
@@ -5044,6 +5066,7 @@
 				CD7C6A121AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,
 				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
 				CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */,
+				D76B0D102F1A63B500032D62 /* TimeLeftCommand.m in Sources */,
 				CD4662832960A0E800B58CC9 /* NodeTreeViewBranch.m in Sources */,
 				D701A87E2EECD9EB0006A962 /* GoPlayerTimeData.m in Sources */,
 				CDE0FC60298463B9008E55A8 /* GoMoveNodeCreationOptions.m in Sources */,
@@ -5056,6 +5079,7 @@
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
 				CDDB08C32927F15D00B38F91 /* NodeTreeViewCell.m in Sources */,
 				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,
+				D76B0D0B2F1A636300032D62 /* TimeSettingsCommand.m in Sources */,
 				CD607BC8280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */,
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */,

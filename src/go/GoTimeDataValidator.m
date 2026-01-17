@@ -396,6 +396,10 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodDurationExceedsMaximum);
     else if (timeSettings.periodBasedTimeSystem.extraTimeDurationInSeconds > gMaximumRemainingTimeInSeconds)
       return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum);
+    else if (timeSettings.periodBasedTimeSystem.minimumNumberOfMovesPerPeriod > gMaximumRemainingNumberOfMovesOrPeriods)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum);
+    else if (timeSettings.periodBasedTimeSystem.numberOfPeriods > gMaximumRemainingNumberOfMovesOrPeriods)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum);
   }
 
   // No further time system consistency checks needed - initializers of
@@ -476,7 +480,15 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 
   if (context->previousValidationResult.isTimeDataValid)
   {
-    if (context->nodeTimeData.isRemainingTimeAbsoluteTime)
+    // First perform general validations that don't depend on the time system
+    // that is in effect
+    if (context->nodeTimeData.remainingTimeInSeconds > gMaximumRemainingTimeInSeconds)
+      context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeExceedsMaximum);
+    else if (context->nodeTimeData.remainingNumberOfMoves > gMaximumRemainingNumberOfMovesOrPeriods)
+      context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesExceedsMaximum);
+    else if (context->nodeTimeData.remainingNumberOfPeriods > gMaximumRemainingNumberOfMovesOrPeriods)
+      context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum);
+    else if (context->nodeTimeData.isRemainingTimeAbsoluteTime)
     {
       if (! context->absoluteTimeSystemIsPresent)
         context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem);
@@ -489,17 +501,24 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
         context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem);
     }
 
-    if (context->nodeTimeData.isRemainingTimeAbsoluteTime)
+    // If data is still valid, perform validations that depend on the time
+    // system that is in effect
+    if (context->previousValidationResult.isTimeDataValid)
     {
-      context->previousValidationResult = [context->absoluteNodeTimeDataValidator validateNodeTimeData:context->nodeTimeData
-                                                                               predecessorNodeTimeData:predecessorNodeTimeData
-                                                                                            timeSystem:context->absoluteTimeSystem];
-    }
-    else
-    {
-      context->previousValidationResult = [context->periodBasedNodeTimeDataValidator validateNodeTimeData:context->nodeTimeData
-                                                                                  predecessorNodeTimeData:predecessorNodeTimeData
-                                                                                               timeSystem:context->periodBasedTimeSystem];
+      if (context->nodeTimeData.isRemainingTimeAbsoluteTime)
+      {
+        context->previousValidationResult = [context->absoluteNodeTimeDataValidator validateNodeTimeData:context->nodeTimeData
+                                                                                 predecessorNodeTimeData:predecessorNodeTimeData
+                                                                                              timeSystem:context->absoluteTimeSystem];
+      }
+      else
+      {
+        // The concrete validators will ignore predecessorNodeTimeData if its
+        // property isRemainingTimeAbsoluteTime is true
+        context->previousValidationResult = [context->periodBasedNodeTimeDataValidator validateNodeTimeData:context->nodeTimeData
+                                                                                    predecessorNodeTimeData:predecessorNodeTimeData
+                                                                                                 timeSystem:context->periodBasedTimeSystem];
+      }
     }
 
     if (context->overallIsTimeDataValid)
@@ -647,7 +666,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (currentNodeTimeData.remainingNumberOfMoves < 0)
     return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative);
 
-  if (predecessorNodeTimeData)
+  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (timeSystem.minimumNumberOfMovesPerPeriod > 1)
     {
@@ -708,7 +727,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (currentNodeTimeData.remainingNumberOfPeriods < 0)
     return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative);
 
-  if (predecessorNodeTimeData)
+  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (currentNodeTimeData.remainingNumberOfPeriods > predecessorNodeTimeData.remainingNumberOfPeriods)
       return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsIsIncreasing);
@@ -735,7 +754,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (currentNodeTimeData.remainingNumberOfMoves < 0)
     return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative);
 
-  if (predecessorNodeTimeData)
+  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (currentNodeTimeData.remainingTimeInSeconds > (predecessorNodeTimeData.remainingTimeInSeconds
                                                       + timeSystem.extraTimeDurationInSeconds))
@@ -776,7 +795,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (currentNodeTimeData.remainingNumberOfMoves < 0)
     return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative);
 
-  if (predecessorNodeTimeData)
+  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (timeSystem.minimumNumberOfMovesPerPeriod > 1)
     {
@@ -843,7 +862,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (currentNodeTimeData.remainingNumberOfMoves < 0)
     return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative);
 
-  if (predecessorNodeTimeData)
+  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (currentNodeTimeData.remainingTimeInSeconds > (predecessorNodeTimeData.remainingTimeInSeconds
                                                       + timeSystem.periodDurationInSeconds))

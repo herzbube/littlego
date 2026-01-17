@@ -1628,13 +1628,24 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   if (_reasonForComputerIsThinking == newValue)
     return;
-  _reasonForComputerIsThinking = newValue;
+
   NSString* notificationName;
+  enum GoGameComputerIsThinkingReason notificationReason;
   if (GoGameComputerIsThinkingReasonIsNotThinking == newValue)
+  {
     notificationName = computerPlayerThinkingStops;
+    notificationReason = _reasonForComputerIsThinking;
+  }
   else
+  {
     notificationName = computerPlayerThinkingStarts;
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
+    notificationReason = newValue;
+  }
+
+  _reasonForComputerIsThinking = newValue;
+
+  NSArray* notificationObject = @[self, @(notificationReason)];
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:notificationObject];
 }
 
 // -----------------------------------------------------------------------------

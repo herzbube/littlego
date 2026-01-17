@@ -611,11 +611,11 @@ enum PeriodBasedTimeSystemType
              valueFormatter:@selector(stringForSliderCellValue:)];
 
     int sliderCellValue = [self sliderCellValueFromDurationInSeconds:durationInSeconds];
-    int sliderCellMaximumValue = [self sliderCellMaximumValue];
+    int durationSliderCellMaximumValue = [self durationSliderCellMaximumValue];
 
     [sliderCell setValue:sliderCellValue
             minimumValue:1.0
-            maximumValue:sliderCellMaximumValue];
+            maximumValue:durationSliderCellMaximumValue];
   }
 }
 
@@ -642,9 +642,11 @@ enum PeriodBasedTimeSystemType
        actionValueDidChange:actionValueDidChange
              valueFormatter:@selector(stringForNumberOfMovesOrPeriods:)];
 
+    int numberOfMovesOrPeriodsSliderCellMaximumValue = [self numberOfMovesOrPeriodsSliderCellMaximumValue];
+
     [sliderCell setValue:(int)numberOfMovesOrPeriods
             minimumValue:1.0
-            maximumValue:maximumNumberOfMovesOrPeriods];
+            maximumValue:numberOfMovesOrPeriodsSliderCellMaximumValue];
   }
 }
 
@@ -869,12 +871,12 @@ enum PeriodBasedTimeSystemType
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the maximum value that this controller allows the user to
-/// select in a TableViewSliderCell.
+/// select in a TableViewSliderCell that represents a duration.
 // -----------------------------------------------------------------------------
-- (int) sliderCellMaximumValue
+- (int) durationSliderCellMaximumValue
 {
-  static int sliderCellMaximumValue = 0;
-  if (sliderCellMaximumValue == 0)
+  static int durationSliderCellMaximumValue = 0;
+  if (durationSliderCellMaximumValue == 0)
   {
     if (maximumDurationInSeconds > gMaximumRemainingTimeInSeconds)
     {
@@ -883,10 +885,10 @@ enum PeriodBasedTimeSystemType
                                 gMaximumRemainingTimeInSeconds];
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     }
-    sliderCellMaximumValue = [self sliderCellValueFromDurationInSeconds:maximumDurationInSeconds];
+    durationSliderCellMaximumValue = [self sliderCellValueFromDurationInSeconds:maximumDurationInSeconds];
   }
 
-  return sliderCellMaximumValue;
+  return durationSliderCellMaximumValue;
 }
 
 // -----------------------------------------------------------------------------
@@ -1238,6 +1240,29 @@ enum PeriodBasedTimeSystemType
 {
   enum GoTimeSystemType goTimeSystemType = [self goTimeSystemType:periodBasedTimeSystemType];
   return [NSString stringWithPeriodBasedTimeSystemType:goTimeSystemType];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the maximum value that this controller allows the user to
+/// select in a TableViewSliderCell that represents a number of moves or a
+/// number of periods.
+// -----------------------------------------------------------------------------
+- (int) numberOfMovesOrPeriodsSliderCellMaximumValue
+{
+  static int numberOfMovesOrPeriodsSliderCellMaximumValue = 0;
+  if (numberOfMovesOrPeriodsSliderCellMaximumValue == 0)
+  {
+    if (maximumNumberOfMovesOrPeriods > gMaximumRemainingNumberOfMovesOrPeriods)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"maximumNumberOfMovesOrPeriods %lu exceeds gMaximumRemainingNumberOfMovesOrPeriods %lu",
+                                maximumNumberOfMovesOrPeriods,
+                                gMaximumRemainingNumberOfMovesOrPeriods];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+    numberOfMovesOrPeriodsSliderCellMaximumValue = maximumNumberOfMovesOrPeriods;
+  }
+
+  return numberOfMovesOrPeriodsSliderCellMaximumValue;
 }
 
 @end

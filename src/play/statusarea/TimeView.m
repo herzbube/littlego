@@ -338,8 +338,12 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
   // See gMaximumRemainingTimeInSeconds.
   offscreenView.remainingTimeInSeconds = 53338; // clock shows "888:58"
   // Widest number for either remaining moves or remaining periods we support:
-  // 3 digits (irrelevant because "Main time" is wider")
-  offscreenView.remainingNumberOfMovesOrPeriods = 888;
+  // 7 digits. This is for sure no wider than the widest value we expect to
+  // display on line 1 ("● 888:58"). It's irrelevant anyway because the string
+  // "Main time" (which we show on line 2 if isRemainingTimeAbsoluteTime is
+  // true) is wider.
+  // See gMaximumRemainingNumberOfMovesOrPeriods.
+  offscreenView.remainingNumberOfMovesOrPeriods = 8888888;
   // Shows "Main time" instead a number
   offscreenView.isRemainingTimeAbsoluteTime = true;
   // Wider border than when clock is stopped (but border is probably outside of

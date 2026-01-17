@@ -70,6 +70,62 @@ GoTimeDataValidationResult GoTimeDataValidationResultMake(bool isTimeDataValid,
 ///
 /// All functions in GoTimeDataValidator are class methods, so there is no need
 /// to create an instance of GoTimeDataValidator.
+///
+/// When GoTimeDataValidator performs time data validation, it examines either
+/// the entire node tree, an entire game variation, or a part of a game
+/// variation up until a given node. In all cases, GoTimeDataValidator visits
+/// nodes starting from the root node and stores the result of the validation
+/// in each visited node's properties @e isTimeDataValid and
+/// @e timeDataInvalidReason.
+///
+/// When GoTimeDataValidator finds a node with invalid time data, it ceases to
+/// perform validation on descendants of that node and instead propagates the
+/// invalid state and invalid reason to those descendants. The rationale is
+/// that time data must be viewed as an interlinked sequence of data points,
+/// much the same as a sequence of moves, and cannot be viewed as independent
+/// data points. Once a piece of time data is invalid, time data further down
+/// in the sequence can therefore no longer be viewed as valid.
+///
+/// At the very beginning, GoTimeDataValidator examines the validity of the
+/// game's time settings. It stores the result of the time settings validation
+/// in the game's root node. GoTimeDataValidator considers time settings valid
+/// only if the app is capable of conducting timed play with those settings.
+/// This means that if the user starts a game without timed play, the root node
+/// will indicate that it has invalid time data. Much the same, if an .sgf file
+/// is loaded from the archive with time settings that the app does not
+/// understand/support, the root node will indicate that it has invalid time
+/// data, and GoTimeDataValidator will propgate that invalidity to the entire
+/// node tree.
+///
+/// Actual time data is allowed to occur only in nodes that contain a move, and
+/// vice versa in a game with timed play every move must be accompanied by time
+/// data. Based on this, the following scenarios can be distinguished:
+/// - When GoTimeDataValidator finds a node that contains a move but no time
+///   data, or time data but no move, then that node (and all of its
+///   descendants) are considered to contain invalid time data.
+/// - When GoTimeDataValidator finds a node that contains neither a move nor
+///   time data, then that node is considered to contain valid time data. This
+///   may seem unexpected at first glance, since the node does not actually
+///   contain time data, but it makes sense when (as explained above) node time
+///   data is considered as an interlinked sequence of data points, and some of
+///   those data points are linked by "neutral" nodes.
+/// - When GoTimeDataValidator finds a node that contains both a move and time
+///   data, it validates that time data first on its own, and then in relation
+///   to the move in the same node, in relation to the game's time settings, and
+///   in relation to the preceding time data.
+///
+/// As a result of a validation operation, all examined nodes now contain a
+/// valid state. Whenever a node is selected, it is immediately clear whether
+/// the node and its predecessors contain valid time data, which then allows
+/// to start or not start a player's clock.
+///
+/// When a new node is created, it inherits the valid state of its parent node.
+/// - If the parent node has invalid time data, then the app cannot suddenly
+///   create valid time data, therefore the new node must be marked to also have
+///   invalid time data.
+/// - If the parent node has valid time data, it is assumed that the app will
+///   continue to create valid time data, therefore the new node can also be
+///   marked as having valid time data.
 // -----------------------------------------------------------------------------
 @interface GoTimeDataValidator : NSObject
 {

@@ -988,6 +988,12 @@ enum GoTimeDataInvalidReason
   /// @brief The period-based time system has an extra time duration that is
   /// greater than the maximum supported by this app.
   GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum,
+  /// @brief The period-based time system has a minimum number of moves per
+  /// period value that is greater than the maximum supported by this app.
+  GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum,
+  /// @brief The period-based time system has a number of periods value that is
+  /// greater than the maximum supported by this app.
+  GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum,
   /// @brief A move node does not contain time data.
   GoTimeDataInvalidReasonMoveNodeHasNoTimeData,
   /// @brief A non-move node contains time data.
@@ -1051,18 +1057,28 @@ enum GoTimeDataInvalidReason
   /// than the remaining number of moves in the predecessor node's time data,
   /// but at the same time the remaining time decreased.
   GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased,
-  /// @brief A node's time data has a remaining number of periods that is higher
-  /// than the remaining number of periods in the predecessor node's time data.
+  /// @brief A node's time data has a remaining number of periods that is
+  /// greater than the remaining number of periods in the predecessor node's
+  /// time data.
   ///
   /// This can occur only for #GoTimeSystemTypeJapanese.
   GoTimeDataInvalidReasonRemainingNumberOfPeriodsIsIncreasing,
-  /// @brief A node's time data has a remaining time that is higher than what
+  /// @brief A node's time data has a remaining time that is greater than what
   /// is allowed after adding extra time to the remaining time in the
   /// predecessor node's time data.
   ///
   /// This can occur only for #GoTimeSystemTypeFischer and
   /// #GoTimeSystemTypeTotalAverage.
   GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows,
+  /// @brief A node's time data has a remaining time that is greater than the
+  /// maximum supported by this app.
+  GoTimeDataInvalidReasonRemainingTimeExceedsMaximum,
+  /// @brief A node's time data has a remaining number of moves that is
+  /// greater than the maximum supported by this app.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesExceedsMaximum,
+  /// @brief A node's time data has a remaining number of periods that is
+  /// greater than the maximum supported by this app.
+  GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum,
 };
 
 extern const enum GoGameType gDefaultGameType;
@@ -1075,6 +1091,7 @@ extern const double gDefaultKomiAreaScoring;
 extern const double gDefaultKomiTerritoryScoring;
 extern const unsigned int gNoObjectReferenceNodeID;
 extern const double gMaximumRemainingTimeInSeconds;
+extern const unsigned long gMaximumRemainingNumberOfMovesOrPeriods;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1174,16 +1191,26 @@ extern NSString* goGameStateChanged;
 /// @name Computer player notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent to indicate that the computer player has started to think
-/// about its next move.
+/// @brief Is sent to indicate that the computer player has started to think.
 ///
-/// The GoGame object is associated with the notification.
+/// An NSArray is associated with the notification that contains the following
+/// objects:
+/// - Object at index position 0: The GoGame object.
+/// - Object at index position 1: An NSNumber that holds an int value that is
+///   actually a value from the enumeration #GoGameComputerIsThinkingReason.
+///   The value indicates why the computer player is thinking.
 extern NSString* computerPlayerThinkingStarts;
-/// @brief Is sent to indicate that the computer player has stopped to think
-/// about its next move. Occurs only after the move has actually been made, i.e.
+/// @brief Is sent to indicate that the computer player has stopped to think.
+/// If the computer was thinking about about its next move, then this
+/// notification is sent after the move has actually been made, i.e.
 /// any GoGame notifications have already been delivered.
 ///
-/// The GoGame object is associated with the notification.
+/// An NSArray is associated with the notification that contains the following
+/// objects:
+/// - Object at index position 0: The GoGame object.
+/// - Object at index position 1: An NSNumber that holds an int value that is
+///   actually a value from the enumeration #GoGameComputerIsThinkingReason.
+///   The value indicates why the computer player was thinking.
 extern NSString* computerPlayerThinkingStops;
 /// @brief Is sent to indicate that the computer player has generated a move
 /// suggestion for the human player whose turn it currently is.

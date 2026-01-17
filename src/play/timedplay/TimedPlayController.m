@@ -176,6 +176,8 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(territoryStatisticsGenerationWillBegin:) name:territoryStatisticsGenerationWillBegin object:nil];
   [center addObserver:self selector:@selector(territoryStatisticsGenerationDidEnd:) name:territoryStatisticsGenerationDidEnd object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingStarts:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(moreGameActionsPopupWillAppear:) name:moreGameActionsPopupWillAppear object:nil];
   [center addObserver:self selector:@selector(moreGameActionsPopupDidDisappear:) name:moreGameActionsPopupDidDisappear object:nil];
   [center addObserver:self selector:@selector(gameInfoScreenWillAppear:) name:gameInfoScreenWillAppear object:nil];
@@ -462,6 +464,59 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 
   self.numberOfThingsBlockingBoardInteractions--;
   [self updateIsBoardInteractive];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingStarts notification.
+// -----------------------------------------------------------------------------
+- (void) computerPlayerThinkingStarts:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(computerPlayerThinkingStarts:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  NSArray* notificationObject = notification.object;
+  NSNumber* reasonAsNumber = [notificationObject objectAtIndex:1];
+  enum GoGameComputerIsThinkingReason reason = [reasonAsNumber intValue];
+  if (reason == GoGameComputerIsThinkingReasonMoveSuggestion)
+  {
+    // Fuego's handler for the "reg_genmove" GTP command ignores the clock (see
+    // GoGtpEngine::CmdRegGenMove()), instead it operates with the
+    // fuegoMaxThinkingTime time limit (see GtpEngineProfile). Because of this,
+    // we cannot let the time that Fuego uses to generate the move suggestion be
+    // deducted from the player's remaining time - it may cause the player to
+    // lose on time.
+    self.numberOfThingsBlockingBoardInteractions++;
+    [self updateIsBoardInteractive];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingStops notification.
+// -----------------------------------------------------------------------------
+- (void) computerPlayerThinkingStops:(NSNotification*)notification
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(computerPlayerThinkingStops:)
+                           withObject:notification
+                        waitUntilDone:YES];
+    return;
+  }
+
+  NSArray* notificationObject = notification.object;
+  NSNumber* reasonAsNumber = [notificationObject objectAtIndex:1];
+  enum GoGameComputerIsThinkingReason reason = [reasonAsNumber intValue];
+  if (reason == GoGameComputerIsThinkingReasonMoveSuggestion)
+  {
+    // See computerPlayerThinkingStarts:() why this is needed
+    self.numberOfThingsBlockingBoardInteractions--;
+    [self updateIsBoardInteractive];
+  }
 }
 
 // -----------------------------------------------------------------------------

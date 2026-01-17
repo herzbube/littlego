@@ -22,6 +22,7 @@
 #import "../game/NewGameCommand.h"
 #import "../game/SaveGameCommand.h"
 #import "../playerinfluence/UpdateTerritoryStatisticsCommand.h"
+#import "../timedplay/TimeLeftCommand.h"
 #import "../../archive/ArchiveViewModel.h"
 #import "../../diagnostics/LoggingModel.h"
 #import "../../go/GoBoard.h"
@@ -124,6 +125,10 @@ enum AlertType
 {
   bool success;
 
+  success = [self submitTimeLeftCommandToGtpEngine];
+  if (! success)
+    return false;
+
   enum PlayerClockStartReason playerClockStartReason = (self.game.nextMovePlayerIsComputerPlayer
                                                         ? PlayerClockStartReasonComputerPlayerTurnBegins
                                                         : PlayerClockStartReasonComputerPlayerStartsThinkingOnBehalfOfHumanPlayer);
@@ -135,6 +140,20 @@ enum AlertType
   if (! success)
     return false;
 
+  return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Submits a "time_left" command to the GTP engine. This informs the
+/// GTP engine how much time it is allowed to use to calculate a move.
+///
+/// This is a private helper for doIt.
+// -----------------------------------------------------------------------------
+- (bool) submitTimeLeftCommandToGtpEngine
+{
+  // Must be invoked before the player clock is started. See class
+  // documentation.
+  bool success = [[[[TimeLeftCommand alloc] init] autorelease] submit];
   return success;
 }
 
