@@ -1586,6 +1586,7 @@ Problematic behaviours of Fuego that can lead to time management bugs:
     reset it back to the correct value.
   - CONCLUSION: To avoid Fuego calculating with wrong values, the command
     "time_left" needs to be executed immediately after time_settings.
+  - Fixed in fuego-on-ios: https://github.com/herzbube/fuego-on-ios/issues/32
 - Potential bug in implementation of GTP command time_left
   - The current implementation of the GTP command simply sets TimeLeft in
     SgTimeRecord, but unlike go_clock does ***NOT*** invoke
@@ -1620,6 +1621,39 @@ Problematic behaviours of Fuego that can lead to time management bugs:
     execute time_left only for the player whose clock is not running. If
     time_left must be executed for the player whose clock is running, only
     execute time_left immediately after go_clock was executed.
+  - Fixed in fuego-on-ios: https://github.com/herzbube/fuego-on-ios/issues/31
+- Fuego does not fully stop the clock after it is configured with
+  "no time limits"
+  - The GTP specification clearly states that when the command "time_settings"
+    is executed with overtime > 0 and moves == 0, then no time limits shall
+    apply. For instance, this command fulfills the definition:
+      time_settings 0 1 0
+  - SgTimeSettings::IsUnknown() is implementing the GTP specification's
+    condition.
+  - The problem: If the above "time_settings" command is executed before any
+    moves were played, then the "go_clock" command indicates that the clock is
+    still running.
+  - The command "clear_board does not stop the clock if it is executed *BEFORE*
+    a move has been played. However, if it is executed *AFTER* a move has been
+    played, then the clock is stopped (ClockIsRunning = false). The clock still
+    has ClockState = CLOCK_SUSPENDED, though, and I have not found a way how to
+    fix this.
+  - The protected helper function
+      SgPoint GenMove(SgBlackWhite color, bool ignoreClock);
+    ignores the current clock in two cases:
+    - If it is invoked with "false" for the second parameter. This happens for
+      the following commands:
+      - place_free_handicap
+      - reg_genmove
+      - reg_genmove_toplay
+    - Or if it is invoked with "true" for the second parameter, but
+      SgTimeSettings::IsUnknown() returns true. This happens for the following
+      commands:
+      - genmove
+  - So overall, the clock data in SgTimeRecord is not handled perfectly, but
+    because SgTimeSettings::IsUnknown() returns true after "time_settings 0 1 0"
+    the time handling should still be correct.
+  - Fixed in fuego-on-ios: https://github.com/herzbube/fuego-on-ios/issues/30
 
 
 Redesigning the drawing mechanism in PlayView (v0.8)
