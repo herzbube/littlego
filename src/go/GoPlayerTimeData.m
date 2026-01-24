@@ -221,6 +221,14 @@
     }
   }
 
+  // We don't want to record fractional seconds. See NOTES.Design, section
+  // "Working with time data", for details. We round up (in favour of the
+  // player), not down, because
+  // 1) It would be unfair to cut off unspent time; and
+  // 2) Rounding down could lead to zero remaining time, which would
+  //    incorrectly indicate that the player lost the game on time.
+  self.remainingTimeInSeconds = ceil(self.remainingTimeInSeconds);
+
   // Important: Set the node time data with values before the period reset. We
   // want to record how much time and how many moves remained when the move
   // ended, not how much time and how many moves remain when playing the next
@@ -467,6 +475,12 @@
 
   if (self.remainingTimeInSeconds != timeSystem.periodDurationInSeconds)
   {
+    // Don't round. periodDurationInSeconds is already a whole second without
+    // fractions if the game was started from scratch with this app (because
+    // this app does not allow the user to select durations with fractions of
+    // seconds). If periodDurationInSeconds was read from SGF, it may or may not
+    // be a whole second, but even if it is not we want to preserve the
+    // original value.
     self.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
     dataHasChanged = true;
   }
@@ -516,6 +530,10 @@
 
   if (self.remainingTimeInSeconds != nodeTimeData.remainingTimeInSeconds)
   {
+    // Don't round. remainingTimeInSeconds is already rounded if the move was
+    // played with this app (see updateAfterMoveWasPlayed:()). If
+    // remainingTimeInSeconds was read from SGF, it may or may not be rounded,
+    // but even if it is not we want to preserve the original value.
     self.remainingTimeInSeconds = nodeTimeData.remainingTimeInSeconds;
     dataHasChanged = true;
   }
@@ -545,8 +563,13 @@
 // -----------------------------------------------------------------------------
 - (enum GoPeriodDurationElapsedResultType) deductElapsedTimeInSeconds:(double)elapsedTimeInSeconds
 {
-  // TODO xxx do we really want to deduct time with full accuracy? SGF does
-  // allow saving fractional values, but how much accuracy do we really need?
+  // We deduct time with full accuracy. Rounding is performed when a move is
+  // played. As a result, it is to be expected that remainingTimeInSeconds can
+  // go below zero because player clock management is not 100% accurate (e.g.
+  // the timer that manages the player clock is unlikely to fire on the full
+  // second). If that happens and the period reset does not bring
+  // remainingTimeInSeconds back to above zero, then remainingTimeInSeconds will
+  // stay negative.
   self.remainingTimeInSeconds -= elapsedTimeInSeconds;
 
   if (self.remainingTimeInSeconds > 0)
@@ -611,6 +634,16 @@
 /// only if such a reset is necessary. Returns true if any properties of this
 /// GoPlayerTimeData changed their values. Returns false if no properties
 /// changed their values (e.g. because no period reset was necessary).
+///
+/// The main use case for invoking this method is right after a move was played.
+/// Time has already been deducted at that point, and the remaining time must
+/// be greater than zero otherwise the move could not have been played.
+///
+/// The other use case is when the user changes the current node: In that case
+/// the data in this GoPlayerTimeData is first set to the data that was recorded
+/// in a GoNodeTimeData object, which is equal to the situation right after the
+/// move accompanying the GoNodeTimeData object was played. A period reset may
+/// therefore also be needed.
 // -----------------------------------------------------------------------------
 - (bool) performPeriodResetIfNecessary:(GoTimeSystem*)timeSystem
 {

@@ -755,6 +755,8 @@
 
   // We always write remaining time. The value can refer to any time system
   // (absolute or period-based).
+  // See NOTES.Design, section "Working with time data", for details why we
+  // don't perform any rounding.
   SGFCRealPropertyValue* remainingTimePropertyValue = [SGFCPropertyValueFactory propertyValueWithReal:goNodeTimeData.remainingTimeInSeconds];
   SGFCProperty* remainingTimeProperty = [SGFCPropertyFactory propertyWithType:remainingTimePropertyType
                                                                         value:remainingTimePropertyValue];

@@ -642,3 +642,57 @@ Markup icon image view
                    If markup icon is not shown: 0
   => The width constraint's constant is dynamically adjusted.
 - [C0064] Height = Fixed height
+
+
+Working with time data
+----------------------
+Handling of integer/fractional seconds
+- The SGF standard uses the Real value type for all time properties that deal
+  with durations.
+- The SGF standard does not impose any limits on the precision of a Real value.
+  In practice, though, SgfcKit and libsgfc++ implement the Real type with the
+  underlying primitive type double, so that is what this app is also using
+  throughout, to be able to represent SGF data accurately.
+- When writing SGF data, though, it does not really make sense to write out
+  fractional values with the maximum precision that double allows. For instance,
+  a BL or WL value saying the player had 7.415912389755249 seconds left after
+  they played their stone is non-sensical data. Although it looks very accurate,
+  in reality there is no practical use for that much accuracy.
+- This app therefore has to make a decision: How much precision makes sense? One
+  could argue that for humans a tenth of a second might still be noticeable. In
+  sports races sometimes even hundreds of a second are used. But Go is not a
+  sports race. A strong hint is coming from the GTP 2.0 specification: There the
+  "time_settings" and "time_left" commands are specified to take integer values
+  for durations, i.e. no fractions are possible, only whole seconds. This is
+  reflected in Fuego's implementation of these commands.
+- Ignoring the urge to have precision where none is needed, this app therefore
+  should only write SGF data with whole seconds, i.e. without fractions. This
+  goal is not achieved by rounding values at the time of writing SGF data,
+  though. Read on for the full concept.
+- For time-keeping purposes, the app still uses a player clock with the full
+  resolution possible by the double data type (actually NSTimeInterval, but that
+  is a typedef to double). The reason is that the clock is potentially suspended
+  and restarted many times when the user performs actions such as calling up a
+  menu or switching to a different tab, and these actions should not lead to
+  time already spent being rounded down or up.
+- However, when a player makes their move, the remaining time that is recorded
+  in a GoNodeTimeData object is rounded to a whole second. The method used is
+  rounding up, which is in favour of the player, because 1) it would be unfair
+  to cut off unspent time; and 2) rounding down could lead to zero remaining
+  time, which would incorrectly indicate that the player lost the game on time.
+- To remain consistent with the data recorded in the GoNodeTimeData objet, the
+  remaining time on the player clock is also rounded up.
+- As a result of having only rounded values in GoNodeTimeData objects, when the
+  app writes SGF data the values that go into the SGF data are automatically
+  also rounded. Thus the goal of having no fractions in SGF data is achieved.
+- To complete the goal, the app does not allow the user to set time limits with
+  fractional seconds when they start a new game.
+- The final question is: What to do with fractional values when reading SGF
+  data? Other programs that author SGF data may have different ideas about how
+  to handle precision, so this app must be able to deal with such data.
+- The decision is to preserve SGF data exactly as it is read, i.e. including
+  fractions. Thus when the user saves the game, the SGF data written will still
+  have the same fractions as in the original SGF data that was read, with only
+  potential minor differences due to precision handling when string data is
+  converted to floating point data, and back. Rounding is only done when the app
+  generates new data, i.e. when the user causes new moves to be played.
