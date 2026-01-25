@@ -963,6 +963,69 @@ enum GoPeriodDurationElapsedResultType
   GoPeriodDurationElapsedResultTypeGameContinues,    ///< @brief There is still time left (e.g. switching from absolute time to overtime, the player has more periods (aka "lifes") left) and the game continues.
 };
 
+/// @brief Enumerates the possible time data validation modes. Modes appear
+/// in order of the number of checks performed.
+///
+/// @ingroup go
+enum GoTimeDataValidationMode
+{
+  /// @brief Validation is performed to detect basic problems only, problems
+  /// that prevent the app from supporting timed play while a given node is
+  /// selected.
+  ///
+  /// Problems detected in this mode range from foundational problems with the
+  /// game's time systems (e.g. no time systems, or a custom time system, or
+  /// a time system's values exceed the maximum values supported by the app), to
+  /// structural problems (e.g. GoNodeTimeData is missing in a move node, or
+  /// refers not to the same player as the move, or refers to a time system that
+  /// was not chosen to start the game), to foundational problems with a node's
+  /// time data (e.g. negative values, or values that exceed the maximum values
+  /// supported by the app).
+  ///
+  /// If there is a foundational problem with the game's time systems, the
+  /// invalid state and invalid reason are propagated to all nodes. Otherwise,
+  /// a node's time data is examined only in isolation.
+  GoTimeDataValidationModeBasic,
+  /// @brief In addition to the validation performed in
+  /// #GoTimeDataValidationModeBasic, a number of inconsistencies between
+  /// time system data and node time data are detected.
+  ///
+  /// A node's time data is examined in relation to the time system that the
+  /// time data refers to.
+  ///
+  /// Even a casual user may still be interested in problems found by this mode.
+  GoTimeDataValidationModeNormal,
+  /// @brief In addition to the validation performed in
+  /// #GoTimeDataValidationModeNormal, inconsistencies in the time data
+  /// sequence are detected. Unlike in #GoTimeDataValidationModePedantic,
+  /// descendant nodes of a node with invalid time data can again have valid
+  /// time data.
+  ///
+  /// A node's time data is examined in relation to the time data in the
+  /// preceding GoNodeTimeData object.
+  ///
+  /// This mode is likely to be of interest only to users who want highly
+  /// consistent time data data.
+  GoTimeDataValidationModeStrict,
+  /// @brief The same validation is performed as in
+  /// #GoTimeDataValidationModeStrict, but when a node with invalid time
+  /// data is found, no further validation is performed on descendants of that
+  /// node. Instead the invalid state and invalid reason is propagated to those
+  /// descendant nodes.
+  ///
+  /// The rationale behind this mode is that time data must be viewed as an
+  /// interlinked sequence of data points, much the same as a sequence of moves,
+  /// and cannot be viewed as independent data points. Once a piece of time data
+  /// is invalid, time data further down in the sequence can therefore no longer
+  /// be viewed as valid.
+  ///
+  /// This mode is likely to be of interest only to users who want highly
+  /// consistent time data. The mode may be useful to users who want to correct
+  /// inconsistent time data, starting at the first node that has inconsistent
+  /// time data.
+  GoTimeDataValidationModePedantic,
+};
+
 /// @brief Enumerates the possible reasons why validating the time data in a
 /// given game variation resulted in #GoTimeDataValidationResultInvalid.
 ///
@@ -973,62 +1036,102 @@ enum GoTimeDataInvalidReason
   /// systems. If the game was loaded from an .sgf file, nodes may contain time
   /// data, but that time data is not validated at all because without time
   /// systems there is no way to interpret the data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonGameDoesNotUseTimedPlay,
   /// @brief The game uses a custom time system that the app does not
   /// understand. If the game was loaded from an .sgf file, nodes may contain
   /// time data, but that time data is not validated at all because the app
   /// does not know how to interpret the data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonCustomTimeSystem,
   /// @brief The absolute time is greater than the maximum supported by this
   /// app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum,
   /// @brief The period-based time system has a period duration that is greater
   /// than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonPeriodDurationExceedsMaximum,
   /// @brief The period-based time system has an extra time duration that is
   /// greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum,
   /// @brief The period-based time system has a minimum number of moves per
   /// period value that is greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum,
   /// @brief The period-based time system has a number of periods value that is
   /// greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum,
   /// @brief A move node does not contain time data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonMoveNodeHasNoTimeData,
   /// @brief A non-move node contains time data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonNonMoveNodeHasTimeData,
   /// @brief The player who made a move is not the same player for which the
   /// time data in that move is.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonMoveAndTimeDataPlayerMismatch,
   /// @brief A node's time data refers to absolute time, but the time settings
   /// do not define an absolute time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem,
   /// @brief A node's time data refers to period-based time, but the time
   /// settings do not define a period-based time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem,
   /// @brief A node's time data has a negative remaining time.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonRemainingTimeNegative,
   /// @brief A node's time data has a negative remaining number of moves.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonRemainingNumberOfMovesNegative,
   /// @brief A node's time data has a negative remaining number of periods.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative,
   /// @brief A node's time data refers to absolute time although a previous
   /// node's time data referred to the period-based time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
   GoTimeDataInvalidReasonAbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData,
   /// @brief A node's time data has a remaining absolute time that is higher
   /// than the remaining absolute time in the predecessor node's time data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
   GoTimeDataInvalidReasonRemainingAbsoluteTimeIsIncreasing,
   /// @brief A node's time data has a remaining time that is higher than what
   /// is allowed by the time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeNormal and higher.
   GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows,
   /// @brief A node's time data has a remaining number of moves that is higher
   /// than what is allowed by the period-based time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeNormal and higher.
   GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows,
   /// @brief A node's time data has a remaining number of periods that is higher
   /// than what is allowed by the period-based time system.
   ///
   /// This can occur only for #GoTimeSystemTypeJapanese.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeNormal and higher.
   GoTimeDataInvalidReasonRemainingNumberOfPeriodsHigherThanPeriodBasedTimeSystemAllows,
   /// @brief A node's time data has a remaining number of moves that is not
   /// constant, i.e. that differs from the remaining number of moves in the
@@ -1038,6 +1141,8 @@ enum GoTimeDataInvalidReason
   /// is 1 (one). Consequently the remaining number of moves should always be
   /// either 0 (zero) or 1 (one). The latter is the case if the SGF writer
   /// records values after a period reset (known case: KGS).
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
   GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant,
   /// @brief A node's time data has a remaining number of moves that is
   /// constant, i.e. that does not differ from the remaining number of moves in
@@ -1048,20 +1153,28 @@ enum GoTimeDataInvalidReason
   /// #GoUnusedTimeHandlingUseForExtraMoves. Consequently the remaining number
   /// of moves should always either decrease (before the period reset), or
   /// increase (after the period reset).
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
   GoTimeDataInvalidReasonRemainingNumberOfMovesConstant,
   /// @brief A node's time data has a remaining number of moves that is less
   /// (or equal) than the remaining number of moves in the predecessor node's
   /// time data, but at the same time the remaining time increased.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
   GoTimeDataInvalidReasonRemainingNumberOfMovesDecreasedButRemainingTimeIncreased,
   /// @brief A node's time data has a remaining number of moves that is greater
   /// than the remaining number of moves in the predecessor node's time data,
   /// but at the same time the remaining time decreased.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
   GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased,
   /// @brief A node's time data has a remaining number of periods that is
   /// greater than the remaining number of periods in the predecessor node's
   /// time data.
   ///
   /// This can occur only for #GoTimeSystemTypeJapanese.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
   GoTimeDataInvalidReasonRemainingNumberOfPeriodsIsIncreasing,
   /// @brief A node's time data has a remaining time that is greater than what
   /// is allowed after adding extra time to the remaining time in the
@@ -1069,15 +1182,23 @@ enum GoTimeDataInvalidReason
   ///
   /// This can occur only for #GoTimeSystemTypeFischer and
   /// #GoTimeSystemTypeTotalAverage.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
   GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows,
   /// @brief A node's time data has a remaining time that is greater than the
   /// maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonRemainingTimeExceedsMaximum,
   /// @brief A node's time data has a remaining number of moves that is
   /// greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonRemainingNumberOfMovesExceedsMaximum,
   /// @brief A node's time data has a remaining number of periods that is
   /// greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum,
 };
 
@@ -2651,6 +2772,9 @@ extern NSString* focusModeKey;
 extern NSString* gameVariationKey;
 extern NSString* newMoveInsertPolicyKey;
 extern NSString* newMoveInsertPositionKey;
+// Timed play settings
+extern NSString* timedPlayKey;
+extern NSString* timeDataValidationModeKey;
 //@}
 
 // -----------------------------------------------------------------------------

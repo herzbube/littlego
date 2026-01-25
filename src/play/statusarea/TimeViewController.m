@@ -19,11 +19,10 @@
 #import "TimeViewController.h"
 #import "TimeView.h"
 #import "../../go/GoClock.h"
-#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoNode.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
+#import "../../go/GoTimeDataValidator.h"
 #import "../../go/GoTimeSettings.h"
 #import "../../go/GoTimeSystem.h"
 #import "../../main/Registry.h"
@@ -488,8 +487,8 @@
   // current board position changes later on, we will get a time validity
   // notification.
   GoGame* game = [GoGame sharedGame];
-  GoNode* currentNode = game.boardPosition.currentNode;
-  self.isTimeDataValid = currentNode.isTimeDataValid;
+  GoTimeDataValidationResult validationState = [GoTimeDataValidator validationStateOfCurrentNode:game];
+  self.isTimeDataValid = validationState.isTimeDataValid;
 }
 
 @end

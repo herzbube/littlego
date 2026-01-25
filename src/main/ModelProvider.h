@@ -36,6 +36,7 @@
 @class SgfSettingsModel;
 @class SoundHandling;
 @class UiSettingsModel;
+@class TimedPlayModel;
 
 
 // -----------------------------------------------------------------------------
@@ -97,5 +98,7 @@
 @property(nonatomic, retain) NodeTreeViewModel* nodeTreeViewModel;
 /// @brief Model object that stores attributes related to game variations.
 @property(nonatomic, retain) GameVariationModel* gameVariationModel;
+/// @brief Model object that stores attributes related to timed play.
+@property(nonatomic, retain) TimedPlayModel* timedPlayModel;
 
 @end

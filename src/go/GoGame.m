@@ -34,6 +34,7 @@
 #import "GoPoint.h"
 #import "GoScore.h"
 #import "GoTimeSettings.h"
+#import "GoTimeDataValidator.h"
 #import "GoUtilities.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
@@ -752,7 +753,8 @@
 /// Time data handling consists of the following:
 /// - Check whether time data is valid at the place in the game tree where
 ///   @a newNode is located.
-/// - If time data is not valid: No further actions.
+/// - If time data is not valid: Perform a validation on @a newNode to assign
+///   correct values to its time data validity properties.
 /// - If time data is valid: Adds a GoNodeTimeData object to @a newNode that
 ///   captures time data from @a playerTimeData (e.g. how much time is
 ///   remainining), and updates @a playerTimeData to prepare it for the next
@@ -765,28 +767,36 @@
     return;
 
   GoNode* parentNode = newNode.parent;
-  if (! parentNode.isTimeDataValid)
-  {
-    // The new node inherits the invalidReason from its parent => same logic as
-    // when time data validation is performed
-    newNode.isTimeDataValid = false;
-    newNode.timeDataInvalidReason = parentNode.timeDataInvalidReason;
+  GoTimeDataValidationResult validationState = [GoTimeDataValidator validationStateOfNode:parentNode];
 
+  if (validationState.isTimeDataValid)
+  {
+    GoNodeTimeData* nodeTimeData = [[[GoNodeTimeData alloc] init] autorelease];
+    newNode.goNodeTimeData = nodeTimeData;
+
+    nodeTimeData.isTimeDataForBlackPlayer = playerTimeData.isTimeDataForBlackPlayer;
+    [playerTimeData updateAfterMoveWasPlayed:nodeTimeData];
+
+    // No need to perform a formal validation, the logic we implement always
+    // results in valid time data
+    newNode.isTimeDataValid = true;
+    newNode.timeDataInvalidReason = GoTimeDataValidationResultValid.timeDataInvalidReason;
+    newNode.timeDataValidationMode = validationState.timeDataValidationMode;
+  }
+  else
+  {
     // If time data is not valid, then we expect that the clock in
     // playerTimeData was not running => we don't need to update the time data
     // in playerTimeData and we don't need to create a GoNodeTimeData object.
-    return;
+
+    // Let GoTimeDataValidator do the validation using the same mode that was
+    // used last time. The outcome is guaranteed to be invalid time data, if
+    // for no other reason than that the node contains a move but no
+    // GoNodeTimeData object, but the invalid reason may also be different
+    // depending on the validation mode.
+    GoTimeDataValidator* timeDataValidator = [[[GoTimeDataValidator alloc] initWithTimeDataValidationMode:validationState.timeDataValidationMode] autorelease];
+    [timeDataValidator validateTimeDataInSubTree:newNode game:self];
   }
-
-  GoNodeTimeData* nodeTimeData = [[[GoNodeTimeData alloc] init] autorelease];
-  nodeTimeData.isTimeDataForBlackPlayer = playerTimeData.isTimeDataForBlackPlayer;
-
-  newNode.goNodeTimeData = nodeTimeData;
-
-  [playerTimeData updateAfterMoveWasPlayed:nodeTimeData];
-
-  newNode.isTimeDataValid = true;
-  newNode.timeDataInvalidReason = -1;
 }
 
 // -----------------------------------------------------------------------------

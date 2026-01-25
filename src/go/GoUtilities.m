@@ -1058,6 +1058,22 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains either a move or time data. Returns @e nil if no move and no time
+/// data can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentMoveOrTimeData:(GoNode*)node
+{
+  while (node)
+  {
+    if (node.goMove || node.goNodeTimeData)
+      return node;
+    node = node.parent;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns true if the content of @a node warrants showing an "info"
 /// indicator to the user when displaying an overview of @a node.
 // -----------------------------------------------------------------------------

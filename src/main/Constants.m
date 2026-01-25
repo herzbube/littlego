@@ -520,6 +520,9 @@ NSString* focusModeKey = @"FocusMode";
 NSString* gameVariationKey = @"GameVariation";
 NSString* newMoveInsertPolicyKey = @"NewMoveInsertPolicy";
 NSString* newMoveInsertPositionKey = @"NewMoveInsertPosition";
+// Timed play settings
+NSString* timedPlayKey = @"TimedPlay";
+NSString* timeDataValidationModeKey = @"TimeDataValidationMode";
 
 // Constants for NSCoding
 // General constants

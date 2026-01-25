@@ -25,6 +25,7 @@
 #import "../../go/GoTimeSettings.h"
 #import "../../play/gameaction/GameActionManager.h"
 #import "../../player/Player.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../utility/ExceptionUtility.h"

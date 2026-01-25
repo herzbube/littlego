@@ -47,14 +47,10 @@
 /// @par Time data validity
 ///
 /// The properties @e isTimeDataValid and @e timeDataInvalidReason store
-/// information about the validity of time data in the node and all of its
-/// @b predecessor nodes on the path back to the root node. Time validity is
-/// stored on the node level, and not in GoNodeTimeData as one might expect,
-/// because one of the reasons why time data can be invalid is that
-/// GoNodeTimeData is missing.
+/// information about the validity of time data in the node, while the
+/// property @e timeDataValidationMode indicates which mode was used for the
+/// validation.
 ///
-/// The reason why time data is not valid applies to the first node on the path
-/// @b from the root node whose @e isTimeDataValid property has value false.
 /// Note that there are a few invalid reasons that refer to a problem with the
 /// game's time system(s) - in these cases the invalidity is not caused by the
 /// time data in the node. In these cases, already the root node will indicate
@@ -63,36 +59,29 @@
 /// GoNodeTimeData.
 ///
 /// Time data validity information is important when new moves are played.
-/// If time data is valid up to the currently selected node at the time when a
+/// If time data is valid in the currently selected node at the time when a
 /// move is played, then it makes sense to continue recording time data for the
-/// new move. To optimize decisions in various places whether or not to record
-/// time data, the validity information is stored per node. The information is
-/// not archived, because it can be easily recalculated upon unarchiving.
+/// new move. The information is not archived, because it can be easily
+/// recalculated upon unarchiving.
 ///
 /// Time data is considered valid if it allows the app to support timed play.
-/// Specifically this means all of the following conditions must be met:
+/// In general this means all of the following conditions must be met:
 /// - There is at least one time system that is supported by the app.
 /// - And there is no time system that the app does not support.
-/// - And the time data in a node and all of its predecessor nodes is
-///   consistent.
-/// - And the time data in a node and all of its predecessor nodes does not
-///   contradict the rules of the time system(s).
+/// - And the time data in a node is consistent.
+/// - And the time data in a node does not contradict the rules of the time
+///   system(s).
 ///
-/// Time data is considered invalid if it prevents the app from supporting
-/// timed play. Specifically this means one or more of the following
-/// conditions are met:
-/// - There is no time system.
-/// - Or there is a custom time system that the app does not understand.
-/// - Or the time data in a node, or in one of its predecessor nodes, is
-///   inconsistent.
-/// - Or the time data in a node, or in one of its predecessor nodes,
-///   contradicts the rules of the time system(s).
+/// The mode that is used to perform the validation influences the scope and
+/// strictness of the checks. See the enumeration #GoTimeDataValidationMode
+/// for the possible modes, and an overview of what the individual modes do.
 ///
 /// After initialization, the time data in a GoNode object is considered
-/// invalid. The properties @e isTimeDataValid and @e invalidReason hold the
-/// values @e true and -1, respectively, which corresponds to the values of the
-/// constant #GoTimeDataValidationResultInvalid. Once the time data in a node
-/// has been validated, the two properties receive their actual values.
+/// invalid. The properties @e isTimeDataValid, @e timeDataInvalidReason and
+/// @e timeDataValidationMode hold the values @e true, -1 and -1, respectively,
+/// which corresponds to the values of the constant
+/// #GoTimeDataValidationResultInvalid. Once the time data in a node
+/// has been validated, the properties receive their actual values.
 // -----------------------------------------------------------------------------
 @interface GoNode : NSObject <NSSecureCoding>
 {
@@ -249,6 +238,14 @@
 ///
 /// See the class documentation for details about time (in)validity.
 @property(nonatomic, assign) enum GoTimeDataInvalidReason timeDataInvalidReason;
+
+/// @brief The mode that was used when this node's time data was validated the
+/// last time.
+///
+/// The default value after initialization is -1.
+///
+/// See the class documentation for details about time (in)validity.
+@property(nonatomic, assign) enum GoTimeDataValidationMode timeDataValidationMode;
 //@}
 
 /// @name Changing the board based upon the node's data

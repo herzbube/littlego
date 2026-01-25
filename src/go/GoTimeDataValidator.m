@@ -26,6 +26,11 @@
 #import "GoPlayer.h"
 #import "GoTimeSettings.h"
 #import "GoTimeSystem.h"
+#import "GoUtilities.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
+#import "../play/model/TimedPlayModel.h"
+
 #import "../utility/ExceptionUtility.h"
 
 
@@ -34,12 +39,18 @@
 // -----------------------------------------------------------------------------
 // See header file for documentation of the two constants and the function
 // -----------------------------------------------------------------------------
-const GoTimeDataValidationResult GoTimeDataValidationResultValid = { true, -1 };
-const GoTimeDataValidationResult GoTimeDataValidationResultInvalid = { false, -1 };
+const GoTimeDataValidationResult GoTimeDataValidationResultValid = { true, -1, -1 };
+const GoTimeDataValidationResult GoTimeDataValidationResultInvalid = { false, -1, -1 };
 GoTimeDataValidationResult GoTimeDataValidationResultMake(bool isTimeDataValid,
-                                                          enum GoTimeDataInvalidReason timeDataInvalidReason)
+                                                          enum GoTimeDataInvalidReason timeDataInvalidReason,
+                                                          enum GoTimeDataValidationMode timeDataValidationMode)
 {
-  return (GoTimeDataValidationResult) {isTimeDataValid, timeDataInvalidReason};
+  return (GoTimeDataValidationResult)
+  {
+    isTimeDataValid,
+    timeDataInvalidReason,
+    timeDataValidationMode
+  };
 }
 
 
@@ -57,7 +68,8 @@ GoTimeDataValidationResult GoTimeDataValidationResultMake(bool isTimeDataValid,
 // -----------------------------------------------------------------------------
 - (GoTimeDataValidationResult) validateNodeTimeData:(GoNodeTimeData*)currentNodeTimeData
                             predecessorNodeTimeData:(GoNodeTimeData*)predecessorNodeTimeData
-                                         timeSystem:(GoTimeSystem*)timeSystem;
+                                         timeSystem:(GoTimeSystem*)timeSystem
+                             timeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode;
 @end
 
 @interface AbsoluteNodeTimeDataValidator : NSObject <NodeTimeDataValidator>
@@ -116,39 +128,118 @@ struct TimeDataValidationContext
   bool didSwitchToPeriodBasedTimeSystemWhite;
   GoNodeTimeData* predecessorNodeTimeDataBlack;
   GoNodeTimeData* predecessorNodeTimeDataWhite;
-  GoTimeDataValidationResult previousValidationResult;
-  bool overallIsTimeDataValid;
+  GoTimeDataValidationResult timeSettingsValidationResult;
+  GoTimeDataValidationResult nodeValidationResult;
+  GoTimeDataValidationResult previousNodeValidationResult;
 };
 typedef struct TimeDataValidationContext TimeDataValidationContext;
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for GoTimeDataValidator.
+// -----------------------------------------------------------------------------
+@interface GoTimeDataValidator()
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) enum GoTimeDataValidationMode timeDataValidationMode;
+//@}
+@end
 
 
 #pragma mark - GoTimeDataValidator implementation
 
 @implementation GoTimeDataValidator
 
+#pragma mark - Initialization and deallocation
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a newly constructed GoTimeDataValidator object that uses the
+/// validation mode obtained from the user defaults.
+// -----------------------------------------------------------------------------
++ (GoTimeDataValidator*) timeDataValidatorWithUserDefaultsMode
+{
+  enum GoTimeDataValidationMode timeDataValidationMode = [Registry sharedRegistry].modelProvider.timedPlayModel.timeDataValidationMode;
+  return [[[GoTimeDataValidator alloc] initWithTimeDataValidationMode:timeDataValidationMode] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoTimeDataValidator object.
+///
+/// @note This is the designated initializer of GoTimeDataValidator.
+// -----------------------------------------------------------------------------
+- (id) initWithTimeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode;
+{
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.timeDataValidationMode = timeDataValidationMode;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoTimeDataValidator object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [super dealloc];
+}
+
 #pragma mark - GoTimeDataValidator implementation - Public API
 
 // -----------------------------------------------------------------------------
-/// @brief Validates the time data in the entire node tree available from
-/// @a game and returns the overall result. If the time data in the entire node
-/// tree is valid, then the overall result is #GoTimeDataValidationResultValid.
-/// Otherwise the overall result is #GoTimeDataValidationResultInvalid.
+/// @brief Validates the time data in the entire game tree available from
+/// @a game.
 ///
-/// As a side effect, updates the properties @e isTimeDataValid and
-/// @e timeDataInvalidReason in all GoNode objects that this function
-/// examines.
+/// As a side effect, updates the properties @e isTimeDataValid,
+/// @e timeDataInvalidReason and @e timeDataValidationMode in all GoNode objects
+/// that this function examines.
 ///
 /// @exception NSInvalidArgumentException Is raised if @a game is @e nil.
 // -----------------------------------------------------------------------------
-+ (GoTimeDataValidationResult) validateTimeDataInNodeTree:(GoGame*)game
+- (void) validateTimeDataInGameTree:(GoGame*)game
 {
   if (! game)
   {
-    NSString* errorMessage = @"validateTimeDataInNodeTree failed, game argument is nil";
+    NSString* errorMessage = @"validateTimeDataInGameTree: failed, game argument is nil";
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
-  return [GoTimeDataValidator validateTimeDataInNodeTreeInternal:game];
+  [self validateTimeDataInNodeTreeInternal:game.nodeModel.rootNode
+                                      game:game];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Validates the time data in @a node and the subtree descending from
+/// @a node.
+///
+/// As a side effect, updates the properties @e isTimeDataValid,
+/// @e timeDataInvalidReason and @e timeDataValidationMode in all GoNode objects
+/// that this function examines.
+///
+/// @exception NSInvalidArgumentException Is raised if @a node is @e nil, or if
+/// @a game is @e nil.
+// -----------------------------------------------------------------------------
+- (void) validateTimeDataInSubTree:(GoNode*)node
+                              game:(GoGame*)game
+{
+  if (! node)
+  {
+    NSString* errorMessage = @"validateTimeDataInSubTree:game: failed, node argument is nil";
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+  }
+
+  if (! game)
+  {
+    NSString* errorMessage = @"validateTimeDataInSubTree:game: failed, game argument is nil";
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+  }
+
+  [self validateTimeDataInNodeTreeInternal:node
+                                      game:game];
+
 }
 
 // -----------------------------------------------------------------------------
@@ -156,22 +247,22 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// @a game and returns the result. The validation examines the time data in
 /// all nodes of the game variation.
 ///
-/// As a side effect, updates the properties @e isTimeDataValid and
-/// @e timeDataInvalidReason in all GoNode objects that this function
-/// examines.
+/// As a side effect, updates the properties @e isTimeDataValid,
+/// @e timeDataInvalidReason and @e timeDataValidationMode in all GoNode objects
+/// that this function examines.
 ///
 /// @exception NSInvalidArgumentException Is raised if @a game is @e nil.
 // -----------------------------------------------------------------------------
-+ (GoTimeDataValidationResult) validateTimeDataInCurrentGameVariation:(GoGame*)game
+- (void) validateTimeDataInCurrentGameVariation:(GoGame*)game
 {
   if (! game)
   {
-    NSString* errorMessage = @"validateTimeDataInCurrentGameVariation failed, game argument is nil";
+    NSString* errorMessage = @"validateTimeDataInCurrentGameVariation: failed, game argument is nil";
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
-  return [GoTimeDataValidator validateTimeDataInCurrentGameVariationInternal:game
-                                                                   untilNode:game.nodeModel.leafNode];
+  [self validateTimeDataInCurrentGameVariationInternal:game
+                                             untilNode:game.nodeModel.leafNode];
 }
 
 // -----------------------------------------------------------------------------
@@ -181,26 +272,26 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// @a lastNodeToValidate. @a lastNodeToValidate must be part of the current
 /// game variation.
 ///
-/// As a side effect, updates the properties @e isTimeDataValid and
-/// @e timeDataInvalidReason in all GoNode objects that this function
-/// examines.
+/// As a side effect, updates the properties @e isTimeDataValid,
+/// @e timeDataInvalidReason and @e timeDataValidationMode in all GoNode objects
+/// that this function examines.
 ///
 /// @exception NSInvalidArgumentException Is raised if @a game is @e nil, or if
 /// @a lastNodeToValidate is @e nil, or if @a lastNodeToValidate is not part of
 /// the current game variation.
 // -----------------------------------------------------------------------------
-+ (GoTimeDataValidationResult) validateTimeDataInCurrentGameVariation:(GoGame*)game
-                                                            untilNode:(GoNode*)lastNodeToValidate
+- (void) validateTimeDataInCurrentGameVariation:(GoGame*)game
+                                      untilNode:(GoNode*)lastNodeToValidate
 {
   if (! game)
   {
-    NSString* errorMessage = @"validateTimeDataInCurrentGameVariationUntilNode failed, game argument is nil";
+    NSString* errorMessage = @"validateTimeDataInCurrentGameVariation:untilNode: failed, game argument is nil";
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
   if (! lastNodeToValidate)
   {
-    NSString* errorMessage = @"validateTimeDataInCurrentGameVariationUntilNode failed, lastNodeToValidate argument is nil";
+    NSString* errorMessage = @"validateTimeDataInCurrentGameVariation:untilNode: failed, lastNodeToValidate argument is nil";
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
@@ -208,12 +299,12 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   bool nodeIsInCurrentGameVariation = [nodeModel indexOfNode:lastNodeToValidate] >= 0;
   if (! nodeIsInCurrentGameVariation)
   {
-    NSString* errorMessage = @"validateTimeDataInCurrentGameVariationUntilNode failed, lastNodeToValidate is not in current game variation";
+    NSString* errorMessage = @"validateTimeDataInCurrentGameVariation:untilNode: failed, lastNodeToValidate is not in current game variation";
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
-  return [GoTimeDataValidator validateTimeDataInCurrentGameVariationInternal:game
-                                                                   untilNode:lastNodeToValidate];
+  [self validateTimeDataInCurrentGameVariationInternal:game
+                                             untilNode:lastNodeToValidate];
 }
 
 // -----------------------------------------------------------------------------
@@ -231,7 +322,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
-  return [GoTimeDataValidator validationStateOfNode:game.nodeModel.leafNode];
+  return [self validationStateOfNode:game.nodeModel.leafNode];
 }
 
 // -----------------------------------------------------------------------------
@@ -249,7 +340,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
-  return [GoTimeDataValidator validationStateOfNode:game.boardPosition.currentNode];
+  return [self validationStateOfNode:game.boardPosition.currentNode];
 }
 
 // -----------------------------------------------------------------------------
@@ -266,7 +357,33 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
-  return GoTimeDataValidationResultMake(node.isTimeDataValid, node.timeDataInvalidReason);
+  if (node.timeDataValidationMode == GoTimeDataValidationModePedantic)
+  {
+    return GoTimeDataValidationResultMake(node.isTimeDataValid,
+                                          node.timeDataInvalidReason,
+                                          node.timeDataValidationMode);
+  }
+
+  // If a node with a move or time data exists we use the validation state of
+  // that node.
+  // - If the node contains only a move but no time data, or only time data but
+  //   no move, then this is a structural problem that was detected in all
+  //   validation modes => validation state is guaranteed to be invalid.
+  // - If the node contains both a move and time data, then the validation
+  //   state depends on the strictness of the validation mode that was used.
+  //
+  // If no node with a move or time data exists, the supplied node must be at
+  // the beginning of the game. In that case we use the validation state of the
+  // supplied node itself, which reflects the validation state of the game's
+  // time settings.
+  GoNode* nodeWithMoveOrTimeData = [GoUtilities nodeWithMostRecentMoveOrTimeData:node];
+  GoNode* nodeWithValidationState = (nodeWithMoveOrTimeData
+                                     ? nodeWithMoveOrTimeData
+                                     : node);
+
+  return GoTimeDataValidationResultMake(nodeWithValidationState.isTimeDataValid,
+                                        nodeWithValidationState.timeDataInvalidReason,
+                                        nodeWithValidationState.timeDataValidationMode);
 }
 
 #pragma mark - GoTimeDataValidator implementation - Internal backends
@@ -275,30 +392,32 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// @brief Internal backend method. Performs no parameter validation, this is
 /// the job of the public callers.
 // -----------------------------------------------------------------------------
-+ (GoTimeDataValidationResult) validateTimeDataInNodeTreeInternal:(GoGame*)game
+- (void) validateTimeDataInNodeTreeInternal:(GoNode*)node
+                                       game:(GoGame*)game
+
 {
   TimeDataValidationContext context;
-  [GoTimeDataValidator setupTimeDataValidationContext:&context withGame:game];
+  [self setupTimeDataValidationContext:&context withNode:node game:game];
 
   NSMutableArray* stack = [NSMutableArray array];
   NSNull* nullValue = [NSNull null];
 
-  context.currentNode = game.nodeModel.rootNode;
+  context.currentNode = node;
 
   while (true)
   {
     while (context.currentNode)
     {
-      [GoTimeDataValidator visitNode:&context];
-      [GoTimeDataValidator pushContextData:&context onStack:stack nullValue:nullValue];
-      [GoTimeDataValidator updatePredecessorNodeTimeData:&context];
+      [self visitNode:&context];
+      [self pushContextData:&context onStack:stack nullValue:nullValue];
+      [self updatePredecessorNodeTimeData:&context];
 
       context.currentNode = context.currentNode.firstChild;
     }
 
     if (stack.count > 0)
     {
-      [GoTimeDataValidator popContextData:&context fromStack:stack nullValue:nullValue];
+      [self popContextData:&context fromStack:stack nullValue:nullValue];
 
       context.currentNode = context.currentNode.nextSibling;
     }
@@ -308,24 +427,20 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       break;
     }
   }
-
-  return (context.overallIsTimeDataValid
-          ? GoTimeDataValidationResultValid
-          : GoTimeDataValidationResultInvalid);
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Internal backend method. Performs no parameter validation, this is
 /// the job of the public callers.
 // -----------------------------------------------------------------------------
-+ (GoTimeDataValidationResult) validateTimeDataInCurrentGameVariationInternal:(GoGame*)game
-                                                                    untilNode:(GoNode*)lastNodeToValidate
+- (void) validateTimeDataInCurrentGameVariationInternal:(GoGame*)game
+                                              untilNode:(GoNode*)lastNodeToValidate
 {
-  TimeDataValidationContext context;
-  [GoTimeDataValidator setupTimeDataValidationContext:&context withGame:game];
-
   GoNodeModel* nodeModel = game.nodeModel;
   int numberOfNodes = nodeModel.numberOfNodes;
+
+  TimeDataValidationContext context;
+  [self setupTimeDataValidationContext:&context withNode:nodeModel.rootNode game:game];
 
   GoNode* node = nil;
   for (int nodeIndex = 0;
@@ -334,23 +449,21 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   {
     context.currentNode = [nodeModel nodeAtIndex:nodeIndex];
 
-    [GoTimeDataValidator visitNode:&context];
-    [GoTimeDataValidator updatePredecessorNodeTimeData:&context];
+    [self visitNode:&context];
+    [self updatePredecessorNodeTimeData:&context];
   }
-
-  return (context.overallIsTimeDataValid
-          ? GoTimeDataValidationResultValid
-          : GoTimeDataValidationResultInvalid);
 }
 
 #pragma mark - GoTimeDataValidator implementation - Validation logic
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes @a context using time settings information obtained from
-/// @a game.
+/// @a game. If @a node is not the root node, also gathers initialization data
+/// from the predecessors of @a node.
 // -----------------------------------------------------------------------------
-+ (void) setupTimeDataValidationContext:(TimeDataValidationContext*)context
-                               withGame:(GoGame*)game
+- (void) setupTimeDataValidationContext:(TimeDataValidationContext*)context
+                               withNode:(GoNode*)node
+                                   game:(GoGame*)game
 {
   GoTimeSettings* timeSettings = game.timeSettings;
 
@@ -360,46 +473,112 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   context->absoluteTimeSystemIsPresent = (context->absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute);
   context->periodBasedTimeSystem = timeSettings.periodBasedTimeSystem;
   context->periodBasedTimeSystemIsPresent = (context->periodBasedTimeSystem.goTimeSystemType != GoTimeSystemTypeNone);
-  context->absoluteNodeTimeDataValidator = [GoTimeDataValidator getValidator:context->absoluteTimeSystem.goTimeSystemType];
-  context->periodBasedNodeTimeDataValidator = [GoTimeDataValidator getValidator:context->periodBasedTimeSystem.goTimeSystemType];
+  context->absoluteNodeTimeDataValidator = [self getValidator:context->absoluteTimeSystem.goTimeSystemType];
+  context->periodBasedNodeTimeDataValidator = [self getValidator:context->periodBasedTimeSystem.goTimeSystemType];
   context->didSwitchToPeriodBasedTimeSystemBlack = (context->absoluteTimeSystemIsPresent ? false : true);
   context->didSwitchToPeriodBasedTimeSystemWhite = context->didSwitchToPeriodBasedTimeSystemBlack;
   context->predecessorNodeTimeDataBlack = nil;
   context->predecessorNodeTimeDataWhite = nil;
-  context->previousValidationResult = [GoTimeDataValidator validateTimeSettings:timeSettings];
-  context->overallIsTimeDataValid = context->previousValidationResult.isTimeDataValid;
+  context->timeSettingsValidationResult = [self validateTimeSettings:timeSettings];
+  context->nodeValidationResult = GoTimeDataValidationResultInvalid;
+
+  if (node.isRoot)
+  {
+    context->previousNodeValidationResult = context->timeSettingsValidationResult;
+  }
+  else
+  {
+    // Used to abort the iteration early. Works only if we encounter
+    // time data for BOTH players that indicates that the respective player
+    // switched to the period time system. If not, the counter will remain at
+    // 2 or 1.
+    int numberOfMissingInformationPieces = 4;
+
+    // The didSwitch... flags can be true already if no absolute time system
+    // is present
+    if (context->didSwitchToPeriodBasedTimeSystemBlack)
+      numberOfMissingInformationPieces--;
+    if (context->didSwitchToPeriodBasedTimeSystemWhite)
+      numberOfMissingInformationPieces--;
+
+    GoNode* parentNode = node.parent;
+    GoNode* iterNode = parentNode;
+    while (iterNode && numberOfMissingInformationPieces > 0)
+    {
+      GoNodeTimeData* nodeTimeData = iterNode.goNodeTimeData;
+      if (nodeTimeData)
+      {
+        if (nodeTimeData.isTimeDataForBlackPlayer)
+        {
+          if (! context->predecessorNodeTimeDataBlack)
+          {
+            context->predecessorNodeTimeDataBlack = nodeTimeData;
+            numberOfMissingInformationPieces--;
+          }
+
+          if (! nodeTimeData.isRemainingTimeAbsoluteTime && ! context->didSwitchToPeriodBasedTimeSystemBlack)
+          {
+            context->didSwitchToPeriodBasedTimeSystemBlack = true;
+            numberOfMissingInformationPieces--;
+          }
+        }
+        else
+        {
+          if (! context->predecessorNodeTimeDataWhite)
+          {
+            context->predecessorNodeTimeDataWhite = nodeTimeData;
+            numberOfMissingInformationPieces--;
+          }
+
+          if (! nodeTimeData.isRemainingTimeAbsoluteTime && ! context->didSwitchToPeriodBasedTimeSystemWhite)
+          {
+            context->didSwitchToPeriodBasedTimeSystemWhite = true;
+            numberOfMissingInformationPieces--;
+          }
+        }
+      }
+
+      iterNode = iterNode.parent;
+    }
+
+    context->previousNodeValidationResult = GoTimeDataValidationResultMake(parentNode.isTimeDataValid,
+                                                                           parentNode.timeDataInvalidReason,
+                                                                           parentNode.timeDataValidationMode);
+  }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Validates the content of @a timeSettings.
 // -----------------------------------------------------------------------------
-+ (GoTimeDataValidationResult) validateTimeSettings:(GoTimeSettings*)timeSettings
+- (GoTimeDataValidationResult) validateTimeSettings:(GoTimeSettings*)timeSettings
 {
   // Check for custom time system first, because a custom time system
-  // automatically means "no timed play"
+  // automatically means "no timed play", but we want to distinguish
+  // GoTimeDataInvalidReasonCustomTimeSystem from
+  // GoTimeDataInvalidReasonGameDoesNotUseTimedPlay.
   if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeCustom)
   {
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonCustomTimeSystem);
+    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonCustomTimeSystem, self.timeDataValidationMode);
   }
   else if (! timeSettings.isGameUsingTimedPlay)
   {
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonGameDoesNotUseTimedPlay);
+    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonGameDoesNotUseTimedPlay, self.timeDataValidationMode);
   }
   else if (timeSettings.absoluteTimeSystem.supportsTimedPlay &&
            timeSettings.absoluteTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)
   {
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum);
+    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum, self.timeDataValidationMode);
   }
   else if (timeSettings.periodBasedTimeSystem.supportsTimedPlay)
   {
     if (timeSettings.periodBasedTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodDurationExceedsMaximum);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodDurationExceedsMaximum, self.timeDataValidationMode);
     else if (timeSettings.periodBasedTimeSystem.extraTimeDurationInSeconds > gMaximumRemainingTimeInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum, self.timeDataValidationMode);
     else if (timeSettings.periodBasedTimeSystem.minimumNumberOfMovesPerPeriod > gMaximumRemainingNumberOfMovesOrPeriods)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum, self.timeDataValidationMode);
     else if (timeSettings.periodBasedTimeSystem.numberOfPeriods > gMaximumRemainingNumberOfMovesOrPeriods)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum, self.timeDataValidationMode);
   }
 
   // No further time system consistency checks needed - initializers of
@@ -414,11 +593,18 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// property @e currentNode in @a context. Invokes visitNodeTimeData:() if the
 /// node contains a GoNodeTimeData object.
 // -----------------------------------------------------------------------------
-+ (void) visitNode:(TimeDataValidationContext*)context
+- (void) visitNode:(TimeDataValidationContext*)context
 {
   context->nodeTimeData = context->currentNode.goNodeTimeData;
 
-  if (context->previousValidationResult.isTimeDataValid)
+  // If the mode is not pedantic, the default is the time settings validation
+  // result => if the time settings are not valid, then this is propagated
+  // to all descendant nodes even though the mode is not pedantic.
+  context->nodeValidationResult = (self.timeDataValidationMode == GoTimeDataValidationModePedantic
+                                   ? context->previousNodeValidationResult
+                                   : context->timeSettingsValidationResult);
+
+  if (context->nodeValidationResult.isTimeDataValid)
   {
     GoMove* move = context->currentNode.goMove;
     GoNodeTimeData* nodeTimeData = context->nodeTimeData;
@@ -428,27 +614,27 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
     if (hasMove != hasNodeTimeData)
     {
       if (hasMove)
-        context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMoveNodeHasNoTimeData);
+        context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMoveNodeHasNoTimeData, self.timeDataValidationMode);
       else
-        context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonNonMoveNodeHasTimeData);
+        context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonNonMoveNodeHasTimeData, self.timeDataValidationMode);
     }
     else if (hasMove) // implies that hasNodeTimeData is also true
     {
       if (move.player.black != nodeTimeData.isTimeDataForBlackPlayer)
-        context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMoveAndTimeDataPlayerMismatch);
+        context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMoveAndTimeDataPlayerMismatch, self.timeDataValidationMode);
     }
-
-    if (context->overallIsTimeDataValid)
-      context->overallIsTimeDataValid = context->previousValidationResult.isTimeDataValid;
   }
 
   if (context->nodeTimeData)
   {
-    [GoTimeDataValidator visitNodeTimeData:context];
+    [self visitNodeTimeData:context];
   }
 
-  context->currentNode.isTimeDataValid = context->previousValidationResult.isTimeDataValid;
-  context->currentNode.timeDataInvalidReason = context->previousValidationResult.timeDataInvalidReason;
+  context->currentNode.isTimeDataValid = context->nodeValidationResult.isTimeDataValid;
+  context->currentNode.timeDataInvalidReason = context->nodeValidationResult.timeDataInvalidReason;
+
+  if (self.timeDataValidationMode == GoTimeDataValidationModePedantic)
+    context->previousNodeValidationResult = context->nodeValidationResult;
 }
 
 // -----------------------------------------------------------------------------
@@ -457,7 +643,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// NodeTimeDataValidator objects found in @a context to perform most of the
 /// validation logic. Which one is used depends on which time system is in use.
 // -----------------------------------------------------------------------------
-+ (void) visitNodeTimeData:(TimeDataValidationContext*)context
+- (void) visitNodeTimeData:(TimeDataValidationContext*)context
 {
   bool* didSwitchToPeriodBasedTimeSystem;
   GoNodeTimeData* predecessorNodeTimeData;
@@ -478,51 +664,67 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (! *didSwitchToPeriodBasedTimeSystem && ! context->nodeTimeData.isRemainingTimeAbsoluteTime)
     *didSwitchToPeriodBasedTimeSystem = true;
 
-  if (context->previousValidationResult.isTimeDataValid)
+  if (context->nodeValidationResult.isTimeDataValid)
   {
     // First perform general validations that don't depend on the time system
     // that is in effect
     if (context->nodeTimeData.remainingTimeInSeconds > gMaximumRemainingTimeInSeconds)
-      context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeExceedsMaximum);
+      context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeExceedsMaximum, self.timeDataValidationMode);
     else if (context->nodeTimeData.remainingNumberOfMoves > gMaximumRemainingNumberOfMovesOrPeriods)
-      context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesExceedsMaximum);
+      context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesExceedsMaximum, self.timeDataValidationMode);
     else if (context->nodeTimeData.remainingNumberOfPeriods > gMaximumRemainingNumberOfMovesOrPeriods)
-      context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum);
+      context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum, self.timeDataValidationMode);
+    else if (context->nodeTimeData.remainingTimeInSeconds < 0)
+      context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeNegative, self.timeDataValidationMode);
+    else if (context->nodeTimeData.remainingNumberOfMoves < 0)
+      context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative, self.timeDataValidationMode);
+    else if (context->nodeTimeData.remainingNumberOfPeriods < 0)
+      context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative, self.timeDataValidationMode);
     else if (context->nodeTimeData.isRemainingTimeAbsoluteTime)
     {
       if (! context->absoluteTimeSystemIsPresent)
-        context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem);
+        context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem, self.timeDataValidationMode);
       else if (*didSwitchToPeriodBasedTimeSystem)
-        context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData);
+      {
+        if (self.timeDataValidationMode >= GoTimeDataValidationModeStrict)
+          context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData, self.timeDataValidationMode);
+      }
     }
     else
     {
       if (! context->periodBasedTimeSystemIsPresent)
-        context->previousValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem);
+        context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem, self.timeDataValidationMode);
     }
 
     // If data is still valid, perform validations that depend on the time
-    // system that is in effect
-    if (context->previousValidationResult.isTimeDataValid)
+    // system that is in effect.
+    //
+    // Note: If the validation mode is not GoTimeDataValidationModePedantic
+    // (where invalidation is propagated to successor nodes),
+    // predecessorNodeTimeData could come from a node that does not contain
+    // a move, i.e. that node would be marked as containing invalid time data.
+    // For comparing GoNodeTimeData values this is not relevant, though. The
+    // only thing that is absolutely needed to support timed play is that the
+    // CURRENT node contains both a move and a GoNodeTimeData object.
+    if (context->nodeValidationResult.isTimeDataValid)
     {
       if (context->nodeTimeData.isRemainingTimeAbsoluteTime)
       {
-        context->previousValidationResult = [context->absoluteNodeTimeDataValidator validateNodeTimeData:context->nodeTimeData
-                                                                                 predecessorNodeTimeData:predecessorNodeTimeData
-                                                                                              timeSystem:context->absoluteTimeSystem];
+        context->nodeValidationResult = [context->absoluteNodeTimeDataValidator validateNodeTimeData:context->nodeTimeData
+                                                                             predecessorNodeTimeData:predecessorNodeTimeData
+                                                                                          timeSystem:context->absoluteTimeSystem
+                                                                              timeDataValidationMode:self.timeDataValidationMode];
       }
       else
       {
         // The concrete validators will ignore predecessorNodeTimeData if its
         // property isRemainingTimeAbsoluteTime is true
-        context->previousValidationResult = [context->periodBasedNodeTimeDataValidator validateNodeTimeData:context->nodeTimeData
-                                                                                    predecessorNodeTimeData:predecessorNodeTimeData
-                                                                                                 timeSystem:context->periodBasedTimeSystem];
+        context->nodeValidationResult = [context->periodBasedNodeTimeDataValidator validateNodeTimeData:context->nodeTimeData
+                                                                                predecessorNodeTimeData:predecessorNodeTimeData
+                                                                                             timeSystem:context->periodBasedTimeSystem
+                                                                                 timeDataValidationMode:self.timeDataValidationMode];
       }
     }
-
-    if (context->overallIsTimeDataValid)
-      context->overallIsTimeDataValid = context->previousValidationResult.isTimeDataValid;
   }
 }
 
@@ -531,7 +733,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// @a context. This method is intended to be used before the validation
 /// iteration proceeds to the next node.
 // -----------------------------------------------------------------------------
-+ (void) updatePredecessorNodeTimeData:(TimeDataValidationContext*)context
+- (void) updatePredecessorNodeTimeData:(TimeDataValidationContext*)context
 {
   if (context->nodeTimeData)
   {
@@ -547,7 +749,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// in place of @e nil (because NSArray cannot store @e nil). This method is
 /// intended to be used when iterating over a node tree.
 // -----------------------------------------------------------------------------
-+ (void) pushContextData:(TimeDataValidationContext*)context
+- (void) pushContextData:(TimeDataValidationContext*)context
                  onStack:(NSMutableArray*)stack
                nullValue:(NSNull*)nullValue
 {
@@ -556,8 +758,8 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
                      @(context->didSwitchToPeriodBasedTimeSystemBlack),
                      context->predecessorNodeTimeDataWhite ? context->predecessorNodeTimeDataWhite : nullValue,
                      @(context->didSwitchToPeriodBasedTimeSystemWhite),
-                     [NSNumber numberWithBool:context->previousValidationResult.isTimeDataValid],
-                     @(context->previousValidationResult.timeDataInvalidReason)]];
+                     [NSNumber numberWithBool:context->previousNodeValidationResult.isTimeDataValid],
+                     @(context->previousNodeValidationResult.timeDataInvalidReason)]];
 }
 
 // -----------------------------------------------------------------------------
@@ -566,7 +768,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// counterpart to pushContextData:onStack:nullValue:(). This method is intended
 /// to be used when iterating over a node tree.
 // -----------------------------------------------------------------------------
-+ (void) popContextData:(TimeDataValidationContext*)context
+- (void) popContextData:(TimeDataValidationContext*)context
               fromStack:(NSMutableArray*)stack
               nullValue:(NSNull*)nullValue
 {
@@ -582,8 +784,8 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if ((id)context->predecessorNodeTimeDataWhite == nullValue)
     context->predecessorNodeTimeDataWhite = nil;
   context->didSwitchToPeriodBasedTimeSystemBlack = [[tuple objectAtIndex:4] intValue];
-  context->previousValidationResult.isTimeDataValid = [[tuple objectAtIndex:5] boolValue];
-  context->previousValidationResult.timeDataInvalidReason = [[tuple objectAtIndex:6] intValue];
+  context->previousNodeValidationResult.isTimeDataValid = [[tuple objectAtIndex:5] boolValue];
+  context->previousNodeValidationResult.timeDataInvalidReason = [[tuple objectAtIndex:6] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -592,7 +794,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// time system @a timeSystemType. Returns @e nil if @a timeSystemType has an
 /// unsupported value.
 // -----------------------------------------------------------------------------
-+ (id<NodeTimeDataValidator>) getValidator:(enum GoTimeSystemType)timeSystemType
+- (id<NodeTimeDataValidator>) getValidator:(enum GoTimeSystemType)timeSystemType
 {
   switch (timeSystemType)
   {
@@ -627,19 +829,19 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 - (GoTimeDataValidationResult) validateNodeTimeData:(GoNodeTimeData*)currentNodeTimeData
                             predecessorNodeTimeData:(GoNodeTimeData*)predecessorNodeTimeData
                                          timeSystem:(GoTimeSystem*)timeSystem
+                             timeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode
 {
-  if (currentNodeTimeData.remainingTimeInSeconds < 0)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeNegative);
-
-  if (predecessorNodeTimeData)
+  if (timeDataValidationMode >= GoTimeDataValidationModeNormal &&
+      currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
   {
-    if (currentNodeTimeData.remainingTimeInSeconds > predecessorNodeTimeData.remainingTimeInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingAbsoluteTimeIsIncreasing);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
   }
-  else
+
+  if (timeDataValidationMode >= GoTimeDataValidationModeStrict &&
+      predecessorNodeTimeData &&
+      currentNodeTimeData.remainingTimeInSeconds > predecessorNodeTimeData.remainingTimeInSeconds)
   {
-    if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows);
+    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingAbsoluteTimeIsIncreasing, timeDataValidationMode);
   }
 
   return GoTimeDataValidationResultValid;
@@ -656,24 +858,27 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 - (GoTimeDataValidationResult) validateNodeTimeData:(GoNodeTimeData*)currentNodeTimeData
                             predecessorNodeTimeData:(GoNodeTimeData*)predecessorNodeTimeData
                                          timeSystem:(GoTimeSystem*)timeSystem
+                             timeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode
 {
-  if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows);
+  if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
+  {
+    if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
 
-  if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows);
+    if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows, timeDataValidationMode);
+  }
 
-  if (currentNodeTimeData.remainingNumberOfMoves < 0)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative);
-
-  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
+  if (timeDataValidationMode >= GoTimeDataValidationModeStrict &&
+      predecessorNodeTimeData &&
+      ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (timeSystem.minimumNumberOfMovesPerPeriod > 1)
     {
       // Remaining number of moves should either decrease (before the period
       // reset), or increase (after the period reset)
       if (currentNodeTimeData.remainingNumberOfMoves == predecessorNodeTimeData.remainingNumberOfMoves)
-        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesConstant);
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesConstant, timeDataValidationMode);
 
       // remainingNumberOfMoves + remainingTimeInSeconds must decrease or
       // increase together. remainingTimeInSeconds may stay the same if a
@@ -686,12 +891,12 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       if (remainingNumberOfMovesHasDecreased)
       {
         if (currentNodeTimeData.remainingTimeInSeconds > predecessorNodeTimeData.remainingTimeInSeconds)
-          return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesDecreasedButRemainingTimeIncreased);
+          return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesDecreasedButRemainingTimeIncreased, timeDataValidationMode);
       }
       else
       {
         if (currentNodeTimeData.remainingTimeInSeconds < predecessorNodeTimeData.remainingTimeInSeconds)
-          return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased);
+          return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased, timeDataValidationMode);
       }
     }
     else
@@ -699,7 +904,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       // If minimumNumberOfMovesPerPeriod is 1 then remainingNumberOfMoves
       // should always be the same
       if (currentNodeTimeData.remainingNumberOfMoves != predecessorNodeTimeData.remainingNumberOfMoves)
-        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant);
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant, timeDataValidationMode);
     }
   }
 
@@ -717,20 +922,23 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 - (GoTimeDataValidationResult) validateNodeTimeData:(GoNodeTimeData*)currentNodeTimeData
                             predecessorNodeTimeData:(GoNodeTimeData*)predecessorNodeTimeData
                                          timeSystem:(GoTimeSystem*)timeSystem
+                             timeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode
 {
-  if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows);
+  if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
+  {
+    if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
 
-  if (currentNodeTimeData.remainingNumberOfPeriods > timeSystem.numberOfPeriods)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsHigherThanPeriodBasedTimeSystemAllows);
+    if (currentNodeTimeData.remainingNumberOfPeriods > timeSystem.numberOfPeriods)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsHigherThanPeriodBasedTimeSystemAllows, timeDataValidationMode);
+  }
 
-  if (currentNodeTimeData.remainingNumberOfPeriods < 0)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative);
-
-  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
+  if (timeDataValidationMode >= GoTimeDataValidationModeStrict &&
+      predecessorNodeTimeData &&
+      ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (currentNodeTimeData.remainingNumberOfPeriods > predecessorNodeTimeData.remainingNumberOfPeriods)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsIsIncreasing);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsIsIncreasing, timeDataValidationMode);
   }
 
   return GoTimeDataValidationResultValid;
@@ -747,28 +955,35 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 - (GoTimeDataValidationResult) validateNodeTimeData:(GoNodeTimeData*)currentNodeTimeData
                             predecessorNodeTimeData:(GoNodeTimeData*)predecessorNodeTimeData
                                          timeSystem:(GoTimeSystem*)timeSystem
+                             timeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode
 {
-  if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows);
+  if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
+  {
+    // periodDurationInSeconds should not be exceeded only on the very first
+    // move for which Fischer Timing is in effect. On later moves it may
+    // be exceeded when extra time is added.
+    if ((! predecessorNodeTimeData || predecessorNodeTimeData.isRemainingTimeAbsoluteTime) &&
+      currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
+    {
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
+    }
 
-  if (currentNodeTimeData.remainingNumberOfMoves < 0)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative);
+    if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows, timeDataValidationMode);
+  }
 
-  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
+  if (timeDataValidationMode >= GoTimeDataValidationModeStrict &&
+      predecessorNodeTimeData &&
+      ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (currentNodeTimeData.remainingTimeInSeconds > (predecessorNodeTimeData.remainingTimeInSeconds
                                                       + timeSystem.extraTimeDurationInSeconds))
     {
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows, timeDataValidationMode);
     }
 
     if (currentNodeTimeData.remainingNumberOfMoves != predecessorNodeTimeData.remainingNumberOfMoves)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant);
-  }
-  else
-  {
-    if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant, timeDataValidationMode);
   }
 
   return GoTimeDataValidationResultValid;
@@ -785,17 +1000,20 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 - (GoTimeDataValidationResult) validateNodeTimeData:(GoNodeTimeData*)currentNodeTimeData
                             predecessorNodeTimeData:(GoNodeTimeData*)predecessorNodeTimeData
                                          timeSystem:(GoTimeSystem*)timeSystem
+                             timeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode
 {
-  if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows);
+  if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
+  {
+    if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
 
-  if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows);
+    if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows, timeDataValidationMode);
+  }
 
-  if (currentNodeTimeData.remainingNumberOfMoves < 0)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative);
-
-  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
+  if (timeDataValidationMode >= GoTimeDataValidationModeStrict &&
+      predecessorNodeTimeData &&
+      ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (timeSystem.minimumNumberOfMovesPerPeriod > 1)
     {
@@ -808,7 +1026,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       if (currentNodeTimeData.remainingNumberOfMoves == predecessorNodeTimeData.remainingNumberOfMoves &&
           (currentNodeTimeData.remainingNumberOfMoves >= 0 || predecessorNodeTimeData.remainingNumberOfMoves >= 0))
       {
-        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesConstant);
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesConstant, timeDataValidationMode);
       }
 
       // remainingNumberOfMoves + remainingTimeInSeconds must decrease or
@@ -824,12 +1042,12 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       if (remainingNumberOfMovesHasDecreased)
       {
         if (currentNodeTimeData.remainingTimeInSeconds > predecessorNodeTimeData.remainingTimeInSeconds)
-          return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesDecreasedButRemainingTimeIncreased);
+          return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesDecreasedButRemainingTimeIncreased, timeDataValidationMode);
       }
       else
       {
         if (currentNodeTimeData.remainingTimeInSeconds < predecessorNodeTimeData.remainingTimeInSeconds)
-          return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased);
+          return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased, timeDataValidationMode);
       }
     }
     else
@@ -837,7 +1055,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       // If minimumNumberOfMovesPerPeriod is 1 then remainingNumberOfMoves
       // should always be the same
       if (currentNodeTimeData.remainingNumberOfMoves != predecessorNodeTimeData.remainingNumberOfMoves)
-        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant);
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant, timeDataValidationMode);
     }
   }
 
@@ -855,38 +1073,45 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 - (GoTimeDataValidationResult) validateNodeTimeData:(GoNodeTimeData*)currentNodeTimeData
                             predecessorNodeTimeData:(GoNodeTimeData*)predecessorNodeTimeData
                                          timeSystem:(GoTimeSystem*)timeSystem
+                             timeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode
 {
-  if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows);
+  if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
+  {
+    // periodDurationInSeconds should not be exceeded only on the very first
+    // move for which Total Average Timing is in effect. On later moves it may
+    // be exceeded when extra time is added.
+    if ((! predecessorNodeTimeData || predecessorNodeTimeData.isRemainingTimeAbsoluteTime) &&
+      currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
+    {
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
+    }
 
-  if (currentNodeTimeData.remainingNumberOfMoves < 0)
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative);
+    if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows, timeDataValidationMode);
+  }
 
-  if (predecessorNodeTimeData && ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
+  if (timeDataValidationMode >= GoTimeDataValidationModeStrict &&
+      predecessorNodeTimeData &&
+      ! predecessorNodeTimeData.isRemainingTimeAbsoluteTime)
   {
     if (currentNodeTimeData.remainingTimeInSeconds > (predecessorNodeTimeData.remainingTimeInSeconds
                                                       + timeSystem.periodDurationInSeconds))
     {
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows, timeDataValidationMode);
     }
 
     if (timeSystem.minimumNumberOfMovesPerPeriod > 1)
     {
       if (currentNodeTimeData.remainingNumberOfMoves == predecessorNodeTimeData.remainingNumberOfMoves)
-        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesConstant);
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesConstant, timeDataValidationMode);
     }
     else
     {
       // If minimumNumberOfMovesPerPeriod is 1 then remainingNumberOfMoves
       // should always be the same
       if (currentNodeTimeData.remainingNumberOfMoves != predecessorNodeTimeData.remainingNumberOfMoves)
-        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant);
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant, timeDataValidationMode);
     }
-  }
-  else
-  {
-    if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows);
   }
 
   return GoTimeDataValidationResultValid;

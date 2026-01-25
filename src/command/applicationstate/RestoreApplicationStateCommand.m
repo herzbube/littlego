@@ -50,7 +50,8 @@
 
   [GoUtilities relinkMoves:unarchivedGame];
   [GoUtilities recalculateZobristHashes:unarchivedGame];
-  [GoTimeDataValidator validateTimeDataInNodeTree:unarchivedGame];
+  GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
+  [timeDataValidator validateTimeDataInGameTree:unarchivedGame];
 
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];
   // We want to keep the mode of the UI area "Play" from the previous session

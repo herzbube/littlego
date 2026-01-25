@@ -40,20 +40,26 @@ struct GoTimeDataValidationResult
   /// the reason why the time data is not valid, but it may also have value -1
   /// if no particular reason for the invalidity is known.
   enum GoTimeDataInvalidReason timeDataInvalidReason;
+
+  /// @brief The mode that was used during the time data validation operation.
+  enum GoTimeDataValidationMode timeDataValidationMode;
+
 };
 typedef struct GoTimeDataValidationResult GoTimeDataValidationResult;
 
 // -----------------------------------------------------------------------------
 /// @brief A GoTimeDataValidationResult constant with a value that indicates
-/// that time data is valid. The properties @e isTimeDataValid and
-/// @e timeDataInvalidReason hold the values @e true and -1, respectively.
+/// that time data is valid. The properties @e isTimeDataValid,
+/// @e timeDataInvalidReason and @e timeDataValidationMode hold the values
+/// @e true, -1 and -1, respectively.
 // -----------------------------------------------------------------------------
 extern const GoTimeDataValidationResult GoTimeDataValidationResultValid;
 
 // -----------------------------------------------------------------------------
 /// @brief A GoTimeDataValidationResult constant with a value that indicates
-/// that time data is invalid. The properties @e isTimeDataValid and
-/// @e timeDataInvalidReason hold the values @e false and -1, respectively.
+/// that time data is invalid. The properties @e isTimeDataValid,
+/// @e timeDataInvalidReason and @e timeDataValidationMode hold the values
+/// @e false, -1 and -1, respectively.
 // -----------------------------------------------------------------------------
 extern const GoTimeDataValidationResult GoTimeDataValidationResultInvalid;
 
@@ -61,15 +67,13 @@ extern const GoTimeDataValidationResult GoTimeDataValidationResultInvalid;
 /// @brief Returns a GoTimeDataValidationResult with the specified values.
 // -----------------------------------------------------------------------------
 GoTimeDataValidationResult GoTimeDataValidationResultMake(bool isTimeDataValid,
-                                                          enum GoTimeDataInvalidReason timeDataInvalidReason);
+                                                          enum GoTimeDataInvalidReason timeDataInvalidReason,
+                                                          enum GoTimeDataValidationMode timeDataValidationMode);
 
 // -----------------------------------------------------------------------------
 /// @brief The GoTimeDataValidator class performs time data validation.
 ///
 /// @ingroup go
-///
-/// All functions in GoTimeDataValidator are class methods, so there is no need
-/// to create an instance of GoTimeDataValidator.
 ///
 /// When GoTimeDataValidator performs time data validation, it examines either
 /// the entire node tree, an entire game variation, or a part of a game
@@ -77,14 +81,6 @@ GoTimeDataValidationResult GoTimeDataValidationResultMake(bool isTimeDataValid,
 /// nodes starting from the root node and stores the result of the validation
 /// in each visited node's properties @e isTimeDataValid and
 /// @e timeDataInvalidReason.
-///
-/// When GoTimeDataValidator finds a node with invalid time data, it ceases to
-/// perform validation on descendants of that node and instead propagates the
-/// invalid state and invalid reason to those descendants. The rationale is
-/// that time data must be viewed as an interlinked sequence of data points,
-/// much the same as a sequence of moves, and cannot be viewed as independent
-/// data points. Once a piece of time data is invalid, time data further down
-/// in the sequence can therefore no longer be viewed as valid.
 ///
 /// At the very beginning, GoTimeDataValidator examines the validity of the
 /// game's time settings. It stores the result of the time settings validation
@@ -101,23 +97,22 @@ GoTimeDataValidationResult GoTimeDataValidationResultMake(bool isTimeDataValid,
 /// vice versa in a game with timed play every move must be accompanied by time
 /// data. Based on this, the following scenarios can be distinguished:
 /// - When GoTimeDataValidator finds a node that contains a move but no time
-///   data, or time data but no move, then that node (and all of its
-///   descendants) are considered to contain invalid time data.
+///   data, or time data but no move, then that node is considered to contain
+///   invalid time data.
 /// - When GoTimeDataValidator finds a node that contains neither a move nor
 ///   time data, then that node is considered to contain valid time data. This
 ///   may seem unexpected at first glance, since the node does not actually
-///   contain time data, but it makes sense when (as explained above) node time
-///   data is considered as an interlinked sequence of data points, and some of
-///   those data points are linked by "neutral" nodes.
+///   contain time data, but it is necessary to support
+///   #GoTimeDataValidationModePedantic where successor nodes inherit the
+///   validation state of their predecessor node.
 /// - When GoTimeDataValidator finds a node that contains both a move and time
 ///   data, it validates that time data first on its own, and then in relation
 ///   to the move in the same node, in relation to the game's time settings, and
 ///   in relation to the preceding time data.
 ///
-/// As a result of a validation operation, all examined nodes now contain a
-/// valid state. Whenever a node is selected, it is immediately clear whether
-/// the node and its predecessors contain valid time data, which then allows
-/// to start or not start a player's clock.
+/// As a result of a validation operation, all examined nodes contain a
+/// validation state which can be used to determine whether or not to start
+/// a player's clock when the currently selected node changes.
 ///
 /// When a new node is created, it inherits the valid state of its parent node.
 /// - If the parent node has invalid time data, then the app cannot suddenly
@@ -131,12 +126,20 @@ GoTimeDataValidationResult GoTimeDataValidationResultMake(bool isTimeDataValid,
 {
 }
 
-+ (GoTimeDataValidationResult) validateTimeDataInNodeTree:(GoGame*)game;
-+ (GoTimeDataValidationResult) validateTimeDataInCurrentGameVariation:(GoGame*)game;
-+ (GoTimeDataValidationResult) validateTimeDataInCurrentGameVariation:(GoGame*)game
-                                                            untilNode:(GoNode*)lastNodeToValidate;
++ (GoTimeDataValidator*) timeDataValidatorWithUserDefaultsMode;
+
+- (id) initWithTimeDataValidationMode:(enum GoTimeDataValidationMode)timeDataValidationMode;
+
+- (void) validateTimeDataInGameTree:(GoGame*)game;
+- (void) validateTimeDataInSubTree:(GoNode*)node
+                              game:(GoGame*)game;
+- (void) validateTimeDataInCurrentGameVariation:(GoGame*)game;
+- (void) validateTimeDataInCurrentGameVariation:(GoGame*)game
+                                      untilNode:(GoNode*)lastNodeToValidate;
 + (GoTimeDataValidationResult) validationStateOfCurrentGameVariation:(GoGame*)game;
 + (GoTimeDataValidationResult) validationStateOfCurrentNode:(GoGame*)game;
 + (GoTimeDataValidationResult) validationStateOfNode:(GoNode*)node;
+
+@property(nonatomic, assign, readonly) enum GoTimeDataValidationMode timeDataValidationMode;
 
 @end

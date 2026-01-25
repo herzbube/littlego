@@ -905,6 +905,8 @@
 		D73B0D3A2F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
 		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74980BB2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
+		D74FD8222F25816E00DD8CA5 /* TimedPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */; };
+		D74FD8232F25816E00DD8CA5 /* TimedPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */; };
 		D76B0D022F12B33C00032D62 /* TimeDataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */; };
 		D76B0D032F12B33C00032D62 /* TimeDataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */; };
 		D76B0D062F13F8CC00032D62 /* CompositeDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D052F13F8CC00032D62 /* CompositeDuration.m */; };
@@ -1958,6 +1960,8 @@
 		D74980B92EBF87BD00BD595D /* Registry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Registry.m; sourceTree = "<group>"; };
 		D74980BC2EBF902500BD595D /* ModelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelProvider.h; sourceTree = "<group>"; };
 		D74980BD2EBFA19200BD595D /* WindowProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowProvider.h; sourceTree = "<group>"; };
+		D74FD8202F25816E00DD8CA5 /* TimedPlayModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimedPlayModel.h; sourceTree = "<group>"; };
+		D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlayModel.m; sourceTree = "<group>"; };
 		D76B0D002F12B33C00032D62 /* TimeDataUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeDataUtilities.h; sourceTree = "<group>"; };
 		D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeDataUtilities.m; sourceTree = "<group>"; };
 		D76B0D042F13F8CC00032D62 /* CompositeDuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CompositeDuration.h; sourceTree = "<group>"; };
@@ -2417,6 +2421,8 @@
 				CD1311C017180B45006CE699 /* ScoringModel.m */,
 				D71F0E092F0C647300823888 /* TimeSettingsModel.h */,
 				D71F0E0A2F0C647300823888 /* TimeSettingsModel.m */,
+				D74FD8202F25816E00DD8CA5 /* TimedPlayModel.h */,
+				D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */,
 			);
 			name = model;
 			path = src/play/model;
@@ -4674,6 +4680,7 @@
 				CD55D0331D6FAE7E00A9A5BC /* CrashReportingHandler.m in Sources */,
 				CD00A363148C2C26004E1A0C /* ApplicationDelegate.mm in Sources */,
 				CD00A364148C2C26004E1A0C /* Constants.m in Sources */,
+				D74FD8232F25816E00DD8CA5 /* TimedPlayModel.m in Sources */,
 				CD00A365148C2C26004E1A0C /* DocumentViewController.m in Sources */,
 				CDB3ED3E284E001A007512F6 /* MarkupModel.m in Sources */,
 				CD00A366148C2C26004E1A0C /* LicensesViewController.m in Sources */,
@@ -4890,6 +4897,7 @@
 				CDB5C5DB284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m in Sources */,
 				CD7C69E01AA67C31009EC5AD /* MainUtility.m in Sources */,
 				CD85068727B95046000D2CCD /* GoNode.m in Sources */,
+				D74FD8222F25816E00DD8CA5 /* TimedPlayModel.m in Sources */,
 				CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */,
 				CDEE19F419433EAC00DF2389 /* BoardView.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,

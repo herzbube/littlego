@@ -20,9 +20,6 @@
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../timedplay/TimeSettingsCommand.h"
 #import "../ChangeUIAreaPlayModeCommand.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../main/ModelProvider.h"
-#import "../../main/Registry.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../gtp/GtpUtilities.h"
@@ -36,6 +33,9 @@
 #import "../../go/GoTimeSettings.h"
 #import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../play/model/BoardSetupModel.h"
 #import "../../play/model/TimeSettingsModel.h"
 #import "../../play/timedplay/PlayerClockService.h"
@@ -234,7 +234,8 @@
       newGame.playerBlack.timeData = blackPlayerTimeData;
       newGame.playerWhite.timeData = whitePlayerTimeData;
 
-      [GoTimeDataValidator validateTimeDataInNodeTree:newGame];
+      GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
+      [timeDataValidator validateTimeDataInGameTree:newGame];
     }
   }
   

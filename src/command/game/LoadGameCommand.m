@@ -1661,7 +1661,8 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   // timed play game, but we detect invalid time data, then the user may not
   // get what they wished. however, the return value is for the entire tree, not
   // only for the current game variation...
-  [GoTimeDataValidator validateTimeDataInNodeTree:game];
+  GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
+  [timeDataValidator validateTimeDataInGameTree:game];
 
   return true;
 }

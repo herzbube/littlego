@@ -84,6 +84,7 @@
 
   self.isTimeDataValid = GoTimeDataValidationResultInvalid.isTimeDataValid;
   self.timeDataInvalidReason = GoTimeDataValidationResultInvalid.timeDataInvalidReason;
+  self.timeDataValidationMode = GoTimeDataValidationResultInvalid.timeDataValidationMode;
 
   self.nodeID = gNoObjectReferenceNodeID;
   self.firstChildNodeID = gNoObjectReferenceNodeID;
@@ -135,14 +136,14 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@, %@, isTimeDataValid = %d, timeDataInvalidReason = %d",
+  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@, %@, isTimeDataValid = %d, timeDataInvalidReason = %d, timeDataValidationMode = %d",
           self,
           _goNodeSetup ? _goNodeSetup : @"No setup",
           _goMove ? _goMove : @"No move",
           _goNodeAnnotation ? _goNodeAnnotation : @"No annotation",
           _goNodeMarkup ? _goNodeMarkup : @"No markup",
           _goNodeTimeData ? _goNodeTimeData : @"No time data",
-          _isTimeDataValid, _timeDataInvalidReason];
+          _isTimeDataValid, _timeDataInvalidReason, _timeDataValidationMode];
 }
 
 #pragma mark - NSCoding overrides
@@ -186,9 +187,10 @@
   self.zobristHash = 0;
 
   // Time validity properties were not archived. Whoever is unarchiving this
-  // GoNodeTimeData is responsible for re-calculating the properties.
+  // GoNode is responsible for re-calculating the properties.
   self.isTimeDataValid = GoTimeDataValidationResultInvalid.isTimeDataValid;
   self.timeDataInvalidReason = GoTimeDataValidationResultInvalid.timeDataInvalidReason;
+  self.timeDataValidationMode = GoTimeDataValidationResultInvalid.timeDataValidationMode;
 
   return self;
 }

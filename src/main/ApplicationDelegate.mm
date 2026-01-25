@@ -51,6 +51,7 @@
 #import "../play/model/MarkupModel.h"
 #import "../play/model/NodeTreeViewModel.h"
 #import "../play/model/ScoringModel.h"
+#import "../play/model/TimedPlayModel.h"
 #import "../play/timedplay/TimedPlayController.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
@@ -109,6 +110,7 @@
 @synthesize markupModel = _markupModel;
 @synthesize nodeTreeViewModel = _nodeTreeViewModel;
 @synthesize gameVariationModel = _gameVariationModel;
+@synthesize timedPlayModel = _timedPlayModel;
 
 #pragma mark - Initialization and deallocation
 
@@ -185,6 +187,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.markupModel = nil;
   self.nodeTreeViewModel = nil;
   self.gameVariationModel = nil;
+  self.timedPlayModel = nil;
 
   self.fileLogger = nil;
   self.timedPlayController = nil;
@@ -508,6 +511,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   self.markupModel = [[[MarkupModel alloc] init] autorelease];
   self.nodeTreeViewModel = [[[NodeTreeViewModel alloc] init] autorelease];
   self.gameVariationModel = [[[GameVariationModel alloc] init] autorelease];
+  self.timedPlayModel = [[[TimedPlayModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -526,6 +530,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   [self.markupModel readUserDefaults];
   [self.nodeTreeViewModel readUserDefaults];
   [self.gameVariationModel readUserDefaults];
+  [self.timedPlayModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
@@ -564,6 +569,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   [self.markupModel writeUserDefaults];
   [self.nodeTreeViewModel writeUserDefaults];
   [self.gameVariationModel writeUserDefaults];
+  [self.timedPlayModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

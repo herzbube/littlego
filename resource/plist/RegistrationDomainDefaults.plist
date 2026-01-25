@@ -578,5 +578,10 @@
 		<key>NewMoveInsertPosition</key>
 		<integer>3</integer>
 	</dict>
+	<key>TimedPlay</key>
+	<dict>
+		<key>TimeDataValidationMode</key>
+		<integer>0</integer>
+	</dict>
 </dict>
 </plist>
