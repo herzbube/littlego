@@ -46,20 +46,14 @@ const double gDefaultKomiTerritoryScoring = 6.5;
 // value that NSCoder::decodeIntForKey:() returns if an archive does not contain
 // the specified key. See GoNode implementation for details.
 const unsigned int gNoObjectReferenceNodeID = 0;
-// 999 minutes and 59 seconds. The reason for this limit is that the clock
-// shown in the UI supports "only" a maximum of 3 digits for minutes,
-// i.e. "mmm:ss". If this limit ever goes away, then the next limit would be
 // std::numeric_limits<int>::max(), because the GTP 2.0 specification defines
 // the parameters of the GTP commands "time_settings" and "time_left" to have
 // type int, and Fuego faithfully uses these types in its implementation.
-const double gMaximumRemainingTimeInSeconds = 59999;
-// The reason for this limit is that the clock shown in the UI supports "only"
-// a maximum of 7 digits. If this limit ever goes away, then the next limit
-// would be std::numeric_limits<int>::max(), because the GTP 2.0 specification
-// defines the parameters of the GTP commands "time_settings" and "time_left"
-// to have type int, and Fuego faithfully uses these types in its
-// implementation.
-const unsigned long gMaximumRemainingNumberOfMovesOrPeriods = 9999999;
+const double gMaximumRemainingTimeInSeconds = 2147483647;
+// std::numeric_limits<int>::max(), because the GTP 2.0 specification defines
+// the parameters of the GTP commands "time_settings" and "time_left" to have
+// type int, and Fuego faithfully uses these types in its implementation.
+const unsigned long gMaximumRemainingNumberOfMovesOrPeriods = 2147483647;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";

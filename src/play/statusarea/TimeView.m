@@ -17,6 +17,7 @@
 
 // Project includes
 #import "TimeView.h"
+#import "../timedplay/CompositeDuration.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
@@ -28,6 +29,14 @@
 // This variable must be accessed via [TimeView timeViewSize]
 static CGSize timeViewSize = { 0.0f, 0.0f };
 
+// We reserve 6 characters to display the clock. Depending on the number of
+// seconds to display we switch to a different resolution.
+static int thresholdInSecondsForSecondsResolution = 59999;   // 999:59
+static int thresholdInSecondsForMinutesResolution = 359999;  // 99h59m +59 seconds
+static int thresholdInSecondsForHoursResolution = 35999999;  //  9999h +3599 seconds
+// We reserve 8 characters to display the number of moves or periods: "(>99999)"
+static int maximumNumberOfMovesOrPeriods = 99999;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for TimeView.
@@ -36,7 +45,8 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 /// @name Private properties
 //@{
 @property(nonatomic, assign) bool viewContentNeedsUpdate;
-@property(nonatomic, assign) unsigned long remainingTimeInSecondsRoundedUp;
+@property(nonatomic, retain) NSString* remainingTimeString;
+@property(nonatomic, retain) NSString* remainingNumberOfMovesOrPeriodsString;
 @property(nonatomic, assign) UILabel* remainingTimeMovesPeriodsLabel;
 //@}
 /// @name Re-declaration of properties to make them readwrite privately
@@ -65,7 +75,8 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
     return nil;
 
   self.viewContentNeedsUpdate = true;
-  self.remainingTimeInSecondsRoundedUp = 0;
+  self.remainingTimeString = [self stringForRemainingTimeInSeconds:0.0];
+  self.remainingNumberOfMovesOrPeriodsString = [self stringForRemainingNumberOfMovesOrPeriods:0];
 
   self.isTimeForBlackPlayer = isTimeForBlackPlayer;
   self.isTimeDataValid = false;
@@ -86,6 +97,7 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.remainingTimeString = nil;
   self.remainingTimeMovesPeriodsLabel = nil;
 
   [super dealloc];
@@ -184,17 +196,15 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 
   if (self.isTimeDataValid)
   {
-    unsigned long remainingMinutes = self.remainingTimeInSecondsRoundedUp / 60;
-    unsigned long remainingSeconds = self.remainingTimeInSecondsRoundedUp - (remainingMinutes * 60);
-    NSString* remainingTimeString = [NSString stringWithFormat:@"%@ %lu:%02lu", colorString, remainingMinutes, remainingSeconds];
+    NSString* colorAndRemainingTimeString = [NSString stringWithFormat:@"%@ %@", colorString, self.remainingTimeString];
 
-    NSString* remainingNumberOfMovesOrPeriodsString;
+    NSString* mainTimeOrRemainingNumberOfMovesOrPeriodsString;
     if (self.isRemainingTimeAbsoluteTime)
-      remainingNumberOfMovesOrPeriodsString = @"Main time";
+      mainTimeOrRemainingNumberOfMovesOrPeriodsString = @"Main time";
     else
-      remainingNumberOfMovesOrPeriodsString = [NSString stringWithFormat:@"(%lu)", self.remainingNumberOfMovesOrPeriods];
+      mainTimeOrRemainingNumberOfMovesOrPeriodsString = self.remainingNumberOfMovesOrPeriodsString;
 
-    self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@\n%@", remainingTimeString, remainingNumberOfMovesOrPeriodsString];
+    self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@\n%@", colorAndRemainingTimeString, mainTimeOrRemainingNumberOfMovesOrPeriodsString];
   }
   else
   {
@@ -276,9 +286,9 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
     return;
   _remainingTimeInSeconds = newValue;
 
-  // Round up in the setter so that the operation needs to be performed only
-  // once. See property documentation for details.
-  self.remainingTimeInSecondsRoundedUp = MAX(ceil(newValue), 0.0);
+  // See property documentation for details why we round up.
+  double remainingTimeInSecondsRoundedUp = MAX(ceil(newValue), 0.0);
+  self.remainingTimeString = [self stringForRemainingTimeInSeconds:remainingTimeInSecondsRoundedUp];
 
   self.viewContentNeedsUpdate = true;
   [self setNeedsLayout];
@@ -292,6 +302,8 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
   if (_remainingNumberOfMovesOrPeriods == newValue)
     return;
   _remainingNumberOfMovesOrPeriods = newValue;
+
+  self.remainingNumberOfMovesOrPeriodsString = [self stringForRemainingNumberOfMovesOrPeriods:_remainingNumberOfMovesOrPeriods];
 
   self.viewContentNeedsUpdate = true;
   [self setNeedsLayout];
@@ -332,19 +344,15 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
   offscreenView.isTimeDataValid = true;
   // "W" is wider than "B"
   offscreenView.isTimeForBlackPlayer = false;
-  // Widest time we support:
-  // - 3 digits for minutes
-  // - 2 digits for seconds
-  // See gMaximumRemainingTimeInSeconds.
-  offscreenView.remainingTimeInSeconds = 53338; // clock shows "888:58"
+  // Widest time we support: 6 characters in total
+  offscreenView.remainingTimeInSeconds = 320280; // clock shows "88h58m"
   // Widest number for either remaining moves or remaining periods we support:
-  // 7 digits. This is for sure no wider than the widest value we expect to
-  // display on line 1 ("● 888:58"). It's irrelevant anyway because the string
-  // "Main time" (which we show on line 2 if isRemainingTimeAbsoluteTime is
-  // true) is wider.
-  // See gMaximumRemainingNumberOfMovesOrPeriods.
-  offscreenView.remainingNumberOfMovesOrPeriods = 8888888;
-  // Shows "Main time" instead a number
+  // 8 characters in total ("(>99999)"). This is about the same width as the
+  // widest value we expect to display on line 1 ("● 88h58m"). It's
+  // irrelevant anyway because the string "Main time" (which we show on line 2
+  // if isRemainingTimeAbsoluteTime is true) is wider.
+  offscreenView.remainingNumberOfMovesOrPeriods = 100000;
+  // Shows "Main time" instead of a number
   offscreenView.isRemainingTimeAbsoluteTime = true;
   // Wider border than when clock is stopped (but border is probably outside of
   // the view's frame)
@@ -355,6 +363,52 @@ static CGSize timeViewSize = { 0.0f, 0.0f };
 
   timeViewSize = CGSizeMake(ceil(timeViewSizeWithFractions.width),
                             ceil(timeViewSizeWithFractions.height));
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a remainingTimeInSeconds
+/// using the appropriate resolution format.
+// -----------------------------------------------------------------------------
+- (NSString*) stringForRemainingTimeInSeconds:(double)remainingTimeInSeconds
+{
+  CompositeDuration* compositeDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:remainingTimeInSeconds] autorelease];
+
+  if (remainingTimeInSeconds <= thresholdInSecondsForSecondsResolution)
+  {
+    return [NSString stringWithFormat:@"%d:%02d",
+            compositeDuration.numberOfMinutes + compositeDuration.numberOfHours * 60,
+            compositeDuration.numberOfSeconds];
+  }
+  else if (remainingTimeInSeconds <= thresholdInSecondsForMinutesResolution)
+  {
+    return [NSString stringWithFormat:@"%dh%02dm",
+            compositeDuration.numberOfHours,
+            compositeDuration.numberOfMinutes];
+  }
+  else if (remainingTimeInSeconds <= thresholdInSecondsForHoursResolution)
+  {
+    return [NSString stringWithFormat:@"%dh",
+            compositeDuration.numberOfHours];
+  }
+  else
+  {
+    compositeDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:thresholdInSecondsForHoursResolution] autorelease];
+    return [NSString stringWithFormat:@">%dh",
+            compositeDuration.numberOfHours];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of
+/// @a remainingNumberOfMovesOrPeriods.
+// -----------------------------------------------------------------------------
+- (NSString*) stringForRemainingNumberOfMovesOrPeriods:(unsigned long)remainingNumberOfMovesOrPeriods
+{
+  return (remainingNumberOfMovesOrPeriods <= maximumNumberOfMovesOrPeriods
+          ? [NSString stringWithFormat:@"(%lu)", _remainingNumberOfMovesOrPeriods]
+          : [NSString stringWithFormat:@"(>%d)", maximumNumberOfMovesOrPeriods]);
 }
 
 @end
