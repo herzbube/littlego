@@ -553,7 +553,18 @@
   // Determine the effective time system after isRemainingTimeAbsoluteTime has
   // been updated
   GoTimeSystem* timeSystem = [self effectiveTimeSystem];
-  dataHasChanged |= [self performPeriodResetIfNecessary:timeSystem];
+
+  // There is no guarantee that SGF data is consistent. For instance, a
+  // GoNodeTimeData object with data that was loaded from SGF might refer to
+  // absolute time even though the SGF content did not define an absolute time
+  // system. Also, a GoNodeTimeData object might refer to the period-based
+  // time system, but it's a custom time system that the app does not
+  // understand. Unlike other updater methods, this one may be invoked even if
+  // such inconsistencies exist - because of that we have to check first if the
+  // time system actually supports timed play before we can perform a period
+  // reset.
+  if (! timeSystem.supportsTimedPlay)
+      dataHasChanged |= [self performPeriodResetIfNecessary:timeSystem];
 
   return dataHasChanged;
 }
