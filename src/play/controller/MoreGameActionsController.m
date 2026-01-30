@@ -522,7 +522,6 @@
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
   [self.delegate moreGameActionsControllerDidFinish:self];
-
 }
 
 // -----------------------------------------------------------------------------
@@ -580,14 +579,15 @@
 // -----------------------------------------------------------------------------
 - (void) revertGameStateFromEndedToInProgress:(enum MoreGameActionsButton)moreGameActionsButton
 {
+  GoGame* game = [GoGame sharedGame];
+  GoPlayer* nextMovePlayer = game.nextMovePlayer;
+
   @try
   {
     DDLogInfo(@"Revert game state from 'ended' to 'in progress'");
     [[ApplicationStateManager sharedManager] beginSavePoint];
-    GoGame* game = [GoGame sharedGame];
     [game revertStateFromEndedToInProgress];
 
-    GoPlayer* nextMovePlayer = game.nextMovePlayer;
     id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
 
     if (moreGameActionsButton == MoreGameActionsButtonUndoLostOnTime)
@@ -595,19 +595,23 @@
       [playerClockService resetClockOfPlayer:nextMovePlayer
                                       reason:PlayerClockResetReasonRevertLostOnTime];
     }
-
-    if (! game.nextMovePlayerIsComputerPlayer)
-    {
-      [[Registry sharedRegistry].playerClockService startClockOfPlayer:nextMovePlayer
-                                                                reason:PlayerClockStartReasonHumanPlayerTurnBegins];
-    }
   }
   @finally
   {
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
+
   [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
+
+  // Start clock after application state has been saved so that a firing timer
+  // does not interfere with the saving
+  if (! game.nextMovePlayerIsComputerPlayer)
+  {
+    [[Registry sharedRegistry].playerClockService startClockOfPlayer:nextMovePlayer
+                                                              reason:PlayerClockStartReasonHumanPlayerTurnBegins];
+  }
+
   [self.delegate moreGameActionsControllerDidFinish:self];
 }
 

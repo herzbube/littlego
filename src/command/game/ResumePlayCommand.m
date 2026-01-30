@@ -56,17 +56,19 @@
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [game revertStateFromEndedToInProgress];
-
-    if (! game.nextMovePlayerIsComputerPlayer)
-    {
-      [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
-                                                                reason:PlayerClockStartReasonHumanPlayerTurnBegins];
-    }
   }
   @finally
   {
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
+  }
+
+  // Start clock after application state has been saved so that a firing timer
+  // does not interfere with the saving
+  if (! game.nextMovePlayerIsComputerPlayer)
+  {
+    [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                              reason:PlayerClockStartReasonHumanPlayerTurnBegins];
   }
 
   if (game.nextMovePlayerIsComputerPlayer)
