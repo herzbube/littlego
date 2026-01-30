@@ -1772,6 +1772,11 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 /// GoGame may already be in state #GoGameStateGameHasEnded due to moves played
 /// in the current variation. An explicit game result in the SGF file overrides
 /// the implicit game ending.
+///
+/// @note During normal game play, the game result is always determined @b after
+/// the other Go model objects have been updated (e.g. @b after a move was
+/// played). It is therefore correct that this method is executed @b after
+/// notifyApplicationAboutFinalGoModelState:().
 // -----------------------------------------------------------------------------
 - (bool) setupGameResult:(NSString**)errorMessage
 {

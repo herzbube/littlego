@@ -754,6 +754,9 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   if (! self.isGameEnded)
     return;
 
+  if (! self.arePlayerClocksManaged)
+    return;
+
   // If the game ends for any reason we want to stop all suspended clocks, to
   // avoid any risk of them being started accidentally. A start by the user is
   // impossible (see handling of PlayerClockStartReasonUserRequest), but there
@@ -762,6 +765,13 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   // Also, the user interface clock rendering of a suspended clock is plain
   // counter-intuitive once a game has ended.
   [self stopAllClocksIfNotStoppedAndInvalidateTimers];
+
+  // Needs to be invoked because LoadGameCommand applies the game result only
+  // AFTER it sets the current board position. If the game ends due to a player
+  // losing on time, then we would not need to invoke this, but it also does
+  // not hurt (actually it's expected to be a NOP because remaining time is
+  // already zero).
+  [self setZeroRemainingTimeAfterLastMoveWhenLostOnTime];
 }
 
 // -----------------------------------------------------------------------------
@@ -1370,29 +1380,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   GoPlayerTimeData* whitePlayerTimeData = self.game.playerWhite.timeData;
   [whitePlayerTimeData updateAfterNodeChanged:currentNode];
 
-  // See documentation of property for a full explanation why this setting
-  // exists.
-  if (! [Registry sharedRegistry].modelProvider.timedPlayModel.showTrueRemainingTimeAfterLastMoveWhenLostOnTime)
-  {
-    GoPlayerTimeData* playerTimeDataLostOnTime = nil;
-    switch (self.game.reasonForGameHasEnded)
-    {
-      case GoGameHasEndedReasonWhiteWinsOnTime:
-        playerTimeDataLostOnTime = blackPlayerTimeData;
-        break;
-      case GoGameHasEndedReasonBlackWinsOnTime:
-        playerTimeDataLostOnTime = whitePlayerTimeData;
-        break;
-      default:
-        break;
-    }
-
-    if (playerTimeDataLostOnTime &&
-        ! [GoUtilities nodeWithNextMoveExists:currentNode inCurrentGameVariation:self.game])
-    {
-      [playerTimeDataLostOnTime updateAfterPlayerLostOnTime];
-    }
-  }
+  [self setZeroRemainingTimeAfterLastMoveWhenLostOnTime];
 }
 
 // -----------------------------------------------------------------------------
@@ -1492,6 +1480,38 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
                                                   reason:GoClockSuspendedReasonBoardNotInteractive];
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets the player clock to display zero remaining time if all
+/// conditions are met.
+// -----------------------------------------------------------------------------
+- (void) setZeroRemainingTimeAfterLastMoveWhenLostOnTime
+{
+  // See documentation of property for a full explanation why this setting
+  // exists.
+  if ([Registry sharedRegistry].modelProvider.timedPlayModel.showTrueRemainingTimeAfterLastMoveWhenLostOnTime)
+    return;
+
+  GoPlayerTimeData* playerTimeDataLostOnTime = nil;
+  switch (self.game.reasonForGameHasEnded)
+  {
+    case GoGameHasEndedReasonWhiteWinsOnTime:
+      playerTimeDataLostOnTime = self.game.playerBlack.timeData;
+      break;
+    case GoGameHasEndedReasonBlackWinsOnTime:
+      playerTimeDataLostOnTime = self.game.playerWhite.timeData;
+      break;
+    default:
+      return;
+  }
+
+  GoBoardPosition* boardPosition = self.game.boardPosition;
+  GoNode* currentNode = boardPosition.currentNode;
+  if ([GoUtilities nodeWithNextMoveExists:currentNode inCurrentGameVariation:self.game])
+    return;
+
+  [playerTimeDataLostOnTime updateAfterPlayerLostOnTime];
 }
 
 @end
