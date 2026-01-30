@@ -65,8 +65,20 @@ enum PlayerClockStopReason
 // -----------------------------------------------------------------------------
 enum PlayerClockSuspendReason
 {
-  /// @brief The user interactively requests the clock to be stopped.
+  /// @brief The user interactively requests the clock to be suspended.
   PlayerClockSuspendReasonUserRequest,
+};
+
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates the possible reasons why the player clock is requested to
+/// be reset to reflect the time data in the currently selected node.
+// -----------------------------------------------------------------------------
+enum PlayerClockResetReason
+{
+  /// @brief The game was lost on time by the player whose clock is to be reset,
+  /// but is now reverted back to in progress.
+  PlayerClockResetReasonRevertLostOnTime,
 };
 
 
@@ -120,7 +132,7 @@ enum PlayerClockServiceOperationResult
 
 // -----------------------------------------------------------------------------
 /// @brief Requests that the clock of @a player be stopped, because of
-/// @a stopReason. The request may or may not be honored, depending on the
+/// @a suspendReason. The request may or may not be honored, depending on the
 /// current state of the application as seen by the service. Does nothing if
 /// the current game does not use timed play.
 ///
@@ -128,5 +140,15 @@ enum PlayerClockServiceOperationResult
 // -----------------------------------------------------------------------------
 - (enum PlayerClockServiceOperationResult) suspendClockOfPlayer:(GoPlayer*)player
                                                          reason:(enum PlayerClockSuspendReason)suspendReason;
+
+// -----------------------------------------------------------------------------
+/// @brief Requests that the clock of @a player is reset to reflect the time
+/// data in the currently selected node, because of @a resetReason. The request
+/// may or may not be honored, depending on the current state of the application
+/// as seen by the service. Does nothing if the current game does not use timed
+/// play.
+// -----------------------------------------------------------------------------
+- (void) resetClockOfPlayer:(GoPlayer*)player
+                     reason:(enum PlayerClockResetReason)resetReason;
 
 @end

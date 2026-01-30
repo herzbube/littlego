@@ -291,7 +291,7 @@
         break;
       }
       case MoreGameActionsButtonUndoResign:
-      case MoreGameActionsButtonUndoTimeout:
+      case MoreGameActionsButtonUndoLostOnTime:
       case MoreGameActionsButtonUndoForfeit:
       {
         if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring)
@@ -310,9 +310,9 @@
             break;
           case GoGameHasEndedReasonBlackWinsOnTime:
           case GoGameHasEndedReasonWhiteWinsOnTime:
-            if (iterButtonIndex != MoreGameActionsButtonUndoTimeout)
+            if (iterButtonIndex != MoreGameActionsButtonUndoLostOnTime)
               continue;
-            title = @"Undo timeout";
+            title = @"Undo lost on time";
             break;
           case GoGameHasEndedReasonBlackWinsByForfeit:
           case GoGameHasEndedReasonWhiteWinsByForfeit:
@@ -323,7 +323,7 @@
           default:
             continue;
         }
-        alertActionBlock = ^(UIAlertAction* action) { [self revertGameStateFromEndedToInProgress]; };
+        alertActionBlock = ^(UIAlertAction* action) { [self revertGameStateFromEndedToInProgress:iterButtonIndex]; };
         break;
       }
       case MoreGameActionsButtonSaveGame:
@@ -569,15 +569,16 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Undo resign", "Undo timeout" or
-/// "Undo forfeit" button. Causes the state of the game to revert from
-/// "has ended" to one of the various "in progress" states.
+/// "Undo forfeit" button. @a moreGameActionsButton indicates which button was
+/// tapped. Causes the state of the game to revert from "has ended" to one of
+/// the various "in progress" states.
 ///
 /// In a computer vs. computer game, the game is paused after this method
 /// returns. In a human vs. computer game it may be the computer player's turn.
 /// The computer player is not triggered, though, to give the user the
 /// flexibility to do further changes of the game.
 // -----------------------------------------------------------------------------
-- (void) revertGameStateFromEndedToInProgress
+- (void) revertGameStateFromEndedToInProgress:(enum MoreGameActionsButton)moreGameActionsButton
 {
   @try
   {
@@ -586,15 +587,18 @@
     GoGame* game = [GoGame sharedGame];
     [game revertStateFromEndedToInProgress];
 
+    GoPlayer* nextMovePlayer = game.nextMovePlayer;
+    id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
+
+    if (moreGameActionsButton == MoreGameActionsButtonUndoLostOnTime)
+    {
+      [playerClockService resetClockOfPlayer:nextMovePlayer
+                                      reason:PlayerClockResetReasonRevertLostOnTime];
+    }
+
     if (! game.nextMovePlayerIsComputerPlayer)
     {
-      // TODO xxx This does not work for GoGameHasEndedReasonBlackWinsOnTime
-      // and GoGameHasEndedReasonWhiteWinsOnTime if the game actually uses
-      // timed play => the clock will be suspended (intermediate on the way to
-      // being started) but GoPlayerTimeData will recognize immediately that
-      // no time is remaining and post playerLostOnTime, which will cause the
-      // game to end again.
-      [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+      [[Registry sharedRegistry].playerClockService startClockOfPlayer:nextMovePlayer
                                                                 reason:PlayerClockStartReasonHumanPlayerTurnBegins];
     }
   }

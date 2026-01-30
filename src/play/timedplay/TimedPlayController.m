@@ -1072,6 +1072,51 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief PlayerClockService method.
+// -----------------------------------------------------------------------------
+- (void) resetClockOfPlayer:(GoPlayer*)player
+                     reason:(enum PlayerClockResetReason)resetReason
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      [self resetClockOfPlayer:player reason:resetReason];
+    });
+    return;
+  }
+
+  if (! self.arePlayerClocksManaged)
+    return;
+
+  GoPlayerTimeData* playerTimeData = player.timeData;
+  if (! playerTimeData)
+    return;
+
+  switch (resetReason)
+  {
+    case PlayerClockResetReasonRevertLostOnTime:
+    {
+      if (player != self.game.nextMovePlayer)
+        return;
+
+      GoBoardPosition* boardPosition = self.game.boardPosition;
+      GoNode* currentNode = boardPosition.currentNode;
+      [playerTimeData updateAfterNodeChanged:currentNode];
+
+      return;
+    }
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"resetClockOfPlayer failed, unknown resetReason = %d", resetReason];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
+      return;
+    }
+  }
+}
+
 #pragma mark - PlayerClockTimerDelegate implementation
 
 // -----------------------------------------------------------------------------

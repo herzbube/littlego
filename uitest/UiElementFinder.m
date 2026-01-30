@@ -169,7 +169,7 @@
     case MoreGameActionsButtonUndoResign:
       buttonName = @"Undo resign";
       break;
-    case MoreGameActionsButtonUndoTimeout:
+    case MoreGameActionsButtonUndoLostOnTime:
       buttonName = @"Undo timeout";
       break;
     case MoreGameActionsButtonUndoForfeit:
