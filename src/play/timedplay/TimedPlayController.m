@@ -189,8 +189,6 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [center addObserver:self selector:@selector(newGameScreenDidDisappear:) name:newGameScreenDidDisappear object:nil];
   [center addObserver:self selector:@selector(saveGameScreenWillAppear:) name:saveGameScreenWillAppear object:nil];
   [center addObserver:self selector:@selector(saveGameScreenDidDisappear:) name:saveGameScreenDidDisappear object:nil];
-  [center addObserver:self selector:@selector(longRunningActionStarts:) name:longRunningActionStarts object:nil];
-  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(playerLostOnTime:) name:playerLostOnTime object:nil];
@@ -651,47 +649,6 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   if ([NSThread currentThread] != [NSThread mainThread])
   {
     [self performSelectorOnMainThread:@selector(saveGameScreenDidDisappear:)
-                           withObject:notification
-                        waitUntilDone:YES];
-    return;
-  }
-
-  self.numberOfThingsBlockingBoardInteractions--;
-  [self updateIsBoardInteractive];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionStarts notification.
-// -----------------------------------------------------------------------------
-- (void) longRunningActionStarts:(NSNotification*)notification
-{
-  if ([NSThread currentThread] != [NSThread mainThread])
-  {
-    [self performSelectorOnMainThread:@selector(longRunningActionStarts:)
-                           withObject:notification
-                        waitUntilDone:YES];
-    return;
-  }
-
-  // Suspend clock to avoid that the timer fires in the middle of the long
-  // running action. In particular, the timer must not fire while the
-  // application state is saved (could result in an inconsistent archive if
-  // the state of Go model objects is changed while they are archived), or
-  // while the currently selected node is changed. Because a long running
-  // action may be executed in a secondary thread, there is no guarantee that
-  // it will block the main thread (where the timer fires).
-  self.numberOfThingsBlockingBoardInteractions++;
-  [self updateIsBoardInteractive];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #longRunningActionEnds notification.
-// -----------------------------------------------------------------------------
-- (void) longRunningActionEnds:(NSNotification*)notification
-{
-  if ([NSThread currentThread] != [NSThread mainThread])
-  {
-    [self performSelectorOnMainThread:@selector(longRunningActionEnds:)
                            withObject:notification
                         waitUntilDone:YES];
     return;

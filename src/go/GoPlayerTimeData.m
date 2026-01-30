@@ -148,14 +148,21 @@
 // -----------------------------------------------------------------------------
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
-  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-  [encoder encodeObject:self.goTimeSettings forKey:goPlayerTimeDataTimeSettingsKey];
-  [encoder encodeObject:self.goClock forKey:goPlayerTimeDataClockKey];
-  [encoder encodeBool:self.isTimeDataForBlackPlayer forKey:goPlayerTimeDataIsTimeDataForBlackPlayerKey];
-  [encoder encodeBool:self.isRemainingTimeAbsoluteTime forKey:goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey];
-  [encoder encodeDouble:self.remainingTimeInSeconds forKey:goPlayerTimeDataRemainingTimeInSecondsKey];
-  [encoder encodeInt64:self.remainingNumberOfMoves forKey:goPlayerTimeDataRemainingNumberOfMovesKey];
-  [encoder encodeInt64:self.remainingNumberOfPeriods forKey:goPlayerTimeDataRemainingNumberOfPeriodsKey];
+  // Lock is needed because the player clock may be running and the clock timer
+  // may be firing and trying to update our data, while at the same time the
+  // application state is being saved, and we are encoding our data, in a
+  // secondary thread.
+  @synchronized(self)
+  {
+    [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+    [encoder encodeObject:self.goTimeSettings forKey:goPlayerTimeDataTimeSettingsKey];
+    [encoder encodeObject:self.goClock forKey:goPlayerTimeDataClockKey];
+    [encoder encodeBool:self.isTimeDataForBlackPlayer forKey:goPlayerTimeDataIsTimeDataForBlackPlayerKey];
+    [encoder encodeBool:self.isRemainingTimeAbsoluteTime forKey:goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey];
+    [encoder encodeDouble:self.remainingTimeInSeconds forKey:goPlayerTimeDataRemainingTimeInSecondsKey];
+    [encoder encodeInt64:self.remainingNumberOfMoves forKey:goPlayerTimeDataRemainingNumberOfMovesKey];
+    [encoder encodeInt64:self.remainingNumberOfPeriods forKey:goPlayerTimeDataRemainingNumberOfPeriodsKey];
+  }
 }
 
 #pragma mark - Public API
