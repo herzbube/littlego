@@ -179,6 +179,8 @@
   // away from the current board position. Because of this we use a loop that
   // changes board positions in chunks.
   int changeChunkSize = [ChangeBoardPositionCommand synchronousExecutionThreshold];
+  bool firstChunk = true;
+  bool lastChunk = false;
   while (numberOfNodesInCurrentGameVariationToDiscard > 0)
   {
     int offset;
@@ -188,12 +190,21 @@
       offset = -numberOfNodesInCurrentGameVariationToDiscard;
     numberOfNodesInCurrentGameVariationToDiscard += offset;
 
+    if (numberOfNodesInCurrentGameVariationToDiscard <= 0)
+      lastChunk = true;
+
     // initWithOffset:() is permissive and allows us to specify an offset that
     // would result in an invalid board position. The offset is adjusted in that
     // case to result in a valid board position.
-    bool success = [[[[ChangeBoardPositionCommand alloc] initWithOffset:offset] autorelease] submit];
+    ChangeBoardPositionCommand* command = [[[ChangeBoardPositionCommand alloc] initWithOffset:offset] autorelease];
+    command.isFirstBoardPositionChange = firstChunk;
+    command.isLastBoardPositionChange = lastChunk;
+
+    bool success = [command submit];
     if (! success)
       return false;
+
+    firstChunk = false;
   }
 
   return true;

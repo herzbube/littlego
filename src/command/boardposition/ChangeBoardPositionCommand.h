@@ -75,4 +75,15 @@
 - (id) initWithLastBoardPosition;
 - (id) initWithOffset:(int)offset;
 
+/// @brief In a sequence of ChangeBoardPositionCommand instances, this property
+/// is @e true  to indicate that this ChangeBoardPositionCommand instance is the
+/// first in the sequence to be executed, or @e false if other
+/// ChangeBoardPositionCommand instances were executed before this instance.
+@property(atomic, assign) bool isFirstBoardPositionChange;
+/// @brief In a sequence of ChangeBoardPositionCommand instances, this property
+/// is @e true  to indicate that this ChangeBoardPositionCommand instance is the
+/// last in the sequence to be executed, or @e false if other
+/// ChangeBoardPositionCommand instances will be executed after this instance.
+@property(atomic, assign) bool isLastBoardPositionChange;
+
 @end

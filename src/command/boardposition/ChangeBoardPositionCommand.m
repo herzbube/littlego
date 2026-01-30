@@ -86,7 +86,14 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.newBoardPosition = aBoardPosition;
+
+  // The default is to assume a sequence of one ChangeBoardPositionCommand
+  // instances
+  self.isFirstBoardPositionChange = true;
+  self.isLastBoardPositionChange = true;
+
   return self;
 }
 
@@ -185,8 +192,11 @@
   {
     [[LongRunningActionCounter sharedCounter] increment];
 
-    [[Registry sharedRegistry].playerClockService stopClockOfPlayer:game.nextMovePlayer
-                                                             reason:PlayerClockStopReasonSelectedNodeChanges];
+    if (self.isFirstBoardPositionChange)
+    {
+      [[Registry sharedRegistry].playerClockService stopClockOfPlayer:game.nextMovePlayer
+                                                               reason:PlayerClockStopReasonSelectedNodeChanges];
+    }
 
     UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
 
@@ -231,7 +241,7 @@
       [game.score calculateWaitUntilDone:false];
     }
 
-    if (! game.nextMovePlayerIsComputerPlayer)
+    if (! game.nextMovePlayerIsComputerPlayer && self.isLastBoardPositionChange)
     {
       [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
                                                                 reason:PlayerClockStartReasonHumanPlayerTurnBegins];

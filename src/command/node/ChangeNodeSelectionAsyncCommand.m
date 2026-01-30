@@ -155,7 +155,10 @@
   int indexOfAncestorOfNodeInCurrentVariation = [nodeModel indexOfNode:ancestorOfNodeInCurrentVariation];
 
   int newBoardPosition = indexOfAncestorOfNodeInCurrentVariation;
-  bool success = [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
+  ChangeBoardPositionCommand* command = [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease];
+  command.isFirstBoardPositionChange = true;
+  command.isLastBoardPositionChange = false;
+  bool success = [command submit];
   if (! success)
     DDLogError(@"%@: Aborting because changing board position to branching node failed", [self shortDescription]);
 
@@ -191,7 +194,10 @@
 
   int indexOfNode = [nodeModel indexOfNode:self.node];
   int newBoardPosition = indexOfNode;
-  bool success = [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
+  ChangeBoardPositionCommand* command = [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease];
+  command.isFirstBoardPositionChange = false;
+  command.isLastBoardPositionChange = true;
+  bool success = [command submit];
   if (! success)
     DDLogError(@"%@: Aborting because changing board position to node to select failed", [self shortDescription]);
 
