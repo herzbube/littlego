@@ -2775,6 +2775,7 @@ extern NSString* newMoveInsertPositionKey;
 // Timed play settings
 extern NSString* timedPlayKey;
 extern NSString* timeDataValidationModeKey;
+extern NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey;
 //@}
 
 // -----------------------------------------------------------------------------

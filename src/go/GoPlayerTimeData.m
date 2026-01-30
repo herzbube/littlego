@@ -290,6 +290,21 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Updates this GoPlayerTimeData object after the player has lost on
+/// time. When this method returns, the remaining time in seconds is zero (or
+/// less).
+// -----------------------------------------------------------------------------
+- (void) updateAfterPlayerLostOnTime
+{
+  if (self.remainingTimeInSeconds <= 0.0)
+    return;
+
+  self.remainingTimeInSeconds = 0.0;
+
+  [self postNotificationOnMainThread:playerTimeDataHasChanged];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief TODO xxx document
 // -----------------------------------------------------------------------------
 - (unsigned long) remainingNumberOfMovesOrPeriods

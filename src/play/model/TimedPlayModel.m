@@ -43,6 +43,7 @@
     return nil;
 
   self.timeDataValidationMode = GoTimeDataValidationModeBasic;
+  self.showTrueRemainingTimeAfterLastMoveWhenLostOnTime = true;
 
   return self;
 }
@@ -66,6 +67,7 @@
   NSDictionary* dictionary = [userDefaults dictionaryForKey:timedPlayKey];
 
   self.timeDataValidationMode = [[dictionary valueForKey:timeDataValidationModeKey] intValue];
+  self.showTrueRemainingTimeAfterLastMoveWhenLostOnTime = [[dictionary valueForKey:showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey] boolValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -76,6 +78,7 @@
 {
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithInt:self.timeDataValidationMode] forKey:timeDataValidationModeKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.showTrueRemainingTimeAfterLastMoveWhenLostOnTime] forKey:showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey];
 
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:timedPlayKey];

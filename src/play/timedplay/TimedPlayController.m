@@ -23,7 +23,9 @@
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeDataValidator.h"
 #import "../../go/GoTimeSettings.h"
+#import "../../go/GoUtilities.h"
 #import "../../play/gameaction/GameActionManager.h"
+#import "../../play/model/TimedPlayModel.h"
 #import "../../player/Player.h"
 #import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
@@ -1367,6 +1369,30 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 
   GoPlayerTimeData* whitePlayerTimeData = self.game.playerWhite.timeData;
   [whitePlayerTimeData updateAfterNodeChanged:currentNode];
+
+  // See documentation of property for a full explanation why this setting
+  // exists.
+  if (! [Registry sharedRegistry].modelProvider.timedPlayModel.showTrueRemainingTimeAfterLastMoveWhenLostOnTime)
+  {
+    GoPlayerTimeData* playerTimeDataLostOnTime = nil;
+    switch (self.game.reasonForGameHasEnded)
+    {
+      case GoGameHasEndedReasonWhiteWinsOnTime:
+        playerTimeDataLostOnTime = blackPlayerTimeData;
+        break;
+      case GoGameHasEndedReasonBlackWinsOnTime:
+        playerTimeDataLostOnTime = whitePlayerTimeData;
+        break;
+      default:
+        break;
+    }
+
+    if (playerTimeDataLostOnTime &&
+        ! [GoUtilities nodeWithNextMoveExists:currentNode inCurrentGameVariation:self.game])
+    {
+      [playerTimeDataLostOnTime updateAfterPlayerLostOnTime];
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------

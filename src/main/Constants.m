@@ -517,6 +517,7 @@ NSString* newMoveInsertPositionKey = @"NewMoveInsertPosition";
 // Timed play settings
 NSString* timedPlayKey = @"TimedPlay";
 NSString* timeDataValidationModeKey = @"TimeDataValidationMode";
+NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey = @"ShowTrueRemainingTimeAfterLastMoveWhenLostOnTime";
 
 // Constants for NSCoding
 // General constants

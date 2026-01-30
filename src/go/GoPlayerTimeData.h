@@ -50,6 +50,7 @@
 
 - (void) updateAfterMoveWasPlayed:(GoNodeTimeData*)nodeTimeData;
 - (void) updateAfterNodeChanged:(GoNode*)node;
+- (void) updateAfterPlayerLostOnTime;
 - (unsigned long) remainingNumberOfMovesOrPeriods;
 - (enum GoClockState) clockState;
 - (enum GoClockSuspendedReason) clockSuspendedReason;

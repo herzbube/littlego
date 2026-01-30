@@ -582,6 +582,8 @@
 	<dict>
 		<key>TimeDataValidationMode</key>
 		<integer>0</integer>
+		<key>ShowTrueRemainingTimeAfterLastMoveWhenLostOnTime</key>
+		<true/>
 	</dict>
 </dict>
 </plist>
