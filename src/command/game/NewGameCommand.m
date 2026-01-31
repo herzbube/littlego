@@ -233,7 +233,9 @@
                                                                      isTimeDataForBlackPlayer:false] autorelease];
       newGame.playerBlack.timeData = blackPlayerTimeData;
       newGame.playerWhite.timeData = whitePlayerTimeData;
-
+    }
+    if (! newGame.timeSettings.hasNoTimeSystems)
+    {
       GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
       [timeDataValidator validateTimeDataInGameTree:newGame];
     }

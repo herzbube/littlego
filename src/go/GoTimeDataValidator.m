@@ -552,17 +552,13 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 // -----------------------------------------------------------------------------
 - (GoTimeDataValidationResult) validateTimeSettings:(GoTimeSettings*)timeSettings
 {
-  // Check for custom time system first, because a custom time system
-  // automatically means "no timed play", but we want to distinguish
-  // GoTimeDataInvalidReasonCustomTimeSystem from
-  // GoTimeDataInvalidReasonGameDoesNotUseTimedPlay.
-  if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeCustom)
-  {
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonCustomTimeSystem, self.timeDataValidationMode);
-  }
-  else if (! timeSettings.isGameUsingTimedPlay)
+  if (timeSettings.hasNoTimeSystems)
   {
     return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonGameDoesNotUseTimedPlay, self.timeDataValidationMode);
+  }
+  else if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeCustom)
+  {
+    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonCustomTimeSystem, self.timeDataValidationMode);
   }
   else if (timeSettings.absoluteTimeSystem.supportsTimedPlay &&
            timeSettings.absoluteTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)

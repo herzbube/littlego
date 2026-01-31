@@ -559,7 +559,7 @@ static const int maxStepsForCreateNodes = 9;
     if (! success)
       return false;
 
-    success = [self validateTimeDataIfGameUsesTimedPlay:errorMessage];
+    success = [self validateTimeDataIfGameHasAtLeastOneTimeSystem:errorMessage];
     if (! success)
       return false;
 
@@ -1643,7 +1643,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 
 // -----------------------------------------------------------------------------
 /// @brief Validates the time data in the entire node tree, but only if the game
-/// uses timed play.
+/// has at least one time system.
 ///
 /// Although the validation traverses the entire node tree, this is a much
 /// faster operation than validateSetupAndMoveNodes:() and therefore does not
@@ -1651,10 +1651,10 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 ///
 /// This is a helper function for setupNodes:().
 // -----------------------------------------------------------------------------
-- (bool) validateTimeDataIfGameUsesTimedPlay:(NSString**)errorMessage
+- (bool) validateTimeDataIfGameHasAtLeastOneTimeSystem:(NSString**)errorMessage
 {
   GoGame* game = [GoGame sharedGame];
-  if (! game.timeSettings.isGameUsingTimedPlay)
+  if (game.timeSettings.hasNoTimeSystems)
     return true;
 
   // TODO xxx consider evaluating the return value => if user wanted to start a

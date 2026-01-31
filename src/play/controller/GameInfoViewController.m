@@ -388,10 +388,10 @@ enum BoardPositionSectionItem
         case GameInfoSection:
           return MaxGameInfoSectionItem;
         case TimeSettingsSection:
-          if ([GoGame sharedGame].timeSettings.isGameUsingTimedPlay)
-            return MaxTimeSettingsSectionItem_TimedPlay;
-          else
+          if ([GoGame sharedGame].timeSettings.hasNoTimeSystems)
             return MaxTimeSettingsSectionItem_NoTimedPlay;
+          else
+            return MaxTimeSettingsSectionItem_TimedPlay;
         case PlayersProfileSection:
           if ([GoGame sharedGame].type == GoGameTypeHumanVsHuman)
             return MaxPlayersProfileSectionItem;
@@ -807,7 +807,15 @@ enum BoardPositionSectionItem
     }
     case TimeSettingsSection:
     {
-      if (game.timeSettings.isGameUsingTimedPlay)
+      if (game.timeSettings.hasNoTimeSystems)
+      {
+        cell = [TableViewCellFactory cellWithType:VariableHeightCellType
+                                        tableView:tableView];
+        TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+        variableHeightCell.descriptionLabel.text = @"Time settings";
+        variableHeightCell.valueLabel.text = [TimeDataUtilities timeSettingsModelSummary:self.timeSettingsModel];
+      }
+      else
       {
         cell = [TableViewCellFactory cellWithType:VariableHeightCellType
                                         tableView:tableView];
@@ -829,13 +837,6 @@ enum BoardPositionSectionItem
           else
             variableHeightCell.valueLabel.text = @"None";
         }
-      }
-      else
-      {
-        cell = [TableViewCellFactory cellWithType:Value1CellType
-                                        tableView:tableView];
-        cell.textLabel.text = @"Time settings";
-        cell.detailTextLabel.text = [TimeDataUtilities timeSettingsModelSummary:self.timeSettingsModel];
       }
       break;
     }

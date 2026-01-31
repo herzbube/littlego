@@ -31,6 +31,7 @@
 //@{
 @property(nonatomic, retain, readwrite) GoTimeSystem* absoluteTimeSystem;
 @property(nonatomic, retain, readwrite) GoTimeSystem* periodBasedTimeSystem;
+@property(nonatomic, assign, readwrite) bool hasNoTimeSystems;
 @property(nonatomic, assign, readwrite) bool isGameUsingTimedPlay;
 //@}
 @end
@@ -100,7 +101,8 @@
 
   self.absoluteTimeSystem = absoluteTimeSystem;
   self.periodBasedTimeSystem = periodBasedTimeSystem;
-  self.isGameUsingTimedPlay = [self doTimeSystemsSupportTimedPlay];
+
+  [self updateCalculatedProperties];
 
   return self;
 }
@@ -119,7 +121,8 @@
 
   self.absoluteTimeSystem = [decoder decodeObjectOfClass:[GoTimeSystem class] forKey:goTimeSettingsAbsoluteTimeSystemKey];
   self.periodBasedTimeSystem = [decoder decodeObjectOfClass:[GoTimeSystem class] forKey:goTimeSettingsPeriodBasedTimeSystemKey];
-  self.isGameUsingTimedPlay = [self doTimeSystemsSupportTimedPlay];
+
+  [self updateCalculatedProperties];
 
   return self;
 }
@@ -151,10 +154,22 @@
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.absoluteTimeSystem forKey:goTimeSettingsAbsoluteTimeSystemKey];
   [encoder encodeObject:self.periodBasedTimeSystem forKey:goTimeSettingsPeriodBasedTimeSystemKey];
-  // No need to encode isGameUsingTimedPlay, property value is calculated by the initializer
+  // No need to encode hasNoTimeSystems and isGameUsingTimedPlay, property
+  // values are calculated by the initializers
 }
 
 #pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the calculated properties @e hasNoTimeSystems and
+/// @e isGameUsingTimedPlay based on the values of the other properties.
+// -----------------------------------------------------------------------------
+- (void) updateCalculatedProperties
+{
+  self.hasNoTimeSystems = (self.absoluteTimeSystem.goTimeSystemType == GoTimeSystemTypeNone &&
+                           self.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeNone);
+  self.isGameUsingTimedPlay = [self doTimeSystemsSupportTimedPlay];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if @e periodBasedTimeSystem is not a custom time system,

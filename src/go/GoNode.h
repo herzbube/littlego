@@ -220,10 +220,10 @@
 
 /// @name Time data validity
 //@{
-/// @brief True if the time data in this node and all of its predecessor nodes
-/// is valid. False if time data is not valid. In the latter case, the value of
-/// property @e timeDataInvalidReason indicates the reason why the time data is
-/// not valid.
+/// @brief True if the time data in this node is valid. False if time data is
+/// not valid. In the latter case, the value of property
+/// @e timeDataInvalidReason indicates the reason why the time data is not
+/// valid.
 ///
 /// The default value after initialization is false.
 ///
