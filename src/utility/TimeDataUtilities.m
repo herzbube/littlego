@@ -30,16 +30,24 @@
 // -----------------------------------------------------------------------------
 + (NSString*) timeSettingsModelSummary:(TimeSettingsModel*)timeSettingsModel
 {
+  NSString* (^periodBasedTimeSystemDescription) (void) = ^ NSString* (void)
+  {
+    if (timeSettingsModel.periodBasedTimeSystemType == GoTimeSystemTypeCustom)
+      return [NSString stringWithFormat:@"custom time system '%@'", timeSettingsModel.customTimeSystemDescription];
+    else
+      return [NSString shortStringWithPeriodBasedTimeSystemType:timeSettingsModel.periodBasedTimeSystemType];
+  };
+
   if (! timeSettingsModel.timedPlayEnabled)
     return @"No timed play";
   else if (! timeSettingsModel.absoluteTimingEnabled && ! timeSettingsModel.periodBasedTimeSystemEnabled)
     return @"No timed play";
   else if (timeSettingsModel.absoluteTimingEnabled && timeSettingsModel.periodBasedTimeSystemEnabled)
-    return [NSString stringWithFormat:@"Main time + overtime (%@)", [NSString shortStringWithPeriodBasedTimeSystemType:timeSettingsModel.periodBasedTimeSystemType]];
+    return [NSString stringWithFormat:@"Main time + Overtime (%@)", periodBasedTimeSystemDescription()];
   else if (timeSettingsModel.absoluteTimingEnabled)
     return @"Main time";
   else if (timeSettingsModel.periodBasedTimeSystemEnabled)
-    return [NSString stringWithFormat:@"Overtime (%@)", [NSString shortStringWithPeriodBasedTimeSystemType:timeSettingsModel.periodBasedTimeSystemType]];
+    return [NSString stringWithFormat:@"Overtime (%@)", periodBasedTimeSystemDescription()];
   else
     return @"Unsupported values";
 }
@@ -106,7 +114,7 @@
     }
     case GoTimeSystemTypeCustom:
     {
-      return timeSettingsModel.customTimeSystemDescription;
+      return [NSString stringWithFormat:@"Custom time system '%@'", timeSettingsModel.customTimeSystemDescription];
     }
     default:
     {

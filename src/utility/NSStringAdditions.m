@@ -563,6 +563,10 @@
       return @"Steady Average Timing";
     case GoTimeSystemTypeTotalAverage:
       return @"Total Average Timing";
+    case GoTimeSystemTypeNone:
+      return @"No time system";
+    case GoTimeSystemTypeCustom:
+      return @"Custom time system";
     default:
       return @"Unknown";
   }
@@ -585,6 +589,10 @@
       return @"Steady Average";
     case GoTimeSystemTypeTotalAverage:
       return @"Total Average";
+    case GoTimeSystemTypeNone:
+      return @"None";
+    case GoTimeSystemTypeCustom:
+      return @"Custom";
     default:
       return @"Unknown";
   }

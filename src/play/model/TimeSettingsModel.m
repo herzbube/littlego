@@ -138,33 +138,29 @@
   else
     self.absoluteTimingDurationInSeconds = absoluteTimeSystem.periodDurationInSeconds;
 
+  self.periodBasedTimeSystemType = periodBasedTimeSystem.goTimeSystemType;
   switch (periodBasedTimeSystem.goTimeSystemType)
   {
     case GoTimeSystemTypeNone:
       self.periodBasedTimeSystemEnabled = false;
       break;
     case GoTimeSystemTypeCanadian:
-      self.periodBasedTimeSystemType = periodBasedTimeSystem.goTimeSystemType;
       self.canadianTimingPeriodDurationInSeconds = periodBasedTimeSystem.periodDurationInSeconds;
       self.canadianTimingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
       break;
     case GoTimeSystemTypeJapanese:
-      self.periodBasedTimeSystemType = periodBasedTimeSystem.goTimeSystemType;
       self.japaneseTimingPeriodDurationInSeconds = periodBasedTimeSystem.periodDurationInSeconds;
       self.japaneseTimingNumberOfPeriods = periodBasedTimeSystem.numberOfPeriods;
       break;
     case GoTimeSystemTypeFischer:
-      self.periodBasedTimeSystemType = periodBasedTimeSystem.goTimeSystemType;
       self.fischerTimingInitialTimeDurationInSeconds = periodBasedTimeSystem.periodDurationInSeconds;
       self.fischerTimingExtraTimeDurationInSeconds = periodBasedTimeSystem.extraTimeDurationInSeconds;
       break;
     case GoTimeSystemTypeSteadyAverage:
-      self.periodBasedTimeSystemType = periodBasedTimeSystem.goTimeSystemType;
       self.steadyAverageTimingPeriodDurationInSeconds = periodBasedTimeSystem.periodDurationInSeconds;
       self.steadyAverageTimingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
       break;
     case GoTimeSystemTypeTotalAverage:
-      self.periodBasedTimeSystemType = periodBasedTimeSystem.goTimeSystemType;
       self.totalAverageTimingPeriodDurationInSeconds = periodBasedTimeSystem.periodDurationInSeconds;
       self.totalAverageTimingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
       break;
