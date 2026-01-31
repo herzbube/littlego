@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2025 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2026 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,19 +16,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TimeViewController class is responsible for displaying
-/// time-related information for both players in #UIAreaPlay. TimeViewController
-/// also provides gesture handling so that the user can suspend, resume, stop
-/// or start a player's clock.
+/// @brief The InvalidTimeDataViewController class is responsible for displaying
+/// information about why the time data in the currently selected node is
+/// invalid.
 // -----------------------------------------------------------------------------
-@interface TimeViewController : UIViewController
+@interface InvalidTimeDataViewController : UIViewController
 {
 }
-
-/// @brief The pre-calculated size of the view of TimeViewController.
-///
-/// When this method is invoked the first time, it performs the necessary size
-/// calculations.
-+ (CGSize) timeViewControllerViewSize;
 
 @end

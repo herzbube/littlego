@@ -18,9 +18,10 @@
 // Project includes
 #import "StatusAreaViewController.h"
 #import "StatusViewController.h"
-#import "TimeViewController.h"
+#import "TimedPlayViewController.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoTimeSettings.h"
+#import "../../go/GoTimeSystem.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
 
@@ -31,8 +32,8 @@
 @interface StatusAreaViewController()
 @property(nonatomic, retain) UIStackView* stackView;
 @property(nonatomic, retain) StatusViewController* statusViewController;
-@property(nonatomic, retain) TimeViewController* timeViewController;
-@property(nonatomic, assign) bool timeViewControllerIntegrationNeedsUpdate;
+@property(nonatomic, retain) TimedPlayViewController* timedPlayViewController;
+@property(nonatomic, assign) bool timedPlayViewControllerIntegrationNeedsUpdate;
 @end
 
 
@@ -54,7 +55,7 @@
 
   self.stackView = nil;
   self.statusViewController = [[[StatusViewController alloc] init] autorelease];
-  self.timeViewControllerIntegrationNeedsUpdate = true;
+  self.timedPlayViewControllerIntegrationNeedsUpdate = true;
 
   [self setupNotificationResponders];
 
@@ -70,7 +71,7 @@
 
   self.stackView = nil;
   self.statusViewController = nil;
-  self.timeViewController = nil;
+  self.timedPlayViewController = nil;
 
   [super dealloc];
 }
@@ -109,8 +110,8 @@
     return;
   }
 
-  self.timeViewControllerIntegrationNeedsUpdate = true;
-  [self updateTimeViewControllerIntegrationIfNeeded];
+  self.timedPlayViewControllerIntegrationNeedsUpdate = true;
+  [self updateTimedPlayViewControllerIntegrationIfNeeded];
 }
 
 #pragma mark - Container view controller handling
@@ -118,25 +119,25 @@
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
-- (void) setTimeViewController:(TimeViewController*)timeViewController
+- (void) setTimedPlayViewController:(TimedPlayViewController*)timedPlayViewController
 {
-  if (_timeViewController == timeViewController)
+  if (_timedPlayViewController == timedPlayViewController)
     return;
-  if (_timeViewController)
+  if (_timedPlayViewController)
   {
-    [_timeViewController willMoveToParentViewController:nil];
+    [_timedPlayViewController willMoveToParentViewController:nil];
     // Automatically calls didMoveToParentViewController:
-    [_timeViewController removeFromParentViewController];
-    [_timeViewController release];
-    _timeViewController = nil;
+    [_timedPlayViewController removeFromParentViewController];
+    [_timedPlayViewController release];
+    _timedPlayViewController = nil;
   }
-  if (timeViewController)
+  if (timedPlayViewController)
   {
     // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:timeViewController];
-    [timeViewController didMoveToParentViewController:self];
-    [timeViewController retain];
-    _timeViewController = timeViewController;
+    [self addChildViewController:timedPlayViewController];
+    [timedPlayViewController didMoveToParentViewController:self];
+    [timedPlayViewController retain];
+    _timedPlayViewController = timedPlayViewController;
   }
 }
 
@@ -152,7 +153,7 @@
   [self setupViewHierarchy];
   [self configureViews];
   [self setupAutoLayoutConstraints];
-  [self updateTimeViewControllerIntegrationIfNeeded];
+  [self updateTimedPlayViewControllerIntegrationIfNeeded];
 }
 
 // -----------------------------------------------------------------------------
@@ -198,36 +199,43 @@
   [AutoLayoutUtility fillSuperview:self.view withSubview:self.stackView];
 }
 
-#pragma mark - Setup/remove TimeViewController
+#pragma mark - Setup/remove TimedPlayViewController
 
 // -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
+/// @brief This is an internal helper invoked when a change occurs that
+/// potentially requires adding or removing TimedPlayViewController.
 // -----------------------------------------------------------------------------
-- (void) updateTimeViewControllerIntegrationIfNeeded
+- (void) updateTimedPlayViewControllerIntegrationIfNeeded
 {
-  if (! self.timeViewControllerIntegrationNeedsUpdate || ! self.isViewLoaded)
+  if (! self.timedPlayViewControllerIntegrationNeedsUpdate || ! self.isViewLoaded)
     return;
-  self.timeViewControllerIntegrationNeedsUpdate = false;
 
+  // This controller is created very early during app launch, before a game
+  // has been created
   GoGame* game = [GoGame sharedGame];
+  if (! game)
+    return;
+
+  self.timedPlayViewControllerIntegrationNeedsUpdate = false;
+
   GoTimeSettings* timeSettings = game.timeSettings;
 
-  bool timeViewControllerIsCurrentlyIntegrated = self.timeViewController;
-  bool shouldIntegrateTimeViewController = timeSettings.isGameUsingTimedPlay;
-  if (timeViewControllerIsCurrentlyIntegrated == shouldIntegrateTimeViewController)
+  bool timedPlayViewControllerIsCurrentlyIntegrated = self.timedPlayViewController;
+  bool shouldIntegrateTimedPlayViewController = ! timeSettings.hasNoTimeSystems;
+  if (timedPlayViewControllerIsCurrentlyIntegrated == shouldIntegrateTimedPlayViewController)
     return;
 
-  if (shouldIntegrateTimeViewController)
+  if (shouldIntegrateTimedPlayViewController)
   {
-    self.timeViewController = [[[TimeViewController alloc] init] autorelease];
+    self.timedPlayViewController = [[[TimedPlayViewController alloc] init] autorelease];
     // Caues UIStackView to add the view as subview
-    [self.stackView addArrangedSubview:self.timeViewController.view];
+    [self.stackView addArrangedSubview:self.timedPlayViewController.view];
   }
   else
   {
     // Causes UIStackView to remove the view from its arranged subviews
-    [self.timeViewController.view removeFromSuperview];
-    self.timeViewController = nil;
+    [self.timedPlayViewController.view removeFromSuperview];
+    self.timedPlayViewController = nil;
   }
 }
 

@@ -33,6 +33,10 @@
 #import "../../utility/ExceptionUtility.h"
 
 
+// This variable must be accessed via [TimeViewController timeViewControllerViewSize]
+static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
+
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for TimeViewController.
 // -----------------------------------------------------------------------------
@@ -191,6 +195,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
+  // IMPORTANT: If you change anything about these constraints, make sure that
+  // the calculation in timeViewControllerViewSize remains aligned.
+
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
@@ -200,9 +207,13 @@
   viewsDictionary[@"timeViewBlackPlayer"] = self.timeViewBlackPlayer;
   viewsDictionary[@"timeViewWhitePlayer"] = self.timeViewWhitePlayer;
 
-  [visualFormats addObject:@"H:|-[timeViewBlackPlayer]-[timeViewWhitePlayer]-|"];
-  [visualFormats addObject:@"V:|-[timeViewBlackPlayer]-|"];
-  [visualFormats addObject:@"V:|-[timeViewWhitePlayer]-|"];
+  CGFloat horizontalSpacingSiblings = [AutoLayoutUtility horizontalSpacingSiblings];
+  CGFloat horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingSuperview];
+  CGFloat verticalSpacingSuperview = [AutoLayoutUtility verticalSpacingSuperview];
+
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%f-[timeViewBlackPlayer]-%f-[timeViewWhitePlayer]-%f-|", horizontalSpacingSuperview, horizontalSpacingSiblings, horizontalSpacingSuperview]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%f-[timeViewBlackPlayer]-%f-|", verticalSpacingSuperview, verticalSpacingSuperview]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%f-[timeViewWhitePlayer]-%f-|", verticalSpacingSuperview, verticalSpacingSuperview]];
 
   CGSize timeViewSize = [TimeView timeViewSize];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[timeViewBlackPlayer(==%f)]", timeViewSize.width]];
@@ -489,6 +500,28 @@
   GoGame* game = [GoGame sharedGame];
   GoTimeDataValidationResult validationState = [GoTimeDataValidator validationStateOfCurrentNode:game];
   self.isTimeDataValid = validationState.isTimeDataValid;
+}
+
+#pragma mark - One-time view size calculation
+
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
++ (CGSize) timeViewControllerViewSize
+{
+  if (CGSizeEqualToSize(timeViewControllerViewSize, CGSizeZero))
+  {
+    CGSize timeViewSize = [TimeView timeViewSize];
+    CGFloat horizontalSpacingSiblings = [AutoLayoutUtility horizontalSpacingSiblings];
+    CGFloat horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingSuperview];
+    CGFloat verticalSpacingSuperview = [AutoLayoutUtility verticalSpacingSuperview];
+
+    // Aligned to setupAutoLayoutConstraints()
+    timeViewControllerViewSize = CGSizeMake(2 * horizontalSpacingSuperview + 2 * timeViewSize.width + horizontalSpacingSiblings,
+                                            2 * verticalSpacingSuperview + timeViewSize.height);
+  }
+
+  return timeViewControllerViewSize;
 }
 
 @end

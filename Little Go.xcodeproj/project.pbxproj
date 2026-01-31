@@ -905,6 +905,12 @@
 		D73B0D3A2F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
 		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74980BB2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
+		D74B1B8F2F2D195500E08D1D /* InvalidTimeDataView.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B8E2F2D195500E08D1D /* InvalidTimeDataView.m */; };
+		D74B1B902F2D195500E08D1D /* InvalidTimeDataView.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B8E2F2D195500E08D1D /* InvalidTimeDataView.m */; };
+		D74B1B932F2D28BD00E08D1D /* TimedPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B922F2D28BD00E08D1D /* TimedPlayViewController.m */; };
+		D74B1B942F2D28BD00E08D1D /* TimedPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B922F2D28BD00E08D1D /* TimedPlayViewController.m */; };
+		D74B1B972F2D6A4100E08D1D /* InvalidTimeDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B962F2D6A4100E08D1D /* InvalidTimeDataViewController.m */; };
+		D74B1B982F2D6A4100E08D1D /* InvalidTimeDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B962F2D6A4100E08D1D /* InvalidTimeDataViewController.m */; };
 		D74FD8222F25816E00DD8CA5 /* TimedPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */; };
 		D74FD8232F25816E00DD8CA5 /* TimedPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */; };
 		D76B0D022F12B33C00032D62 /* TimeDataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */; };
@@ -1960,6 +1966,12 @@
 		D74980B92EBF87BD00BD595D /* Registry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Registry.m; sourceTree = "<group>"; };
 		D74980BC2EBF902500BD595D /* ModelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelProvider.h; sourceTree = "<group>"; };
 		D74980BD2EBFA19200BD595D /* WindowProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowProvider.h; sourceTree = "<group>"; };
+		D74B1B8D2F2D195500E08D1D /* InvalidTimeDataView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InvalidTimeDataView.h; sourceTree = "<group>"; };
+		D74B1B8E2F2D195500E08D1D /* InvalidTimeDataView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InvalidTimeDataView.m; sourceTree = "<group>"; };
+		D74B1B912F2D28BD00E08D1D /* TimedPlayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimedPlayViewController.h; sourceTree = "<group>"; };
+		D74B1B922F2D28BD00E08D1D /* TimedPlayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlayViewController.m; sourceTree = "<group>"; };
+		D74B1B952F2D6A4100E08D1D /* InvalidTimeDataViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InvalidTimeDataViewController.h; sourceTree = "<group>"; };
+		D74B1B962F2D6A4100E08D1D /* InvalidTimeDataViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InvalidTimeDataViewController.m; sourceTree = "<group>"; };
 		D74FD8202F25816E00DD8CA5 /* TimedPlayModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimedPlayModel.h; sourceTree = "<group>"; };
 		D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlayModel.m; sourceTree = "<group>"; };
 		D76B0D002F12B33C00032D62 /* TimeDataUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeDataUtilities.h; sourceTree = "<group>"; };
@@ -3942,10 +3954,16 @@
 		D70D7A192EEF1D8600648CBB /* statusarea */ = {
 			isa = PBXGroup;
 			children = (
+				D74B1B8D2F2D195500E08D1D /* InvalidTimeDataView.h */,
+				D74B1B8E2F2D195500E08D1D /* InvalidTimeDataView.m */,
+				D74B1B952F2D6A4100E08D1D /* InvalidTimeDataViewController.h */,
+				D74B1B962F2D6A4100E08D1D /* InvalidTimeDataViewController.m */,
 				D70D7A132EEF1D8600648CBB /* StatusAreaViewController.h */,
 				D70D7A142EEF1D8600648CBB /* StatusAreaViewController.m */,
 				CD1311CC17180D57006CE699 /* StatusViewController.h */,
 				CD1311CD17180D57006CE699 /* StatusViewController.m */,
+				D74B1B912F2D28BD00E08D1D /* TimedPlayViewController.h */,
+				D74B1B922F2D28BD00E08D1D /* TimedPlayViewController.m */,
 				D70D7A202EEF345600648CBB /* TimeView.h */,
 				D70D7A212EEF345600648CBB /* TimeView.m */,
 				D70D7A0F2EEF003200648CBB /* TimeViewController.h */,
@@ -4577,6 +4595,7 @@
 				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
 				CD7C57D422024C4700694520 /* BoardSetupSettingsController.m in Sources */,
 				CD0F6BE627B02C91002DBE6B /* GoNodeAnnotation.m in Sources */,
+				D74B1B972F2D6A4100E08D1D /* InvalidTimeDataViewController.m in Sources */,
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
 				CD81790B25DC5AA700F39091 /* StoneView.m in Sources */,
 				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
@@ -4585,6 +4604,7 @@
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CDC8DEFF28EDF8E600619305 /* NodeTreeViewMetrics.m in Sources */,
+				D74B1B902F2D195500E08D1D /* InvalidTimeDataView.m in Sources */,
 				CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */,
 				CDB198C72B78E6C600E8512F /* UserManualViewController.m in Sources */,
 				CDEE19F119433EAC00DF2389 /* BoardTileView.m in Sources */,
@@ -4769,6 +4789,7 @@
 				CDF341CA1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
 				CDB3ECDA2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */,
 				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
+				D74B1B942F2D28BD00E08D1D /* TimedPlayViewController.m in Sources */,
 				CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */,
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CDDC968E25E697B300598CF7 /* PlaceholderView.m in Sources */,
@@ -4820,6 +4841,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D74B1B932F2D28BD00E08D1D /* TimedPlayViewController.m in Sources */,
 				CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
 				CDC0C5B12832D20300EA467C /* GoNodeMarkup.m in Sources */,
 				CD63B9E321C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
@@ -4926,6 +4948,7 @@
 				CD1F4F6925AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDFD9F8218F1D5F40031CBCF /* GtpLogSettingsController.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
+				D74B1B982F2D6A4100E08D1D /* InvalidTimeDataViewController.m in Sources */,
 				CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */,
 				CD1E6EB42865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */,
 				CD7C6A1A1AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */,
@@ -5123,6 +5146,7 @@
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
 				D70D7A122EEF003200648CBB /* TimeViewController.m in Sources */,
 				CD0F6BE727B02C91002DBE6B /* GoNodeAnnotation.m in Sources */,
+				D74B1B8F2F2D195500E08D1D /* InvalidTimeDataView.m in Sources */,
 				CDDB08BB291EB44500B38F91 /* NodeTreeViewModel.m in Sources */,
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,
