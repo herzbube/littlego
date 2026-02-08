@@ -62,6 +62,6 @@
 + (CGSize) customButtonTouchAreaSize;
 + (CGFloat) statusAreaLabelFontSizeForUiType:(enum UIType)uiType;
 + (CGFloat) annotationViewLabelFontSizeForUiType:(enum UIType)uiType;
-+ (CGFloat) annotationViewIconHeightForUiType:(enum UIType)uiType;
++ (CGFloat) iconHeightForUiType:(enum UIType)uiType;
 
 @end

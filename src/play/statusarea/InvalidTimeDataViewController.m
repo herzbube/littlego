@@ -17,12 +17,17 @@
 
 // Project includes
 #import "InvalidTimeDataViewController.h"
+#import "InvalidTimeDataDetailViewController.h"
 #import "InvalidTimeDataView.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoNode.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
+#import "../../ui/UIViewControllerAdditions.h"
+#import "../../utility/UIImageAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,7 +36,11 @@
 // -----------------------------------------------------------------------------
 @interface InvalidTimeDataViewController()
 @property(nonatomic, retain) InvalidTimeDataView* invalidTimeDataView;
+@property(nonatomic, retain) UIButton* infoButton;
 @property(nonatomic, assign) bool invalidTimeDataNeedsUpdate;
+@property(nonatomic, assign) enum UIType uiType;
+@property(nonatomic, assign) int iconHeight;
+@property(nonatomic, assign) bool presentInfoTextInPopover;
 @end
 
 
@@ -52,7 +61,12 @@
     return nil;
 
   self.invalidTimeDataView = nil;
+  self.infoButton = nil;
   self.invalidTimeDataNeedsUpdate = false;
+
+  self.uiType = [LayoutManager sharedManager].uiType;
+  self.iconHeight = [UiElementMetrics iconHeightForUiType:self.uiType];
+  self.presentInfoTextInPopover = (self.uiType == UITypePad);
 
   [self setupNotificationResponders];
 
@@ -68,6 +82,7 @@
   [self removeNotificationResponders];
   
   self.invalidTimeDataView = nil;
+  self.infoButton = nil;
 
   [super dealloc];
 }
@@ -132,6 +147,9 @@
 {
   self.invalidTimeDataView = [[[InvalidTimeDataView alloc] initWithFrame:CGRectZero] autorelease];
   [self.view addSubview:self.invalidTimeDataView];
+
+  self.infoButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [self.view addSubview:self.infoButton];
 }
 
 // -----------------------------------------------------------------------------
@@ -139,6 +157,13 @@
 // -----------------------------------------------------------------------------
 - (void) configureView
 {
+  [self.infoButton setImage:[[UIImage imageNamed:uiAreaAboutIconResource] imageByScalingToHeight:self.iconHeight]
+                   forState:UIControlStateNormal];
+
+  [self.infoButton addTarget:self
+                      action:@selector(showInfo:)
+            forControlEvents:UIControlEventTouchUpInside];
+
   [self updateColors];
 }
 
@@ -147,9 +172,25 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.invalidTimeDataView.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.view
-                       withSubview:self.invalidTimeDataView];
+  self.infoButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+  viewsDictionary[@"invalidTimeDataView"] = self.invalidTimeDataView;
+  viewsDictionary[@"infoButton"] = self.infoButton;
+
+  [visualFormats addObject:@"H:|-[invalidTimeDataView]-[infoButton]-|"];
+  [visualFormats addObject:@"V:|-[invalidTimeDataView]-|"];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[infoButton(==%d)]", self.iconHeight]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[infoButton(==%d)]", self.iconHeight]];
+
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+
+  [AutoLayoutUtility centerSubview:self.infoButton
+                       inSuperview:self.view
+                            onAxis:UILayoutConstraintAxisVertical];
 }
 
 #pragma mark - User interface style handling (light/dark mode)
@@ -161,7 +202,8 @@
 - (void) updateColors
 {
   UITraitCollection* traitCollection = self.traitCollection;
-  [UiUtilities applyTransparentStyleToView:self.invalidTimeDataView traitCollection:traitCollection];
+  [UiUtilities applyTransparentStyleToView:self.view traitCollection:traitCollection];
+  [UiUtilities applyTintColorToButton:self.infoButton traitCollection:traitCollection];
 }
 
 #pragma mark - Notification responders
@@ -207,6 +249,25 @@
 
   self.invalidTimeDataView.isTimeDataValid = currentNode.isTimeDataValid;
   self.invalidTimeDataView.timeDataInvalidReason = currentNode.timeDataInvalidReason;
+}
+
+#pragma mark - Button handlers
+
+// -----------------------------------------------------------------------------
+/// @brief Displays a pop up that shows detailed information about why the time
+/// data in the currently selected node is invalid.
+// -----------------------------------------------------------------------------
+- (void) showInfo:(id)sender
+{
+  GoGame* game = [GoGame sharedGame];
+  GoNode* currentNode = game.boardPosition.currentNode;
+
+  InvalidTimeDataDetailViewController* invalidTimeDataDetailViewController = [[[InvalidTimeDataDetailViewController alloc] initWithGame:game
+                                                                                                                            currentNode:currentNode] autorelease];
+  [self presentNavigationControllerWithRootViewController:invalidTimeDataDetailViewController
+                                        usingPopoverStyle:self.presentInfoTextInPopover
+                                        popoverSourceView:sender
+                                     popoverBarButtonItem:nil];
 }
 
 @end

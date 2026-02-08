@@ -911,6 +911,8 @@
 		D74B1B942F2D28BD00E08D1D /* TimedPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B922F2D28BD00E08D1D /* TimedPlayViewController.m */; };
 		D74B1B972F2D6A4100E08D1D /* InvalidTimeDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B962F2D6A4100E08D1D /* InvalidTimeDataViewController.m */; };
 		D74B1B982F2D6A4100E08D1D /* InvalidTimeDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B962F2D6A4100E08D1D /* InvalidTimeDataViewController.m */; };
+		D74B1B9F2F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B9E2F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.m */; };
+		D74B1BA02F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B9E2F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.m */; };
 		D74FD8222F25816E00DD8CA5 /* TimedPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */; };
 		D74FD8232F25816E00DD8CA5 /* TimedPlayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */; };
 		D76B0D022F12B33C00032D62 /* TimeDataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D012F12B33C00032D62 /* TimeDataUtilities.m */; };
@@ -1972,6 +1974,8 @@
 		D74B1B922F2D28BD00E08D1D /* TimedPlayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlayViewController.m; sourceTree = "<group>"; };
 		D74B1B952F2D6A4100E08D1D /* InvalidTimeDataViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InvalidTimeDataViewController.h; sourceTree = "<group>"; };
 		D74B1B962F2D6A4100E08D1D /* InvalidTimeDataViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InvalidTimeDataViewController.m; sourceTree = "<group>"; };
+		D74B1B9D2F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InvalidTimeDataDetailViewController.h; sourceTree = "<group>"; };
+		D74B1B9E2F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InvalidTimeDataDetailViewController.m; sourceTree = "<group>"; };
 		D74FD8202F25816E00DD8CA5 /* TimedPlayModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimedPlayModel.h; sourceTree = "<group>"; };
 		D74FD8212F25816E00DD8CA5 /* TimedPlayModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlayModel.m; sourceTree = "<group>"; };
 		D76B0D002F12B33C00032D62 /* TimeDataUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeDataUtilities.h; sourceTree = "<group>"; };
@@ -3954,6 +3958,8 @@
 		D70D7A192EEF1D8600648CBB /* statusarea */ = {
 			isa = PBXGroup;
 			children = (
+				D74B1B9D2F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.h */,
+				D74B1B9E2F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.m */,
 				D74B1B8D2F2D195500E08D1D /* InvalidTimeDataView.h */,
 				D74B1B8E2F2D195500E08D1D /* InvalidTimeDataView.m */,
 				D74B1B952F2D6A4100E08D1D /* InvalidTimeDataViewController.h */,
@@ -4670,6 +4676,7 @@
 				CDC8DEF328EDECCA00619305 /* NodeTreeView.m in Sources */,
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CD1D606425BC230A00345506 /* UIViewControllerAdditions.m in Sources */,
+				D74B1BA02F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.m in Sources */,
 				CDB4579F147AEB590043EDE4 /* EditPlayerProfileController.m in Sources */,
 				CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
 				CD97FA101AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
@@ -4970,6 +4977,7 @@
 				CDC8DEFC28EDF2A400619305 /* NodeTreeViewLayerDelegateBase.m in Sources */,
 				CD1F504025B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */,
 				CDB5AE2F1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */,
+				D74B1B9F2F2F6DEF00E08D1D /* InvalidTimeDataDetailViewController.m in Sources */,
 				CD00A369148C2C62004E1A0C /* ApplicationDelegate.mm in Sources */,
 				CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */,
 				CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */,

@@ -18,7 +18,6 @@
 // Project includes
 #import "GameInfoItem.h"
 #import "../play/model/TimeSettingsModel.h"
-#import "../play/timedplay/CompositeDuration.h"
 #import "../sgf/SgfUtilities.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
@@ -857,7 +856,7 @@ enum DataSourceInfoSectionItem
     self.timeSettingsModel = [SgfUtilities timeSettingsFromSgfGameInfo:goGameInfo];
     NSString* formattedTimeLimitInSeconds;
     if (self.timeSettingsModel.timedPlayEnabled && self.timeSettingsModel.absoluteTimingEnabled)
-      formattedTimeLimitInSeconds = [CompositeDuration humanReadableStringWithDurationInSeconds:self.timeSettingsModel.absoluteTimingDurationInSeconds];
+      formattedTimeLimitInSeconds = [TimeDataUtilities absoluteTimeSystemSummary:self.timeSettingsModel];
     else
       formattedTimeLimitInSeconds = @"";
     self.timeLimitInSecondsAsString = [self stringValue:formattedTimeLimitInSeconds

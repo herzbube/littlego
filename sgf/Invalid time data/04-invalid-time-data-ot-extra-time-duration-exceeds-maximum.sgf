@@ -1,0 +1,5 @@
+(;FF[4]CA[UTF-8]
+KM[6.5]
+OT[2147483648/600 Fischer]
+C[The OT property contains an extra time duration value that exceeds the maximum supported by the app (2^31-1). GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum.]
+;B[aa]BL[590]OB[0])

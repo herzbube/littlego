@@ -21,9 +21,11 @@
 #import "../model/TimeSettingsModel.h"
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewSliderCell.h"
+#import "../../ui/TableViewVariableHeightCell.h"
 #import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/ExceptionUtility.h"
 #import "../../utility/NSStringAdditions.h"
+#import "../../utility/TimeDataUtilities.h"
 
 
 // Arbitrarily chosen maximum values
@@ -97,7 +99,7 @@ enum TimeSettingsTableViewSection_Readonly
   OvertimeSection_Readonly,
   OvertimeParametersSection_Readonly,
   MaxSection_Readonly,
-  MaxSection_OvertimeDisabled_Readonly = OvertimeSection_Readonly + 1,
+  MaxSection_NoOvertimeParameters_Readonly = OvertimeSection_Readonly + 1,
 };
 
 // -----------------------------------------------------------------------------
@@ -239,10 +241,10 @@ enum PeriodBasedTimeSystemType
 {
   if (self.readonlyMode)
   {
-    if (self.timeSettingsModel.periodBasedTimeSystemEnabled)
+    if (self.timeSettingsModel.periodBasedTimeSystemEnabled && self.timeSettingsModel.periodBasedTimeSystemType != GoTimeSystemTypeCustom)
       return MaxSection_Readonly;
     else
-      return MaxSection_OvertimeDisabled_Readonly;
+      return MaxSection_NoOvertimeParameters_Readonly;
   }
   else
   {
@@ -339,8 +341,7 @@ enum PeriodBasedTimeSystemType
 {
   enum CellId cellId = [self cellIdForIndexPath:indexPath];
   UITableViewCell* cell = [self createCellWithCellId:cellId
-                                        forTableView:tableView
-                                   forRowAtIndexPath:indexPath];
+                                        forTableView:tableView];
   [self configureCell:cell
            withCellId:cellId];
   return cell;
@@ -353,10 +354,14 @@ enum PeriodBasedTimeSystemType
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) createCellWithCellId:(enum CellId)cellId
                              forTableView:(UITableView*)tableView
-                        forRowAtIndexPath:(NSIndexPath*)indexPath
 {
   if (self.readonlyMode)
-    return [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+  {
+    if (cellId == CellIdOvertimeDescription_Readonly)
+      return [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+    else
+      return [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+  }
 
   UITableViewCell* cell = nil;
 
@@ -545,8 +550,12 @@ enum PeriodBasedTimeSystemType
     {
       if (self.timeSettingsModel.periodBasedTimeSystemEnabled)
       {
-        cell.textLabel.text = @"Overtime system";
-        cell.detailTextLabel.text = [NSString stringWithPeriodBasedTimeSystemType:self.timeSettingsModel.periodBasedTimeSystemType];
+        TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+        variableHeightCell.descriptionLabel.text = @"Overtime system";
+        if (self.timeSettingsModel.periodBasedTimeSystemType == GoTimeSystemTypeCustom)
+          variableHeightCell.valueLabel.text = [TimeDataUtilities periodBasedTimeSystemSummary:self.timeSettingsModel];
+        else
+          variableHeightCell.valueLabel.text = [NSString stringWithPeriodBasedTimeSystemType:self.timeSettingsModel.periodBasedTimeSystemType];
       }
       else
       {

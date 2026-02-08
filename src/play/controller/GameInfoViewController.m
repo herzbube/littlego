@@ -19,7 +19,6 @@
 #import "GameInfoViewController.h"
 #import "../model/BoardViewModel.h"
 #import "../model/TimeSettingsModel.h"
-#import "../timedplay/CompositeDuration.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -825,7 +824,7 @@ enum BoardPositionSectionItem
         {
           variableHeightCell.descriptionLabel.text = @"Main time";
           if (self.timeSettingsModel.absoluteTimingEnabled)
-            variableHeightCell.valueLabel.text = [CompositeDuration humanReadableStringWithDurationInSeconds:self.timeSettingsModel.absoluteTimingDurationInSeconds];
+            variableHeightCell.valueLabel.text = [TimeDataUtilities absoluteTimeSystemSummary:self.timeSettingsModel];
           else
             variableHeightCell.valueLabel.text = @"None";
         }

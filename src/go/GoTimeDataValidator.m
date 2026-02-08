@@ -830,7 +830,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (timeDataValidationMode >= GoTimeDataValidationModeNormal &&
       currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
   {
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows, timeDataValidationMode);
   }
 
   if (timeDataValidationMode >= GoTimeDataValidationModeStrict &&
@@ -859,7 +859,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
   {
     if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows, timeDataValidationMode);
 
     if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
       return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows, timeDataValidationMode);
@@ -923,7 +923,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
   {
     if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows, timeDataValidationMode);
 
     if (currentNodeTimeData.remainingNumberOfPeriods > timeSystem.numberOfPeriods)
       return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsHigherThanPeriodBasedTimeSystemAllows, timeDataValidationMode);
@@ -961,7 +961,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
     if ((! predecessorNodeTimeData || predecessorNodeTimeData.isRemainingTimeAbsoluteTime) &&
       currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
     {
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows, timeDataValidationMode);
     }
 
     if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
@@ -1001,7 +1001,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
   {
     if (currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows, timeDataValidationMode);
 
     if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)
       return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows, timeDataValidationMode);
@@ -1079,7 +1079,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
     if ((! predecessorNodeTimeData || predecessorNodeTimeData.isRemainingTimeAbsoluteTime) &&
       currentNodeTimeData.remainingTimeInSeconds > timeSystem.periodDurationInSeconds)
     {
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows, timeDataValidationMode);
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows, timeDataValidationMode);
     }
 
     if (currentNodeTimeData.remainingNumberOfMoves > timeSystem.minimumNumberOfMovesPerPeriod)

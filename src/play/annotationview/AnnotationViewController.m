@@ -127,7 +127,7 @@ static const int spacerBottomTag = 2;
   // three-digit score is displayed. Also font and icon sizes must be chosen
   // so that the weight of labels and icons is balanced.
   self.labelFontSize = [UiElementMetrics annotationViewLabelFontSizeForUiType:uiType];
-  self.iconHeight = [UiElementMetrics annotationViewIconHeightForUiType:uiType];
+  self.iconHeight = [UiElementMetrics iconHeightForUiType:uiType];
   self.mainViewMargin = [UiElementMetrics horizontalSpacingSiblings];
   self.verticalSpacingBetweenLabelAndButton = [UiElementMetrics verticalSpacingSiblings];
 

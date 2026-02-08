@@ -320,7 +320,7 @@
   }
 }
 
-+ (CGFloat) annotationViewIconHeightForUiType:(enum UIType)uiType
++ (CGFloat) iconHeightForUiType:(enum UIType)uiType
 {
   switch (uiType)
   {

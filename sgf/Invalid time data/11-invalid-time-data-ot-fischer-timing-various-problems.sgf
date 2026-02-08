@@ -1,0 +1,10 @@
+(;FF[4]CA[UTF-8]
+KM[6.5]
+OT[20/600 Fischer]
+;C[The node contains valid time data.]
+ B[aa]BL[590]OB[0]
+;C[The node contains time data where the remaining time is higher than the extra time allows. GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows.]
+ B[ab]BL[620]OB[0]
+;C[The node contains time data where the remaining number of moves is not constant. GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant.]
+ B[ac]BL[610]OB[1]
+)

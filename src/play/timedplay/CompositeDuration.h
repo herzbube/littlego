@@ -30,16 +30,18 @@
 }
 
 + (NSString*) humanReadableStringWithDurationInSeconds:(double)durationInSeconds;
++ (NSString*) humanReadableStringWithDurationInSeconds:(double)durationInSeconds
+                                 withSecondsResolution:(bool)withSecondsResolution;
 
 - (id) initWithDurationInSeconds:(double)durationInSeconds;
-- (id) initWithHours:(int)numberOfHours
-             minutes:(int)numberOfMinutes
-             seconds:(int)numberOfSeconds;
+- (id) initWithHours:(long)numberOfHours
+             minutes:(short)numberOfMinutes
+             seconds:(short)numberOfSeconds;
 
 @property(nonatomic, assign, readonly) double durationInSeconds;
-@property(nonatomic, assign, readonly) int numberOfHours;
-@property(nonatomic, assign, readonly) int numberOfMinutes;
-@property(nonatomic, assign, readonly) int numberOfSeconds;
+@property(nonatomic, assign, readonly) long numberOfHours;
+@property(nonatomic, assign, readonly) short numberOfMinutes;
+@property(nonatomic, assign, readonly) short numberOfSeconds;
 @property(nonatomic, retain, readonly) NSString* humanReadableString;
 
 @end

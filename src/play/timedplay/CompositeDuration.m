@@ -26,9 +26,9 @@
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) double durationInSeconds;
-@property(nonatomic, assign, readwrite) int numberOfHours;
-@property(nonatomic, assign, readwrite) int numberOfMinutes;
-@property(nonatomic, assign, readwrite) int numberOfSeconds;
+@property(nonatomic, assign, readwrite) long numberOfHours;
+@property(nonatomic, assign, readwrite) short numberOfMinutes;
+@property(nonatomic, assign, readwrite) short numberOfSeconds;
 @property(nonatomic, retain, readwrite) NSString* humanReadableString;
 //@}
 @end
@@ -44,13 +44,41 @@
 // -----------------------------------------------------------------------------
 + (NSString*) humanReadableStringWithDurationInSeconds:(double)durationInSeconds
 {
+  return [CompositeDuration humanReadableStringWithDurationInSeconds:durationInSeconds
+                                               withSecondsResolution:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a human-readable string representation of
+/// @a durationInSeconds. If @a withSecondsResolution is @e true the exact
+/// number of seconds is appended to the human-readable string if the string's
+/// resolution is not seconds. If @a withSecondsResolution is @e false the
+/// exact number of seconds is never appended.
+///
+/// The human-readable string's resolution is seconds if @a durationInSeconds
+/// is less than 60 seconds. If @a durationInSeconds is 60 seconds or more,
+/// the human-readable string has a resolution of minutes or hours.
+// -----------------------------------------------------------------------------
++ (NSString*) humanReadableStringWithDurationInSeconds:(double)durationInSeconds
+                                 withSecondsResolution:(bool)withSecondsResolution;
+{
   CompositeDuration* compositeDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:durationInSeconds] autorelease];
-  return compositeDuration.humanReadableString;
+
+  // Use compositeDuration.durationInSeconds to make sure to use the rounded-up
+  // value
+  if (withSecondsResolution && fabs(compositeDuration.durationInSeconds) >= 60.0)
+    return [NSString stringWithFormat:@"%@ (%@ seconds)", compositeDuration.humanReadableString, [CompositeDuration formattedDurationInSecondsString:compositeDuration.durationInSeconds]];
+  else
+    return compositeDuration.humanReadableString;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CompositeDuration object that holds the value
-/// @a durationInSeconds.
+/// @a durationInSeconds (rounded up to the nearest whole second). The value
+/// of @a durationInSeconds is decomposed into hours, minutes and seconds
+/// which are then available in the properties @e numberOfHours,
+/// @e numberOfMinutes and/or @e numberOfSeconds of the initialized
+/// CompositeDuration object.
 ///
 /// @note This is the designated initializer of CompositeDuration.
 // -----------------------------------------------------------------------------
@@ -79,25 +107,20 @@
 /// @brief Initializes a CompositeDuration object that holds a duration in
 /// seconds that corresponds to the sum of @a numberOfHours, @a numberOfMinutes
 /// and @a numberOfSeconds.
+///
+/// The supplied parameters are used to calculate the total duration in seconds,
+/// which is then used to invoke the designated initializer. This means that if
+/// you supply values for @a numberOfMinutes and/or @a numberOfSeconds that are
+/// greater than 60, then the properties @e numberOfHours, @e numberOfMinutes
+/// and/or @e numberOfSeconds of the initialized CompositeDuration object may
+/// be different than the values you supply to this initializer.
 // -----------------------------------------------------------------------------
-- (id) initWithHours:(int)numberOfHours
-             minutes:(int)numberOfMinutes
-             seconds:(int)numberOfSeconds
+- (id) initWithHours:(long)numberOfHours
+             minutes:(short)numberOfMinutes
+             seconds:(short)numberOfSeconds
 {
-  // Call designated initializer of superclass (NSObject)
-  self = [super init];
-  if (! self)
-    return nil;
-
-  self.durationInSeconds = numberOfHours * 3600 + numberOfMinutes * 60 + numberOfSeconds;
-  self.numberOfHours = numberOfHours;
-  self.numberOfMinutes = numberOfMinutes;
-  self.numberOfSeconds = numberOfSeconds;
-  self.humanReadableString = [CompositeDuration stringWithDurationInHours:self.numberOfHours
-                                                                  minutes:self.numberOfMinutes
-                                                                  seconds:self.numberOfSeconds];
-
-  return self;
+  double durationInSeconds = numberOfHours * 3600 + numberOfMinutes * 60 + numberOfSeconds;
+  return [self initWithDurationInSeconds:durationInSeconds];
 }
 
 // -----------------------------------------------------------------------------
@@ -114,16 +137,16 @@
 /// @brief Returns a human-readable string representation of the duration
 /// represented by @a numberOfHours, @a numberOfMinutes and @a numberOfSeconds.
 // -----------------------------------------------------------------------------
-+ (NSString*) stringWithDurationInHours:(int)numberOfHours
++ (NSString*) stringWithDurationInHours:(long)numberOfHours
                                 minutes:(int)numberOfMinutes
                                 seconds:(int)numberOfSeconds
 {
-  NSString* (^stringWithDuration) (int, NSString*, NSString*) = ^ NSString* (int duration, NSString* singularUnitName, NSString* pluralUnitName)
+  NSString* (^stringWithDuration) (long, NSString*, NSString*) = ^ NSString* (long duration, NSString* singularUnitName, NSString* pluralUnitName)
   {
     if (duration == 0)
       return nil;
     else
-      return [NSString stringWithFormat:@"%d %@", duration, (duration == 1 ? singularUnitName : pluralUnitName)];
+      return [NSString stringWithFormat:@"%ld %@", duration, (duration == 1 ? singularUnitName : pluralUnitName)];
   };
 
   if (numberOfHours == 0)
@@ -133,15 +156,28 @@
     else if (numberOfSeconds == 0)
       return stringWithDuration(numberOfMinutes, @"minute", @"minutes");
     else
-      return [NSString stringWithFormat:@"%d:%02d minutes", numberOfMinutes, numberOfSeconds];
+      return [NSString stringWithFormat:@"%d:%02d minutes", numberOfMinutes, abs(numberOfSeconds)];
   }
   else
   {
     if (numberOfMinutes == 0)
       return stringWithDuration(numberOfHours, @"hour", @"hours");
     else
-      return [NSString stringWithFormat:@"%d:%02d hours", numberOfHours, numberOfMinutes];
+      return [NSString stringWithFormat:@"%ld:%02d hours", numberOfHours, abs(numberOfMinutes)];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a formatted string representation of @a durationInSeconds.
+/// @a durationInSeconds is expected to be in whole seconds.
+// -----------------------------------------------------------------------------
++ (NSString*) formattedDurationInSecondsString:(double)durationInSeconds
+{
+  // This implementation uses NSNumberFormatter because of its capability of
+  // inserting thousands separators when we use NSNumberFormatterDecimalStyle.
+  NSNumberFormatter* formatter = [[[NSNumberFormatter alloc] init] autorelease];
+  formatter.numberStyle = NSNumberFormatterDecimalStyle;
+  return [formatter stringFromNumber:[NSNumber numberWithDouble:durationInSeconds]];
 }
 
 @end

@@ -1120,7 +1120,12 @@ enum GoTimeDataInvalidReason
   /// is allowed by the time system.
   ///
   /// This check is performed in #GoTimeDataValidationModeNormal and higher.
-  GoTimeDataInvalidReasonRemainingTimeHigherThanTimeSystemAllows,
+  GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows,
+  /// @brief A node's time data has a remaining time that is higher than what
+  /// is allowed by the time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeNormal and higher.
+  GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows,
   /// @brief A node's time data has a remaining number of moves that is higher
   /// than what is allowed by the period-based time system.
   ///

@@ -16,28 +16,18 @@
 
 
 // Forward declarations
-@class TimeSettingsModel;
+@class GoGame;
+@class GoNode;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TimeDataUtilities class is a container for various utility
-/// functions related to time data.
-///
-/// @ingroup sgf
-///
-/// All functions in TimeDataUtilities are class methods, so there is no need to
-/// create an instance of TimeDataUtilities.
+/// @brief The InvalidTimeDataDetailViewController class xxx
 // -----------------------------------------------------------------------------
-@interface TimeDataUtilities : NSObject
+@interface InvalidTimeDataDetailViewController : UITableViewController
 {
 }
 
-+ (NSString*) timeSettingsModelSummary:(TimeSettingsModel*)timeSettingsModel;
-+ (NSString*) absoluteTimeSystemSummary:(TimeSettingsModel*)timeSettingsModel;
-+ (NSString*) absoluteTimeSystemSummary:(TimeSettingsModel*)timeSettingsModel
-                  withSecondsResolution:(bool)withSecondsResolution;
-+ (NSString*) periodBasedTimeSystemSummary:(TimeSettingsModel*)timeSettingsModel;
-+ (NSString*) periodBasedTimeSystemSummary:(TimeSettingsModel*)timeSettingsModel
-                     withSecondsResolution:(bool)withSecondsResolution;
+- (id) initWithGame:(GoGame*)game
+        currentNode:(GoNode*)currentNode;
 
 @end

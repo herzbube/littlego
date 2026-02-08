@@ -53,10 +53,55 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a string that is a summary of the absolute time system
+/// values found in @a timeSettingsModel.
+// -----------------------------------------------------------------------------
++ (NSString*) absoluteTimeSystemSummary:(TimeSettingsModel*)timeSettingsModel
+{
+  return [TimeDataUtilities absoluteTimeSystemSummary:timeSettingsModel
+                                withSecondsResolution:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that is a summary of the absolute time system
+/// values found in @a timeSettingsModel. If @a withSecondsResolution is @e true
+/// the exact number of seconds is appended to any human-readable strings
+/// representing a duration if the string's resolution is not seconds. If
+/// @a withSecondsResolution is @e false the exact number of seconds is never
+/// appended.
+// -----------------------------------------------------------------------------
++ (NSString*) absoluteTimeSystemSummary:(TimeSettingsModel*)timeSettingsModel
+                  withSecondsResolution:(bool)withSecondsResolution
+{
+  if (! timeSettingsModel.timedPlayEnabled)
+    return @"No timed play";
+  else if (! timeSettingsModel.absoluteTimingEnabled)
+    return @"No main time";
+  else
+    return [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.absoluteTimingDurationInSeconds
+                                                 withSecondsResolution:withSecondsResolution];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a string that is a summary of the period-based time system
 /// values found in @a timeSettingsModel.
 // -----------------------------------------------------------------------------
 + (NSString*) periodBasedTimeSystemSummary:(TimeSettingsModel*)timeSettingsModel
+{
+  return [TimeDataUtilities periodBasedTimeSystemSummary:timeSettingsModel
+                                   withSecondsResolution:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that is a summary of the period-based time system
+/// values found in @a timeSettingsModel. If @a withSecondsResolution is @e true
+/// the exact number of seconds is appended to any human-readable strings
+/// representing a duration if the string's resolution is not seconds. If
+/// @a withSecondsResolution is @e false the exact number of seconds is never
+/// appended.
+// -----------------------------------------------------------------------------
++ (NSString*) periodBasedTimeSystemSummary:(TimeSettingsModel*)timeSettingsModel
+                     withSecondsResolution:(bool)withSecondsResolution
 {
   if (! timeSettingsModel.timedPlayEnabled)
     return @"No timed play";
@@ -75,41 +120,47 @@
   {
     case GoTimeSystemTypeCanadian:
     {
-      CompositeDuration* periodDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:timeSettingsModel.canadianTimingPeriodDurationInSeconds] autorelease];
+      NSString* periodDurationString = [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.canadianTimingPeriodDurationInSeconds
+                                                                             withSecondsResolution:withSecondsResolution];
       return [NSString stringWithFormat:@"Canadian Timing, %@ %@",
-              periodDuration.humanReadableString,
+              periodDurationString,
               stringWithNumberOfMoves(timeSettingsModel.canadianTimingNumberOfMoves)];
     }
     case GoTimeSystemTypeJapanese:
     {
-      CompositeDuration* periodDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:timeSettingsModel.japaneseTimingPeriodDurationInSeconds] autorelease];
+      NSString* periodDurationString = [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.japaneseTimingPeriodDurationInSeconds
+                                                                             withSecondsResolution:withSecondsResolution];
       NSString* numberOfPeriodsString = (timeSettingsModel.japaneseTimingNumberOfPeriods == 1
                                          ? @"one period"
                                          : [NSString stringWithFormat:@"%lu periods", timeSettingsModel.japaneseTimingNumberOfPeriods]);
       return [NSString stringWithFormat:@"Japanese Timing, %@ per move, %@",
-              periodDuration.humanReadableString,
+              periodDurationString,
               numberOfPeriodsString];
     }
     case GoTimeSystemTypeFischer:
     {
-      CompositeDuration* initialTimeDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:timeSettingsModel.fischerTimingInitialTimeDurationInSeconds] autorelease];
-      CompositeDuration* extraTimeDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:timeSettingsModel.fischerTimingExtraTimeDurationInSeconds] autorelease];
+      NSString* initialTimeDurationString = [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.fischerTimingInitialTimeDurationInSeconds
+                                                                                  withSecondsResolution:withSecondsResolution];
+      NSString* extraTimeDurationString = [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.fischerTimingExtraTimeDurationInSeconds
+                                                                                withSecondsResolution:withSecondsResolution];
       return [NSString stringWithFormat:@"Fischer Timing, %@ initial time, %@ extra time after each move",
-              initialTimeDuration.humanReadableString,
-              extraTimeDuration.humanReadableString];
+              initialTimeDurationString,
+              extraTimeDurationString];
     }
     case GoTimeSystemTypeSteadyAverage:
     {
-      CompositeDuration* periodDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:timeSettingsModel.steadyAverageTimingPeriodDurationInSeconds] autorelease];
+      NSString* periodDurationString = [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.steadyAverageTimingPeriodDurationInSeconds
+                                                                             withSecondsResolution:withSecondsResolution];
       return [NSString stringWithFormat:@"Steady Average Timing, %@ %@",
-              periodDuration.humanReadableString,
+              periodDurationString,
               stringWithNumberOfMoves(timeSettingsModel.steadyAverageTimingNumberOfMoves)];
     }
     case GoTimeSystemTypeTotalAverage:
     {
-      CompositeDuration* periodDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:timeSettingsModel.totalAverageTimingPeriodDurationInSeconds] autorelease];
+      NSString* periodDurationString = [CompositeDuration humanReadableStringWithDurationInSeconds:timeSettingsModel.totalAverageTimingPeriodDurationInSeconds
+                                                                             withSecondsResolution:withSecondsResolution];
       return [NSString stringWithFormat:@"Total Average Timing, %@ %@",
-              periodDuration.humanReadableString,
+              periodDurationString,
               stringWithNumberOfMoves(timeSettingsModel.totalAverageTimingNumberOfMoves)];
     }
     case GoTimeSystemTypeCustom:

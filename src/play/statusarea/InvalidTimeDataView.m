@@ -136,13 +136,9 @@
   self.viewContentNeedsUpdate = false;
 
   if (self.isTimeDataValid)
-  {
     self.invalidReasonDescriptionLabel.text = @"Time data is valid";
-  }
   else
-  {
-    self.invalidReasonDescriptionLabel.text = [NSString stringWithFormat:@"Time data is not valid. Reason = %d", self.timeDataInvalidReason];
-  }
+    self.invalidReasonDescriptionLabel.text = [NSString stringWithFormat:@"No time data. Reason: %d.", self.timeDataInvalidReason];
 }
 
 #pragma mark - Property setters
@@ -172,7 +168,5 @@
   self.viewContentNeedsUpdate = true;
   [self setNeedsLayout];
 }
-
-#pragma mark - Private helpers
 
 @end
