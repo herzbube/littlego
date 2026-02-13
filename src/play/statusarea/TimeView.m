@@ -377,25 +377,25 @@ static int maximumNumberOfMovesOrPeriods = 99999;
 
   if (remainingTimeInSeconds <= thresholdInSecondsForSecondsResolution)
   {
-    return [NSString stringWithFormat:@"%d:%02d",
+    return [NSString stringWithFormat:@"%ld:%02d",
             compositeDuration.numberOfMinutes + compositeDuration.numberOfHours * 60,
             compositeDuration.numberOfSeconds];
   }
   else if (remainingTimeInSeconds <= thresholdInSecondsForMinutesResolution)
   {
-    return [NSString stringWithFormat:@"%dh%02dm",
+    return [NSString stringWithFormat:@"%ldh%02dm",
             compositeDuration.numberOfHours,
             compositeDuration.numberOfMinutes];
   }
   else if (remainingTimeInSeconds <= thresholdInSecondsForHoursResolution)
   {
-    return [NSString stringWithFormat:@"%dh",
+    return [NSString stringWithFormat:@"%ldh",
             compositeDuration.numberOfHours];
   }
   else
   {
     compositeDuration = [[[CompositeDuration alloc] initWithDurationInSeconds:thresholdInSecondsForHoursResolution] autorelease];
-    return [NSString stringWithFormat:@">%dh",
+    return [NSString stringWithFormat:@">%ldh",
             compositeDuration.numberOfHours];
   }
 }
