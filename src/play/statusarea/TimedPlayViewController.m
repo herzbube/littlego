@@ -267,9 +267,12 @@
 
   if (shouldIntegrateTimeViewController)
   {
-    // Causes UIStackView to remove the view from its arranged subviews
-    [self.invalidTimeDataViewController.view removeFromSuperview];
-    self.invalidTimeDataViewController = nil;
+    if (childViewControllerIntegrationHasTakenPlaceBefore)
+    {
+      // Causes UIStackView to remove the view from its arranged subviews
+      [self.invalidTimeDataViewController.view removeFromSuperview];
+      self.invalidTimeDataViewController = nil;
+    }
 
     self.timeViewController = [[[TimeViewController alloc] init] autorelease];
     // Causes UIStackView to add the view as subview
@@ -277,9 +280,12 @@
   }
   else
   {
-    // Causes UIStackView to remove the view from its arranged subviews
-    [self.timeViewController.view removeFromSuperview];
-    self.timeViewController = nil;
+    if (childViewControllerIntegrationHasTakenPlaceBefore)
+    {
+      // Causes UIStackView to remove the view from its arranged subviews
+      [self.timeViewController.view removeFromSuperview];
+      self.timeViewController = nil;
+    }
 
     self.invalidTimeDataViewController = [[[InvalidTimeDataViewController alloc] init] autorelease];
     // Causes UIStackView to add the view as subview

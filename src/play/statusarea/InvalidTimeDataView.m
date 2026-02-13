@@ -111,16 +111,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
-
   self.invalidReasonDescriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
-  viewsDictionary[@"invalidReasonDescriptionLabel"] = self.invalidReasonDescriptionLabel;
-
-  [visualFormats addObject:@"H:|-[invalidReasonDescriptionLabel]-|"];
-  [visualFormats addObject:@"V:|-[invalidReasonDescriptionLabel]-|"];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
+  [AutoLayoutUtility fillSuperview:self withSubview:self.invalidReasonDescriptionLabel];
 }
 
 #pragma mark - Content update

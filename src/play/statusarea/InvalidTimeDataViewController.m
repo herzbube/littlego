@@ -181,7 +181,14 @@
   viewsDictionary[@"invalidTimeDataView"] = self.invalidTimeDataView;
   viewsDictionary[@"infoButton"] = self.infoButton;
 
-  [visualFormats addObject:@"H:|-[invalidTimeDataView]-[infoButton]-|"];
+  int horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingSiblings];
+
+  // Need to specify an explicit spacing on the trailing edge to align the info
+  // button to the superview edge. With only an implicit spacing ("-|") the info
+  // button aligns to the layout margin guide which - for unknown reasons - is
+  // non-zero in portrait orientation (ok) but zero in landscape orientation
+  // (not ok).
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[invalidTimeDataView]-[infoButton]-%d-|", horizontalSpacingSuperview, horizontalSpacingSuperview]];
   [visualFormats addObject:@"V:|-[invalidTimeDataView]-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[infoButton(==%d)]", self.iconHeight]];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[infoButton(==%d)]", self.iconHeight]];
