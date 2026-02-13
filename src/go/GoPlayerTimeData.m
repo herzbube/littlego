@@ -538,7 +538,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the time data in this GoPlayerTimeData object to be equal to
-/// the time data in @a nodeTimeData.
+/// the time data in @a nodeTimeData. Afterwards performs a period reset (if
+/// necessary).
 // -----------------------------------------------------------------------------
 - (bool) updateWithNodeTimeData:(GoNodeTimeData*)nodeTimeData
 {
@@ -585,7 +586,7 @@
   // such inconsistencies exist - because of that we have to check first if the
   // time system actually supports timed play before we can perform a period
   // reset.
-  if (! timeSystem.supportsTimedPlay)
+  if (timeSystem.supportsTimedPlay)
       dataHasChanged |= [self performPeriodResetIfNecessary:timeSystem];
 
   return dataHasChanged;
