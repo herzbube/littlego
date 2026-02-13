@@ -440,7 +440,7 @@ static const int maxStepsForCreateNodes = 9;
 
       if (actualNumberOfHandicapStones != expectedNumberOfHandicapStones)
       {
-        *errorMessage = [NSString stringWithFormat:@"The handicap (%ld) is greater than the number of black setup stones (%lu).", expectedNumberOfHandicapStones, (unsigned long)actualNumberOfHandicapStones];
+        *errorMessage = [NSString stringWithFormat:@"The handicap (%lld) is greater than the number of black setup stones (%lu).", expectedNumberOfHandicapStones, (unsigned long)actualNumberOfHandicapStones];
         return false;
       }
     }

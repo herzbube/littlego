@@ -1334,7 +1334,7 @@ enum LoadResultType
       }
       else
       {
-        NSString* descriptiveText = [NSString stringWithFormat:@"The game is not a Go game. The SGF game number is %ld.", gameInfo.gameTypeAsNumber];
+        NSString* descriptiveText = [NSString stringWithFormat:@"The game is not a Go game. The SGF game number is %lld.", gameInfo.gameTypeAsNumber];
         gameInfoItem = [GameInfoItem gameInfoItemWithDescriptiveText:descriptiveText titleText:titleText];
       }
 
