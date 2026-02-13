@@ -379,13 +379,11 @@ enum PeriodBasedTimeSystemType
     case CellIdFischerTimingExtraTimeDurationInSeconds:
     case CellIdSteadyAverageTimingPeriodDurationInSeconds:
     case CellIdTotalAverageTimingPeriodDurationInSeconds:
-      cell = [TableViewCellFactory cellWithType:SliderWithValueLabelAndStepperCellType tableView:tableView];
-      break;
     case CellIdCanadianTimingNumberOfMoves:
     case CellIdJapaneseTimingNumberOfPeriods:
     case CellIdSteadyAverageTimingNumberOfMoves:
     case CellIdTotalAverageTimingNumberOfMoves:
-      cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
+      cell = [TableViewCellFactory cellWithType:SliderWithValueLabelAndStepperCellType tableView:tableView];
       break;
     case CellIdPeriodBasedTimeSystemType:
       cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
