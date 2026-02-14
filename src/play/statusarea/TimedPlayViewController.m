@@ -196,10 +196,10 @@
 
   viewsDictionary[@"stackView"] = self.stackView;
 
-  CGSize timeViewControllerViewSize = [TimeViewController timeViewControllerViewSize];
+  CGSize timeViewControllerClockViewSize = [TimeViewController timeViewControllerClockViewSize];
 
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[stackView(==%f)]", timeViewControllerViewSize.width]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[stackView(==%f)]", timeViewControllerViewSize.height]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[stackView(==%f)]", timeViewControllerClockViewSize.width]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[stackView(==%f)]", timeViewControllerClockViewSize.height]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
 
@@ -274,7 +274,7 @@
       self.invalidTimeDataViewController = nil;
     }
 
-    self.timeViewController = [[[TimeViewController alloc] init] autorelease];
+    self.timeViewController = [[[TimeViewController alloc] initWithClockView] autorelease];
     // Causes UIStackView to add the view as subview
     [self.stackView addArrangedSubview:self.timeViewController.view];
   }

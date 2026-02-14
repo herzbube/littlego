@@ -18,8 +18,11 @@
 // Project includes
 #import "TimeViewController.h"
 #import "TimeView.h"
+#import "../../go/GoBoardPosition.h"
 #import "../../go/GoClock.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoNode.h"
+#import "../../go/GoNodeTimeData.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeDataValidator.h"
@@ -33,14 +36,15 @@
 #import "../../utility/ExceptionUtility.h"
 
 
-// This variable must be accessed via [TimeViewController timeViewControllerViewSize]
-static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
+// This variable must be accessed via [TimeViewController timeViewControllerClockViewSize]
+static CGSize timeViewControllerClockViewSize = { 0.0f, 0.0f };
 
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for TimeViewController.
 // -----------------------------------------------------------------------------
 @interface TimeViewController()
+@property(nonatomic, assign) bool clockViewMode;
 @property(nonatomic, retain) TimeView* timeViewBlackPlayer;
 @property(nonatomic, retain) TimeView* timeViewWhitePlayer;
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizerTimeViewBlackPlayer;
@@ -52,6 +56,8 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 @property(nonatomic, assign) bool whitePlayerTimeDataNeedsUpdate;
 @property(nonatomic, assign) bool isTimeDataValid;
 @property(nonatomic, assign) bool timeDataValidityNeedsUpdate;
+@property(nonatomic, retain) TimeView* timeViewNodeTimeData;
+@property(nonatomic, assign) bool nodeTimeDataNeedsUpdate;
 @end
 
 
@@ -60,16 +66,38 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes an TimeViewController object.
+/// @brief Initializes a TimeViewController object that operates in
+/// "clock view" mode.
+// -----------------------------------------------------------------------------
+- (id) initWithClockView
+{
+  return [self initWithMode:true];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a TimeViewController object that operates in
+/// "node time data view" mode.
+// -----------------------------------------------------------------------------
+- (id) initWithNodeTimeDataView
+{
+  return [self initWithMode:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a TimeViewController object that operates either in
+/// "clock view" mode (@a clockViewMode is true) or in "node time data view"
+/// mode (@a clockViewMode is false).
 ///
 /// @note This is the designated initializer of TimeViewController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithMode:(bool)clockViewMode
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
+  self.clockViewMode = clockViewMode;
 
   self.timeViewBlackPlayer = nil;
   self.timeViewWhitePlayer = nil;
@@ -83,6 +111,9 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
   self.whitePlayerTimeDataNeedsUpdate = false;
   self.isTimeDataValid = false;
   self.timeDataValidityNeedsUpdate = false;
+
+  self.timeViewNodeTimeData = nil;
+  self.nodeTimeDataNeedsUpdate = false;
 
   [self setupNotificationResponders];
   [self initializeWithGoModelData];
@@ -102,6 +133,8 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
   self.tapRecognizerTimeViewBlackPlayer = nil;
   self.tapRecognizerTimeViewWhitePlayer = nil;
 
+  self.timeViewNodeTimeData = nil;
+
   [super dealloc];
 }
 
@@ -114,11 +147,18 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(playerClockStateHasChanged:) name:playerClockStateHasChanged object:nil];
-  [center addObserver:self selector:@selector(playerTimeDataHasChanged:) name:playerTimeDataHasChanged object:nil];
   [center addObserver:self selector:@selector(timeDataDidBecomeValid:) name:timeDataDidBecomeValid object:nil];
   [center addObserver:self selector:@selector(timeDataDidBecomeInvalid:) name:timeDataDidBecomeInvalid object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  if (self.clockViewMode)
+  {
+    [center addObserver:self selector:@selector(playerClockStateHasChanged:) name:playerClockStateHasChanged object:nil];
+    [center addObserver:self selector:@selector(playerTimeDataHasChanged:) name:playerTimeDataHasChanged object:nil];
+  }
+  else
+  {
+    [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -156,8 +196,11 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle &&
+      self.clockViewMode)
+  {
     [self updateColors];
+  }
 }
 
 #pragma mark - Private helpers for loadView
@@ -167,11 +210,19 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  self.timeViewBlackPlayer = [[[TimeView alloc] initWithFrame:CGRectZero isTimeForBlackPlayer:true] autorelease];
-  self.timeViewWhitePlayer = [[[TimeView alloc] initWithFrame:CGRectZero isTimeForBlackPlayer:false] autorelease];
+  if (self.clockViewMode)
+  {
+    self.timeViewBlackPlayer = [[[TimeView alloc] initWithFrame:CGRectZero isTimeDataForBlackPlayer:true] autorelease];
+    self.timeViewWhitePlayer = [[[TimeView alloc] initWithFrame:CGRectZero isTimeDataForBlackPlayer:false] autorelease];
 
-  [self.view addSubview:self.timeViewBlackPlayer];
-  [self.view addSubview:self.timeViewWhitePlayer];
+    [self.view addSubview:self.timeViewBlackPlayer];
+    [self.view addSubview:self.timeViewWhitePlayer];
+  }
+  else
+  {
+    self.timeViewNodeTimeData = [[[TimeView alloc] initWithFrame:CGRectZero] autorelease];
+    [self.view addSubview:self.timeViewNodeTimeData];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -179,15 +230,22 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 // -----------------------------------------------------------------------------
 - (void) configureView
 {
-  self.timeViewBlackPlayer.userInteractionEnabled = YES;
-  self.tapRecognizerTimeViewBlackPlayer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped:)] autorelease];
-  [self.timeViewBlackPlayer addGestureRecognizer:self.tapRecognizerTimeViewBlackPlayer];
+  if (self.clockViewMode)
+  {
+    self.timeViewBlackPlayer.userInteractionEnabled = YES;
+    self.tapRecognizerTimeViewBlackPlayer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped:)] autorelease];
+    [self.timeViewBlackPlayer addGestureRecognizer:self.tapRecognizerTimeViewBlackPlayer];
 
-  self.timeViewWhitePlayer.userInteractionEnabled = YES;
-  self.tapRecognizerTimeViewWhitePlayer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped:)] autorelease];
-  [self.timeViewWhitePlayer addGestureRecognizer:self.tapRecognizerTimeViewWhitePlayer];
+    self.timeViewWhitePlayer.userInteractionEnabled = YES;
+    self.tapRecognizerTimeViewWhitePlayer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped:)] autorelease];
+    [self.timeViewWhitePlayer addGestureRecognizer:self.tapRecognizerTimeViewWhitePlayer];
 
-  [self updateColors];
+    [self updateColors];
+  }
+  else
+  {
+    self.timeViewNodeTimeData.userInteractionEnabled = NO;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -195,8 +253,20 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
+  if (self.clockViewMode)
+    [self setupAutoLayoutConstraintsClockViewMode];
+  else
+    [self setupAutoLayoutConstraintsNodeTimeDataViewMode];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the Auto Layout constraints when this controller operates in
+/// "clock view" mode.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsClockViewMode
+{
   // IMPORTANT: If you change anything about these constraints, make sure that
-  // the calculation in timeViewControllerViewSize remains aligned.
+  // the calculation in timeViewControllerClockViewSize remains aligned.
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
@@ -218,6 +288,28 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
   CGSize timeViewSize = [TimeView timeViewSize];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[timeViewBlackPlayer(==%f)]", timeViewSize.width]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[timeViewWhitePlayer(==%f)]", timeViewSize.width]];
+
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the Auto Layout constraints when this controller operates in
+/// "node time data view" mode.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsNodeTimeDataViewMode
+{
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  self.timeViewNodeTimeData.translatesAutoresizingMaskIntoConstraints = NO;
+
+  viewsDictionary[@"timeViewNodeTimeData"] = self.timeViewNodeTimeData;
+
+  CGFloat horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingSuperview];
+  CGFloat verticalSpacingSuperview = [AutoLayoutUtility verticalSpacingSuperview];
+
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%f-[timeViewNodeTimeData]-%f-|", horizontalSpacingSuperview, horizontalSpacingSuperview]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%f-[timeViewNodeTimeData]-%f-|", verticalSpacingSuperview, verticalSpacingSuperview]];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
@@ -249,7 +341,6 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
                       ? game.playerBlack
                       : game.playerWhite);
 
-  // TODO xxx implement real handling => implement command
   switch (player.timeData.clockState)
   {
     case GoClockStateStopped:
@@ -329,6 +420,15 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  self.nodeTimeDataNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -356,15 +456,24 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
   // updaters
   [self updateTimeData];
 
-  [self updateBlackPlayerClockState];
-  [self updateWhitePlayerClockState];
-  [self updateBlackPlayerTimeData];
-  [self updateWhitePlayerTimeData];
+  if (self.clockViewMode)
+  {
+    [self updateBlackPlayerClockState];
+    [self updateWhitePlayerClockState];
+    [self updateBlackPlayerTimeData];
+    [self updateWhitePlayerTimeData];
+  }
+  else
+  {
+    [self updateNodeTimeData];
+  }
+
   [self updateTimeDataValidity];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates TimeView objects to completely refresh the data they display.
+/// @brief Updates all TimeView instances shown by this controller to completely
+/// refresh the data they display.
 // -----------------------------------------------------------------------------
 - (void) updateTimeData
 {
@@ -372,10 +481,18 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
     return;
   self.timeDataNeedsUpdate = false;
 
-  self.blackPlayerClockStateNeedsUpdate = true;
-  self.whitePlayerClockStateNeedsUpdate = true;
-  self.blackPlayerTimeDataNeedsUpdate = true;
-  self.whitePlayerTimeDataNeedsUpdate = true;
+  if (self.clockViewMode)
+  {
+    self.blackPlayerClockStateNeedsUpdate = true;
+    self.whitePlayerClockStateNeedsUpdate = true;
+    self.blackPlayerTimeDataNeedsUpdate = true;
+    self.whitePlayerTimeDataNeedsUpdate = true;
+  }
+  else
+  {
+    self.nodeTimeDataNeedsUpdate = true;
+  }
+
   self.timeDataValidityNeedsUpdate = true;
 }
 
@@ -440,9 +557,25 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates TimeView objects to display each player's current time data
-/// (if time data is valid), or a special string indicating that time data is
-/// invalid.
+/// @brief Updates the TimeView that displays the currently selected node's
+/// time data.
+// -----------------------------------------------------------------------------
+- (void) updateNodeTimeData
+{
+  if (! self.nodeTimeDataNeedsUpdate)
+    return;
+  self.nodeTimeDataNeedsUpdate = false;
+
+  GoGame* game = [GoGame sharedGame];
+  [self updateTimeDataInTimeView:self.timeViewNodeTimeData
+                withNodeTimeData:game.boardPosition.currentNode
+                    timeSettings:game.timeSettings];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates all TimeView instances shown by this controller to either
+/// display their normal time data (if time data is valid), or a special string
+/// indicating that time data is invalid.
 // -----------------------------------------------------------------------------
 - (void) updateTimeDataValidity
 {
@@ -450,8 +583,15 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
     return;
   self.timeDataValidityNeedsUpdate = false;
 
-  self.timeViewBlackPlayer.isTimeDataValid = self.isTimeDataValid;
-  self.timeViewWhitePlayer.isTimeDataValid = self.isTimeDataValid;
+  if (self.clockViewMode)
+  {
+    self.timeViewBlackPlayer.isTimeDataValid = self.isTimeDataValid;
+    self.timeViewWhitePlayer.isTimeDataValid = self.isTimeDataValid;
+  }
+  else
+  {
+    self.timeViewNodeTimeData.isTimeDataValid = self.isTimeDataValid;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -478,26 +618,58 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Updates @a timeView to display the time data taken from
+/// @a playerTimeData.
+// -----------------------------------------------------------------------------
+- (void) updateTimeDataInTimeView:(TimeView*)timeView
+                 withNodeTimeData:(GoNode*)node
+                     timeSettings:(GoTimeSettings*)timeSettings
+{
+  GoNodeTimeData* nodeTimeData = node.goNodeTimeData;
+  if (nodeTimeData)
+  {
+    timeView.showsTimeData = true;
+    timeView.isTimeDataForBlackPlayer = nodeTimeData.isTimeDataForBlackPlayer;
+    timeView.isTimeDataValid = node.isTimeDataValid;
+    timeView.isRemainingTimeAbsoluteTime = nodeTimeData.isRemainingTimeAbsoluteTime;
+    timeView.remainingTimeInSeconds = nodeTimeData.remainingTimeInSeconds;
+    // TODO xxx TimeView should not show anything for FischerTiming
+    if (nodeTimeData.isRemainingTimeAbsoluteTime)
+      timeView.remainingNumberOfMovesOrPeriods = 0;
+    else if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeJapanese)
+      timeView.remainingNumberOfMovesOrPeriods = nodeTimeData.remainingNumberOfPeriods;
+    else
+      timeView.remainingNumberOfMovesOrPeriods = nodeTimeData.remainingNumberOfMoves;
+  }
+  else
+  {
+    timeView.showsTimeData = false;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Initializes some properties of this controller with current Go model
 /// data.
 ///
-/// There is no permanent instance of this controller, rather it is instantiated
-/// on demand when a game is created that supports timed play. Because of this,
-/// this controller may miss some notifications that have already been sent
-/// before this controller instance was created. This method is a somewhat ugly
-/// hack to initialize properties that may have the wrong values because of the
-/// missed notifications.
+/// The instance of this controller that shows the player clocks is created on
+/// demand when a game is created that supports timed play. This controller
+/// instance may miss some notifications that have already been sent before it
+/// was created. This method is a somewhat ugly hack to initialize properties
+/// that may have the wrong values because of the missed notifications.
 // -----------------------------------------------------------------------------
 - (void) initializeWithGoModelData
 {
-  // We assume that this controller is created in response to goGameDidCreate.
-  // Either the game is created with only a root node (completely new game, or
-  // game loaded from .sgf), or the game is created with a full node tree
-  // (unarchive) with the current board position set up correctly. In all cases
-  // the current board position must hold the correct time data validity. If the
-  // current board position changes later on, we will get a time validity
-  // notification.
   GoGame* game = [GoGame sharedGame];
+  if (! game)
+    return;
+
+  // The instance of this controller that shows the player clocks is created in
+  // response to goGameDidCreate. Either the game is created with only a root
+  // node (completely new game, or game loaded from .sgf), or the game is
+  // created with a full node tree (unarchive) with the current board position
+  // set up correctly. In all cases the current board position must hold the
+  // correct time data validity. If the current board position changes later on,
+  // we will get a time validity notification.
   GoTimeDataValidationResult validationState = [GoTimeDataValidator validationStateOfCurrentNode:game];
   self.isTimeDataValid = validationState.isTimeDataValid;
 }
@@ -507,9 +679,9 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
 // -----------------------------------------------------------------------------
 // Method is documented in the header file.
 // -----------------------------------------------------------------------------
-+ (CGSize) timeViewControllerViewSize
++ (CGSize) timeViewControllerClockViewSize
 {
-  if (CGSizeEqualToSize(timeViewControllerViewSize, CGSizeZero))
+  if (CGSizeEqualToSize(timeViewControllerClockViewSize, CGSizeZero))
   {
     CGSize timeViewSize = [TimeView timeViewSize];
     CGFloat horizontalSpacingSiblings = [AutoLayoutUtility horizontalSpacingSiblings];
@@ -517,11 +689,11 @@ static CGSize timeViewControllerViewSize = { 0.0f, 0.0f };
     CGFloat verticalSpacingSuperview = [AutoLayoutUtility verticalSpacingSuperview];
 
     // Aligned to setupAutoLayoutConstraints()
-    timeViewControllerViewSize = CGSizeMake(2 * horizontalSpacingSuperview + 2 * timeViewSize.width + horizontalSpacingSiblings,
-                                            2 * verticalSpacingSuperview + timeViewSize.height);
+    timeViewControllerClockViewSize = CGSizeMake(2 * horizontalSpacingSuperview + 2 * timeViewSize.width + horizontalSpacingSiblings,
+                                                 2 * verticalSpacingSuperview + timeViewSize.height);
   }
 
-  return timeViewControllerViewSize;
+  return timeViewControllerClockViewSize;
 }
 
 @end

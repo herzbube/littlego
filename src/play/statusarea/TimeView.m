@@ -42,17 +42,11 @@ static int maximumNumberOfMovesOrPeriods = 99999;
 /// @brief Class extension with private properties for TimeView.
 // -----------------------------------------------------------------------------
 @interface TimeView()
-/// @name Private properties
-//@{
+@property(nonatomic, assign) bool showsPlayerClock;
 @property(nonatomic, assign) bool viewContentNeedsUpdate;
 @property(nonatomic, retain) NSString* remainingTimeString;
 @property(nonatomic, retain) NSString* remainingNumberOfMovesOrPeriodsString;
 @property(nonatomic, assign) UILabel* remainingTimeMovesPeriodsLabel;
-//@}
-/// @name Re-declaration of properties to make them readwrite privately
-//@{
-@property(nonatomic, assign, readwrite) bool isTimeForBlackPlayer;
-//@}
 @end
 
 
@@ -61,24 +55,52 @@ static int maximumNumberOfMovesOrPeriods = 99999;
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a TimeView object that displays the time for either the
-/// black player (@a isTimeForBlackPlayer is true) or the white player
-/// (@a isTimeForBlackPlayer is false).
+/// @brief Initializes a TimeView object that displays time data stored in a
+/// node. The initial value for property @e isTimeDataForBlackPlayer is true,
+/// but it is expected that the property is continuously updated to match the
+/// other data that the TimeView displays.
+// -----------------------------------------------------------------------------
+- (id) initWithFrame:(CGRect)rect
+{
+  return [self initWithFrame:rect isTimeDataForBlackPlayer:true showsPlayerClock:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a TimeView object that displays the clock for either the
+/// black player (@a isTimeDataForBlackPlayer is true) or the white player
+/// (@a isTimeDataForBlackPlayer is false).
+// -----------------------------------------------------------------------------
+- (id) initWithFrame:(CGRect)rect isTimeDataForBlackPlayer:(bool)isTimeDataForBlackPlayer
+{
+  return [self initWithFrame:rect isTimeDataForBlackPlayer:isTimeDataForBlackPlayer showsPlayerClock:true];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a TimeView object that displays time data. If
+/// @a showsPlayerClock is @e true the TimeView displays time data representing
+/// the clock for either the black player (@a isTimeDataForBlackPlayer is true)
+/// or the white player (@a isTimeDataForBlackPlayer is false). If
+/// @a showsPlayerClock is @e false the TimeView displays time data stored in a
+/// node. @a isTimeDataForBlackPlayer is used to initialize the property of the
+/// same name, but it is expected that the property is continuously updated to
+/// match the other data that the TimeView displays.
 ///
 /// @note This is the designated initializer of TimeView.
 // -----------------------------------------------------------------------------
-- (id) initWithFrame:(CGRect)rect isTimeForBlackPlayer:(bool)isTimeForBlackPlayer
+- (id) initWithFrame:(CGRect)rect isTimeDataForBlackPlayer:(bool)isTimeDataForBlackPlayer showsPlayerClock:(bool)showsPlayerClock
 {
   // Call designated initializer of superclass (UIView)
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
 
+  self.showsPlayerClock = showsPlayerClock;
   self.viewContentNeedsUpdate = true;
   self.remainingTimeString = [self stringForRemainingTimeInSeconds:0.0];
   self.remainingNumberOfMovesOrPeriodsString = [self stringForRemainingNumberOfMovesOrPeriods:0];
 
-  self.isTimeForBlackPlayer = isTimeForBlackPlayer;
+  self.showsTimeData = true;
+  self.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
   self.isTimeDataValid = false;
   self.isRemainingTimeAbsoluteTime = false;
   self.remainingTimeInSeconds = 0.0;
@@ -185,11 +207,27 @@ static int maximumNumberOfMovesOrPeriods = 99999;
   UITraitCollection* traitCollection = self.traitCollection;
   bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:traitCollection];
 
+  [self updateLabelText:isLightUserInterfaceStyle];
+  [self updateColors:isLightUserInterfaceStyle];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper for updateViewContentIfNeeded.
+// -----------------------------------------------------------------------------
+- (void) updateLabelText:(bool)isLightUserInterfaceStyle
+{
+  if (! self.showsTimeData)
+  {
+    // Can occur only when showsPlayerClock == false
+    self.remainingTimeMovesPeriodsLabel.text = @"Node does not contain time data.";
+    return;
+  }
+
   // In dark mode a filled circle is rendered with fill color white
   // => in dark mode we have to reverse the symbols to keep the appearance of
   //    black/white stones
   NSString* colorString;
-  if (self.isTimeForBlackPlayer)
+  if (self.isTimeDataForBlackPlayer)
     colorString = (isLightUserInterfaceStyle ? @"●" : @"○");
   else
     colorString = (isLightUserInterfaceStyle ? @"○" : @"●");
@@ -210,6 +248,15 @@ static int maximumNumberOfMovesOrPeriods = 99999;
   {
     self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@ Invalid time data", colorString];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper for updateViewContentIfNeeded.
+// -----------------------------------------------------------------------------
+- (void) updateColors:(bool)isLightUserInterfaceStyle
+{
+  if (! self.showsPlayerClock)
+    return;
 
   UIColor* textColor;
   UIColor* borderColor;
@@ -250,6 +297,32 @@ static int maximumNumberOfMovesOrPeriods = 99999;
 }
 
 #pragma mark - Property setters
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setShowsTimeData:(bool)newValue
+{
+  if (_showsTimeData == newValue)
+    return;
+  _showsTimeData = newValue;
+
+  self.viewContentNeedsUpdate = true;
+  [self setNeedsLayout];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setIsTimeDataForBlackPlayer:(bool)newValue
+{
+  if (_isTimeDataForBlackPlayer == newValue)
+    return;
+  _isTimeDataForBlackPlayer = newValue;
+
+  self.viewContentNeedsUpdate = true;
+  [self setNeedsLayout];
+}
 
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
@@ -339,11 +412,11 @@ static int maximumNumberOfMovesOrPeriods = 99999;
 // -----------------------------------------------------------------------------
 + (void) setupStaticViewMetrics
 {
-  TimeView* offscreenView = [[[TimeView alloc] initWithFrame:CGRectZero isTimeForBlackPlayer:false] autorelease];
+  TimeView* offscreenView = [[[TimeView alloc] initWithFrame:CGRectZero isTimeDataForBlackPlayer:false] autorelease];
 
   offscreenView.isTimeDataValid = true;
   // "W" is wider than "B"
-  offscreenView.isTimeForBlackPlayer = false;
+  offscreenView.isTimeDataForBlackPlayer = false;
   // Widest time we support: 6 characters in total
   offscreenView.remainingTimeInSeconds = 320280; // clock shows "88h58m"
   // Widest number for either remaining moves or remaining periods we support:

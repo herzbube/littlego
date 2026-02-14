@@ -18,12 +18,21 @@
 // -----------------------------------------------------------------------------
 /// @brief The TimeView class is a UIView subclass that displays time data for
 /// one player.
+///
+/// TimeView supports two modes:
+/// - In "clock view" mode, TimeView uses colors (border + text) to represent
+///   the value of @e clockState.
+/// - In "node time data view" mode, TimeView ignores the value of
+///   @e clockState.
+///
+/// The mode is determined based on the initializer being used.
 // -----------------------------------------------------------------------------
 @interface TimeView : UIView
 {
 }
 
-- (id) initWithFrame:(CGRect)rect isTimeForBlackPlayer:(bool)isTimeForBlackPlayer;
+- (id) initWithFrame:(CGRect)rect;
+- (id) initWithFrame:(CGRect)rect isTimeDataForBlackPlayer:(bool)isTimeDataForBlackPlayer;
 
 /// @brief The pre-calculated size of a TimeView instance that displays all
 /// subviews with their longest possible content.
@@ -32,19 +41,28 @@
 /// calculations.
 + (CGSize) timeViewSize;
 
-/// @brief True if this TimeView displays the time for the black player, false
-/// if it displays the time for the white player.
-@property(nonatomic, assign, readonly) bool isTimeForBlackPlayer;
-/// @brief True if time data is valid and the player's time data can be
-/// displayed. False if time data is not valid and the player's time data cannot
-/// be displayed.
+/// @brief @e true if this TimeView displays some time data (even if it's
+/// invalid). @e false if this TimeView displays no time data at all. In the
+/// latter case this TimeView displays a placeholder string indicating that
+/// no time data is available.
+///
+/// The default value after initialization is true.
+@property(nonatomic, assign) bool showsTimeData;
+/// @brief @e true if this TimeView displays time data for the black player,
+/// @e false if it displays time data for the white player.
+///
+/// The initializer used determines the default value.
+@property(nonatomic, assign) bool isTimeDataForBlackPlayer;
+/// @brief @e true if time data is valid and the player's time data can be
+/// displayed. @e false if time data is not valid and the player's time data
+/// cannot be displayed.
 ///
 /// The default value after initialization is false.
 @property(nonatomic, assign) bool isTimeDataValid;
-/// @brief True if @e remainingTimeInSeconds refers to absolute time, false if
-/// not.
+/// @brief @e true if @e remainingTimeInSeconds refers to absolute time,
+/// @e false if not.
 ///
-/// When this is true, the value of @e remainingNumberOfMovesOrPeriods is not
+/// When this is @e true, the value of @e remainingNumberOfMovesOrPeriods is not
 /// displayed. In its stead a static string is displayed, indicating that
 /// absolute time is in effect.
 ///

@@ -17,18 +17,28 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The TimeViewController class is responsible for displaying
-/// time-related information for both players in #UIAreaPlay. TimeViewController
-/// also provides gesture handling so that the user can suspend, resume, stop
-/// or start a player's clock.
+/// time-related information in #UIAreaPlay.
+///
+/// TimeViewController supports two modes:
+/// - In "clock view" mode, TimeViewController shows two TimeView instances
+///   side-by-side, representing the two players' clocks. In this mode,
+///   TimeViewController also provides gesture handling so that the user can
+///   suspend or resume a player's clock.
+/// - In "node time data view" mode, TimeViewController shows only a single
+///   TimeView that displays the time data in the currently selected node.
 // -----------------------------------------------------------------------------
 @interface TimeViewController : UIViewController
 {
 }
 
-/// @brief The pre-calculated size of the view of TimeViewController.
+/// @brief The pre-calculated size of the view of TimeViewController when it
+/// operates in "clock view" mode.
 ///
 /// When this method is invoked the first time, it performs the necessary size
 /// calculations.
-+ (CGSize) timeViewControllerViewSize;
++ (CGSize) timeViewControllerClockViewSize;
+
+- (id) initWithClockView;
+- (id) initWithNodeTimeDataView;
 
 @end

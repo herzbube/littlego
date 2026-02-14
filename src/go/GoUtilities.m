@@ -1079,6 +1079,17 @@
 // -----------------------------------------------------------------------------
 + (bool) showInfoIndicatorForNode:(GoNode*)node
 {
+  // Time data is not considered special enough to show an "info" indicator,
+  // so we don't check for the presence of GoNodeTimeData.
+  // - In a game without timed play, no time data is expected to be present. If
+  //   it ***IS*** present then that is remarkable because the SGF authoring
+  //   program did something strange, but for the user it is hardly of any
+  //   interest.
+  // - In a game with timed play, time data is expected to be present in
+  //   ***EVERY*** node that contains a move. Showing the "info" indicator
+  //   would therefore become meaningless and obscure the presence of things
+  //   that are of real interest to the user.
+
   GoMove* move = node.goMove;
   if (move && move.goMoveValuation != GoMoveValuationNone)
     return true;

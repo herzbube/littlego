@@ -224,7 +224,8 @@ enum InfoType
 enum AnnotationViewPage
 {
   AnnotationViewPageValuation,
-  AnnotationViewPageDescription
+  AnnotationViewPageDescription,
+  AnnotationViewPageTimeData,
 };
 
 /// @brief Enumerates the UI elements displayed on the valuation page of the
@@ -3008,6 +3009,7 @@ extern NSString* annotationViewShortDescriptionLabelAccessibilityIdentifier;
 extern NSString* annotationViewLongDescriptionLabelAccessibilityIdentifier;
 extern NSString* annotationViewEditDescriptionButtonAccessibilityIdentifier;
 extern NSString* annotationViewRemoveDescriptionButtonAccessibilityIdentifier;
+extern NSString* annotationViewTimeDataPageAccessibilityIdentifier;
 //@}
 
 // -----------------------------------------------------------------------------

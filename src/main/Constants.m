@@ -736,6 +736,7 @@ NSString* annotationViewShortDescriptionLabelAccessibilityIdentifier = @"annotat
 NSString* annotationViewLongDescriptionLabelAccessibilityIdentifier = @"annotationViewLongDescriptionLabel";
 NSString* annotationViewEditDescriptionButtonAccessibilityIdentifier = @"annotationViewEditDescriptionButton";
 NSString* annotationViewRemoveDescriptionButtonAccessibilityIdentifier = @"annotationViewRemoveDescriptionButton";
+NSString* annotationViewTimeDataPageAccessibilityIdentifier = @"annotationViewTimeDataPage";
 
 // Other UI testing constants
 NSString* uiTestModeLaunchArgument = @"--ui-test-mode";
