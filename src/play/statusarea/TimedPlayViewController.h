@@ -18,9 +18,23 @@
 // -----------------------------------------------------------------------------
 /// @brief The TimedPlayViewController class is responsible for displaying
 /// information related to timed play in #UIAreaPlay.
+///
+/// TimedPlayViewController shows one of two child view controllers depending
+/// on whether the time data in the currently selected node is valid or not:
+/// - Valid time data => TimeViewController.
+/// - Invalid time data => InvalidTimeDataViewController.
+///
+/// TimedPlayViewController supports two modes (which it forwards to its child
+/// view controllers):
+/// - In "clock view" mode, TimedPlayViewController displays player clocks.
+/// - In "node time data view" mode, TimedPlayViewController displays the time
+///   data of the currently selected node.
 // -----------------------------------------------------------------------------
 @interface TimedPlayViewController : UIViewController
 {
 }
+
+- (id) initWithClockView;
+- (id) initWithNodeTimeDataView;
 
 @end

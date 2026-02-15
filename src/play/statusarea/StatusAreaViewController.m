@@ -258,7 +258,7 @@
 
   if (shouldIntegrateTimedPlayViewController)
   {
-    self.timedPlayViewController = [[[TimedPlayViewController alloc] init] autorelease];
+    self.timedPlayViewController = [[[TimedPlayViewController alloc] initWithClockView] autorelease];
     // Caues UIStackView to add the view as subview
     [self.stackView addArrangedSubview:self.timedPlayViewController.view];
   }

@@ -35,6 +35,7 @@
 /// InvalidTimeDataViewController.
 // -----------------------------------------------------------------------------
 @interface InvalidTimeDataViewController()
+@property(nonatomic, assign) bool clockViewMode;
 @property(nonatomic, retain) InvalidTimeDataView* invalidTimeDataView;
 @property(nonatomic, retain) UIButton* infoButton;
 @property(nonatomic, assign) bool invalidTimeDataNeedsUpdate;
@@ -49,16 +50,38 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes an InvalidTimeDataViewController object.
+/// @brief Initializes a InvalidTimeDataViewController object that operates in
+/// "clock view" mode.
+// -----------------------------------------------------------------------------
+- (id) initWithClockView
+{
+  return [self initWithMode:true];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a InvalidTimeDataViewController object that operates in
+/// "node time data view" mode.
+// -----------------------------------------------------------------------------
+- (id) initWithNodeTimeDataView
+{
+  return [self initWithMode:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a InvalidTimeDataViewController object that operates
+/// either in "clock view" mode (@a clockViewMode is true) or in "node time
+/// data view" mode (@a clockViewMode is false).
 ///
 /// @note This is the designated initializer of InvalidTimeDataViewController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithMode:(bool)clockViewMode
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
+  self.clockViewMode = clockViewMode;
 
   self.invalidTimeDataView = nil;
   self.infoButton = nil;
@@ -209,7 +232,8 @@
 - (void) updateColors
 {
   UITraitCollection* traitCollection = self.traitCollection;
-  [UiUtilities applyTransparentStyleToView:self.view traitCollection:traitCollection];
+  if (self.clockViewMode)
+    [UiUtilities applyTransparentStyleToView:self.view traitCollection:traitCollection];
   [UiUtilities applyTintColorToButton:self.infoButton traitCollection:traitCollection];
 }
 

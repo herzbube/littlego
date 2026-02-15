@@ -19,9 +19,20 @@
 /// @brief The InvalidTimeDataViewController class is responsible for displaying
 /// information about why the time data in the currently selected node is
 /// invalid.
+///
+/// InvalidTimeDataViewController supports two modes:
+/// - In "clock view" mode, InvalidTimeDataViewController applies the typical
+///   "transparent style" to its view, letting it appear as a framed rectangle
+///   with translucent background.
+/// - In "node time data view" mode, InvalidTimeDataViewController does not
+///   apply the "transparent style" to its view, assuming that its view will
+///   be embedded in an appropriately styled superview.
 // -----------------------------------------------------------------------------
 @interface InvalidTimeDataViewController : UIViewController
 {
 }
+
+- (id) initWithClockView;
+- (id) initWithNodeTimeDataView;
 
 @end

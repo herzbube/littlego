@@ -31,6 +31,7 @@
 /// @brief Class extension with private properties for TimedPlayViewController.
 // -----------------------------------------------------------------------------
 @interface TimedPlayViewController()
+@property(nonatomic, assign) bool clockViewMode;
 @property(nonatomic, retain) UIStackView* stackView;
 @property(nonatomic, retain) TimeViewController* timeViewController;
 @property(nonatomic, retain) InvalidTimeDataViewController* invalidTimeDataViewController;
@@ -43,16 +44,38 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes an TimedPlayViewController object.
+/// @brief Initializes a TimedPlayViewController object that operates in
+/// "clock view" mode.
+// -----------------------------------------------------------------------------
+- (id) initWithClockView
+{
+  return [self initWithMode:true];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a TimedPlayViewController object that operates in
+/// "node time data view" mode.
+// -----------------------------------------------------------------------------
+- (id) initWithNodeTimeDataView
+{
+  return [self initWithMode:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a TimedPlayViewController object that operates either in
+/// "clock view" mode (@a clockViewMode is true) or in "node time data view"
+/// mode (@a clockViewMode is false).
 ///
 /// @note This is the designated initializer of TimedPlayViewController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithMode:(bool)clockViewMode
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
+  self.clockViewMode = clockViewMode;
 
   self.stackView = nil;
   self.childViewControllerIntegrationNeedsUpdate = true;
@@ -191,16 +214,19 @@
   [AutoLayoutUtility fillSuperview:self.view
                        withSubview:self.stackView];
 
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
-
-  viewsDictionary[@"stackView"] = self.stackView;
-
-  CGSize timeViewControllerClockViewSize = [TimeViewController timeViewControllerClockViewSize];
-
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[stackView(==%f)]", timeViewControllerClockViewSize.width]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[stackView(==%f)]", timeViewControllerClockViewSize.height]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+  if (self.clockViewMode)
+  {
+    NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+    NSMutableArray* visualFormats = [NSMutableArray array];
+    
+    viewsDictionary[@"stackView"] = self.stackView;
+    
+    CGSize timeViewControllerClockViewSize = [TimeViewController timeViewControllerClockViewSize];
+    
+    [visualFormats addObject:[NSString stringWithFormat:@"H:[stackView(==%f)]", timeViewControllerClockViewSize.width]];
+    [visualFormats addObject:[NSString stringWithFormat:@"V:[stackView(==%f)]", timeViewControllerClockViewSize.height]];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+  }
 }
 
 #pragma mark - Notification responders
@@ -274,7 +300,10 @@
       self.invalidTimeDataViewController = nil;
     }
 
-    self.timeViewController = [[[TimeViewController alloc] initWithClockView] autorelease];
+    if (self.clockViewMode)
+      self.timeViewController = [[[TimeViewController alloc] initWithClockView] autorelease];
+    else
+      self.timeViewController = [[[TimeViewController alloc] initWithNodeTimeDataView] autorelease];
     // Causes UIStackView to add the view as subview
     [self.stackView addArrangedSubview:self.timeViewController.view];
   }
@@ -287,7 +316,10 @@
       self.timeViewController = nil;
     }
 
-    self.invalidTimeDataViewController = [[[InvalidTimeDataViewController alloc] init] autorelease];
+    if (self.clockViewMode)
+      self.invalidTimeDataViewController = [[[InvalidTimeDataViewController alloc] initWithClockView] autorelease];
+    else
+      self.invalidTimeDataViewController = [[[InvalidTimeDataViewController alloc] initWithNodeTimeDataView] autorelease];
     // Causes UIStackView to add the view as subview
     [self.stackView addArrangedSubview:self.invalidTimeDataViewController.view];
   }

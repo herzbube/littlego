@@ -18,7 +18,7 @@
 // Project includes
 #import "AnnotationViewController.h"
 #import "../model/BoardViewModel.h"
-#import "../statusarea/TimeViewController.h"
+#import "../statusarea/TimedPlayViewController.h"
 #import "../../command/node/ChangeAnnotationDataCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -235,7 +235,7 @@ static const int spacerBottomTag = 2;
 {
   self.valuationViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   self.descriptionViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-  self.timeDataViewController = [[[TimeViewController alloc] initWithNodeTimeDataView] autorelease];
+  self.timeDataViewController = [[[TimedPlayViewController alloc] initWithNodeTimeDataView] autorelease];
 
   UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
   UIViewController* initialViewController;
