@@ -2780,7 +2780,12 @@ extern NSString* newMoveInsertPolicyKey;
 extern NSString* newMoveInsertPositionKey;
 // Timed play settings
 extern NSString* timedPlayKey;
+extern NSString* autostartPlayerClockForNewGamesKey;
+extern NSString* autostartPlayerClockForArchiveGamesKey;
+extern NSString* autostartPlayerClockWhenTurnBeginsKey;
+extern NSString* canUserSuspendPlayerClocksKey;
 extern NSString* timeDataValidationModeKey;
+extern NSString* hidePlayerClockViewForInvalidTimeSystemsKey;
 extern NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey;
 //@}
 

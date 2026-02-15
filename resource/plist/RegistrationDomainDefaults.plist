@@ -580,10 +580,20 @@
 	</dict>
 	<key>TimedPlay</key>
 	<dict>
+		<key>AutostartPlayerClockForNewGames</key>
+		<true/>
+		<key>AutostartPlayerClockForArchiveGames</key>
+		<true/>
+		<key>AutostartPlayerClockWhenTurnBegins</key>
+		<true/>
+		<key>CanUserSuspendPlayerClocks</key>
+		<true/>
 		<key>TimeDataValidationMode</key>
 		<integer>0</integer>
+		<key>HidePlayerClockViewForInvalidTimeSystems</key>
+		<false/>
 		<key>ShowTrueRemainingTimeAfterLastMoveWhenLostOnTime</key>
-		<true/>
+		<false/>
 	</dict>
 </dict>
 </plist>

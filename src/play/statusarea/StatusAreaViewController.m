@@ -22,6 +22,9 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoTimeSettings.h"
 #import "../../go/GoTimeSystem.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
+#import "../../play/model/TimedPlayModel.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
 
@@ -85,6 +88,10 @@
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+
+  // KVO observing
+  TimedPlayModel* timedPlayModel = [Registry sharedRegistry].modelProvider.timedPlayModel;
+  [timedPlayModel addObserver:self forKeyPath:@"hidePlayerClockViewForInvalidTimeSystems" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -93,6 +100,10 @@
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  // KVO observing
+  TimedPlayModel* timedPlayModel = [Registry sharedRegistry].modelProvider.timedPlayModel;
+  [timedPlayModel removeObserver:self forKeyPath:@"hidePlayerClockViewForInvalidTimeSystems"];
 }
 
 #pragma mark - Notification responders
@@ -110,6 +121,17 @@
     return;
   }
 
+  self.timedPlayViewControllerIntegrationNeedsUpdate = true;
+  [self updateTimedPlayViewControllerIntegrationIfNeeded];
+}
+
+#pragma mark - KVO responder
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
   self.timedPlayViewControllerIntegrationNeedsUpdate = true;
   [self updateTimedPlayViewControllerIntegrationIfNeeded];
 }
@@ -218,10 +240,19 @@
 
   self.timedPlayViewControllerIntegrationNeedsUpdate = false;
 
+  TimedPlayModel* timedPlayModel = [Registry sharedRegistry].modelProvider.timedPlayModel;
   GoTimeSettings* timeSettings = game.timeSettings;
 
   bool timedPlayViewControllerIsCurrentlyIntegrated = self.timedPlayViewController;
-  bool shouldIntegrateTimedPlayViewController = ! timeSettings.hasNoTimeSystems;
+
+  bool shouldIntegrateTimedPlayViewController;
+  if (timeSettings.hasNoTimeSystems)
+    shouldIntegrateTimedPlayViewController = false;
+  else if (timedPlayModel.hidePlayerClockViewForInvalidTimeSystems && ! timeSettings.isTimeDataValid)
+    shouldIntegrateTimedPlayViewController = false;
+  else
+    shouldIntegrateTimedPlayViewController = true;
+
   if (timedPlayViewControllerIsCurrentlyIntegrated == shouldIntegrateTimedPlayViewController)
     return;
 

@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoTimeSettings.h"
+#import "GoTimeDataValidator.h"
 #import "GoTimeSystem.h"
 #import "../utility/ExceptionUtility.h"
 
@@ -102,6 +103,10 @@
   self.absoluteTimeSystem = absoluteTimeSystem;
   self.periodBasedTimeSystem = periodBasedTimeSystem;
 
+  self.isTimeDataValid = GoTimeDataValidationResultInvalid.isTimeDataValid;
+  self.timeDataInvalidReason = GoTimeDataValidationResultInvalid.timeDataInvalidReason;
+  self.timeDataValidationMode = GoTimeDataValidationResultInvalid.timeDataValidationMode;
+
   [self updateCalculatedProperties];
 
   return self;
@@ -121,6 +126,12 @@
 
   self.absoluteTimeSystem = [decoder decodeObjectOfClass:[GoTimeSystem class] forKey:goTimeSettingsAbsoluteTimeSystemKey];
   self.periodBasedTimeSystem = [decoder decodeObjectOfClass:[GoTimeSystem class] forKey:goTimeSettingsPeriodBasedTimeSystemKey];
+
+  // Time validity properties were not archived. Whoever is unarchiving this
+  // GoTimeSettings is responsible for re-calculating the properties.
+  self.isTimeDataValid = GoTimeDataValidationResultInvalid.isTimeDataValid;
+  self.timeDataInvalidReason = GoTimeDataValidationResultInvalid.timeDataInvalidReason;
+  self.timeDataValidationMode = GoTimeDataValidationResultInvalid.timeDataValidationMode;
 
   [self updateCalculatedProperties];
 
@@ -154,8 +165,12 @@
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.absoluteTimeSystem forKey:goTimeSettingsAbsoluteTimeSystemKey];
   [encoder encodeObject:self.periodBasedTimeSystem forKey:goTimeSettingsPeriodBasedTimeSystemKey];
+
   // No need to encode hasNoTimeSystems and isGameUsingTimedPlay, property
   // values are calculated by the initializers
+
+  // Time validity property values are not archived to reduce the size of the
+  // archive. The property values can be recalculated upon unarchiving.
 }
 
 #pragma mark - Private helpers

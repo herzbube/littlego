@@ -25,8 +25,15 @@
 // -----------------------------------------------------------------------------
 enum PlayerClockStartReason
 {
+  /// @brief The clock is requested to be started because a new game has been
+  /// started and it is the beginning of a human player's turn.
+  PlayerClockStartReasonNewGameHumanPlayerTurnBegins,
+  /// @brief The clock is requested to be started because a game has been loaded
+  /// from the archive and it is the beginning of a human player's turn.
+  PlayerClockStartReasonLoadGameHumanPlayerTurnBegins,
   /// @brief The clock is requested to be started because it is the beginning
-  /// of a human player's turn.
+  /// of a human player's turn (not immediately when a new game starts or is
+  /// loaded from the archive).
   PlayerClockStartReasonHumanPlayerTurnBegins,
   /// @brief The clock is requested to be started because it is the beginning
   /// of a computer player's turn.

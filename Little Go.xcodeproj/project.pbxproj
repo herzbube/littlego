@@ -923,6 +923,8 @@
 		D76B0D0C2F1A636300032D62 /* TimeSettingsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D092F1A636300032D62 /* TimeSettingsCommand.m */; };
 		D76B0D0F2F1A63B500032D62 /* TimeLeftCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */; };
 		D76B0D102F1A63B500032D62 /* TimeLeftCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */; };
+		D773347C2F40FAC3005FE3D5 /* TimedPlaySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = D773347B2F40FAC3005FE3D5 /* TimedPlaySettingsController.m */; };
+		D773347D2F40FAC3005FE3D5 /* TimedPlaySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = D773347B2F40FAC3005FE3D5 /* TimedPlaySettingsController.m */; };
 		D79B28082ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
 		D79B28092ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
 		D79B280C2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */ = {isa = PBXBuildFile; fileRef = D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */; };
@@ -1986,6 +1988,8 @@
 		D76B0D092F1A636300032D62 /* TimeSettingsCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeSettingsCommand.m; sourceTree = "<group>"; };
 		D76B0D0D2F1A63B500032D62 /* TimeLeftCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeLeftCommand.h; sourceTree = "<group>"; };
 		D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeLeftCommand.m; sourceTree = "<group>"; };
+		D773347A2F40FAC3005FE3D5 /* TimedPlaySettingsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimedPlaySettingsController.h; sourceTree = "<group>"; };
+		D773347B2F40FAC3005FE3D5 /* TimedPlaySettingsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlaySettingsController.m; sourceTree = "<group>"; };
 		D79B28062ED3CC0700AA71A6 /* FilesystemMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemMonitor.h; sourceTree = "<group>"; };
 		D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FilesystemMonitor.m; sourceTree = "<group>"; };
 		D79B280A2EDB12C900AA71A6 /* FilesystemOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemOperations.h; sourceTree = "<group>"; };
@@ -2408,6 +2412,8 @@
 				CD1F4F7F25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m */,
 				CDE6C547183D820300186E89 /* SoundSettingsController.h */,
 				CDE6C548183D820300186E89 /* SoundSettingsController.m */,
+				D773347A2F40FAC3005FE3D5 /* TimedPlaySettingsController.h */,
+				D773347B2F40FAC3005FE3D5 /* TimedPlaySettingsController.m */,
 			);
 			path = settings;
 			sourceTree = "<group>";
@@ -4584,6 +4590,7 @@
 				CD63B9E221C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
 				D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */,
+				D773347C2F40FAC3005FE3D5 /* TimedPlaySettingsController.m in Sources */,
 				CD1E6EB32865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
 				CD46627E2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */,
@@ -5118,6 +5125,7 @@
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
 				CDDB08C32927F15D00B38F91 /* NodeTreeViewCell.m in Sources */,
 				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,
+				D773347D2F40FAC3005FE3D5 /* TimedPlaySettingsController.m in Sources */,
 				D76B0D0B2F1A636300032D62 /* TimeSettingsCommand.m in Sources */,
 				CD607BC8280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */,
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,

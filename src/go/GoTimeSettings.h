@@ -33,12 +33,18 @@
 - (id) initWithAbsoluteTimeSystem:(GoTimeSystem*)absoluteTimeSystem
             periodBasedTimeSystem:(GoTimeSystem*)periodBasedTimeSystem;
 
+/// @name Time systems
+//@{
 /// @brief The absolute time system that is in effect. The GoTimeSystem object
 /// has #GoTimeSystemNone if no absolute time system is in effect.
 @property(nonatomic, retain, readonly) GoTimeSystem* absoluteTimeSystem;
 /// @brief The period-based time system that is in effect. The GoTimeSystem object
 /// has #GoTimeSystemNone if no period-based time system is in effect.
 @property(nonatomic, retain, readonly) GoTimeSystem* periodBasedTimeSystem;
+//@}
+
+/// @name Calculated properties
+//@{
 /// @brief @e true if both @e absoluteTimeSystem and @e periodBasedTimeSystem
 /// have #GoTimeSystemTypeNone. @e false if either @e absoluteTimeSystem or
 /// @e periodBasedTimeSystem, or both, have a time system type that is not
@@ -46,7 +52,34 @@
 @property(nonatomic, assign, readonly) bool hasNoTimeSystems;
 /// @brief @e true if @e periodBasedTimeSystem is not a custom time system,
 /// and either @e absoluteTimeSystem or @e periodBasedTimeSystem or both have a
-/// time system for which the app supports timed play.
+/// time system for which the app supports timed play. Note that
+/// @e isTimeDataValid could still be @e false if the time validation routine
+/// found a problem with some other data of one of the time systems.
 @property(nonatomic, assign, readonly) bool isGameUsingTimedPlay;
+//@}
+
+/// @name Time data validity
+//@{
+/// @brief @e true if time data validation did run and did not find any problem
+/// with the time data in this GoTimeSettings object. @e false if time data
+/// validation did not run, or did run but found a problem with the time data in
+/// this GoTimeSettings object. In the latter case, the value of property
+/// @e timeDataInvalidReason indicates the reason why the time data is not
+/// valid.
+///
+/// The default value after initialization is false.
+@property(nonatomic, assign) bool isTimeDataValid;
+/// @brief If property @e isTimeDataValid is @e false, indicates the reason
+/// why the time data is not valid. If property @e isTimeDataValid is @e true,
+/// this property has value -1.
+///
+/// The default value after initialization is -1.
+@property(nonatomic, assign) enum GoTimeDataInvalidReason timeDataInvalidReason;
+/// @brief The mode that was used when this GoTimeSettings object's time data
+/// was validated the last time.
+///
+/// The default value after initialization is -1.
+@property(nonatomic, assign) enum GoTimeDataValidationMode timeDataValidationMode;
+//@}
 
 @end

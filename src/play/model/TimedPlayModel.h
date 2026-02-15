@@ -28,7 +28,12 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
+@property(nonatomic, assign) bool autostartPlayerClockForNewGames;
+@property(nonatomic, assign) bool autostartPlayerClockForArchiveGames;
+@property(nonatomic, assign) bool autostartPlayerClockWhenTurnBegins;
+@property(nonatomic, assign) bool canUserSuspendPlayerClocks;
 @property(nonatomic, assign) enum GoTimeDataValidationMode timeDataValidationMode;
+@property(nonatomic, assign) bool hidePlayerClockViewForInvalidTimeSystems;
 
 /// @brief This setting controls what the player clock should show for
 /// "remaining time" when a player has lost on time and the node with the last

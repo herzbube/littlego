@@ -548,46 +548,57 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Validates the content of @a timeSettings.
+/// @brief Validates the content of @a timeSettings. Stores the result in
+/// @a timeSettings, but also returns the result.
 // -----------------------------------------------------------------------------
 - (GoTimeDataValidationResult) validateTimeSettings:(GoTimeSettings*)timeSettings
 {
-  if (timeSettings.hasNoTimeSystems)
+  GoTimeDataValidationResult (^validateTimeSettings)(GoTimeSettings*) = ^ GoTimeDataValidationResult (GoTimeSettings* timeSettings)
   {
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonGameDoesNotUseTimedPlay, self.timeDataValidationMode);
-  }
-  else if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeCustom)
-  {
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonCustomTimeSystem, self.timeDataValidationMode);
-  }
-  else if (timeSettings.absoluteTimeSystem.supportsTimedPlay &&
-           timeSettings.absoluteTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)
-  {
-    return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum, self.timeDataValidationMode);
-  }
-  else if (timeSettings.periodBasedTimeSystem.supportsTimedPlay)
-  {
-    if (timeSettings.periodBasedTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodDurationExceedsMaximum, self.timeDataValidationMode);
-    else if (timeSettings.periodBasedTimeSystem.extraTimeDurationInSeconds > gMaximumRemainingTimeInSeconds)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum, self.timeDataValidationMode);
-    else if (timeSettings.periodBasedTimeSystem.minimumNumberOfMovesPerPeriod > gMaximumRemainingNumberOfMovesOrPeriods)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum, self.timeDataValidationMode);
-    else if (timeSettings.periodBasedTimeSystem.numberOfPeriods > gMaximumRemainingNumberOfMovesOrPeriods)
-      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum, self.timeDataValidationMode);
-  }
+    if (timeSettings.hasNoTimeSystems)
+    {
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonGameDoesNotUseTimedPlay, self.timeDataValidationMode);
+    }
+    else if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeCustom)
+    {
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonCustomTimeSystem, self.timeDataValidationMode);
+    }
+    else if (timeSettings.absoluteTimeSystem.supportsTimedPlay &&
+             timeSettings.absoluteTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)
+    {
+      return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum, self.timeDataValidationMode);
+    }
+    else if (timeSettings.periodBasedTimeSystem.supportsTimedPlay)
+    {
+      if (timeSettings.periodBasedTimeSystem.periodDurationInSeconds > gMaximumRemainingTimeInSeconds)
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonPeriodDurationExceedsMaximum, self.timeDataValidationMode);
+      else if (timeSettings.periodBasedTimeSystem.extraTimeDurationInSeconds > gMaximumRemainingTimeInSeconds)
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum, self.timeDataValidationMode);
+      else if (timeSettings.periodBasedTimeSystem.minimumNumberOfMovesPerPeriod > gMaximumRemainingNumberOfMovesOrPeriods)
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum, self.timeDataValidationMode);
+      else if (timeSettings.periodBasedTimeSystem.numberOfPeriods > gMaximumRemainingNumberOfMovesOrPeriods)
+        return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum, self.timeDataValidationMode);
+    }
 
-  // No further time system consistency checks needed - initializers of
-  // GoTimeSystem and GoTimeSettings prevent combinations that the app does not
-  // support.
+    // No further time system consistency checks needed - initializers of
+    // GoTimeSystem and GoTimeSettings prevent combinations that the app does not
+    // support.
 
-  return GoTimeDataValidationResultValid;
+    return GoTimeDataValidationResultValid;
+  };
+
+  GoTimeDataValidationResult validationResult = validateTimeSettings(timeSettings);
+  timeSettings.isTimeDataValid = validationResult.isTimeDataValid;
+  timeSettings.timeDataInvalidReason = validationResult.timeDataInvalidReason;
+  timeSettings.timeDataValidationMode = validationResult.timeDataValidationMode;
+  return validationResult;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Validates the data found in the node whose reference is stored in
 /// property @e currentNode in @a context. Invokes visitNodeTimeData:() if the
-/// node contains a GoNodeTimeData object.
+/// node contains a GoNodeTimeData object. Stores the validation result in the
+/// visited node.
 // -----------------------------------------------------------------------------
 - (void) visitNode:(TimeDataValidationContext*)context
 {
@@ -628,6 +639,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 
   context->currentNode.isTimeDataValid = context->nodeValidationResult.isTimeDataValid;
   context->currentNode.timeDataInvalidReason = context->nodeValidationResult.timeDataInvalidReason;
+  context->currentNode.timeDataValidationMode = context->nodeValidationResult.timeDataValidationMode;
 
   if (self.timeDataValidationMode == GoTimeDataValidationModePedantic)
     context->previousNodeValidationResult = context->nodeValidationResult;

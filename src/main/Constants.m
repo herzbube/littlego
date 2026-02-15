@@ -516,7 +516,12 @@ NSString* newMoveInsertPolicyKey = @"NewMoveInsertPolicy";
 NSString* newMoveInsertPositionKey = @"NewMoveInsertPosition";
 // Timed play settings
 NSString* timedPlayKey = @"TimedPlay";
+NSString* autostartPlayerClockForNewGamesKey = @"AutostartPlayerClockForNewGames";
+NSString* autostartPlayerClockForArchiveGamesKey = @"AutostartPlayerClockForArchiveGames";
+NSString* autostartPlayerClockWhenTurnBeginsKey = @"AutostartPlayerClockWhenTurnBegins";
+NSString* canUserSuspendPlayerClocksKey = @"CanUserSuspendPlayerClocks";
 NSString* timeDataValidationModeKey = @"TimeDataValidationMode";
+NSString* hidePlayerClockViewForInvalidTimeSystemsKey = @"HidePlayerClockViewForInvalidTimeSystems";
 NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey = @"ShowTrueRemainingTimeAfterLastMoveWhenLostOnTime";
 
 // Constants for NSCoding

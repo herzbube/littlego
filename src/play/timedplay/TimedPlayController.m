@@ -683,6 +683,13 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   //   the old and new game variations differ. Then, after the game variation
   //   has been changed, when the board position of the new game variation is
   //   changed to the target node selected by the user.
+  // - When GoGame generates a new node for a move that is being played. In
+  //   this scenario updateAllPlayerTimeDataToMatchCurrentlySelectedNode would
+  //   not be necessary because the time data of the player who just made the
+  //   move should already be up-to-date, and the time data of the other player
+  //   does not need updating. At the moment, it is not possible to detect
+  //   the reason for the node change, though, so we have no choice but to
+  //   perform the update.
   //
   // We don't receive this notification if the current game variation changes
   // but the current node does not change. In that case the time validity does
@@ -797,6 +804,8 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
 
   switch (startReason)
   {
+    case PlayerClockStartReasonNewGameHumanPlayerTurnBegins:
+    case PlayerClockStartReasonLoadGameHumanPlayerTurnBegins:
     case PlayerClockStartReasonHumanPlayerTurnBegins:
       // Fallthrough intentional
     case PlayerClockStartReasonComputerPlayerTurnBegins:
@@ -808,10 +817,42 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
       if (self.isGameEnded)
         return;
 
+      // User has suspended the clock during the previous turn (the user is
+      // allowed to suspend the clock of both human and computer players). We
+      // respect the user's wish indefinitely and don't turn the clock back on.
+      if (playerTimeData.clockState == GoClockStateSuspended &&
+          playerTimeData.clockSuspendedReason == GoClockSuspendedReasonUserAction)
+      {
+        return;
+      }
+
+      // From this point onwards: The clock can only be stopped.
+      // - It cannot be started because before the player's turn began, nobody
+      //   can have started the clock because it was not that player's turn.
+      // - Ditto for suspended. GoClockSuspendedReasonUserAction is the only
+      //   exception, and that was handled above.
+      assert(playerTimeData.clockState == GoClockStateStopped);
+
+      bool humanPlayerTurnBegins = (startReason != PlayerClockStartReasonComputerPlayerTurnBegins);
+      if (humanPlayerTurnBegins)
+      {
+        TimedPlayModel* timedPlayModel = [Registry sharedRegistry].modelProvider.timedPlayModel;
+        if ((startReason == PlayerClockStartReasonNewGameHumanPlayerTurnBegins && ! timedPlayModel.autostartPlayerClockForNewGames) ||
+            (startReason == PlayerClockStartReasonLoadGameHumanPlayerTurnBegins && ! timedPlayModel.autostartPlayerClockForArchiveGames) ||
+            (startReason == PlayerClockStartReasonHumanPlayerTurnBegins && ! timedPlayModel.autostartPlayerClockWhenTurnBegins))
+        {
+          // Using the "user action" reason guarantees that the app does not
+          // start the clock on its own
+          [self suspendClockIfNotSuspendedAndInvalidateTimer:playerTimeData
+                                                      reason:GoClockSuspendedReasonUserAction];
+          return;
+        }
+      }
+
       // If the the board is not interactive, and the clock is stopped, then
       // we "almost start" the clock - we suspend it. This has the same result
       // as if the clock were started and the board became non-interactive.
-      if (startReason == PlayerClockStartReasonHumanPlayerTurnBegins &&
+      if (humanPlayerTurnBegins &&
           ! self.isBoardInteractive &&
           playerTimeData.clockState == GoClockStateStopped)
       {
@@ -820,20 +861,6 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
         return;
       }
 
-      // User has suspended the clock during the previous turn (the user is
-      // allowed to suspend the clock of both human and computer players). We
-      // respect the user's wish indefinitely and don't turn the clock back on.
-      // TODO xxx consider starting the clock, i.e. the user's wish is valid
-      // for only 1 turn => can be made into a user preference
-      if (playerTimeData.clockState == GoClockStateSuspended &&
-          playerTimeData.clockSuspendedReason == GoClockSuspendedReasonUserAction)
-      {
-        return;
-      }
-
-      // The clock is expected to be never started: Before the player's turn
-      // began, nobody can have started the clock because it was not that
-      // player's turn.
       [self startClockAndScheduleTimer:playerTimeData];
       return;
     }
@@ -1014,6 +1041,10 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   {
     case PlayerClockSuspendReasonUserRequest:
     {
+      TimedPlayModel* timedPlayModel = [Registry sharedRegistry].modelProvider.timedPlayModel;
+      if (! timedPlayModel.canUserSuspendPlayerClocks)
+        return PlayerClockServiceOperationResultGameContinues;
+
       // User may only change the state of the clock of the player whose turn
       // it currently is.
       if (player != self.game.nextMovePlayer)

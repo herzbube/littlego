@@ -132,7 +132,7 @@
   else if (shouldStartHumanPlayerClock)
   {
     [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
-                                                              reason:PlayerClockStartReasonHumanPlayerTurnBegins];
+                                                              reason:PlayerClockStartReasonNewGameHumanPlayerTurnBegins];
   }
 
   return true;

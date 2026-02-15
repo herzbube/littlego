@@ -29,6 +29,7 @@
 #import "ScoringSettingsController.h"
 #import "SgfSettingsController.h"
 #import "SoundSettingsController.h"
+#import "TimedPlaySettingsController.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -57,6 +58,7 @@ enum ViewSettingsSectionItem
   BoardSetupItem,
   MarkupItem,
   NodeTreeViewItem,
+  TimedPlayItem,
   MaxViewSettingsSectionItem
 };
 
@@ -190,6 +192,11 @@ enum SgfSettingsSectionItem
           cell.textLabel.text = @"Tree view";
           break;
         }
+        case TimedPlayItem:
+        {
+          cell.textLabel.text = @"Timed play";
+          break;
+        }
       }
       break;
     }
@@ -283,6 +290,11 @@ enum SgfSettingsSectionItem
         case NodeTreeViewItem:
         {
           controller = [NodeTreeViewSettingsController controller];
+          break;
+        }
+        case TimedPlayItem:
+        {
+          controller = [TimedPlaySettingsController controller];
           break;
         }
       }

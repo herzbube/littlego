@@ -42,8 +42,13 @@
   if (! self)
     return nil;
 
+  self.autostartPlayerClockForNewGames = true;
+  self.autostartPlayerClockForArchiveGames = true;
+  self.autostartPlayerClockWhenTurnBegins = true;
+  self.canUserSuspendPlayerClocks = true;
   self.timeDataValidationMode = GoTimeDataValidationModeBasic;
-  self.showTrueRemainingTimeAfterLastMoveWhenLostOnTime = true;
+  self.hidePlayerClockViewForInvalidTimeSystems = false;
+  self.showTrueRemainingTimeAfterLastMoveWhenLostOnTime = false;
 
   return self;
 }
@@ -66,7 +71,12 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:timedPlayKey];
 
+  self.autostartPlayerClockForNewGames = [[dictionary valueForKey:autostartPlayerClockForNewGamesKey] boolValue];
+  self.autostartPlayerClockForArchiveGames = [[dictionary valueForKey:autostartPlayerClockForArchiveGamesKey] boolValue];
+  self.autostartPlayerClockWhenTurnBegins = [[dictionary valueForKey:autostartPlayerClockWhenTurnBeginsKey] boolValue];
+  self.canUserSuspendPlayerClocks = [[dictionary valueForKey:canUserSuspendPlayerClocksKey] boolValue];
   self.timeDataValidationMode = [[dictionary valueForKey:timeDataValidationModeKey] intValue];
+  self.hidePlayerClockViewForInvalidTimeSystems = [[dictionary valueForKey:hidePlayerClockViewForInvalidTimeSystemsKey] boolValue];
   self.showTrueRemainingTimeAfterLastMoveWhenLostOnTime = [[dictionary valueForKey:showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey] boolValue];
 }
 
@@ -77,7 +87,12 @@
 - (void) writeUserDefaults
 {
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithBool:self.autostartPlayerClockForNewGames] forKey:autostartPlayerClockForNewGamesKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.autostartPlayerClockForArchiveGames] forKey:autostartPlayerClockForArchiveGamesKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.autostartPlayerClockWhenTurnBegins] forKey:autostartPlayerClockWhenTurnBeginsKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.canUserSuspendPlayerClocks] forKey:canUserSuspendPlayerClocksKey];
   [dictionary setValue:[NSNumber numberWithInt:self.timeDataValidationMode] forKey:timeDataValidationModeKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.hidePlayerClockViewForInvalidTimeSystems] forKey:hidePlayerClockViewForInvalidTimeSystemsKey];
   [dictionary setValue:[NSNumber numberWithBool:self.showTrueRemainingTimeAfterLastMoveWhenLostOnTime] forKey:showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey];
 
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];

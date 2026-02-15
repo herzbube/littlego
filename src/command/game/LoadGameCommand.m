@@ -1657,10 +1657,6 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   if (game.timeSettings.hasNoTimeSystems)
     return true;
 
-  // TODO xxx consider evaluating the return value => if user wanted to start a
-  // timed play game, but we detect invalid time data, then the user may not
-  // get what they wished. however, the return value is for the entire tree, not
-  // only for the current game variation...
   GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
   [timeDataValidator validateTimeDataInGameTree:game];
 
@@ -1901,7 +1897,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 - (void) startHumanPlayerClockOnMainThread:(GoGame*)game
 {
   [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
-                                                            reason:PlayerClockStartReasonHumanPlayerTurnBegins];
+                                                            reason:PlayerClockStartReasonLoadGameHumanPlayerTurnBegins];
 }
 
 // -----------------------------------------------------------------------------
