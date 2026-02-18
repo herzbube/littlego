@@ -36,6 +36,7 @@
 #import "../../sgf/SgfUtilities.h"
 #import "../../utility/PathUtilities.h"
 #import "../../utility/FilesystemOperations.h"
+#import "../../utility/VersionInfoUtilities.h"
 
 
 @implementation SaveSgfCommand
@@ -148,6 +149,14 @@
                 withValuesFromGoGame:(GoGame*)goGame
                            boardSize:(SGFCBoardSize)boardSize
 {
+  // Requires SGFCArgumentTypeDoNotAddSgfcApProperty to prevent SGFC from
+  // clobbering our own AP value => argument is added at the time when the
+  // document is written
+  SGFCComposedPropertyValue* apPropertyValue = [SGFCPropertyValueFactory composedPropertyValueWithSimpleText:[VersionInfoUtilities applicationName]
+                                                                                                  simpleText:[VersionInfoUtilities applicationVersion]];
+  SGFCProperty* apProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeAP value:apPropertyValue];
+  [rootNode setProperty:apProperty];
+
   SGFCGameType gameType = SGFCGameTypeGo;
   SGFCNumberPropertyValue* gmPropertyValue = [SGFCPropertyValueFactory propertyValueWithGameType:gameType];
   SGFCGameTypeProperty* gmProperty = [SGFCPropertyFactory gameTypePropertyWithNumberPropertyValue:gmPropertyValue];
@@ -871,6 +880,10 @@
   NSString* errorMessageContextString = @"writing the game data to a temporary file";
 
   SGFCDocumentWriter* documentWriter = [SGFCDocumentWriter documentWriter];
+
+  SGFCArguments* arguments = documentWriter.arguments;
+  [arguments addArgumentWithType:SGFCArgumentTypeDoNotAddSgfcApProperty];
+
   SGFCDocumentWriteResult* result;
   @try
   {
