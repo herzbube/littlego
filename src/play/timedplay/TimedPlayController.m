@@ -1396,8 +1396,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
     if (self.isGameUsingTimedPlay)
       [self stopAllClocksIfNotStoppedAndInvalidateTimers];
 
-    NSNumber* invalidReasonAsNumber = @(self.timeDataValidationResult.timeDataInvalidReason);
-    [center postNotificationName:timeDataDidBecomeInvalid object:invalidReasonAsNumber];
+    [center postNotificationName:timeDataDidBecomeInvalid object:nil];
   }
 }
 

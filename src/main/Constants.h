@@ -1767,7 +1767,10 @@ extern NSString* nodeTreeViewNodeSymbolDidChange;
 ///
 /// This notification is guaranteed to be posted on the main thread.
 ///
-/// TODO xxx notify ApplicationStateManager that data is dirty
+/// Because player clock state changes happen frequently (at least every second
+/// when the one-second timer temporarily suspends and then resumes the clock
+/// to perform its housekeeping), the application state is not marked dirty when
+/// this notification is sent.
 extern NSString* playerClockStateHasChanged;
 /// @brief Is sent to indicate that something about the time data of one of the
 /// players has changed (e.g. remaining time has been decreased, remaining moves
@@ -1777,26 +1780,26 @@ extern NSString* playerClockStateHasChanged;
 ///
 /// This notification is guaranteed to be posted on the main thread.
 ///
-/// TODO xxx notify ApplicationStateManager that data is dirty
+/// Because player time data changes happen frequently (at least every second
+/// when the one-second timer counts down the remaining time), the application
+/// state is not marked dirty when this notification is sent.
 extern NSString* playerTimeDataHasChanged;
 /// @brief Is sent to indicate that a player has run out of time and lost the
 /// game. The GoPlayerTimeData object associated with the player who lost is
 /// associated with the notification.
 ///
 /// This notification is guaranteed to be posted on the main thread.
-///
-/// TODO xxx notify ApplicationStateManager that data is dirty
 extern NSString* playerLostOnTime;
-/// @brief Is sent to indicate that the time data of the currently selected
-/// node has become valid. This alwa
+/// @brief Is sent to indicate that the time data validity of the currently
+/// selected node has become valid.
 ///
 /// This notification is guaranteed to be posted on the main thread.
 extern NSString* timeDataDidBecomeValid;
-/// @brief Is sent to indicate that the time data of the current game variation
-/// has become invalid.  An NSNumber object is associated with the notification
-/// that contains the #GoTimeDataInvalidReason value. Receivers of the
-/// notification must process the NSNumber immediately because the NSNumber may
-/// be deallocated after the notification has been delivered.
+/// @brief Is sent to indicate that the time data validity of the currently
+/// selected node has become invalid.
+///
+/// This notification is only sent if the validity changes from valid to
+/// invalid. It is @b not sent if the invalid reason changes.
 ///
 /// This notification is guaranteed to be posted on the main thread.
 extern NSString* timeDataDidBecomeInvalid;
