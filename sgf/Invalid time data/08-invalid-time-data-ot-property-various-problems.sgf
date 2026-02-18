@@ -3,6 +3,6 @@ KM[6.5]
 OT[25/600 Canadian]
 ;C[The node contains time data that refers to main time, but the game does not use main time. GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem.]
  B[aa]BL[590]
-;C[The node contains time data that has a negative number of remaining moves. In theory GoTimeDataInvalidReasonRemainingNumberOfMovesNegative, but will be converted to GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum because the app uses an unsigned data type to store the information.]
+;C[The node contains time data that has a negative number of remaining moves. LoadGameCommand converts this to 0 (zero) because the app uses an unsigned data type to store the information.]
  B[ab]BL[590]OB[-24]
 )

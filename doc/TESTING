@@ -2008,12 +2008,6 @@ GoTimeDataInvalidReasonMoveAndTimeDataPlayerMismatch                            
 GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem                  08-invalid-time-data-ot-property-various-problems.sgf
 GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem            09-invalid-time-data-tm-property-various-problems.sgf
 GoTimeDataInvalidReasonRemainingTimeNegative                                           07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
-GoTimeDataInvalidReasonRemainingNumberOfMovesNegative                                  08-invalid-time-data-ot-property-various-problems.sgf
-                                                                                       Not possible because GoNodeTimeData uses an unsigned data type to store the information.
-                                                                                       Will be converted to GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum.
-GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative                                10-invalid-time-data-ot-japanese-timing-various-problems.sgf
-                                                                                       Not possible because GoNodeTimeData uses an unsigned data type to store the information.
-                                                                                       Will be converted to GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum.
 GoTimeDataInvalidReasonAbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData       07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
 GoTimeDataInvalidReasonRemainingAbsoluteTimeIsIncreasing                               07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
 GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows                 07-invalid-time-data-tm-and-ot-properties-various-problems.sgf

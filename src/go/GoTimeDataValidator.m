@@ -690,10 +690,6 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum, self.timeDataValidationMode);
     else if (context->nodeTimeData.remainingTimeInSeconds < 0)
       context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingTimeNegative, self.timeDataValidationMode);
-    else if (context->nodeTimeData.remainingNumberOfMoves < 0)
-      context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesNegative, self.timeDataValidationMode);
-    else if (context->nodeTimeData.remainingNumberOfPeriods < 0)
-      context->nodeValidationResult = GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative, self.timeDataValidationMode);
     else if (context->nodeTimeData.isRemainingTimeAbsoluteTime)
     {
       if (! context->absoluteTimeSystemIsPresent)

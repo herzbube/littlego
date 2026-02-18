@@ -557,30 +557,6 @@
 // -----------------------------------------------------------------------------
 /// @brief Exercises the general node time data validation.
 // -----------------------------------------------------------------------------
-- (void) testVisitNodeTimeData_RemainingNumberOfMovesNegative
-{
-  // remainingNumberOfMoves is unsigned in the app's data model
-  // => invalid reason can never occur
-  //
-  // The OB/OW properties can have a negative value in the SGF data, but the
-  // app handles this by converting the negative value to zero
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises the general node time data validation.
-// -----------------------------------------------------------------------------
-- (void) testVisitNodeTimeData_RemainingNumberOfPeriodsNegative
-{
-  // remainingNumberOfPeriods is unsigned in the app's data model
-  // => invalid reason can never occur
-  //
-  // The OB/OW properties can have a negative value in the SGF data, but the
-  // app handles this by converting the negative value to zero
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises the general node time data validation.
-// -----------------------------------------------------------------------------
 - (void) testVisitNodeTimeData_AbsoluteTimeDataFoundWithoutAbsoluteTimeSystem
 {
   [self setupGameTreeWithThreeMoveNodes];

@@ -1,7 +1,7 @@
 (;FF[4]CA[UTF-8]
 KM[6.5]
 OT[25/600 byo-yomi]
-;C[The node contains time data that has a negative number of remaining periods. In theory GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative, but will be converted to number of periods 0 (zero) by error handling in LoadGameCommand.]
+;C[The node contains time data that has a negative number of remaining periods. LoadGameCommand converts this to 0 (zero) because the app uses an unsigned data type to store the information.]
  B[ab]BL[590]OB[-24]
 ;C[The node contains time data where the remaining number of periods is higher than the time system allows. GoTimeDataInvalidReasonRemainingNumberOfPeriodsHigherThanPeriodBasedTimeSystemAllows.]
  B[ac]BL[590]OB[26]

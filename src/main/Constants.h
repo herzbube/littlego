@@ -1099,14 +1099,6 @@ enum GoTimeDataInvalidReason
   ///
   /// This check is performed in #GoTimeDataValidationModeBasic and higher.
   GoTimeDataInvalidReasonRemainingTimeNegative,
-  /// @brief A node's time data has a negative remaining number of moves.
-  ///
-  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
-  GoTimeDataInvalidReasonRemainingNumberOfMovesNegative,
-  /// @brief A node's time data has a negative remaining number of periods.
-  ///
-  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
-  GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative,
   /// @brief A node's time data refers to absolute time although a previous
   /// node's time data referred to the period-based time system.
   ///

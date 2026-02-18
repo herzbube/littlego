@@ -344,8 +344,6 @@ enum CellId
     case GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem:
     case GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem:
     case GoTimeDataInvalidReasonRemainingTimeNegative:
-    case GoTimeDataInvalidReasonRemainingNumberOfMovesNegative:
-    case GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative:
     case GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows:
     case GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows:
     case GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows:
@@ -407,8 +405,6 @@ enum CellId
     case GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem:
     case GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem:
     case GoTimeDataInvalidReasonRemainingTimeNegative:
-    case GoTimeDataInvalidReasonRemainingNumberOfMovesNegative:
-    case GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative:
     case GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows:
     case GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows:
     case GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows:
@@ -486,8 +482,6 @@ enum CellId
     case GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem:
     case GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem:
     case GoTimeDataInvalidReasonRemainingTimeNegative:
-    case GoTimeDataInvalidReasonRemainingNumberOfMovesNegative:
-    case GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative:
     case GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows:
     case GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows:
     case GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows:
@@ -816,8 +810,6 @@ enum CellId
     case GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem:
     case GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem:
     case GoTimeDataInvalidReasonRemainingTimeNegative:
-    case GoTimeDataInvalidReasonRemainingNumberOfMovesNegative:
-    case GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative:
     case GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows:
     case GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows:
     case GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows:
@@ -1098,10 +1090,6 @@ enum CellId
       return @"The time data in the currently selected node was recorded for overtime, but the game is not configured with overtime.";
     case GoTimeDataInvalidReasonRemainingTimeNegative:
       return @"The time data in the currently selected node indicates that the time left to play is negative.";
-    case GoTimeDataInvalidReasonRemainingNumberOfMovesNegative:
-      return @"The time data in the currently selected node indicates that the number of moves left to play in this period is negative.";
-    case GoTimeDataInvalidReasonRemainingNumberOfPeriodsNegative:
-      return @"The time data in the currently selected node indicates that the number of periods left to play is negative.";
     case GoTimeDataInvalidReasonAbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData:
       return @"The time data in the currently selected node was recorded for main time, but overtime has already started at this point of the game.";
     case GoTimeDataInvalidReasonRemainingAbsoluteTimeIsIncreasing:
