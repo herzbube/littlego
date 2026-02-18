@@ -59,15 +59,19 @@
 ///
 /// The default value after initialization is false.
 @property(nonatomic, assign) bool isTimeDataValid;
-/// @brief @e true if @e remainingTimeInSeconds refers to absolute time,
-/// @e false if not.
+/// @brief Indicates the time system for which this TimeView displays time data.
 ///
-/// When this is @e true, the value of @e remainingNumberOfMovesOrPeriods is not
-/// displayed. In its stead a static string is displayed, indicating that
-/// absolute time is in effect.
+/// When this is #GoTimeSystemTypeAbsolute, the value of
+/// @e remainingNumberOfMovesOrPeriods is not displayed. In its stead a static
+/// string is displayed, indicating that absolute time is in effect.
 ///
-/// The default value after initialization is false.
-@property(nonatomic, assign) bool isRemainingTimeAbsoluteTime;
+/// When this is #GoTimeSystemTypeFischer, the value of
+/// @e remainingNumberOfMovesOrPeriods is not displayed at all because the
+/// remaining number of moves is always 1, so there is no benefit in showing
+/// that number.
+///
+/// The default value after initialization is #GoTimeSystemNone.
+@property(nonatomic, assign) enum GoTimeSystemType timeSystemType;
 /// @brief The time (in seconds) that the player has left.
 ///
 /// Fractional seconds are rounded up. Rationale: If we would round down, 0.x
@@ -87,7 +91,8 @@
 /// current time period, or the number of time periods that the player has left.
 ///
 /// The value in this property is not displayed if
-/// @e isRemainingTimeAbsoluteTime is true.
+/// @e timeSystemType is either #GoTimeSystemTypeAbsolute or
+/// #GoTimeSystemTypeFischer.
 ///
 /// The default value after initialization is 0 (zero).
 ///

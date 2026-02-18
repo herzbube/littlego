@@ -319,20 +319,35 @@ enum PeriodBasedTimeSystemType
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-// TODO xxx
-//- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
-//{
-//  switch (section)
-//  {
-//    case DiscardMyLastMoveSection:
-//      return @"When you discard the computer player's last move this also discards your own last move, so that you can then immediately play again and try out a different move. Turn this option off to only discard a single last move, regardless of who made that move. Note: This option only affects computer vs. human games.";
-//    case DiscardFutureNodesAlertSection:
-//      return @"When you are viewing a board position in the middle of the current game variation, some actions (e.g. discard the current node) will discard all nodes after this position. If this option is turned off you will NOT be alerted that this is going to happen.";
-//    default:
-//      break;
-//  }
-//  return nil;
-//}
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  // We want to show the same descriptions in all modes
+  // => map read-only sections to read-write sections
+  if (self.readonlyMode)
+  {
+    switch (section)
+    {
+      case MaintimeSection_Readonly:
+        section = AbsoluteTimeSystemSection;
+        break;
+      case OvertimeSection_Readonly:
+        section = PeriodBasedTimeSystemSection;
+        break;
+      default:
+        return nil;
+    }
+  }
+
+  switch (section)
+  {
+    case AbsoluteTimeSystemSection:
+      return @"Main time is sometimes referred to as \"Absolute Time\", or the \"Absolute Timing\" time system. Main time defines a fixed amount of time. When a player has used up their main time, they either switch to overtime (if enabled), or lose the game.";
+    case PeriodBasedTimeSystemSection:
+      return @"Overtime can be used with or without a preceding block of main time. The manual has a description of all time systems that are supported by the app.";
+    default:
+      return nil;
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
@@ -448,7 +463,7 @@ enum PeriodBasedTimeSystemType
     case CellIdCanadianTimingPeriodDurationInSeconds_Readonly:
     {
       [self configureDurationValueCell:cell
-                              withText:@"Overtime"
+                              withText:@"Period duration"
                      durationInSeconds:self.timeSettingsModel.canadianTimingPeriodDurationInSeconds
                   actionValueDidChange:@selector(canadianTimingPeriodDurationInSecondsDidChange:)];
       break;
@@ -457,7 +472,7 @@ enum PeriodBasedTimeSystemType
     case CellIdCanadianTimingNumberOfMoves_Readonly:
     {
       [self configureNumberOfMovesOrPeriodsValueCell:cell
-                                            withText:@"Moves"
+                                            withText:@"Moves per period"
                               numberOfMovesOrPeriods:self.timeSettingsModel.canadianTimingNumberOfMoves
                                 actionValueDidChange:@selector(canadianTimingNumberOfMovesDidChange:)];
       break;
@@ -502,7 +517,7 @@ enum PeriodBasedTimeSystemType
     case CellIdSteadyAverageTimingPeriodDurationInSeconds_Readonly:
     {
       [self configureDurationValueCell:cell
-                              withText:@"Overtime"
+                              withText:@"Period duration"
                      durationInSeconds:self.timeSettingsModel.steadyAverageTimingPeriodDurationInSeconds
                   actionValueDidChange:@selector(steadyAverageTimingPeriodDurationInSecondsDidChange:)];
       break;
@@ -511,7 +526,7 @@ enum PeriodBasedTimeSystemType
     case CellIdSteadyAverageTimingNumberOfMoves_Readonly:
     {
       [self configureNumberOfMovesOrPeriodsValueCell:cell
-                                            withText:@"Moves"
+                                            withText:@"Moves per period"
                               numberOfMovesOrPeriods:self.timeSettingsModel.steadyAverageTimingNumberOfMoves
                                 actionValueDidChange:@selector(steadyAverageTimingNumberOfMovesDidChange:)];
       break;
@@ -520,7 +535,7 @@ enum PeriodBasedTimeSystemType
     case CellIdTotalAverageTimingPeriodDurationInSeconds_Readonly:
     {
       [self configureDurationValueCell:cell
-                              withText:@"Overtime"
+                              withText:@"Period duration"
                      durationInSeconds:self.timeSettingsModel.totalAverageTimingPeriodDurationInSeconds
                   actionValueDidChange:@selector(totalAverageTimingPeriodDurationInSecondsDidChange:)];
       break;
@@ -529,7 +544,7 @@ enum PeriodBasedTimeSystemType
     case CellIdTotalAverageTimingNumberOfMoves_Readonly:
     {
       [self configureNumberOfMovesOrPeriodsValueCell:cell
-                                            withText:@"Moves"
+                                            withText:@"Moves per period"
                               numberOfMovesOrPeriods:self.timeSettingsModel.totalAverageTimingNumberOfMoves
                                 actionValueDidChange:@selector(totalAverageTimingNumberOfMovesDidChange:)];
       break;

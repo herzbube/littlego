@@ -102,7 +102,7 @@ static int maximumNumberOfMovesOrPeriods = 99999;
   self.showsTimeData = true;
   self.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
   self.isTimeDataValid = false;
-  self.isRemainingTimeAbsoluteTime = false;
+  self.timeSystemType = GoTimeSystemTypeNone;
   self.remainingTimeInSeconds = 0.0;
   self.remainingNumberOfMovesOrPeriods = 0;
   self.clockState = GoClockStateStopped;
@@ -237,12 +237,23 @@ static int maximumNumberOfMovesOrPeriods = 99999;
     NSString* colorAndRemainingTimeString = [NSString stringWithFormat:@"%@ %@", colorString, self.remainingTimeString];
 
     NSString* mainTimeOrRemainingNumberOfMovesOrPeriodsString;
-    if (self.isRemainingTimeAbsoluteTime)
-      mainTimeOrRemainingNumberOfMovesOrPeriodsString = @"Main time";
-    else
-      mainTimeOrRemainingNumberOfMovesOrPeriodsString = self.remainingNumberOfMovesOrPeriodsString;
+    switch (self.timeSystemType)
+    {
+      case GoTimeSystemTypeAbsolute:
+        mainTimeOrRemainingNumberOfMovesOrPeriodsString = @"Main time";
+        break;
+      case GoTimeSystemTypeFischer:
+        mainTimeOrRemainingNumberOfMovesOrPeriodsString = nil;
+        break;
+      default:
+        mainTimeOrRemainingNumberOfMovesOrPeriodsString = self.remainingNumberOfMovesOrPeriodsString;
+        break;
+    }
 
-    self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@\n%@", colorAndRemainingTimeString, mainTimeOrRemainingNumberOfMovesOrPeriodsString];
+    if (mainTimeOrRemainingNumberOfMovesOrPeriodsString)
+      self.remainingTimeMovesPeriodsLabel.text = [NSString stringWithFormat:@"%@\n%@", colorAndRemainingTimeString, mainTimeOrRemainingNumberOfMovesOrPeriodsString];
+    else
+      self.remainingTimeMovesPeriodsLabel.text = colorAndRemainingTimeString;
   }
   else
   {
@@ -340,11 +351,11 @@ static int maximumNumberOfMovesOrPeriods = 99999;
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) setIsRemainingTimeAbsoluteTime:(bool)newValue
+- (void) setTimeSystemType:(enum GoTimeSystemType)newValue
 {
-  if (_isRemainingTimeAbsoluteTime == newValue)
+  if (_timeSystemType == newValue)
     return;
-  _isRemainingTimeAbsoluteTime = newValue;
+  _timeSystemType = newValue;
 
   self.viewContentNeedsUpdate = true;
   [self setNeedsLayout];
@@ -423,10 +434,10 @@ static int maximumNumberOfMovesOrPeriods = 99999;
   // 8 characters in total ("(>99999)"). This is about the same width as the
   // widest value we expect to display on line 1 ("● 88h58m"). It's
   // irrelevant anyway because the string "Main time" (which we show on line 2
-  // if isRemainingTimeAbsoluteTime is true) is wider.
+  // if timeSystemType is GoTimeSystemTypeAbsolute) is wider.
   offscreenView.remainingNumberOfMovesOrPeriods = 100000;
   // Shows "Main time" instead of a number
-  offscreenView.isRemainingTimeAbsoluteTime = true;
+  offscreenView.timeSystemType = GoTimeSystemTypeAbsolute;
   // Wider border than when clock is stopped (but border is probably outside of
   // the view's frame)
   offscreenView.clockState = GoClockStateStarted;

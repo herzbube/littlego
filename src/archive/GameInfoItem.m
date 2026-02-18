@@ -1099,12 +1099,16 @@ enum DataSourceInfoSectionItem
 
 - (UITableViewCell*) timeLimitCellWithTableView:(UITableView*)tableView
 {
-  return [self value1CellWithTableView:tableView itemName:@"Main time" itemValue:self.timeLimitInSecondsAsString];
+  TableViewVariableHeightCell* cell = [self variableHeightCellWithTableView:tableView itemName:@"Main time" itemValue:self.timeLimitInSecondsAsString];
+  cell.descriptionLabelWidthPercentage = 0.3;
+  return cell;
 }
 
 - (UITableViewCell*) overtimeInformationCellWithTableView:(UITableView*)tableView
 {
-  return [self variableHeightCellWithTableView:tableView itemName:@"Overtime" itemValue:self.overtimeInformation];
+  TableViewVariableHeightCell* cell = [self variableHeightCellWithTableView:tableView itemName:@"Overtime" itemValue:self.overtimeInformation];
+  cell.descriptionLabelWidthPercentage = 0.3;
+  return cell;
 }
 
 - (UITableViewCell*) value1CellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
@@ -1115,7 +1119,7 @@ enum DataSourceInfoSectionItem
   return cell;
 }
 
-- (UITableViewCell*) variableHeightCellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
+- (TableViewVariableHeightCell*) variableHeightCellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
 {
   TableViewVariableHeightCell* cell = (TableViewVariableHeightCell*)[TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
   cell.descriptionLabel.text = itemName;

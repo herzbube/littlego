@@ -611,9 +611,8 @@ static CGSize timeViewControllerClockViewSize = { 0.0f, 0.0f };
 - (void) updateTimeDataInTimeView:(TimeView*)timeView
                withPlayerTimeData:(GoPlayerTimeData*)playerTimeData
 {
-  timeView.isRemainingTimeAbsoluteTime = playerTimeData.isRemainingTimeAbsoluteTime;
+  timeView.timeSystemType = playerTimeData.effectiveTimeSystemType;
   timeView.remainingTimeInSeconds = playerTimeData.remainingTimeInSeconds;
-  // TODO xxx TimeView should not show anything for FischerTiming
   timeView.remainingNumberOfMovesOrPeriods = playerTimeData.remainingNumberOfMovesOrPeriods;
 }
 
@@ -631,9 +630,10 @@ static CGSize timeViewControllerClockViewSize = { 0.0f, 0.0f };
     timeView.showsTimeData = true;
     timeView.isTimeDataForBlackPlayer = nodeTimeData.isTimeDataForBlackPlayer;
     timeView.isTimeDataValid = node.isTimeDataValid;
-    timeView.isRemainingTimeAbsoluteTime = nodeTimeData.isRemainingTimeAbsoluteTime;
+    timeView.timeSystemType = (nodeTimeData.isRemainingTimeAbsoluteTime
+                               ? timeSettings.absoluteTimeSystem.goTimeSystemType
+                               : timeSettings.periodBasedTimeSystem.goTimeSystemType);
     timeView.remainingTimeInSeconds = nodeTimeData.remainingTimeInSeconds;
-    // TODO xxx TimeView should not show anything for FischerTiming
     if (nodeTimeData.isRemainingTimeAbsoluteTime)
       timeView.remainingNumberOfMovesOrPeriods = 0;
     else if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeJapanese)

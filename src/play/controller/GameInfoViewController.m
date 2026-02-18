@@ -771,6 +771,7 @@ enum BoardPositionSectionItem
         case DisputeResolutionRuleItem:
         {
           TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+          variableHeightCell.descriptionLabelWidthPercentage = 0.5;
           variableHeightCell.descriptionLabel.text = disputeResolutionRuleText_GameInfoViewController;
           variableHeightCell.valueLabel.text = [NSString stringWithDisputeResolutionRule:game.rules.disputeResolutionRule];
           break;
@@ -811,6 +812,7 @@ enum BoardPositionSectionItem
         cell = [TableViewCellFactory cellWithType:VariableHeightCellType
                                         tableView:tableView];
         TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+        variableHeightCell.descriptionLabelWidthPercentage = 0.5;
         variableHeightCell.descriptionLabel.text = @"Time settings";
         variableHeightCell.valueLabel.text = [TimeDataUtilities timeSettingsModelSummary:self.timeSettingsModel];
       }
@@ -819,6 +821,7 @@ enum BoardPositionSectionItem
         cell = [TableViewCellFactory cellWithType:VariableHeightCellType
                                         tableView:tableView];
         TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+        variableHeightCell.descriptionLabelWidthPercentage = 0.3;
 
         if (indexPath.row == MaintimeDescriptionItem)
         {
