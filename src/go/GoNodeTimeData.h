@@ -29,9 +29,6 @@
 /// 0 (zero), if @e isRemainingTimeAbsoluteTime is true. The reason is that
 /// Absolute Timing has no minimum number of moves per period limit.
 ///
-/// Depending on the time system that is in effect, @e remainingNumberOfMoves
-/// and/or @e remainingNumberOfPeriods may have a fixed value 1.
-///
 /// @e remainingNumberOfPeriods can never be 0 (zero) because if a player has
 /// no time period left they lose and cannot play another move.
 ///

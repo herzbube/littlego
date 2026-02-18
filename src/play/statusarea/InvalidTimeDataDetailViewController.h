@@ -21,7 +21,15 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The InvalidTimeDataDetailViewController class xxx
+/// @brief The InvalidTimeDataDetailViewController class is responsible for
+/// showing details about why the time data in the node that is supplied to the
+/// controller's initializer is invalid.
+///
+/// InvalidTimeDataDetailViewController displays the details in the form of a
+/// table view, with the top-level table view cell containing a textual
+/// explanation of the #GoTimeDataInvalidReason value that is stored in the
+/// GoNode, and the remaining cells providing context and actual values to
+/// supplement the textual explanation.
 // -----------------------------------------------------------------------------
 @interface InvalidTimeDataDetailViewController : UITableViewController
 {

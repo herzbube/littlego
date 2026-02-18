@@ -27,8 +27,6 @@
 #import "../utility/ExceptionUtility.h"
 
 
-// TODO xxx Review synchronization, e.g. timer/Fuego/user triggers could overlap
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoPlayerTimeData.
 // -----------------------------------------------------------------------------
@@ -125,8 +123,6 @@
   // the clock now (which will deduce any elapsed time from our remaining time),
   // and to let an external handler decide at the appropriate time whether to
   // start the clock again, or leave it suspended.
-
-  // TODO xxx do we still need this?
   if (self.clockState == GoClockStateStarted)
     [self suspendClockIfNotSuspended:GoClockSuspendedReasonRestoredFromArchive];
 
@@ -189,6 +185,10 @@
 /// - If the player has already lost on time. The caller needs to make sure
 ///   the player still has some time left before invoking this method. Invoke
 ///   didPlayerLoseOnTime() to check.
+/// - If @e remainingNumberOfMoves is 0 (zero) and an overtime system is in
+///   effect that does not use #GoUnusedTimeHandlingUseForExtraMoves. That
+///   scenario can only occur if the internal logic of GoPlayerTimeData did
+///   not perform a correct period reset when the previous move was played.
 ///
 /// @exception NSInvalidArgumentException Is raised if @a nodeTimeData is
 /// @e nil.
@@ -207,6 +207,8 @@
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
+  // Side effect of this check: The remainder of the method does not have to
+  // deal with a potentially negative remaining time
   if (self.didPlayerLoseOnTime)
   {
     NSString* errorMessage = @"updateAfterMoveWasPlayed: failed: player has lost on time";
@@ -243,6 +245,9 @@
   // 1) It would be unfair to cut off unspent time; and
   // 2) Rounding down could lead to zero remaining time, which would
   //    incorrectly indicate that the player lost the game on time.
+  // Note: We don't have to deal with a potentially negative value here, because
+  // a negative remaining time means the player has lost on time, and that would
+  // cause an exception further up.
   self.remainingTimeInSeconds = ceil(self.remainingTimeInSeconds);
 
   // Important: Set the node time data with values before the period reset. We
@@ -321,7 +326,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Returns either the remaining number of moves (if an overtime system
+/// other than Japanese Timing is in effect), or the remaining number of periods
+/// (if Japanese Timing is in effect). If main time is still in effect, returns
+/// the number of periods of the absolute time system (which is 1).
 // -----------------------------------------------------------------------------
 - (unsigned long) remainingNumberOfMovesOrPeriods
 {
@@ -343,7 +351,10 @@
 // -----------------------------------------------------------------------------
 - (enum GoClockState) clockState
 {
-  return self.goClock.state;
+  @synchronized(self)
+  {
+    return self.goClock.state;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -355,7 +366,10 @@
 // -----------------------------------------------------------------------------
 - (enum GoClockSuspendedReason) clockSuspendedReason
 {
-  return self.goClock.suspendedReason;
+  @synchronized(self)
+  {
+    return self.goClock.suspendedReason;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -369,7 +383,13 @@
 #pragma mark - Clock handling
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Starts the clock.
+///
+/// Posts #playerClockStateHasChanged on the main thread after starting the
+/// clock.
+///
+/// Raises an @e NSInternalInconsistencyException if the clock is already
+/// started, or if the player has lost on time.
 // -----------------------------------------------------------------------------
 - (void) startClock
 {
@@ -397,7 +417,23 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Suspends the clock.
+///
+/// If the clock is started when this method is invoked, deducts the elapsed
+/// time since the clock was started from the remaining time. Performs a period
+/// reset if the remaining time reaches zero, which may result in the player
+/// losing on time. If that happens, immediately stops the clock. Posts
+/// #playerClockStateHasChanged on the main thread (before deducting time), then
+/// posts #playerTimeDataHasChanged on the main thread (after deducting time).
+/// If the clock is stopped because the player loses on time, posts
+/// another #playerClockStateHasChanged followed by #playerLostOnTime on the
+/// main thread.
+///
+/// If the clock is stopped when this method is invoked, does not deduct any
+/// time. Posts #playerClockStateHasChanged on the main thread.
+///
+/// Raises an @e NSInternalInconsistencyException if the clock is already
+/// suspended.
 // -----------------------------------------------------------------------------
 - (void) suspendClockIfNotSuspended:(enum GoClockSuspendedReason)reason
 {
@@ -440,7 +476,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Stops the clock.
+///
+/// If the clock is started when this method is invoked, deducts the elapsed
+/// time since the clock was started from the remaining time. Performs a period
+/// reset if the remaining time reaches zero, which may result in the player
+/// losing on time. Posts #playerClockStateHasChanged on the main thread (before
+/// deducting time), then posts #playerTimeDataHasChanged on the main thread
+/// (after deducting time). If the clock is stopped because the player loses on
+/// time, posts #playerLostOnTime on the main thread.
+///
+/// If the clock is suspended when this method is invoked, does not deduct any
+/// time. Posts #playerClockStateHasChanged on the main thread.
+///
+/// If the clock is stopped when this method is invoked, does nothing.
 // -----------------------------------------------------------------------------
 - (void) stopClockIfNotStopped
 {
@@ -470,21 +519,31 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Returns @e true if the remaining time is 0 (zero) or less and the
+/// player therefore has lost the game on time. Returns @e false if the
+/// remaining time is still above 0 (zero).
+///
+/// Raises an @e NSInternalInconsistencyException if the clock is started and
+/// the remaining time therefore cannot be reliably determined.
 // -----------------------------------------------------------------------------
 - (bool) didPlayerLoseOnTime
 {
-  if (self.goClock.state == GoClockStateStarted)
+  @synchronized(self)
   {
-    NSString* errorMessage = @"Failed to determine whether player lost on time, clock is still started";
-    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    if (self.goClock.state == GoClockStateStarted)
+    {
+      NSString* errorMessage = @"Failed to determine whether player lost on time, clock is still started";
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
   }
 
   return (self.remainingTimeInSeconds <= 0);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Posts the notification with name @a notificationName on the main
+/// thread and this GoPlayerTimeData as the object associated with the
+/// notification.
 // -----------------------------------------------------------------------------
 - (void) postNotificationOnMainThread:(NSString*)notificationName
 {
@@ -617,7 +676,32 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Deducts @a elapsedTimeInSeconds from property
+/// @e remainingTimeInSeconds and returns a value from the enumeration
+/// #GoPeriodDurationElapsedResultType to indicate whether the game continues
+/// (because @e remainingTimeInSeconds is still above zero), or stops because
+/// the player lost on time (@e remainingTimeInSeconds has reached zero).
+///
+/// When @e remainingTimeInSeconds reaches zero the player loses on time except
+/// in the following cases:
+/// - If the clock is on main time and the time settings define an overtime
+///   system, then GoPlayerTimeData switches from main time to overtime, adding
+///   the overtime system's period duration to @e remainingTimeInSeconds. If
+///   @e remainingTimeInSeconds is now above zero the game continues. Otherwise
+///   the next two cases are tried.
+/// - If the overtime system that is in effect has more than one period left
+///   (Japanese Timing), GoPlayerTimeData deducts a time period and adds the
+///   period duration to @e remainingTimeInSeconds. If @e remainingTimeInSeconds
+///   is now above zero the game continues. Otherwise GoPlayerTimeData repeats
+///   the time period deduction until either @e remainingTimeInSeconds becomes
+///   greater than zero and the game continues, or all periods are exhausted
+///   and the player loses on time.
+/// - If the overtime system that is in effect has the #GoUnusedTimeHandling
+///   value #GoUnusedTimeHandlingUseForExtraMoves and the player has already
+///   made the minimum number of moves per period, GoPlayerTimeData performs
+///   a period reset and adds the period duration to @e remainingTimeInSeconds.
+///   If @e remainingTimeInSeconds is now above zero the game continues.
+///   Otherwise the player loses on time.
 // -----------------------------------------------------------------------------
 - (enum GoPeriodDurationElapsedResultType) deductElapsedTimeInSeconds:(double)elapsedTimeInSeconds
 {
@@ -674,7 +758,19 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx document
+/// @brief Repeatedly deducts a period and adds the period duration to
+/// @e remainingTimeInSeconds until either @e remainingTimeInSeconds is
+/// above zero, or all periods are exhausted (@e remainingNumberOfPeriods
+/// becomes zero).
+///
+/// Returns #GoPeriodDurationElapsedResultTypeGameContinues if
+/// @e remainingTimeInSeconds is above zero. Returns
+/// #GoPeriodDurationElapsedResultTypeGameLostOnTime if all periods are
+/// exhausted and @e remainingTimeInSeconds is still zero or below.
+///
+/// Immediately returns #GoPeriodDurationElapsedResultTypeGameContinues
+/// without deducting a period if @e remainingTimeInSeconds is above zero when
+/// this method is invoked.
 // -----------------------------------------------------------------------------
 - (enum GoPeriodDurationElapsedResultType) countDownPeriodsWithTimeSystem:(GoTimeSystem*)timeSystem
 {

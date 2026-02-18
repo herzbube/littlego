@@ -166,7 +166,7 @@
 /// @brief True if Fuego should reuse the subtree from the previous search.
 @property(nonatomic, assign) bool fuegoReuseSubtree;
 /// @brief Maximum time in seconds that Fuego is allowed to think on its own
-/// turn.
+/// turn. This is ignored when using timed play.
 @property(nonatomic, assign) unsigned int fuegoMaxThinkingTime;
 /// @brief Maximum number of games that Fuego is allowed to play before it must
 /// decide on a best move.

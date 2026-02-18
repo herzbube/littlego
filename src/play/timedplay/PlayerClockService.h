@@ -118,7 +118,13 @@ enum PlayerClockServiceOperationResult
 /// current state of the application as seen by the service. Does nothing if
 /// the current game does not use timed play.
 ///
-/// TODO xxx provide at least one example why the request may not be honored.
+/// Some examples why the request may not be honored are: The game has already
+/// ended, or the user has previously suspended the clock, or the user attempts
+/// to start the clock of a player when it's not that player's turn.
+///
+/// In some cases a stopped clock is not started, but instead suspended. Notably
+/// this happens if the user preferences indicate that the human player's clock
+/// not be automatically started.
 // -----------------------------------------------------------------------------
 - (void) startClockOfPlayer:(GoPlayer*)player
                      reason:(enum PlayerClockStartReason)startReason;
@@ -129,21 +135,25 @@ enum PlayerClockServiceOperationResult
 /// current state of the application as seen by the service. Does nothing if
 /// the current game does not use timed play.
 ///
-/// The clock is guaranteed to be not started when this method returns. If the
-/// clock is not stopped as requested, then it is at least suspended.
-///
-/// TODO xxx provide at least one example why the request may not be honored.
+/// Currently the only reason why the request may not be honored is if the clock
+/// is already suspended. If that is the case, the clock remains suspended.
+/// It can therefore be said that the clock is guaranteed to be "not started"
+/// when this method returns. If the clock is not stopped as requested, then it
+/// is at least suspended.
 // -----------------------------------------------------------------------------
 - (enum PlayerClockServiceOperationResult) stopClockOfPlayer:(GoPlayer*)player
                                                       reason:(enum PlayerClockStopReason)stopReason;
 
 // -----------------------------------------------------------------------------
-/// @brief Requests that the clock of @a player be stopped, because of
+/// @brief Requests that the clock of @a player be suspended, because of
 /// @a suspendReason. The request may or may not be honored, depending on the
 /// current state of the application as seen by the service. Does nothing if
 /// the current game does not use timed play.
 ///
-/// TODO xxx provide at least one example why the request may not be honored.
+/// Some examples why the request may not be honored are: The user attempts to
+/// suspend the clock of a player when it's not that player's turn, or the user
+/// preferences indicate that the user is not allowed to suspend player clocks
+/// at all.
 // -----------------------------------------------------------------------------
 - (enum PlayerClockServiceOperationResult) suspendClockOfPlayer:(GoPlayer*)player
                                                          reason:(enum PlayerClockSuspendReason)suspendReason;
@@ -154,6 +164,9 @@ enum PlayerClockServiceOperationResult
 /// may or may not be honored, depending on the current state of the application
 /// as seen by the service. Does nothing if the current game does not use timed
 /// play.
+///
+/// An example why the request may not be honored is if it is not the turn of
+/// @a player.
 // -----------------------------------------------------------------------------
 - (void) resetClockOfPlayer:(GoPlayer*)player
                      reason:(enum PlayerClockResetReason)resetReason;

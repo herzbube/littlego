@@ -192,9 +192,6 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(playerLostOnTime:) name:playerLostOnTime object:nil];
-
-  // TODO xxx consider enhancing UIViewControllerAdditions with general support
-  // for interaction indication
 }
 
 // -----------------------------------------------------------------------------

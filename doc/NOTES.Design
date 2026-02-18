@@ -644,6 +644,101 @@ Markup icon image view
 - [C0064] Height = Fixed height
 
 
+Timed play design
+-----------------
+Managing player clocks
+- The main problem with managing player clocks is that they can be suspended.
+  If this were not possible, then it would be as simple as in a real-world game
+  of Go: When a player's turn starts the clock starts, when a player's turn ends
+  the clock stops.
+- This app, however, does not strive to replicate this real-world scenario. This
+  app instead has the following goals:
+  - Let the user play a timed game, but in a relaxed non-tournament,
+    non-competitive environment where the user has the freedom to suspend
+    the clock whenever a distraction occurs or they choose to do so for any
+    other reason.
+  - To help with the above goal of a relaxed game, if the user performs an
+    action that would prevent them from playing a move in time, the app
+    automatically suspends the clock. One obvious example for this is when the
+    user sends the entire app to the background. Other examples, for when the
+    app is still in the foreground, are when the user switches to a different
+    tab or calls up the Game Info screen and no longer sees the game board, or
+    when the user calls up the "More game actions" menu and is no longer able
+    to interact with the game board to make a move. When the situation
+    "normalizes", i.e. the user is again able to interact with the game board
+    and make a move, the app automatically resumes the clock.
+- So the main problem that the app must solve is when to suspend clocks and when
+  to resume or stop a suspended clock.
+- A number of basic invariants are:
+  - If the game that is currently in progress does not use timed play, then the
+    app does not touch player clocks.
+  - If the current game uses timed play, ignore all attempts to change the state
+    of the clock of the player who is not next to move. This mainly is important
+    for direct user interaction in the UI, where the user attempts to suspend a
+    player clock, or resume a suspended player clock. The application logic that
+    governs game play should be correct and should never attempt to manipulate
+    the clock of the player when it's not their turn.
+  - If the current game uses timed play, but the time data stored in the
+    currently selected node is not valid, then the app does not touch player
+    clocks. See "Time data validation" below for details.
+- Inputs for player clock management (possibly incomplete):
+  - Application events (e.g. scene is deactivated or activated, tab is changed,
+    a screen is called up or dismissed, etc.) that indicate that a clock may
+    need to be suspended or resumed.
+  - Requests from various parts of the application logic to start or stop a
+    clock (e.g. a player's turn ended or started, the game ended).
+  - When the currently selected node changes, player clocks must be adjusted to
+    the situation of the newly selected node.
+  - Direct user interaction with the clock, i.e. the user wants to suspend a
+    started clock, or resume a suspended clock.
+  - The app also suspends and resumes the clock when it needs to perform
+    internal housekeeping. The only example so far is when the one-second timer
+    fires that keeps the user interface clock counting down.
+- Involved classes
+  - The central authority for managing player clocks is the class
+    TimedPlayController. It orchestrates all the inputs listed above to fulfill
+    the goals followed by the app, as outlined further up.
+  - The protocol PlayerClockService is used by various parts of the application
+    logic to request changes to the player clock state. TimedPlayController
+    implements the protocol and fulfills the requests according to its various
+    inputs. TimedPlayController may ignore a request if it violates a basic
+    invariant. While that may sound irritating, this is a conscious design
+    choice: Various parts of the application logic can be kept simpler if they
+    are allowed to assume that the game uses timed play and that they need to
+    manage a player clock. The actual decisions what to do with a request are
+    then deferred to TimedPlayController. For instance, if the game does not
+    actually use timed play, TimedPlayController can simply ignore the request.
+  - The GoPlayerTimeData class keeps the player's time data and provides the
+    actual player clock functionality.
+  - The GoTimeSystem class represents one of the time systems supported by the
+    app, and stores the parameters that govern timed play when this particular
+    time system is in effect. For instance, a GoTimeSystem instance may indicate
+    that Canadian Timing is being used, and that the user chose a certain
+    period duration <d>, and a number of moves per period <n>, when they started
+    the game.
+  - The GoTimeSettings class assembles two GoTimeSystem instances that govern
+    the game's timed play. The first GoTimeSystem instance indicates whether
+    main time is used, the second GoTimeSystem instance indicates whether
+    overtime is used (and which time system).
+  - The GoNodeTimeData class stores the time data after a move was played.
+    Instances are attached to GoNode, and their presence or absence indicate
+    the presence or absence of node-specific time data (following the same
+    concept as other classes, such as GoNodeMarkup, to indicate the presence or
+    absence of optional node data).
+  - The TimeSettingsCommand and TimeLeftCommand classes are used to configure
+    the GTP engine. The "Research" document contains a large amount of
+    information, not replicated here, about how Fuego handles timed play.
+  - The GoTimeDataValidator class is used to perform validation of time data
+    when a game is is loaded from the archive. Time data produced by this app
+    is always valid, but an SGF file produced by another Go program may contain
+    time data that this app does not understand (e.g. an unknown/custom time
+    system), or time data is missing that is required to guarantee that this
+    app's time-related functions work properly.
+- A number of UI-related classes (controllers, views) also exist to display time
+  data, but as these are always subject to change as the app evolves, they are
+  not mentioned here.
+
+
 Working with time data
 ----------------------
 Handling of integer/fractional seconds

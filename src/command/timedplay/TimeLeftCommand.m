@@ -88,28 +88,6 @@ typedef struct TimeLeftParameterValues TimeLeftParameterValues;
   if (playerTimeData.clockState == GoClockStateStarted)
     DDLogError(@"%@: Player clock is already started, time_left will use remaining time that is too high", self);
 
-  // TODO xxx Consider adding user preferences for Japanese Timing and Fischer
-  // Timing to determine remainingNumberOfSeconds.
-  // - Japanese Timing
-  //   - Option 1: Set the period duration as time limit (= current implementation)
-  //     => Fuego will never exhaust periods
-  //   - Option 2: Set the sum of all remaining period durations as time limit
-  //     => Fuego will make use of the periods, and will probably very quickly end up with
-  //        only 1 time period left
-  //   - Option 3: Set n% (ranging between 51-100%) of the sum of two period durations as
-  //     time limit as long as there are 2 or more periods remaining; when there is only one
-  //     period remaining set its duration as time limit
-  //     => Fuego will never use up more than 1 period per move, but will probably still
-  //        rather quickly end up with only 1 time period left
-  // - Fischer Timing
-  //   - Option 1: Set the remaining time as time limit
-  //     => Fuego will probably quickly use up the initial time and will then be reduced to
-  //        the extra time per move
-  //   - Option 2: If the remaining time is greater than the extra time duration, set the
-  //     time limit to extra time duration + n% of the buffer time; otherwise just set the
-  //     time limit to be the remaining time
-  //     => Restrict Fuego from using up the time buffer too aggressively
-
   // We use floor() because 1) we are almost certain to get a fractional
   // value; but 2) the command supports only integer values; so 3) we round
   // down and not up, to prevent Fuego from using more time than the app

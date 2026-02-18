@@ -266,7 +266,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self setupSound];
   // Has no dependencies
   [self setupFuego];
-  // TODO xxx review dependencies
+  // Depends on setupRegistry
   [self setupTimedPlay];
 
   return YES;

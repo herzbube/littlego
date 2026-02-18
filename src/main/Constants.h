@@ -1765,11 +1765,7 @@ extern NSString* nodeTreeViewNodeSymbolDidChange;
 /// players has changed. The GoPlayerTimeData object whose clock state has
 /// changed is associated with the notification.
 ///
-/// This notification is guaranteed to be posted on the main thread. Neither
-/// player's clock is running when this notification is posted, to avoid the
-/// player losing time while receivers are handling the notification. Once all
-/// receivers have handled the notification, one of the clocks may be
-/// (re)started.
+/// This notification is guaranteed to be posted on the main thread.
 ///
 /// TODO xxx notify ApplicationStateManager that data is dirty
 extern NSString* playerClockStateHasChanged;
@@ -1779,11 +1775,7 @@ extern NSString* playerClockStateHasChanged;
 /// GoPlayerTimeData object whose data has changed is associated with the
 /// notification.
 ///
-/// This notification is guaranteed to be posted on the main thread. Neither
-/// player's clock is running when this notification is posted, to avoid the
-/// player losing time while receivers are handling the notification. Once all
-/// receivers have handled the notification, one of the clocks may be
-/// (re)started.
+/// This notification is guaranteed to be posted on the main thread.
 ///
 /// TODO xxx notify ApplicationStateManager that data is dirty
 extern NSString* playerTimeDataHasChanged;
@@ -1791,14 +1783,12 @@ extern NSString* playerTimeDataHasChanged;
 /// game. The GoPlayerTimeData object associated with the player who lost is
 /// associated with the notification.
 ///
-/// This notification is guaranteed to be posted on the main thread. When this
-/// notification is posted, the clock of the losing player is stopped and the
-/// clock of the winning player is suspended.
+/// This notification is guaranteed to be posted on the main thread.
 ///
 /// TODO xxx notify ApplicationStateManager that data is dirty
 extern NSString* playerLostOnTime;
-/// @brief Is sent to indicate that the time data of the current game variation
-/// has become valid.
+/// @brief Is sent to indicate that the time data of the currently selected
+/// node has become valid. This alwa
 ///
 /// This notification is guaranteed to be posted on the main thread.
 extern NSString* timeDataDidBecomeValid;

@@ -1393,10 +1393,16 @@ Fuego actually uses for a move:
       with the GTP command go_param_timecontrol: remaining_constant,
       fast_open_moves and fast_open_factor.
     - In general, the algorithm gives early moves in the game more time than
-      later moves: For each move, the amount of main time that is left is
-      divided by the estimated total number of moves in a game. Assuming that
-      the estimate stays the same, this results in later moves getting less and
-      less time, as the amount of main time dwindles.
+      later moves.
+      - For each move, the amount of main time that is left is divided by the
+        estimated TOTAL number of moves in a game - i.e. NOT the estimated
+        REMAINING number of moves.
+      - Assuming that the estimated TOTAL number of moves stays the same, this
+        results in later moves getting less and less time, as the amount of main
+        time dwindles.
+      - Although the estimated REMAINING number of moves (algorithm see below)
+        is somewhat fluid, thus influencing the estimated TOTAL number, the
+        general rule that early moves get more time remains in force.
     - remaining_constant can be set to further influence the degree to which
       early moves are favoured with more time.
       - remaining_constant is multiplied with the "estimated total number of
@@ -1412,19 +1418,20 @@ Fuego actually uses for a move:
       - When remaining_constant becomes 0, the divisor will be capped at 1 (as
         explained above), which results in the first move getting the entire
         main time.
+      - The way how the algorithm works, remaining_constant is also a threshold
+        until WHEN in the game remaining_constant stays effective. At 1.0
+        remaining_constant has no effect at all. At 0.5, remaining_constant is
+        effective until half of the game has passed (i.e. half of the estimated
+        TOTAL number of moves have been played). At 1.0, remaining_constant is
+        effective for the entire game.
+      - The SgDefaultTimeControl constructor uses 1.0 as the default value for
+        remaining_constant, but GoUctPlayer::SetDefaultParameters changes that
+        value to 0.5.
     - In case Fuego is configured to use overtime after main time, the algorithm
       contains steps to make sure that Fuego can actually reach overtime. This
       is achieved by giving moves more time than they would get otherwise, in
       particular a move in main time can never get less time than the first
       move will get in overtime.
-    - One final twist are that Fuego can be configured to give opening moves
-      less time, and therefore leave more main time for later moves, under the
-      assumption that opening moves don't require much time to calculate.
-      - The parameter fast_open_moves defines how many moves at the start of a
-        game will get less time.
-      - The parameter fast_open_factor is used to multiply the time the move
-        would get to arrive at the final time. Obviously, if fast_open_moves is
-        zero then fast_open_factor will be ignored.
     - The estimated amount of remaining moves is calculated according to the
       following sub algorithm:
       - Number of intersections that are currently empty
@@ -1448,6 +1455,14 @@ Fuego actually uses for a move:
         - As explained above, there is a cap that makes sure that low values
           for final_space cannot lead to too low number of estimated remaining
           moves.
+  - One final twist is that Fuego can be configured to give opening moves
+    less time, and therefore leave more main time for later moves, under the
+    assumption that opening moves don't require much time to calculate.
+    - The parameter fast_open_moves defines how many moves at the start of a
+      game will get less time.
+    - The parameter fast_open_factor is used to multiply the time the move
+      would get to arrive at the final time. Obviously, if fast_open_moves is
+      zero then fast_open_factor will be ignored.
 
 Some types used
 - SgTimeSettings stores the parameters of the time systems in use. Supported:
@@ -1565,6 +1580,70 @@ Other GTP commands and their effect on the clock
   - Starts the clock if it was suspended by gogui-setup.
 - reg_genmove
   - Ignores clock entirely.
+
+What happens when Fuego thinks the player has lost on time and it receives a
+"genmove" command"?
+- The question is important because when very low time limits are used there is
+  the potential that too much time elapses beteen the moment when Little Go
+  sets a player's time limit with the "time_left" command and the time it
+  sends the "genmove" command. The main thing to clarify is whether Fuego will
+  still generate a move of any kind, or if it will start to behave differently.
+  For instance, it might indicate that the "genmove" command has failed.
+- Without time limits, the following sequence leads to Fuego calculating a move
+  for the last "genmove" command
+    play b a1
+    play w a2
+    play b a3
+    genmove w
+    genmove b
+    genmove w
+    genmove b
+- With "time_settings 5 0 0" and deliberate wait times between the commands to
+  let the main time limit of 5 seconds expire, the last "genmove" command in the
+  sequence above generates a PASS move, and all further "genmove" commands also
+  generate PASS moves. This is the output of the last "genmove" command in the
+  sequence above:
+    genmove b
+    SgTimeRecord: outOfTime
+    SgDefaultTimeControl: timeLeft=-24.7754 remaining=67.5 timeMove=0
+    GoUctPlayer: No tree to reuse found
+    SgUctSearch: max time reached
+    Count          1
+    GamesPlayed    1
+    Nodes          1
+    Time           0.034
+    GameLen        477.0 dev=0.0 min=477.0 max=477.0
+    InTree         0.0 dev=0.0 min=0.0 max=0.0
+    Aborted        0%
+    Games/s        29.6
+    Value          0.85
+    Sequence
+    TimeInitTree   0.00
+    TimeRootFilter 0.00
+    GoUctPlayer: doing a search if early pass is possible
+    SgUctSearch: max time reached
+    GoUctPlayer: no early pass possible (no win)
+    SgTimeRecord: outOfTime
+    = PASS
+- When "time_left" is used to reset the time limit back to >0, Fuego takes again
+  some time to think, but only a very short time - probably because its
+  implementation of the estimated number of moves left during main time kicks
+  in. Afterwards "genmove" commands no longer result in PASS moves but in actual
+  play moves, but they execute very quickly.
+- Conclusion:
+  - As long as there are still moves from the opening book, Fuego happily
+    generates moves from the opening book even though there is no time left.
+  - As soon as Fuego has to actually calculate a move when there is no time
+    left, it immediately responds with a move.
+    - If Fuego never had time to calculate a subtree, it seems to always
+      generate PASS moves.
+    - If Fuego had time to do some calculations, then it generates actual play
+      moves.
+    - Not verified, but an educated guess: Fuego might eventually revert to
+      playing PASS moves when it exhausts the previously made calculations.
+  - In any case, Fuego continues to generate moves when no time is left, even
+    if they may not be good moves. This means that Little Go's handling of the
+    response to the "genmove" command does not need to be adapted.
 
 Problematic behaviours of Fuego that can lead to time management bugs:
 - Fuego does not reset MovesLeft to 0 in the following scenario
