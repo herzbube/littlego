@@ -50,5 +50,7 @@
 + (NSString*) stringWithBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation;
 + (NSString*) stringWithMarkupType:(enum MarkupType)markupType;
 + (BOOL) nullableString:(NSString*)string1 isEqualToNullableString:(NSString*)string2;
++ (NSString*) stringWithPeriodBasedTimeSystemType:(enum GoTimeSystemType)periodBasedTimeSystemType;
++ (NSString*) shortStringWithPeriodBasedTimeSystemType:(enum GoTimeSystemType)periodBasedTimeSystemType;
 
 @end

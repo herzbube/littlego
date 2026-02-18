@@ -25,6 +25,7 @@
 #import "../../go/GoScore.h"
 #import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiSettingsModel.h"
@@ -85,7 +86,14 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.newBoardPosition = aBoardPosition;
+
+  // The default is to assume a sequence of one ChangeBoardPositionCommand
+  // instances
+  self.isFirstBoardPositionChange = true;
+  self.isLastBoardPositionChange = true;
+
   return self;
 }
 
@@ -167,10 +175,11 @@
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
+  int oldCurrentBoardPosition = boardPosition.currentBoardPosition;
   DDLogVerbose(@"%@: newBoardPosition = %d, currentBoardPosition = %d, numberOfBoardPositions = %d",
                [self shortDescription],
                self.newBoardPosition,
-               boardPosition.currentBoardPosition,
+               oldCurrentBoardPosition,
                boardPosition.numberOfBoardPositions);
 
   if (self.newBoardPosition < 0 || self.newBoardPosition >= boardPosition.numberOfBoardPositions)
@@ -182,6 +191,12 @@
   @try
   {
     [[LongRunningActionCounter sharedCounter] increment];
+
+    if (self.isFirstBoardPositionChange)
+    {
+      [[Registry sharedRegistry].playerClockService stopClockOfPlayer:game.nextMovePlayer
+                                                               reason:PlayerClockStopReasonSelectedNodeChanges];
+    }
 
     UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
 
@@ -199,11 +214,14 @@
       [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
     }
 
-    int oldCurrentBoardPosition = boardPosition.currentBoardPosition;
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    NSArray* notificationObject = @[[NSNumber numberWithInt:oldCurrentBoardPosition],
+                                    [NSNumber numberWithInt:self.newBoardPosition]];
+    [center postNotificationName:currentBoardPositionWillChange object:notificationObject];
+
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:self.newBoardPosition]]];
+    [center postNotificationName:currentBoardPositionDidChange object:notificationObject];
 
     SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
     bool syncSuccess = [syncCommand submit];
@@ -221,6 +239,12 @@
     {
       [game.score didChangeBoardPosition];  // re-enable GoBoardRegion caching
       [game.score calculateWaitUntilDone:false];
+    }
+
+    if (! game.nextMovePlayerIsComputerPlayer && self.isLastBoardPositionChange)
+    {
+      [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                                reason:PlayerClockStartReasonHumanPlayerTurnBegins];
     }
 
     return true;

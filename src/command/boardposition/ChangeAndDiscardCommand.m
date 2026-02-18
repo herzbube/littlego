@@ -52,18 +52,9 @@
 
     bool success;
 
-    // Before we discard, first change to a node that will be valid even after
-    // the discard.
-    if (shouldDiscardNodes)
-    {
-      success = [self changeCurrentNodeIfNecessary];
-      if (! success)
-      {
-        DDLogError(@"%@: Aborting because changeCurrentNodeIfNecessary failed", [self shortDescription]);
-        return false;
-      }
-    }
-
+    // Revert game state before we change the node, because this allows
+    // ChangeBoardPositionCommand to start the clock of the player whose turn
+    // it is
     if (shouldRevertGameStateToInProgress)
     {
       success = [self revertGameStateIfNecessary];
@@ -76,6 +67,15 @@
 
     if (shouldDiscardNodes)
     {
+      // Before we discard, first change to a node that will be valid even after
+      // the discard.
+      success = [self changeCurrentNodeIfNecessary];
+      if (! success)
+      {
+        DDLogError(@"%@: Aborting because changeCurrentNodeIfNecessary failed", [self shortDescription]);
+        return false;
+      }
+
       success = [self discardNodesIfNecessary];
       if (! success)
       {
@@ -179,6 +179,8 @@
   // away from the current board position. Because of this we use a loop that
   // changes board positions in chunks.
   int changeChunkSize = [ChangeBoardPositionCommand synchronousExecutionThreshold];
+  bool firstChunk = true;
+  bool lastChunk = false;
   while (numberOfNodesInCurrentGameVariationToDiscard > 0)
   {
     int offset;
@@ -188,12 +190,21 @@
       offset = -numberOfNodesInCurrentGameVariationToDiscard;
     numberOfNodesInCurrentGameVariationToDiscard += offset;
 
+    if (numberOfNodesInCurrentGameVariationToDiscard <= 0)
+      lastChunk = true;
+
     // initWithOffset:() is permissive and allows us to specify an offset that
     // would result in an invalid board position. The offset is adjusted in that
     // case to result in a valid board position.
-    bool success = [[[[ChangeBoardPositionCommand alloc] initWithOffset:offset] autorelease] submit];
+    ChangeBoardPositionCommand* command = [[[ChangeBoardPositionCommand alloc] initWithOffset:offset] autorelease];
+    command.isFirstBoardPositionChange = firstChunk;
+    command.isLastBoardPositionChange = lastChunk;
+
+    bool success = [command submit];
     if (! success)
       return false;
+
+    firstChunk = false;
   }
 
   return true;

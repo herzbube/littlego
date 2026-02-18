@@ -27,6 +27,7 @@
 @class GoPlayer;
 @class GoPoint;
 @class GoScore;
+@class GoTimeSettings;
 
 
 // -----------------------------------------------------------------------------
@@ -80,6 +81,7 @@
 - (bool) isLegalPassMoveByColor:(enum GoColor)color illegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalPassMoveByColor:(enum GoColor)color afterNode:(GoNode*)node illegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (void) endGameDueToPassMovesIfGameRulesRequireIt;
+- (void) endGameWithReason:(enum GoGameHasEndedReason)reason;
 - (void) revertStateFromEndedToInProgress;
 - (void) switchNextMoveColor;
 - (void) toggleHandicapPoint:(GoPoint*)point;
@@ -179,11 +181,11 @@
 /// @brief The state of the game. Note that this property is tied to the LAST
 /// board position, not the CURRENT board position, of the current game
 /// variation.
-@property(nonatomic, assign) enum GoGameState state;
+@property(nonatomic, assign, readonly) enum GoGameState state;
 /// @brief The reason why the game has reached the state
 /// #GoGameStateGameHasEnded. Is #GoGameHasEndedReasonNotYetEnded if property
 /// @e state has not the value #GoGameStateGameHasEnded.
-@property(nonatomic, assign) enum GoGameHasEndedReason reasonForGameHasEnded;
+@property(nonatomic, assign, readonly) enum GoGameHasEndedReason reasonForGameHasEnded;
 /// @brief Returns true if the computer player is currently busy thinking about
 /// something (typically its next move).
 @property(nonatomic, assign, readonly, getter=isComputerThinking) bool computerThinks;
@@ -197,6 +199,10 @@
 @property(nonatomic, retain) GoBoardPosition* boardPosition;
 /// @brief Defines the rules that are in effect for this GoGame.
 @property(nonatomic, retain) GoGameRules* rules;
+/// @brief Defines the time settings that are in effect for this GoGame. For
+/// non-timed play the GoTimeSettings object contains two GoTimeSystem objects
+/// that both have the time system type #GoTimeSystemTypeNone.
+@property(nonatomic, retain) GoTimeSettings* timeSettings;
 /// @brief Represents this GoGame as a document that can be saved to / loaded
 /// from disk.
 @property(nonatomic, retain) GoGameDocument* document;

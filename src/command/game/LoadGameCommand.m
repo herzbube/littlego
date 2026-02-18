@@ -33,8 +33,13 @@
 #import "../../go/GoNodeMarkup.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoNodeSetup.h"
+#import "../../go/GoNodeTimeData.h"
 #import "../../go/GoPlayer.h"
+#import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoTimeDataValidator.h"
+#import "../../go/GoTimeSettings.h"
+#import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpUtilities.h"
@@ -42,6 +47,8 @@
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../newgame/NewGameModel.h"
+#import "../../play/model/TimeSettingsModel.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../sgf/SgfUtilities.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -229,7 +236,7 @@ static const int maxStepsForCreateNodes = 9;
     // flag remains set (which will cause a warning when the next new game is
     // started), and the document name remains uninitialized (which will make
     // it appear to anybody who evaluates the document name as if the game has
-    // has never been saved before).
+    // never been saved before).
 
     // No need to create a backup, we already have the one we are restoring from
   }
@@ -238,8 +245,10 @@ static const int maxStepsForCreateNodes = 9;
     [self notifyGoGameDocument];
     [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
   }
+
   [GtpUtilities setupComputerPlayer];
-  [self performSelector:@selector(triggerComputerPlayerOnMainThread)
+
+  [self performSelector:@selector(triggerComputerPlayerOrStartHumanPlayerClockOnMainThread)
                onThread:[NSThread mainThread]
              withObject:nil
           waitUntilDone:YES];
@@ -259,11 +268,13 @@ static const int maxStepsForCreateNodes = 9;
   if (goBoardSize == GoBoardSizeUndefined)
     return false;
 
-  // Temporarily re-configure NewGameModel with the new board size from the
-  // loaded game
-  NewGameModel* model = [Registry sharedRegistry].modelProvider.theNewGameModel;
-  enum GoBoardSize oldBoardSize = model.boardSize;
-  model.boardSize = goBoardSize;
+  // Temporarily re-configure NewGameModel with values from the loaded game
+  // We do this so the user defaults in NewGameModel are preserved.
+  NewGameModel* newGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
+  enum GoBoardSize oldBoardSize = newGameModel.boardSize;
+  newGameModel.boardSize = goBoardSize;
+  TimeSettingsModel* oldTimeSettingsModel = [[newGameModel.timeSettingsModel retain] autorelease];
+  newGameModel.timeSettingsModel = [SgfUtilities timeSettingsFromSgfGameInfoNode:self.sgfGameInfoNode];
 
   if (self.restoreMode)
   {
@@ -289,14 +300,17 @@ static const int maxStepsForCreateNodes = 9;
   command.shouldHonorAutoEnableBoardSetupMode = false;
   // Handicap and komi will later be set up by SyncGTPEngineCommand
   command.shouldSetupGtpHandicapAndKomi = false;
-  // We have to do this ourselves, after setting up handicap + moves
+  // We have to trigger the computer player and/or start the human player's
+  // clock ourselves, after setting up handicap + moves
   command.shouldTriggerComputerPlayerIfItIsTheirTurn = false;
+  command.shouldStartHumanPlayerClockIfItIsTheirTurn = false;
   // We want the load game command to proceed as quickly as possible, therefore
   // we set up the computer player ourselves, at the very end just before we
   // trigger the computer player. If we would allow the computer player to be
   // set up earlier, it might start pondering, taking away precious CPU cycles
   // from the already slow load game command.
   command.shouldSetupComputerPlayer = false;
+
   bool success = [command submit];
   if (! success)
   {
@@ -304,9 +318,9 @@ static const int maxStepsForCreateNodes = 9;
     *errorMessage = @"Internal error: Starting a new game failed";
   }
 
-  // Restore the original board size (is a user preference which should should
-  // not be overwritten by the loaded game's setting)
-  model.boardSize = oldBoardSize;
+  // Restore original values in NewGameModel (preserving user defaults)
+  newGameModel.boardSize = oldBoardSize;
+  newGameModel.timeSettingsModel = oldTimeSettingsModel;
 
   return success;
 }
@@ -426,7 +440,7 @@ static const int maxStepsForCreateNodes = 9;
 
       if (actualNumberOfHandicapStones != expectedNumberOfHandicapStones)
       {
-        *errorMessage = [NSString stringWithFormat:@"The handicap (%ld) is greater than the number of black setup stones (%lu).", expectedNumberOfHandicapStones, (unsigned long)actualNumberOfHandicapStones];
+        *errorMessage = [NSString stringWithFormat:@"The handicap (%lld) is greater than the number of black setup stones (%lu).", expectedNumberOfHandicapStones, (unsigned long)actualNumberOfHandicapStones];
         return false;
       }
     }
@@ -507,7 +521,7 @@ static const int maxStepsForCreateNodes = 9;
   return true;
 }
 
-#pragma mark - Step 5: Setup nodes + content (annotations, markup, setup, moves)
+#pragma mark - Step 5: Setup nodes + content (annotations, markup, setup, moves, time data)
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the nodes for the new game.
@@ -542,6 +556,10 @@ static const int maxStepsForCreateNodes = 9;
       return false;
 
     success = [self validateSetupAndMoveNodes:numberOfNodesInGameTree errorMessage:errorMessage];
+    if (! success)
+      return false;
+
+    success = [self validateTimeDataIfGameHasAtLeastOneTimeSystem:errorMessage];
     if (! success)
       return false;
 
@@ -752,6 +770,7 @@ static const int maxStepsForCreateNodes = 9;
 /// - All node annotation properties: C, N, GB, GW, DM, UC, V, HO.
 /// - All move annotation properties: TE, DO, BM, IT.
 /// - All markup properties: CR, SQ, TR, MA, SL, AR, LN, LB, DD
+/// - All time data properties: BL, WL, OB, OW
 ///
 /// This is a helper function for createNodes:errorMessage:().
 // -----------------------------------------------------------------------------
@@ -769,6 +788,8 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   GoNodeAnnotation* goNodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
   bool atLeastOneAnnotationPropertyWasFound = false;
   GoNodeMarkup* goNodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
+  GoNodeTimeData* goNodeTimeData = [[[GoNodeTimeData alloc] init] autorelease];
+  bool atLeastOneTimeDataPropertyWasFound = false;
 
   for (SGFCProperty* sgfProperty in sgfNode.properties)
   {
@@ -936,6 +957,18 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       if (! success)
         return nil;
     }
+    else if (sgfProperty.propertyCategory == SGFCPropertyCategoryTiming)
+    {
+      bool success = [self populateGoNodeTimeData:goNodeTimeData
+                             withTimeDataProperty:sgfProperty
+               atLeastOneTimeDataPropertyWasFound:atLeastOneTimeDataPropertyWasFound
+                                     timeSettings:game.timeSettings
+                                     errorMessage:errorMessage];
+      if (! success)
+        return false;
+
+      atLeastOneTimeDataPropertyWasFound = true;
+    }
   }
 
   if (goMoveValuation != GoMoveValuationNone)
@@ -963,6 +996,9 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 
   if (goNodeMarkup.hasMarkup)
     goNode.goNodeMarkup = goNodeMarkup;
+
+  if (atLeastOneTimeDataPropertyWasFound)
+    goNode.goNodeTimeData = goNodeTimeData;
 
   return true;
 }
@@ -1236,6 +1272,110 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Populates @a goNodeTimeData with data found in
+/// @a sgfTimeDataProperty, which is expected to be either the SGF property BL,
+/// WL, OB or OW. @a atLeastOneTimeDataPropertyWasFound indicates whether
+/// another time data property was already found in the same node.
+///
+/// Before setting any data in @a goNodeTimeData, this method checks if time
+/// data properties for contradicting player colors exist in the same node. The
+/// first time data property encountered determines which player color is
+/// considered valid. Contradicting time data properties are discarded, similar
+/// to how SGFC operates. The following contradictions are found by this method:
+/// - BL and WL in the same node
+/// - BL and OW in the same node
+/// - OB and WL in the same node
+/// - OB and OW in the same node
+///
+/// @note SGFC does not perform @e any kind of time data validation! This method
+/// also has only minimal time data validation (described above), but accepts
+/// the majority of time data, even if it is invalid, so that it can be written
+/// back to an .sgf file later on. Further time data validation is performed
+/// later on once the node tree has been created (see GoTimeDataValidator). The
+/// validation performed by this method only checks for issues that can no
+/// longer be found later on because of the way the app's data is modeled.
+///
+/// This is a helper function for
+/// populateGoNodeSetup:withSetupProperty:foundInGameInfoNode:mostRecentMove:errorMessage:().
+// -----------------------------------------------------------------------------
+   - (bool) populateGoNodeTimeData:(GoNodeTimeData*)goNodeTimeData
+              withTimeDataProperty:(SGFCProperty*)sgfTimeDataProperty
+atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
+                      timeSettings:(GoTimeSettings*)timeSettings
+                      errorMessage:(NSString**)errorMessage
+{
+  bool (^tryUpdateIsTimeDataForBlackPlayer)(bool) = ^ bool (bool isTimeDataForBlackPlayer)
+  {
+    if (! atLeastOneTimeDataPropertyWasFound)
+    {
+      goNodeTimeData.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
+      return true;
+    }
+
+    if (goNodeTimeData.isTimeDataForBlackPlayer == isTimeDataForBlackPlayer)
+      return true;
+
+    DDLogWarn(@"Found time data properties for different players in the same node, discarding data of later property %@", sgfTimeDataProperty.propertyName);
+    return false;
+  };
+
+  void (^updateRemainingNumberOfMovesOrPeriods)(void) = ^ void ()
+  {
+    unsigned long remainingNumberOfMovesOrPeriods;
+    SGFCNumber sgfTimeDataPropertyValue = sgfTimeDataProperty.propertyValue.toSingleValue.toNumberValue.numberValue;
+    if (sgfTimeDataPropertyValue < 0)
+    {
+      DDLogWarn(@"Found time data property with negative value, will use 0 (zero) instead: %@", sgfTimeDataProperty.propertyName);
+      remainingNumberOfMovesOrPeriods = 0;
+    }
+    else
+    {
+      remainingNumberOfMovesOrPeriods = sgfTimeDataPropertyValue;
+    }
+
+    if (timeSettings.periodBasedTimeSystem.goTimeSystemType == GoTimeSystemTypeJapanese)
+      goNodeTimeData.remainingNumberOfPeriods = remainingNumberOfMovesOrPeriods;
+    else
+      goNodeTimeData.remainingNumberOfMoves = remainingNumberOfMovesOrPeriods;
+
+    goNodeTimeData.isRemainingTimeAbsoluteTime = false;
+  };
+
+  SGFCPropertyType propertyType = sgfTimeDataProperty.propertyType;
+  if (propertyType == SGFCPropertyTypeBL)
+  {
+    bool success = tryUpdateIsTimeDataForBlackPlayer(true);
+    if (success)
+      goNodeTimeData.remainingTimeInSeconds = sgfTimeDataProperty.propertyValue.toSingleValue.toRealValue.realValue;
+  }
+  else if (propertyType == SGFCPropertyTypeWL)
+  {
+    bool success = tryUpdateIsTimeDataForBlackPlayer(false);
+    if (success)
+      goNodeTimeData.remainingTimeInSeconds = sgfTimeDataProperty.propertyValue.toSingleValue.toRealValue.realValue;
+  }
+  else if (propertyType == SGFCPropertyTypeOB)
+  {
+    bool success = tryUpdateIsTimeDataForBlackPlayer(true);
+    if (success)
+      updateRemainingNumberOfMovesOrPeriods();
+  }
+  else if (propertyType == SGFCPropertyTypeOW)
+  {
+    bool success = tryUpdateIsTimeDataForBlackPlayer(false);
+    if (success)
+      updateRemainingNumberOfMovesOrPeriods();
+  }
+  else
+  {
+    *errorMessage = [NSString stringWithFormat:@"Unknown time data property found: %@", sgfTimeDataProperty.propertyName];
+    return false;
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Validates setup information and moves in all GoNode objects that were
 /// previously generated by createNodes:errorMessage:(), to make sure that no
 /// board positions are created that the app considers to be illegal.
@@ -1502,6 +1642,28 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Validates the time data in the entire node tree, but only if the game
+/// has at least one time system.
+///
+/// Although the validation traverses the entire node tree, this is a much
+/// faster operation than validateSetupAndMoveNodes:() and therefore does not
+/// need to provide progress feedback.
+///
+/// This is a helper function for setupNodes:().
+// -----------------------------------------------------------------------------
+- (bool) validateTimeDataIfGameHasAtLeastOneTimeSystem:(NSString**)errorMessage
+{
+  GoGame* game = [GoGame sharedGame];
+  if (game.timeSettings.hasNoTimeSystems)
+    return true;
+
+  GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
+  [timeDataValidator validateTimeDataInGameTree:game];
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Adjusts the state of various model objects so that everything is set
 /// up for the app to display the last board position of the main game
 /// variation.
@@ -1577,11 +1739,21 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   // node
   [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 
+  // Needs to be posted so that observers who examine a game variation's content
+  // as a whole are triggered
+  [center postNotificationName:currentGameVariationWillChange object:nil];
+  [center postNotificationName:currentGameVariationDidChange object:nil];
+
   if (oldNumberOfBoardPositions != newNumberOfBoardPositions)
     [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
 
   if (oldCurrentBoardPosition != newCurrentBoardPosition)
-    [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
+  {
+    NSArray* notificationObject = @[[NSNumber numberWithInt:oldCurrentBoardPosition],
+                                    [NSNumber numberWithInt:newCurrentBoardPosition]];
+    [center postNotificationName:currentBoardPositionWillChange object:notificationObject];
+    [center postNotificationName:currentBoardPositionDidChange object:notificationObject];
+  }
 
   return true;
 }
@@ -1596,6 +1768,11 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 /// GoGame may already be in state #GoGameStateGameHasEnded due to moves played
 /// in the current variation. An explicit game result in the SGF file overrides
 /// the implicit game ending.
+///
+/// @note During normal game play, the game result is always determined @b after
+/// the other Go model objects have been updated (e.g. @b after a move was
+/// played). It is therefore correct that this method is executed @b after
+/// notifyApplicationAboutFinalGoModelState:().
 // -----------------------------------------------------------------------------
 - (bool) setupGameResult:(NSString**)errorMessage
 {
@@ -1605,15 +1782,14 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   if (sgfGameResult.IsValid)
   {
     enum GoGameHasEndedReason reasonForGameHasEnded = [SgfUtilities goGameHasEndedReasonForGameResult:sgfGameResult];
-    
+
     // Some SGFCGameResult values actually cannot be mapped to a corresponding
     // GoGameHasEndedReason value
     if (reasonForGameHasEnded != GoGameHasEndedReasonNotYetEnded)
     {
       if (game.state == GoGameStateGameHasEnded)
         [game revertStateFromEndedToInProgress];
-      game.reasonForGameHasEnded = reasonForGameHasEnded;
-      game.state = GoGameStateGameHasEnded;
+      [game endGameWithReason:reasonForGameHasEnded];
     }
   }
 
@@ -1658,7 +1834,24 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Triggers the computer player to make a move, if it is his turn.
+/// @brief Triggers the computer player to make a move, or starts the human
+/// player's clock, depending on which player's turn it is. Does nothing if
+/// the game has already ended.
+// -----------------------------------------------------------------------------
+- (void) triggerComputerPlayerOrStartHumanPlayerClockOnMainThread
+{
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameStateGameHasEnded == game.state)
+    return;
+
+  if (game.nextMovePlayerIsComputerPlayer)
+    [self triggerComputerPlayerOnMainThread:game];
+  else
+    [self startHumanPlayerClockOnMainThread:game];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Triggers the computer player to make a move.
 ///
 /// This method, and with it ComputerPlayMoveCommand, must be executed on the
 /// main thread. Reason:
@@ -1676,27 +1869,35 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 /// GTP response, LoadGameCommand has long since terminated its long-running
 /// action.
 // -----------------------------------------------------------------------------
-- (void) triggerComputerPlayerOnMainThread
+- (void) triggerComputerPlayerOnMainThread:(GoGame*)game
 {
-  GoGame* game = [GoGame sharedGame];
-  if (game.nextMovePlayerIsComputerPlayer)
+  if (self.restoreMode)
   {
-    if (self.restoreMode)
+    if (GoGameTypeComputerVsComputer == game.type)
     {
-      if (GoGameTypeComputerVsComputer == game.type)
-      {
-        // The game may already have ended, in which case there is no need to
-        // pause (in fact, we must not pause, otherwise we trigger an exception)
-        if (GoGameStateGameHasEnded != game.state)
-          [game pause];
-      }
-    }
-    else
-    {
-      [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
-      self.didTriggerComputerPlayer = true;
+      // The game may already have ended, in which case there is no need to
+      // pause (in fact, we must not pause, otherwise we trigger an exception)
+      if (GoGameStateGameHasEnded != game.state)
+        [game pause];
     }
   }
+  else
+  {
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+    self.didTriggerComputerPlayer = true;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Starts the human player's clock.
+///
+/// This method must be executed on the main thread, because PlayerClockService
+/// expects requests to be submitted on the main thread.
+// -----------------------------------------------------------------------------
+- (void) startHumanPlayerClockOnMainThread:(GoGame*)game
+{
+  [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                            reason:PlayerClockStartReasonLoadGameHumanPlayerTurnBegins];
 }
 
 // -----------------------------------------------------------------------------

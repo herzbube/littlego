@@ -177,6 +177,7 @@ enum DiscardFutureNodesAlertSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Mark next move";
       accessoryView.on = self.boardPositionModel.markNextMove;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleMarkNextMove:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -186,6 +187,7 @@ enum DiscardFutureNodesAlertSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Discard my last move";
       accessoryView.on = self.boardPositionModel.discardMyLastMove;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleDiscardMyLastMove:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -197,6 +199,7 @@ enum DiscardFutureNodesAlertSectionItem
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.boardPositionModel.discardFutureNodesAlert;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleDiscardFutureNodesAlert:) forControlEvents:UIControlEventValueChanged];
       break;
     }

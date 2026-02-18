@@ -89,6 +89,7 @@
   XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
   long long hashForEmptyBoard = 0;
   XCTAssertEqual(m_game.zobristHashAfterHandicap, hashForEmptyBoard);
+  XCTAssertNotNil(m_game.timeSettings);
 }
 
 // -----------------------------------------------------------------------------
@@ -1859,6 +1860,28 @@
 
   XCTAssertThrowsSpecificNamed([m_game endGameDueToPassMovesIfGameRulesRequireIt],
                               NSException, NSInternalInconsistencyException, @"attempt to end game after game is already ended");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the endGameWithReason:() method.
+// -----------------------------------------------------------------------------
+- (void) testEndGameWithReason
+{
+  XCTAssertThrowsSpecificNamed([m_game endGameWithReason:GoGameHasEndedReasonNotYetEnded],
+                               NSException, NSInvalidArgumentException, @"invalid reason");
+
+  XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  XCTAssertFalse(m_game.document.dirty);
+
+  [m_game endGameWithReason:GoGameHasEndedReasonFourPasses];
+
+  XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
+  XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
+  XCTAssertTrue(m_game.document.dirty);
+
+  XCTAssertThrowsSpecificNamed([m_game endGameWithReason:GoGameHasEndedReasonTwoPasses],
+                               NSException, NSInternalInconsistencyException, @"game has already ended");
 }
 
 // -----------------------------------------------------------------------------

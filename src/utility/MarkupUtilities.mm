@@ -78,7 +78,7 @@
 /// value from the enumeration #GoMarkupSymbol and returns the mapped value.
 /// Raises an exception if mapping is not possible.
 ///
-/// @exception InvalidArgumentException Is thrown if @a markupType cannot be
+/// @exception NSInvalidArgumentException Is thrown if @a markupType cannot be
 /// mapped. Only markup types for symbols can be mapped.
 // -----------------------------------------------------------------------------
 + (enum GoMarkupSymbol) symbolForMarkupType:(enum MarkupType)markupType
@@ -154,7 +154,7 @@
 /// value from the enumeration #GoMarkupConnection and returns the mapped value.
 /// Raises an exception if mapping is not possible.
 ///
-/// @exception InvalidArgumentException Is thrown if @a markupType cannot be
+/// @exception NSInvalidArgumentException Is thrown if @a markupType cannot be
 /// mapped. Only markup types for connections can be mapped.
 // -----------------------------------------------------------------------------
 + (enum GoMarkupConnection) connectionForMarkupType:(enum MarkupType)markupType
@@ -194,7 +194,7 @@
 /// value from the enumeration #GoMarkupLabel and returns the mapped value.
 /// Raises an exception if mapping is not possible.
 ///
-/// @exception InvalidArgumentException Is thrown if @a markupType cannot be
+/// @exception NSInvalidArgumentException Is thrown if @a markupType cannot be
 /// mapped. Only markup types for labels can be mapped.
 // -----------------------------------------------------------------------------
 + (enum GoMarkupLabel) labelForMarkupType:(enum MarkupType)markupType
@@ -239,7 +239,7 @@
 /// does not refer to a marker type. Returns @e nil if all markers of the
 /// requested type are already in use.
 ///
-/// @exception InvalidArgumentException Is thrown if @a labelType is neither
+/// @exception NSInvalidArgumentException Is thrown if @a labelType is neither
 /// #GoMarkupLabelMarkerLetter nor #GoMarkupLabelMarkerNumber.
 // -----------------------------------------------------------------------------
 + (NSString*) nextFreeMarkerOfType:(enum GoMarkupLabel)labelType

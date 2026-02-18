@@ -17,8 +17,8 @@
 
 // Project includes
 #import "ContinueGameCommand.h"
-#import "../../go/GoGame.h"
 #import "../move/ComputerPlayMoveCommand.h"
+#import "../../go/GoGame.h"
 
 
 @implementation ContinueGameCommand

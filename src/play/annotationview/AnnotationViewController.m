@@ -18,6 +18,7 @@
 // Project includes
 #import "AnnotationViewController.h"
 #import "../model/BoardViewModel.h"
+#import "../statusarea/TimedPlayViewController.h"
 #import "../../command/node/ChangeAnnotationDataCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -85,6 +86,7 @@ static const int spacerBottomTag = 2;
 @property(nonatomic, retain) UIButton* descriptionRemoveButton;
 @property(nonatomic, retain) UIView* descriptionButtonSpacerView;
 @property(nonatomic, retain) NSLayoutConstraint* descriptionLabelsVerticalSpacingConstraint;
+@property(nonatomic, retain) UIViewController* timeDataViewController;
 @end
 
 
@@ -113,7 +115,7 @@ static const int spacerBottomTag = 2;
 // -----------------------------------------------------------------------------
 - (id) initWithUiType:(enum UIType)uiType sizeOrientation:(enum SizeOrientation)sizeOrientation
 {
-  // Call designated initializer of superclass (AnnotationViewController)
+  // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
@@ -127,7 +129,7 @@ static const int spacerBottomTag = 2;
   // three-digit score is displayed. Also font and icon sizes must be chosen
   // so that the weight of labels and icons is balanced.
   self.labelFontSize = [UiElementMetrics annotationViewLabelFontSizeForUiType:uiType];
-  self.iconHeight = [UiElementMetrics annotationViewIconHeightForUiType:uiType];
+  self.iconHeight = [UiElementMetrics iconHeightForUiType:uiType];
   self.mainViewMargin = [UiElementMetrics horizontalSpacingSiblings];
   self.verticalSpacingBetweenLabelAndButton = [UiElementMetrics verticalSpacingSiblings];
 
@@ -192,6 +194,7 @@ static const int spacerBottomTag = 2;
   self.descriptionRemoveButton = nil;
   self.descriptionButtonSpacerView = nil;
   self.descriptionLabelsVerticalSpacingConstraint = nil;
+  self.timeDataViewController = nil;
 }
 
 #pragma mark - Setup/remove notification responders
@@ -232,15 +235,27 @@ static const int spacerBottomTag = 2;
 {
   self.valuationViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   self.descriptionViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+  self.timeDataViewController = [[[TimedPlayViewController alloc] initWithNodeTimeDataView] autorelease];
 
   UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
   UIViewController* initialViewController;
-  if (uiSettingsModel.visibleAnnotationViewPage == AnnotationViewPageValuation)
-    initialViewController = self.valuationViewController;
-  else
-    initialViewController = self.descriptionViewController;
+  switch (uiSettingsModel.visibleAnnotationViewPage)
+  {
+    case AnnotationViewPageValuation:
+      initialViewController = self.valuationViewController;
+      break;
+    case AnnotationViewPageDescription:
+      initialViewController = self.descriptionViewController;
+      break;
+    case AnnotationViewPageTimeData:
+      initialViewController = self.timeDataViewController;
+      break;
+    default:
+      assert(0);
+      return;
+  }
 
-  NSArray* pageViewControllers = @[self.valuationViewController, self.descriptionViewController];
+  NSArray* pageViewControllers = @[self.valuationViewController, self.descriptionViewController, self.timeDataViewController];
   self.customPageViewController = [PageViewController pageViewControllerWithViewControllers:pageViewControllers
                                                                       initialViewController:initialViewController];
 
@@ -341,6 +356,9 @@ static const int spacerBottomTag = 2;
 
   [self setupDescriptionView:self.descriptionViewController.view];
   self.descriptionViewController.view.accessibilityIdentifier = annotationViewDescriptionPageAccessibilityIdentifier;
+
+  [self setupTimeDataView:self.timeDataViewController.view];
+  self.timeDataViewController.view.accessibilityIdentifier = annotationViewDescriptionPageAccessibilityIdentifier;
 }
 
 // -----------------------------------------------------------------------------
@@ -419,6 +437,14 @@ static const int spacerBottomTag = 2;
   [self.descriptionRemoveButton setImage:[[UIImage trashcanIcon] imageByScalingToHeight:self.iconHeight]
                                 forState:UIControlStateNormal];
   self.descriptionRemoveButton.accessibilityIdentifier = annotationViewRemoveDescriptionButtonAccessibilityIdentifier;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupViewHierarchy.
+// -----------------------------------------------------------------------------
+- (void) setupTimeDataView:(UIView*)superview
+{
+  // Nothing to do, time data view is managed by its dedicated controller
 }
 
 // -----------------------------------------------------------------------------
@@ -524,6 +550,7 @@ static const int spacerBottomTag = 2;
 
   [self setupAutoLayoutConstraintsValuationView];
   [self setupAutoLayoutConstraintsDescriptionViewWithViewSizeOrientation:viewSizeOrientation];
+  [self setupAutoLayoutConstraintsTimeDataView];
 }
 
 // -----------------------------------------------------------------------------
@@ -681,6 +708,14 @@ static const int spacerBottomTag = 2;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraints.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsTimeDataView
+{
+  // Nothing to do, time data view is managed by its dedicated controller
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Private helper for setupAutoLayoutConstraintsValuationView and
 /// setupAutoLayoutConstraintsDescriptionView.
 // -----------------------------------------------------------------------------
@@ -722,8 +757,10 @@ static const int spacerBottomTag = 2;
   UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
   if (nextViewController == self.valuationViewController)
     uiSettingsModel.visibleAnnotationViewPage = AnnotationViewPageValuation;
-  else
+  else if (nextViewController == self.descriptionViewController)
     uiSettingsModel.visibleAnnotationViewPage = AnnotationViewPageDescription;
+  else
+    uiSettingsModel.visibleAnnotationViewPage = AnnotationViewPageTimeData;
 }
 
 #pragma mark - Notification responders
@@ -864,6 +901,7 @@ static const int spacerBottomTag = 2;
   {
     [self updateValuationViewContent:node];
     [self updateDescriptionViewContent:node];
+    [self updateTimeDataViewContent];
   }
 }
 
@@ -930,6 +968,14 @@ static const int spacerBottomTag = 2;
     self.descriptionLabelsVerticalSpacingConstraint.constant = [UiElementMetrics verticalSpacingSiblings];
   else
     self.descriptionLabelsVerticalSpacingConstraint.constant = 0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateContent.
+// -----------------------------------------------------------------------------
+- (void) updateTimeDataViewContent
+{
+  // Nothing to do, time data view is managed by its dedicated controller
 }
 
 // -----------------------------------------------------------------------------

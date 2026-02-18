@@ -169,6 +169,7 @@ enum NewMoveInsertPositionSectionItem
       cell.textLabel.numberOfLines = 0;
       cell.textLabel.text = @"Move creates new game variation when future nodes exist";
       accessoryView.on = self.gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleNewMoveInsertPolicy:) forControlEvents:UIControlEventValueChanged];
       break;
     }

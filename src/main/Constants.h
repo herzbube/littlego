@@ -149,7 +149,7 @@ enum MoreGameActionsButton
   MoreGameActionsButtonResumePlay,
   MoreGameActionsButtonResign,
   MoreGameActionsButtonUndoResign,
-  MoreGameActionsButtonUndoTimeout,
+  MoreGameActionsButtonUndoLostOnTime,
   MoreGameActionsButtonUndoForfeit,
   MoreGameActionsButtonSaveGame,
   MoreGameActionsButtonNewGame,
@@ -224,7 +224,8 @@ enum InfoType
 enum AnnotationViewPage
 {
   AnnotationViewPageValuation,
-  AnnotationViewPageDescription
+  AnnotationViewPageDescription,
+  AnnotationViewPageTimeData,
 };
 
 /// @brief Enumerates the UI elements displayed on the valuation page of the
@@ -849,6 +850,356 @@ enum GoNewMoveInsertPosition
   GoNewMoveInsertPositionNextBoardPosition,
 };
 
+/// @brief Enumerates time systems that can be used in games with timed play.
+///
+/// @ingroup go
+///
+/// Time systems can be somewhat generalized as follows:
+/// - A time system has a number of time periods <p>.
+/// - A time period has a duration <d>.
+/// - A player has to play a minimum number of moves <n> within a time period.
+/// - If a player runs out of time, a time period is deducted from <p>.
+///   - If <p> is already 0 (zero), deduction fails and the player loses the
+///     game.
+///   - If <p> is still greater than 0 (zero), then deduction works (it can be
+///     said that the player "loses a life") and the player gets additional time
+///     <d> to play the remaining moves.
+/// - Once a player has played <n> moves, what happens next depends on the
+///   time system. See #GoUnusedTimeHandling.
+///   - In some time systems <d> and <n> are reset and unused time is cut off
+///     (aka "rounded down").
+///   - Also possible is that upon reset the unused time is added to <d>.
+///   - Or the player is allowed to play additional moves within the unused
+///     time, and the reset occurs only after the entire time has been used.
+///   - Finally, some time systems don't reset <d> and instead add extra
+///     time <e> to whatever time remains.
+///
+/// In some time systems, <p>, <d>, <n> and/or <e> can be arbitrarily chosen by
+/// players, but in all time systems supported by this app at least one of the
+/// parameters is fixed.
+enum GoTimeSystemType
+{
+  GoTimeSystemTypeAbsolute,        ///< @brief Absolute Timing, aka "Sudden Death". <p> = 1, <d> = arbitrary, <n> = unlimited, <e> = none, round down = no.
+  GoTimeSystemTypeCanadian,        ///< @brief Canadian Timing. <p> = 1, <d> = arbitrary, <n> = arbitrary, <e> = none, round down = yes.
+  GoTimeSystemTypeJapanese,        ///< @brief Japanese Timing. <p> = arbitrary, <d> = arbitrary, <n> = 1, <e> = none, round down = yes.
+  GoTimeSystemTypeFischer,         ///< @brief Fischer Timing. <p> = 1, <d> = arbitrary, <n> = 1, <e> = arbitrary, round down = no.
+  GoTimeSystemTypeSteadyAverage,   ///< @brief Steady Average Timing. <p> = 1, <d> = arbitrary, <n> = arbitrary, <e> = none, round down = no.
+  GoTimeSystemTypeTotalAverage,    ///< @brief Total Average Timing. <p> = 1, <d> = arbitrary, <n> = arbitrary, <e> = <d>, round down = no.
+  GoTimeSystemTypeCustom,          ///< @brief A custom time system the rules of which the app does not know.
+  GoTimeSystemTypeNone,            ///< @brief No time system.
+  GoTimeSystemTypeFirst = GoTimeSystemTypeAbsolute,   ///< @brief Pseudo time system, used as the starting value during a for-loop.
+  GoTimeSystemTypeLast = GoTimeSystemTypeNone         ///< @brief Pseudo time system, used as the end value during a for-loop.
+};
+
+/// @brief Enumerates how a time system can deal with remaining unused time
+/// once a player has played the required minimum number of moves within a time
+/// period.
+///
+/// @ingroup go
+enum GoUnusedTimeHandling
+{
+  GoUnusedTimeHandlingRoundDown,           ///< @brief The period reset occurs immediately and the remaining unused time is cut off, i.e. rounded down.
+  GoUnusedTimeHandlingUseForExtraMoves,    ///< @brief The period reset does not occur. The player can use the remaining unused time to play extra moves.
+  GoUnusedTimeHandlingAddPeriodDuration,   ///< @brief The period reset occurs immediately and the period duration is added to the remaining unused time.
+  GoUnusedTimeHandlingAddExtraTime,        ///< @brief The period reset occurs immediately, but instead of the period duration a separate extra time duration is added to the remaining unused time.
+  GoUnusedTimeHandlingNone,                ///< @brief There is no unused time handling, either because no time system is in force, or because the time system is not period-based.
+};
+
+/// @brief Enumerates the possible states of the clock in games with timed play.
+///
+/// @ingroup go
+enum GoClockState
+{
+  GoClockStateStopped,     ///< @brief The clock is stopped. The game does not use timed play.
+  GoClockStateStarted,     ///< @brief The clock is started and running.
+  GoClockStateSuspended,   ///< @brief The clock is suspended. The game uses timed play, but the clock was temporarily stopped.
+};
+
+/// @brief Enumerates the possible reasons why the clock is currently in state
+/// #GoClockStateSuspended.
+///
+/// @ingroup go
+enum GoClockSuspendedReason
+{
+  /// @brief The clock is suspended temporarily because the app is handling a
+  /// timer update. When the handling completes, the app will set the clock back
+  /// to #GoClockStateStarted or #GoClockStateStopped (the latter if the player
+  /// loses on time).
+  GoClockSuspendedReasonHandleTimer,
+  /// @brief The clock is suspended temporarily because it was unexpectedly
+  /// restored from the archive in started state, probably due to an application
+  /// crash. The app will automatically set the clock to #GoClockStateStopped
+  /// when the scene activates to let the user investigate the situation
+  /// without time pressure.
+  GoClockSuspendedReasonRestoredFromArchive,
+  /// @brief The clock is suspended because the user explicitly requested it
+  /// via interaction with the user interface clock. The user can manually
+  /// start the clock again via interaction with the user interface clock.
+  /// The application may stop or start the clock automatically under certain
+  /// conditions.
+  GoClockSuspendedReasonUserAction,
+  /// @brief The clock is suspended temporarily because the user currently
+  /// cannot interact with the Go board to play a move (e.g. the board is not
+  /// visible at all, or it is partially covered by a popup, or an animation of
+  /// long duration is blocking interaction, or the board is not in
+  /// #UIAreaPlayModePlay, or the scene is deactivated) and may therefore lose
+  /// on time because they cannot play their move on time. The app will
+  /// automatically set the clock back to #GoClockStateStarted when the user
+  /// can interact with the board again. Note: Scene deactivation occurs when
+  /// the user sends the app to the background, but also when there is a phone
+  /// call or other interruption.
+  GoClockSuspendedReasonBoardNotInteractive,
+  /// @brief The clock is not suspended. The clock is set to either
+  /// #GoClockStateStopped or #GoClockStateStarted.
+  GoClockSuspendedReasonNotSuspended,
+};
+
+/// @brief Enumerates the possible results when the duration of a player's
+/// current time period has elapsed.
+///
+/// @ingroup go
+enum GoPeriodDurationElapsedResultType
+{
+  GoPeriodDurationElapsedResultTypeGameLostOnTime,   ///< @brief There is no more time left and the player loses the game on time.
+  GoPeriodDurationElapsedResultTypeGameContinues,    ///< @brief There is still time left (e.g. switching from absolute time to overtime, the player has more periods (aka "lifes") left) and the game continues.
+};
+
+/// @brief Enumerates the possible time data validation modes. Modes appear
+/// in order of the number of checks performed.
+///
+/// @ingroup go
+enum GoTimeDataValidationMode
+{
+  /// @brief Validation is performed to detect basic problems only, problems
+  /// that prevent the app from supporting timed play while a given node is
+  /// selected.
+  ///
+  /// Problems detected in this mode range from foundational problems with the
+  /// game's time systems (e.g. no time systems, or a custom time system, or
+  /// a time system's values exceed the maximum values supported by the app), to
+  /// structural problems (e.g. GoNodeTimeData is missing in a move node, or
+  /// refers not to the same player as the move, or refers to a time system that
+  /// was not chosen to start the game), to foundational problems with a node's
+  /// time data (e.g. negative values, or values that exceed the maximum values
+  /// supported by the app).
+  ///
+  /// If there is a foundational problem with the game's time systems, the
+  /// invalid state and invalid reason are propagated to all nodes. Otherwise,
+  /// a node's time data is examined only in isolation.
+  GoTimeDataValidationModeBasic,
+  /// @brief In addition to the validation performed in
+  /// #GoTimeDataValidationModeBasic, a number of inconsistencies between
+  /// time system data and node time data are detected.
+  ///
+  /// A node's time data is examined in relation to the time system that the
+  /// time data refers to.
+  ///
+  /// Even a casual user may still be interested in problems found by this mode.
+  GoTimeDataValidationModeNormal,
+  /// @brief In addition to the validation performed in
+  /// #GoTimeDataValidationModeNormal, inconsistencies in the time data
+  /// sequence are detected. Unlike in #GoTimeDataValidationModePedantic,
+  /// descendant nodes of a node with invalid time data can again have valid
+  /// time data.
+  ///
+  /// A node's time data is examined in relation to the time data in the
+  /// preceding GoNodeTimeData object.
+  ///
+  /// This mode is likely to be of interest only to users who want highly
+  /// consistent time data data.
+  GoTimeDataValidationModeStrict,
+  /// @brief The same validation is performed as in
+  /// #GoTimeDataValidationModeStrict, but when a node with invalid time
+  /// data is found, no further validation is performed on descendants of that
+  /// node. Instead the invalid state and invalid reason is propagated to those
+  /// descendant nodes.
+  ///
+  /// The rationale behind this mode is that time data must be viewed as an
+  /// interlinked sequence of data points, much the same as a sequence of moves,
+  /// and cannot be viewed as independent data points. Once a piece of time data
+  /// is invalid, time data further down in the sequence can therefore no longer
+  /// be viewed as valid.
+  ///
+  /// This mode is likely to be of interest only to users who want highly
+  /// consistent time data. The mode may be useful to users who want to correct
+  /// inconsistent time data, starting at the first node that has inconsistent
+  /// time data.
+  GoTimeDataValidationModePedantic,
+};
+
+/// @brief Enumerates the possible reasons why validating the time data in a
+/// given game variation resulted in #GoTimeDataValidationResultInvalid.
+///
+/// @ingroup go
+enum GoTimeDataInvalidReason
+{
+  /// @brief The game does not use timed play, i.e. it does not use any time
+  /// systems. If the game was loaded from an .sgf file, nodes may contain time
+  /// data, but that time data is not validated at all because without time
+  /// systems there is no way to interpret the data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonGameDoesNotUseTimedPlay,
+  /// @brief The game uses a custom time system that the app does not
+  /// understand. If the game was loaded from an .sgf file, nodes may contain
+  /// time data, but that time data is not validated at all because the app
+  /// does not know how to interpret the data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonCustomTimeSystem,
+  /// @brief The absolute time is greater than the maximum supported by this
+  /// app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum,
+  /// @brief The period-based time system has a period duration that is greater
+  /// than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonPeriodDurationExceedsMaximum,
+  /// @brief The period-based time system has an extra time duration that is
+  /// greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum,
+  /// @brief The period-based time system has a minimum number of moves per
+  /// period value that is greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum,
+  /// @brief The period-based time system has a number of periods value that is
+  /// greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum,
+  /// @brief A move node does not contain time data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonMoveNodeHasNoTimeData,
+  /// @brief A non-move node contains time data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonNonMoveNodeHasTimeData,
+  /// @brief The player who made a move is not the same player for which the
+  /// time data in that move is.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonMoveAndTimeDataPlayerMismatch,
+  /// @brief A node's time data refers to absolute time, but the time settings
+  /// do not define an absolute time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem,
+  /// @brief A node's time data refers to period-based time, but the time
+  /// settings do not define a period-based time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem,
+  /// @brief A node's time data has a negative remaining time.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonRemainingTimeNegative,
+  /// @brief A node's time data refers to absolute time although a previous
+  /// node's time data referred to the period-based time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
+  GoTimeDataInvalidReasonAbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData,
+  /// @brief A node's time data has a remaining absolute time that is higher
+  /// than the remaining absolute time in the predecessor node's time data.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
+  GoTimeDataInvalidReasonRemainingAbsoluteTimeIsIncreasing,
+  /// @brief A node's time data has a remaining time that is higher than what
+  /// is allowed by the time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeNormal and higher.
+  GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows,
+  /// @brief A node's time data has a remaining time that is higher than what
+  /// is allowed by the time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeNormal and higher.
+  GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows,
+  /// @brief A node's time data has a remaining number of moves that is higher
+  /// than what is allowed by the period-based time system.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeNormal and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows,
+  /// @brief A node's time data has a remaining number of periods that is higher
+  /// than what is allowed by the period-based time system.
+  ///
+  /// This can occur only for #GoTimeSystemTypeJapanese.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeNormal and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfPeriodsHigherThanPeriodBasedTimeSystemAllows,
+  /// @brief A node's time data has a remaining number of moves that is not
+  /// constant, i.e. that differs from the remaining number of moves in the
+  /// predecessor node's time data.
+  ///
+  /// This occurs in time systems where the minimum number of moves per period
+  /// is 1 (one). Consequently the remaining number of moves should always be
+  /// either 0 (zero) or 1 (one). The latter is the case if the SGF writer
+  /// records values after a period reset (known case: KGS).
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant,
+  /// @brief A node's time data has a remaining number of moves that is
+  /// constant, i.e. that does not differ from the remaining number of moves in
+  /// the predecessor node's time data.
+  ///
+  /// This occurs in time systems where the minimum number of moves per period
+  /// is greater than 1 (one) and that does not use
+  /// #GoUnusedTimeHandlingUseForExtraMoves. Consequently the remaining number
+  /// of moves should always either decrease (before the period reset), or
+  /// increase (after the period reset).
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesConstant,
+  /// @brief A node's time data has a remaining number of moves that is less
+  /// (or equal) than the remaining number of moves in the predecessor node's
+  /// time data, but at the same time the remaining time increased.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesDecreasedButRemainingTimeIncreased,
+  /// @brief A node's time data has a remaining number of moves that is greater
+  /// than the remaining number of moves in the predecessor node's time data,
+  /// but at the same time the remaining time decreased.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased,
+  /// @brief A node's time data has a remaining number of periods that is
+  /// greater than the remaining number of periods in the predecessor node's
+  /// time data.
+  ///
+  /// This can occur only for #GoTimeSystemTypeJapanese.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfPeriodsIsIncreasing,
+  /// @brief A node's time data has a remaining time that is greater than what
+  /// is allowed after adding extra time to the remaining time in the
+  /// predecessor node's time data.
+  ///
+  /// This can occur only for #GoTimeSystemTypeFischer and
+  /// #GoTimeSystemTypeTotalAverage.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeStrict and higher.
+  GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows,
+  /// @brief A node's time data has a remaining time that is greater than the
+  /// maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonRemainingTimeExceedsMaximum,
+  /// @brief A node's time data has a remaining number of moves that is
+  /// greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfMovesExceedsMaximum,
+  /// @brief A node's time data has a remaining number of periods that is
+  /// greater than the maximum supported by this app.
+  ///
+  /// This check is performed in #GoTimeDataValidationModeBasic and higher.
+  GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum,
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -858,6 +1209,8 @@ extern const enum GoScoringSystem gDefaultScoringSystem;
 extern const double gDefaultKomiAreaScoring;
 extern const double gDefaultKomiTerritoryScoring;
 extern const unsigned int gNoObjectReferenceNodeID;
+extern const double gMaximumRemainingTimeInSeconds;
+extern const unsigned long gMaximumRemainingNumberOfMovesOrPeriods;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -957,16 +1310,26 @@ extern NSString* goGameStateChanged;
 /// @name Computer player notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent to indicate that the computer player has started to think
-/// about its next move.
+/// @brief Is sent to indicate that the computer player has started to think.
 ///
-/// The GoGame object is associated with the notification.
+/// An NSArray is associated with the notification that contains the following
+/// objects:
+/// - Object at index position 0: The GoGame object.
+/// - Object at index position 1: An NSNumber that holds an int value that is
+///   actually a value from the enumeration #GoGameComputerIsThinkingReason.
+///   The value indicates why the computer player is thinking.
 extern NSString* computerPlayerThinkingStarts;
-/// @brief Is sent to indicate that the computer player has stopped to think
-/// about its next move. Occurs only after the move has actually been made, i.e.
+/// @brief Is sent to indicate that the computer player has stopped to think.
+/// If the computer was thinking about about its next move, then this
+/// notification is sent after the move has actually been made, i.e.
 /// any GoGame notifications have already been delivered.
 ///
-/// The GoGame object is associated with the notification.
+/// An NSArray is associated with the notification that contains the following
+/// objects:
+/// - Object at index position 0: The GoGame object.
+/// - Object at index position 1: An NSNumber that holds an int value that is
+///   actually a value from the enumeration #GoGameComputerIsThinkingReason.
+///   The value indicates why the computer player was thinking.
 extern NSString* computerPlayerThinkingStops;
 /// @brief Is sent to indicate that the computer player has generated a move
 /// suggestion for the human player whose turn it currently is.
@@ -1264,17 +1627,32 @@ extern NSString* nodeMarkupDataDidChange;
 /// If board positions are discarded from the current game variation, and the
 /// current board position is among the discarded board positions, then the
 /// current board position is changed before the discard takes place.
-/// #currentBoardPositionDidChange is therefore sent before this notification.
+/// #currentBoardPositionWillChange and #currentBoardPositionDidChange are
+/// therefore sent before this notification.
 ///
 /// If new board positions are added to the current game variation, and the
 /// current board position changes to one of the new board positions, then this
-/// notification is sent first and #currentBoardPositionDidChange is sent
-/// afterwards.
+/// notification is sent first and #currentBoardPositionWillChange and
+/// #currentBoardPositionDidChange are sent afterwards.
 ///
 /// If the number of board positions changes because the current game variation
 /// in GoNodeModel changes, then this notification is sent first and
 /// #currentGameVariationDidChange is sent afterwards.
 extern NSString* numberOfBoardPositionsDidChange;
+/// @brief Is sent to indicate that the current board position is about to
+/// change. This notification is sent before the state of any Go model objects
+/// has been updated.
+///
+/// An NSArray object containing two NSNumber objects is associated with the
+/// notification. The two NSNumber objects each wrap an integer value: The first
+/// value is the old current board position, the second value is the new
+/// current board position.
+///
+/// This notification is sent before the the first #boardPositionChangeProgress.
+///
+/// @see #currentGameVariationDidChange for details about board position
+/// changes that occur when the current game variation changes.
+extern NSString* currentBoardPositionWillChange;
 /// @brief Is sent to indicate that the current board position has changed.
 /// This notification is sent only after the state of all Go model objects
 /// has been updated.
@@ -1285,6 +1663,9 @@ extern NSString* numberOfBoardPositionsDidChange;
 /// current board position.
 ///
 /// This notification is sent after the last #boardPositionChangeProgress.
+///
+/// @see #currentGameVariationDidChange for details about board position
+/// changes that occur when the current game variation changes.
 extern NSString* currentBoardPositionDidChange;
 /// @brief Is sent (B-A) times while the current board position in
 /// GoBoardPosition changes from A to B. Observers can use this notification to
@@ -1295,6 +1676,9 @@ extern NSString* boardPositionChangeProgress;
 ///
 /// This notification is followed by #currentGameVariationDidChange. In between
 /// #numberOfBoardPositionsDidChange may also be sent.
+///
+/// @see #currentGameVariationDidChange for details about board position
+/// changes.
 extern NSString* currentGameVariationWillChange;
 /// @brief Is sent to indicate that the current game variation in GoNodeModel
 /// has changed.
@@ -1306,18 +1690,24 @@ extern NSString* currentGameVariationWillChange;
 /// taken before this notification is sent:
 /// - Before the game variation is changed, the current board position must be
 ///   made to match a node that is present in both the old and the new game
-///   variation. This notification may therefore be preceded by
-///   #currentBoardPositionDidChange. The current board position change can
-///   take place even before #currentGameVariationWillChange is sent, because
-///   the operation is not strictly related to the game variation change.
+///   variation. #currentGameVariationWillChange is therefore usually preceded
+///   by #currentBoardPositionWillChange and #currentBoardPositionDidChange.
+///   It does @b not happen, though, if the current board position node is
+///   already present in both game variations.
 /// - After the game variation is changed, GoBoardPosition must be updated with
 ///   the number of board positions in the new game variation. The notification
 ///   #numberOfBoardPositionsDidChange must be sent @b after
-///   #currentGameVariationWillChange is sent, because the game variation change
-///   and the number of board positions change can be seen as belonging to the
-///   same "transaction" that is bounded by the willChange/didChange
-///   notifications. #numberOfBoardPositionsDidChange may not be sent if the
-///   new game variation has the same number of board positions as the old one.
+///   #currentGameVariationWillChange is sent, but before this notification
+///   is sent, because the game variation change and the number of board
+///   positions change can be seen as belonging to the same "transaction" that
+///   is bounded by the willChange/didChange notifications.
+///   #numberOfBoardPositionsDidChange is not sent if the new game variation
+///   has the same number of board positions as the old one.
+///
+/// This notification is followed by another pair of
+/// #currentBoardPositionWillChange and #currentBoardPositionDidChange if the
+/// game variation was changed because of a node selection change and the newly
+/// selected node is not part of the new game variation.
 extern NSString* currentGameVariationDidChange;
 //@}
 
@@ -1368,48 +1758,180 @@ extern NSString* nodeTreeViewNodeSymbolDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Other notifications
+/// @name Time based play notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent when the first of a nested series of long-running actions
-/// starts. See LongRunningActionCounter for a detailed discussion of the
-/// concept.
-extern NSString* longRunningActionStarts;
-/// @brief Is sent when the last of a nested series of long-running actions
-/// ends. See LongRunningActionCounter for a detailed discussion of the concept.
-extern NSString* longRunningActionEnds;
-/// @brief Is sent to indicate that players and profiles are about to be reset
-/// to their factory defaults. Is sent before #goGameWillCreate.
-extern NSString* playersAndProfilesWillReset;
-/// @brief Is sent to indicate that players and profiles have been reset to
-/// their factory defaults. Is sent after #goGameDidCreate.
-extern NSString* playersAndProfilesDidReset;
-/// @brief Is sent to indicate that territory statistics in GoPoint objects have
-/// been updated.
-extern NSString* territoryStatisticsChanged;
+/// @brief Is sent to indicate that the state of the clock of one of the
+/// players has changed. The GoPlayerTimeData object whose clock state has
+/// changed is associated with the notification.
+///
+/// This notification is guaranteed to be posted on the main thread.
+///
+/// TODO xxx notify ApplicationStateManager that data is dirty
+extern NSString* playerClockStateHasChanged;
+/// @brief Is sent to indicate that something about the time data of one of the
+/// players has changed (e.g. remaining time has been decreased, remaining moves
+/// or periods have been decreased, switch from main time to overtime). The
+/// GoPlayerTimeData object whose data has changed is associated with the
+/// notification.
+///
+/// This notification is guaranteed to be posted on the main thread.
+///
+/// TODO xxx notify ApplicationStateManager that data is dirty
+extern NSString* playerTimeDataHasChanged;
+/// @brief Is sent to indicate that a player has run out of time and lost the
+/// game. The GoPlayerTimeData object associated with the player who lost is
+/// associated with the notification.
+///
+/// This notification is guaranteed to be posted on the main thread.
+///
+/// TODO xxx notify ApplicationStateManager that data is dirty
+extern NSString* playerLostOnTime;
+/// @brief Is sent to indicate that the time data of the currently selected
+/// node has become valid. This alwa
+///
+/// This notification is guaranteed to be posted on the main thread.
+extern NSString* timeDataDidBecomeValid;
+/// @brief Is sent to indicate that the time data of the current game variation
+/// has become invalid.  An NSNumber object is associated with the notification
+/// that contains the #GoTimeDataInvalidReason value. Receivers of the
+/// notification must process the NSNumber immediately because the NSNumber may
+/// be deallocated after the notification has been delivered.
+///
+/// This notification is guaranteed to be posted on the main thread.
+extern NSString* timeDataDidBecomeInvalid;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Play area / board view notifications
+// -----------------------------------------------------------------------------
+//@{
 /// @brief Is sent to indicate that the mode of the UI area "Play" is about
 /// to change. An NSArray object containing two NSNumber objects is associated
 /// with the notification. The first NSNumber object contains the old
-/// UIAreaPlayMode value, the second NSNumber object the new UIAreaPlayMode
+/// #UIAreaPlayMode value, the second NSNumber object the new #UIAreaPlayMode
 /// value. Receivers of the notification must process the NSArray immediately
 /// because the NSArray may be deallocated, or its content changed, after the
 /// notification has been delivered.
+///
+/// This notification is sent during application startup to indicate the initial
+/// #UIAreaPlayMode value. In that case, both NSNumber objects contain the
+/// same #UIAreaPlayMode value.
+///
+/// This notification is guaranteed to be delivered in the main thread.
 extern NSString* uiAreaPlayModeWillChange;
 /// @brief Is sent to indicate that the mode of the UI area "Play" has changed.
 /// An NSArray object containing two NSNumber objects is associated with the
-/// notification. The first NSNumber object contains the old UIAreaPlayMode
-/// value, the second NSNumber object the new UIAreaPlayMode value. Receivers
+/// notification. The first NSNumber object contains the old #UIAreaPlayMode
+/// value, the second NSNumber object the new #UIAreaPlayMode value. Receivers
 /// of the notification must process the NSArray immediately because the NSArray
 /// may be deallocated, or its content changed, after the notification has been
 /// delivered.
+///
+/// This notification is sent during application startup to indicate the initial
+/// #UIAreaPlayMode value. In that case, both NSNumber objects contain the
+/// same #UIAreaPlayMode value.
+///
+/// This notification is guaranteed to be delivered in the main thread.
 extern NSString* uiAreaPlayModeDidChange;
 /// @brief Is sent before an animation is started on the board view. As a
 /// response user interaction should be suspended until the balancing
 /// #boardAnimationDidEnd is sent.
+///
+/// This notification is guaranteed to be delivered in the main thread.
 extern NSString* boardViewAnimationWillBegin;
 /// @brief Is sent after an animation has ended on the board view. This is the
 /// balancing notification to #boardAnimationWillBegin.
+///
+/// This notification is guaranteed to be delivered in the main thread.
 extern NSString* boardViewAnimationDidEnd;
+/// @brief Is sent when the "More Game Actions" popup is about to appear.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* moreGameActionsPopupWillAppear;
+/// @brief Is sent when the "More Game Actions" popup has disappeared.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* moreGameActionsPopupDidDisappear;
+/// @brief Is sent when the "Game Info" screen is about to appear.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* gameInfoScreenWillAppear;
+/// @brief Is sent when the "Game Info" screen has disappeared.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* gameInfoScreenDidDisappear;
+/// @brief Is sent when the "New Game" screen is about to appear, or in the
+/// "rematch" use case when a new game is about to be started.
+///
+/// The "rematch" use case has the potential to be fully non-interactive, but
+/// if the current game has unsaved changes there will be a popup asking for
+/// confirmation that these changes can be discarded.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* newGameScreenWillAppear;
+/// @brief Is sent when the "New Game" screen has disappeared, or in the
+/// "rematch" use case when there is no further user interaction.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* newGameScreenDidDisappear;
+/// @brief Is sent when the "Save Game" screen is about to appear.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* saveGameScreenWillAppear;
+/// @brief Is sent when the "Save Game" screen has disappeared and there is
+/// no further user interaction.
+///
+/// If the popup is displayed that asks for the overwrite confirmation, this
+/// notification is sent after the popup has disappeared.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* saveGameScreenDidDisappear;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Territory statistics notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that territory statistics in GoPoint objects have
+/// been updated.
+extern NSString* territoryStatisticsChanged;
+/// @brief Is sent before generation of territory statistics begins. The
+/// generation occurs because the user requested it.
+///
+/// Before this notification is posted, the GoGame property
+/// @e reasonForComputerIsThinking is set to
+/// #GoGameComputerIsThinkingReasonPlayerInfluence (from the previous value
+/// #GoGameComputerIsThinkingReasonIsNotThinking).
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* territoryStatisticsGenerationWillBegin;
+/// @brief Is sent after generation of territory statistics has ended. The
+/// generation occurred because the user requested it.
+///
+/// Before this notification is posted, the GoGame property
+/// @e reasonForComputerIsThinking is set to
+/// #GoGameComputerIsThinkingReasonIsNotThinking (from the previous value
+/// #GoGameComputerIsThinkingReasonPlayerInfluence).
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* territoryStatisticsGenerationDidEnd;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name General UI notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the UI area has changed. An NSNumber object
+/// is associated with the notification that contains the new #UIArea value.
+/// Receivers of the notification must process the NSNumber immediately because
+/// the NSNumber may be deallocated after the notification has been delivered.
+///
+/// This notification is sent during application startup to indicate the initial
+/// #UIArea value.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* uiAreaDidChange;
 /// @brief Is sent when the user interface layout is about to change
 /// orientation from Portrait to Landscape, or from Landscape to Portrait.
 ///
@@ -1425,6 +1947,41 @@ extern NSString* uiWillChangeLayoutOrientation;
 /// notification and instead override
 /// viewWillTransitionToSize:withTransitionCoordinator().
 extern NSString* uiWillChangeInterfaceOrientation;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Other notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent when the app setup process during the initial app launch
+/// is about to begin.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* applicationSetupWillStart;
+/// @brief Is sent when the app setup process during the initial app launch
+/// has ended. A function GoGame instance is now present, either restored from
+/// the previous state, or an entirely new game if the restore failed or was not
+/// possible (e.g. first app launch after installation on the device).
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* applicationSetupDidEnd;
+/// @brief Is sent when the first of a nested series of long-running actions
+/// starts. See LongRunningActionCounter for a detailed discussion of the
+/// concept.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* longRunningActionStarts;
+/// @brief Is sent when the last of a nested series of long-running actions
+/// ends. See LongRunningActionCounter for a detailed discussion of the concept.
+///
+/// This notification is guaranteed to be delivered in the main thread.
+extern NSString* longRunningActionEnds;
+/// @brief Is sent to indicate that players and profiles are about to be reset
+/// to their factory defaults. Is sent before #goGameWillCreate.
+extern NSString* playersAndProfilesWillReset;
+/// @brief Is sent to indicate that players and profiles have been reset to
+/// their factory defaults. Is sent after #goGameDidCreate.
+extern NSString* playersAndProfilesDidReset;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1929,8 +2486,9 @@ enum TableViewCellType
   Value2CellType,        ///< @brief Cell with style @e UITableViewCellStyleValue2
   SubtitleCellType,      ///< @brief Cell with style @e UITableViewCellStyleSubtitle
   SwitchCellType,        ///< @brief Cell with a UISwitch in the accessory view
-  SliderWithValueLabelCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value. Displays the value label.
-  SliderWithoutValueLabelCellType,     ///< @brief ditto, but does not display the value label.
+  SliderWithValueLabelAndStepperCellType,  ///< @brief Similar to Value1CellType, but with a slider and a stepper that allow to adjust the value. Displays the value label.
+  SliderWithValueLabelCellType,            ///< @brief ditto, but does not display the stepper.
+  SliderWithoutValueLabelCellType,         ///< @brief ditto, but displays neither the stepper nor the value label.
   GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
   ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
   DeleteTextCellType,     ///< @brief Cell that displays a "delete" text. Style and color are similar to the delete cell in Apple's address book or calendar apps.
@@ -2073,6 +2631,22 @@ extern NSString* scoringSystemKey;
 extern NSString* lifeAndDeathSettlingRuleKey;
 extern NSString* disputeResolutionRuleKey;
 extern NSString* fourPassesRuleKey;
+// Time settings (part of new game settings)
+extern NSString* timedPlayEnabledKey;
+extern NSString* absoluteTimingEnabledKey;
+extern NSString* absoluteTimingDurationInSecondsKey;
+extern NSString* periodBasedTimeSystemEnabledKey;
+extern NSString* periodBasedTimeSystemTypeKey;
+extern NSString* canadianTimingPeriodDurationInSecondsKey;
+extern NSString* canadianTimingNumberOfMovesKey;
+extern NSString* japaneseTimingPeriodDurationInSecondsKey;
+extern NSString* japaneseTimingNumberOfPeriodsKey;
+extern NSString* fischerTimingInitialTimeDurationInSecondsKey;
+extern NSString* fischerTimingExtraTimeDurationInSecondsKey;
+extern NSString* steadyAverageTimingPeriodDurationInSecondsKey;
+extern NSString* steadyAverageTimingNumberOfMovesKey;
+extern NSString* totalAverageTimingPeriodDurationInSecondsKey;
+extern NSString* totalAverageTimingNumberOfMovesKey;
 // Players
 extern NSString* playerListKey;
 extern NSString* playerUUIDKey;
@@ -2186,6 +2760,15 @@ extern NSString* focusModeKey;
 extern NSString* gameVariationKey;
 extern NSString* newMoveInsertPolicyKey;
 extern NSString* newMoveInsertPositionKey;
+// Timed play settings
+extern NSString* timedPlayKey;
+extern NSString* autostartPlayerClockForNewGamesKey;
+extern NSString* autostartPlayerClockForArchiveGamesKey;
+extern NSString* autostartPlayerClockWhenTurnBeginsKey;
+extern NSString* canUserSuspendPlayerClocksKey;
+extern NSString* timeDataValidationModeKey;
+extern NSString* hidePlayerClockViewForInvalidTimeSystemsKey;
+extern NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -2212,12 +2795,22 @@ extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameReasonForComputerIsThinking;
 extern NSString* goGameBoardPositionKey;
 extern NSString* goGameRulesKey;
+extern NSString* goGameTimeSettingsKey;
 extern NSString* goGameDocumentKey;
 extern NSString* goGameScoreKey;
 extern NSString* goGameSetupFirstMoveColorKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
+extern NSString* goPlayerTimeDataKey;
+// GoPlayerTimeData keys
+extern NSString* goPlayerTimeDataTimeSettingsKey;
+extern NSString* goPlayerTimeDataIsTimeDataForBlackPlayerKey;
+extern NSString* goPlayerTimeDataClockKey;
+extern NSString* goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey;
+extern NSString* goPlayerTimeDataRemainingTimeInSecondsKey;
+extern NSString* goPlayerTimeDataRemainingNumberOfMovesKey;
+extern NSString* goPlayerTimeDataRemainingNumberOfPeriodsKey;
 // GoMove keys
 extern NSString* goMoveTypeKey;
 extern NSString* goMovePlayerKey;
@@ -2252,6 +2845,7 @@ extern NSString* goNodeGoNodeSetupKey;
 extern NSString* goNodeGoMoveKey;
 extern NSString* goNodeGoNodeAnnotationKey;
 extern NSString* goNodeGoNodeMarkupKey;
+extern NSString* goNodeGoNodeTimeDataKey;
 // GoNodeSetup keys
 extern NSString* goNodeSetupGameKey;
 extern NSString* goNodeSetupBlackSetupStonesKey;
@@ -2274,6 +2868,12 @@ extern NSString* goNodeMarkupSymbolsKey;
 extern NSString* goNodeMarkupConnectionsKey;
 extern NSString* goNodeMarkupLabelsKey;
 extern NSString* goNodeMarkupDimmingsKey;
+// GoNodeTimeData keys
+extern NSString* goNodeTimeDataIsTimeDataForBlackPlayerKey;
+extern NSString* goNodeTimeDataIsRemainingTimeAbsoluteTimeKey;
+extern NSString* goNodeTimeDataRemainingTimeInSecondsKey;
+extern NSString* goNodeTimeDataRemainingNumberOfMovesKey;
+extern NSString* goNodeTimeDataRemainingNumberOfPeriodsKey;
 // GoNodeModel keys
 extern NSString* goNodeModelGameKey;
 extern NSString* goNodeModelRootNodeKey;
@@ -2328,6 +2928,22 @@ extern NSString* goGameRulesScoringSystemKey;
 extern NSString* goGameRulesLifeAndDeathSettlingRuleKey;
 extern NSString* goGameRulesDisputeResolutionRuleKey;
 extern NSString* goGameRulesFourPassesRuleKey;
+// GoClock keys
+extern NSString* goClockStateKey;
+extern NSString* goClockSuspendedReasonKey;
+extern NSString* goClockElapsedTimeInSecondsKey;
+// GoTimeSystem keys
+extern NSString* goTimeSystemGoTimeSystemTypeKey;
+extern NSString* goTimeSystemCustomTimeSystemDescriptionKey;
+extern NSString* goTimeSystemNumberOfPeriodsKey;
+extern NSString* goTimeSystemPeriodDurationInSecondsKey;
+extern NSString* goTimeSystemHasMinimumNumberOfMovesPerPeriodKey;
+extern NSString* goTimeSystemMinimumNumberOfMovesPerPeriodKey;
+extern NSString* goTimeSystemGoUnusedTimeHandlingKey;
+extern NSString* goTimeSystemExtraTimeDurationInSecondsKey;
+// GoTimeSettings keys
+extern NSString* goTimeSettingsAbsoluteTimeSystemKey;
+extern NSString* goTimeSettingsPeriodBasedTimeSystemKey;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -2380,6 +2996,7 @@ extern NSString* annotationViewShortDescriptionLabelAccessibilityIdentifier;
 extern NSString* annotationViewLongDescriptionLabelAccessibilityIdentifier;
 extern NSString* annotationViewEditDescriptionButtonAccessibilityIdentifier;
 extern NSString* annotationViewRemoveDescriptionButtonAccessibilityIdentifier;
+extern NSString* annotationViewTimeDataPageAccessibilityIdentifier;
 //@}
 
 // -----------------------------------------------------------------------------

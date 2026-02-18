@@ -21,6 +21,7 @@
 #import "../go/GoUtilities.h"
 #import "../main/Registry.h"
 #import "../main/WindowProvider.h"
+#import "../play/model/TimeSettingsModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/Player.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -995,6 +996,29 @@ NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
   // dictionary. Because the value for this key was never exposed in the UI as
   // a configurable user preference it cannot appear in the user defaults, and
   // therefore no migration needs to be done for this.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 14.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion14
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  // Add new key to "NewGame" dictionary
+  id newGameDictionary = [userDefaults objectForKey:newGameKey];
+  if (newGameDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* newGameDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:newGameDictionary];
+
+    // The default values in TimeSettingsModel match the ones in the
+    // registration domain
+    TimeSettingsModel* timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
+    [timeSettingsModel writeToDictionary:newGameDictionaryUpgrade];
+
+    [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
+  }
 }
 
 // -----------------------------------------------------------------------------

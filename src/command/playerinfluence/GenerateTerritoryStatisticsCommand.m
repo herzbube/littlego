@@ -22,6 +22,9 @@
 #import "../../go/GoPlayer.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
+#import "../../play/model/BoardViewModel.h"
 
 
 @implementation GenerateTerritoryStatisticsCommand
@@ -31,16 +34,32 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // Fuego's handler for the "reg_genmove" GTP command ignores the clock (see
+  // GoGtpEngine::CmdRegGenMove()), instead it operates with the
+  // fuegoMaxThinkingTime time limit (see GtpEngineProfile). Because of this,
+  // we don't need to submit a TimeLeftCommand.
+
+  BoardViewModel* model = [Registry sharedRegistry].modelProvider.boardViewModel;
+  if (! model.displayPlayerInfluence)
+  {
+    DDLogVerbose(@"%@: Display of player influence is turned off, nothing to do.", [self shortDescription]);
+    return true;
+  }
+
   GoGame* game = [GoGame sharedGame];
   if (! game)
     return false;
+
+  game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonPlayerInfluence;
+  [self postNotificationOnMainThread:territoryStatisticsGenerationWillBegin];
+
   NSString* commandString = @"reg_genmove ";
   commandString = [commandString stringByAppendingString:game.nextMovePlayer.colorString];
   GtpCommand* command = [GtpCommand asynchronousCommand:commandString
                                          responseTarget:self
                                                selector:@selector(gtpResponseReceived:)];
   [command submit];
-  game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonPlayerInfluence;
+
   return true;
 }
 
@@ -56,8 +75,29 @@
     assert(0);
     return;
   }
+
   [[[[UpdateTerritoryStatisticsCommand alloc] init] autorelease] submit];
+
   [GoGame sharedGame].reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
+  [self postNotificationOnMainThread:territoryStatisticsGenerationDidEnd];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
+- (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

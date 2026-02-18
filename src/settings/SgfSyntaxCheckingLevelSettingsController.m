@@ -192,6 +192,7 @@ enum ResetToDefaultsSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Restrictive checking";
       accessoryView.on = self.sgfSettingsModel.enableRestrictiveChecking;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleEnableRestrictiveChecking:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -201,6 +202,7 @@ enum ResetToDefaultsSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Disable all warning messages";
       accessoryView.on = self.sgfSettingsModel.disableAllWarningMessages;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleDisableAllWarningMessages:) forControlEvents:UIControlEventValueChanged];
       break;
     }

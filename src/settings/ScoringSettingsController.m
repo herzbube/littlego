@@ -200,6 +200,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
       accessoryView.enabled = YES;
       cell.textLabel.text = @"Auto scoring / resuming play";
       accessoryView.on = self.scoringModel.autoScoringAndResumingPlay;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleAutoScoringAndResumingPlay:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -210,6 +211,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
       accessoryView.enabled = YES;
       cell.textLabel.text = @"Find dead stones";
       accessoryView.on = self.scoringModel.askGtpEngineForDeadStones;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleAskGtpEngineForDeadStones:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -222,6 +224,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.scoringModel.markDeadStonesIntelligently;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleMarkDeadStonesIntelligently:) forControlEvents:UIControlEventValueChanged];
       break;
     }

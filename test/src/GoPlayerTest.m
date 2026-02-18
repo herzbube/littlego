@@ -39,10 +39,12 @@
   XCTAssertNotNil(m_game.playerBlack.player);
   XCTAssertTrue(m_game.playerBlack.isBlack);
   XCTAssertTrue([m_game.playerBlack.colorString isEqualToString:@"B"]);
+  XCTAssertNil(m_game.playerBlack.timeData);
   XCTAssertNotNil(m_game.playerWhite);
   XCTAssertNotNil(m_game.playerWhite.player);
   XCTAssertFalse(m_game.playerWhite.isBlack);
   XCTAssertTrue([m_game.playerWhite.colorString isEqualToString:@"W"]);
+  XCTAssertNil(m_game.playerWhite.timeData);
 }
 
 // -----------------------------------------------------------------------------

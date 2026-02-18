@@ -19,6 +19,7 @@
 #import "TableViewSliderCell.h"
 #import "AutoLayoutUtility.h"
 #import "UIColorAdditions.h"
+#import "../utility/ExceptionUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -29,13 +30,15 @@
 //@{
 @property(nonatomic, retain, readwrite) UILabel* descriptionLabel;
 @property(nonatomic, retain, readwrite) UILabel* valueLabel;
+@property(nonatomic, retain, readwrite) UIStepper* stepper;
 @property(nonatomic, retain, readwrite) UISlider* slider;
 @property(nonatomic, assign, readwrite) id delegate;
 @property(nonatomic, assign, readwrite) SEL delegateActionValueDidChange;
-@property(nonatomic, assign, readwrite) SEL delegateActionSliderValueDidChange;
+@property(nonatomic, assign, readwrite) SEL delegateValueFormatter;
 //@}
-/// @brief The horizontal stack view that contains the two labels
-@property(nonatomic, retain) UIStackView* stackViewLabels;
+/// @brief The horizontal stack view that contains the two labels and the
+/// stepper.
+@property(nonatomic, retain) UIStackView* stackViewLabelsAndStepper;
 /// @brief The vertical stack view that contains the label stack view and the
 /// slider.
 @property(nonatomic, retain) UIStackView* stackViewSlider;
@@ -50,9 +53,11 @@
 // -----------------------------------------------------------------------------
 + (TableViewSliderCell*) cellWithReuseIdentifier:(NSString*)reuseIdentifier
                                 valueLabelHidden:(bool)valueLabelHidden
+                                   stepperHidden:(bool)stepperHidden
 {
   TableViewSliderCell* cell = [[TableViewSliderCell alloc] initWithReuseIdentifier:reuseIdentifier
-                                                                  valueLabelHidden:valueLabelHidden];
+                                                                  valueLabelHidden:valueLabelHidden
+                                                                     stepperHidden:stepperHidden];
   if (cell)
     [cell autorelease];
   return cell;
@@ -63,28 +68,41 @@
 /// @a reuseIdentifier.
 ///
 /// @note This is the designated initializer of TableViewSliderCell.
+///
+/// @exception NSInvalidArgumentException Is raised if @a valueLabelHidden is
+/// @e true and @a stepperHidden is @e false. In other words: If the stepper is
+/// shown then the value label must also be shown.
 // -----------------------------------------------------------------------------
 - (id) initWithReuseIdentifier:(NSString*)reuseIdentifier
               valueLabelHidden:(bool)valueLabelHidden
+                 stepperHidden:(bool)stepperHidden
 {
   // Call designated initializer of superclass (UITableViewCell)
   self = [super initWithStyle:UITableViewCellStyleDefault
               reuseIdentifier:reuseIdentifier];
   if (! self)
     return nil;
+
+  if (valueLabelHidden && ! stepperHidden)
+  {
+    NSString* errorMessage = @"Not allowed to hide the value label but show the stepper - stepper always requires the value label";
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+  }
+
   _valueLabelHidden = valueLabelHidden;
+  _stepperHidden = stepperHidden;
   [self setupCell];
   [self setupContentView];
-  // TODO: instead of duplicating code from the setter, we should invoke the
-  // setter (self.value = ...), but we need to be sure that it does not update
-  // because of its old/new value check
   int newValue = self.slider.minimumValue;
   self.value = newValue;
   self.slider.value = newValue;
+  if (self.stepper)
+    self.stepper.value = newValue;
   [self updateValueLabel];
   self.delegate = nil;
   self.delegateActionValueDidChange = nil;
-  self.delegateActionSliderValueDidChange = nil;
+  self.delegateValueFormatter = nil;
+  
   return self;
 }
 
@@ -95,10 +113,12 @@
 {
   self.descriptionLabel = nil;
   self.valueLabel = nil;
+  self.stepper = nil;
   self.slider = nil;
-  self.stackViewLabels = nil;
+  self.stackViewLabelsAndStepper = nil;
   self.stackViewSlider = nil;
   self.delegate = nil;
+
   [super dealloc];
 }
 
@@ -121,6 +141,8 @@
   [self setupDescriptionLabel];
   if (! self.valueLabelHidden)
     [self setupValueLabel];
+  if (! self.stepperHidden)
+    [self setupStepper];
   [self setupSlider];
   [self setupStackViews];
 
@@ -154,6 +176,19 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupContentView
 // -----------------------------------------------------------------------------
+- (void) setupStepper
+{
+  self.stepper = [[[UIStepper alloc] initWithFrame:CGRectNull] autorelease];
+  self.stepper.tag = SliderCellStepperTag;
+  self.stepper.continuous = YES;
+  self.stepper.autorepeat = YES;
+  self.stepper.wraps = NO;
+  [self.stepper addTarget:self action:@selector(stepperValueChanged:) forControlEvents:UIControlEventValueChanged];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupContentView
+// -----------------------------------------------------------------------------
 - (void) setupSlider
 {
   self.slider = [[[UISlider alloc] initWithFrame:CGRectNull] autorelease];
@@ -167,14 +202,28 @@
 // -----------------------------------------------------------------------------
 - (void) setupStackViews
 {
-  if (self.valueLabelHidden)
-    self.stackViewLabels = [[[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel]] autorelease];
+  if (self.valueLabelHidden) // stepper must also be hidden
+  {
+    self.stackViewLabelsAndStepper = [[[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel]] autorelease];
+  }
   else
-    self.stackViewLabels = [[[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel, self.valueLabel]] autorelease];
-  self.stackViewLabels.axis = UILayoutConstraintAxisHorizontal;
-  self.stackViewLabels.spacing = [AutoLayoutUtility horizontalSpacingSiblings];
+  {
+    if (self.stepperHidden)
+    {
+      self.stackViewLabelsAndStepper = [[[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel, self.valueLabel]] autorelease];
+    }
+    else
+    {
+      UIStackView* stackViewValueLabelAndStepper = [[[UIStackView alloc] initWithArrangedSubviews:@[self.valueLabel, self.stepper]] autorelease];
+      stackViewValueLabelAndStepper.axis = UILayoutConstraintAxisHorizontal;
+      stackViewValueLabelAndStepper.spacing = [AutoLayoutUtility horizontalSpacingSiblings];
+      self.stackViewLabelsAndStepper = [[[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel, stackViewValueLabelAndStepper]] autorelease];
+    }
+  }
+  self.stackViewLabelsAndStepper.axis = UILayoutConstraintAxisHorizontal;
+  self.stackViewLabelsAndStepper.spacing = [AutoLayoutUtility horizontalSpacingSiblings];
 
-  self.stackViewSlider = [[[UIStackView alloc] initWithArrangedSubviews:@[self.stackViewLabels, self.slider]] autorelease];
+  self.stackViewSlider = [[[UIStackView alloc] initWithArrangedSubviews:@[self.stackViewLabelsAndStepper, self.slider]] autorelease];
   self.stackViewSlider.axis = UILayoutConstraintAxisVertical;
   self.stackViewSlider.spacing = [AutoLayoutUtility verticalSpacingSiblings];
 }
@@ -194,17 +243,22 @@
 // -----------------------------------------------------------------------------
 /// @brief Updates the integer value of this cell to @a newValue.
 ///
-/// This method also updates the slider's value, so be sure to adjust the
-/// slider's minimum/maximum values to accomodate @a newValue before invoking
-/// this method.
+/// This method also updates the stepper's value and the slider's value, so be
+/// sure to adjust the stepper's and slider's minimum/maximum values to
+/// accomodate @a newValue before invoking this method.
 // -----------------------------------------------------------------------------
 - (void) setValue:(int)newValue
 {
   if (_value == newValue)
     return;
   _value = newValue;
+
+  if (self.stepper)
+    self.stepper.value = newValue;
   self.slider.value = newValue;
+
   [self updateValueLabel];
+
   if (self.delegate && self.delegateActionValueDidChange)
   {
     if ([self.delegate respondsToSelector:self.delegateActionValueDidChange])
@@ -223,12 +277,23 @@
   int newValue = sender.value;
   if (_value == newValue)
     return;
+
   self.value = newValue;
-  if (self.delegate && self.delegateActionSliderValueDidChange)
-  {
-    if ([self.delegate respondsToSelector:self.delegateActionSliderValueDidChange])
-      [self.delegate performSelector:self.delegateActionSliderValueDidChange withObject:self];
-  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Update value label to display the stepper's new value.
+// -----------------------------------------------------------------------------
+- (void) stepperValueChanged:(UIStepper*)sender
+{
+  // This check also has the benefit that the value label is not updated
+  // unnecessarily many times for fraction changes that we are not interested
+  // in
+  int newValue = sender.value;
+  if (_value == newValue)
+    return;
+
+  self.value = newValue;
 }
 
 // -----------------------------------------------------------------------------
@@ -239,19 +304,48 @@
 {
   if (self.valueLabelHidden)
     return;
-  int intValue = self.slider.value;
-  self.valueLabel.text = [NSString stringWithFormat:@"%d", intValue];
+
+  if (self.delegate &&
+      self.delegateValueFormatter &&
+      [self.delegate respondsToSelector:self.delegateValueFormatter])
+  {
+    self.valueLabel.text = [self.delegate performSelector:self.delegateValueFormatter
+                                               withObject:[NSNumber numberWithInt:_value]];
+  }
+  else
+  {
+    self.valueLabel.text = [NSString stringWithFormat:@"%d", _value];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures this cell with @a value, @a minimumValue and
+/// @a maximumValue.
+// -----------------------------------------------------------------------------
+- (void) setValue:(int)value minimumValue:(float)minimumValue maximumValue:(float)maximumValue
+{
+  if (self.stepper)
+  {
+    self.stepper.minimumValue = minimumValue;
+    self.stepper.maximumValue = maximumValue;
+  }
+
+  self.slider.minimumValue = minimumValue;
+  self.slider.maximumValue = maximumValue;
+
+  self.value = value;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Configures this cell with @a delegate and selectors for methods to
-/// invoke when the cell's integer value changes.
+/// invoke when the cell's integer value changes and when the cell's integer
+/// value is rendered.
 // -----------------------------------------------------------------------------
-- (void) setDelegate:(id)aDelegate actionValueDidChange:(SEL)action1 actionSliderValueDidChange:(SEL)action2
+- (void) setDelegate:(id)delegate actionValueDidChange:(SEL)action valueFormatter:(SEL)valueFormatter
 {
-  self.delegate = aDelegate;
-  self.delegateActionValueDidChange = action1;
-  self.delegateActionSliderValueDidChange = action2;
+  self.delegate = delegate;
+  self.delegateActionValueDidChange = action;
+  self.delegateValueFormatter = valueFormatter;
 }
 
 @end

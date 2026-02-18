@@ -26,13 +26,18 @@
 #import "../go/GoUtilities.h"
 #import "../main/ModelProvider.h"
 #import "../main/Registry.h"
+#import "../play/model/TimeSettingsModel.h"
+#import "../play/timedplay/TimeSettingsController.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
+#import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UIViewControllerAdditions.h"
 #import "../utility/NSObjectAdditions.h"
+#import "../utility/NSStringAdditions.h"
+#import "../utility/TimeDataUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -44,7 +49,7 @@ enum NewGameTableViewSection
   PlayersSection,
   BoardSizeSection,
   RulesetHandicapSection,
-  AdvancedSection,
+  TimedPlaySection,
   MaxSection
 };
 
@@ -56,7 +61,7 @@ enum NewGameTableViewSection_LoadGame
 {
   PlayersSection_LoadGame,
   RulesetHandicapSection_LoadGame,
-  AdvancedSection_LoadGame,
+  TimedPlaySection_LoadGame,
   MaxSection_LoadGame
 };
 
@@ -101,19 +106,19 @@ enum RulesetHandicapSectionItem
   RulesetItem,
   EvenGameItem,  // not shown in "load game" mode
   HandicapItem,  // not shown in "load game" mode; also not shown in "normal" mode if game is even
+  AdvancedItem,
   MaxRulesetHandicapSectionItem_UnevenGame,
   MaxRulesetHandicapSectionItem_EvenGame = MaxRulesetHandicapSectionItem_UnevenGame - 1,
   MaxRulesetHandicapSectionItem_LoadGame = MaxRulesetHandicapSectionItem_UnevenGame - 2
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the AdvancedSection.
+/// @brief Enumerates items in the TimedPlaySection.
 // -----------------------------------------------------------------------------
-enum AdvancedSectionItem
+enum TimedPlaySection
 {
-  AdvancedItem,
-  MaxAdvancedSectionItem,
-  MaxAdvancedSectionItem_LoadGame = MaxAdvancedSectionItem
+  TimedPlayItem,
+  MaxTimedPlaySectionItem,
 };
 
 // -----------------------------------------------------------------------------
@@ -123,7 +128,7 @@ enum AdvancedSectionItem
 ///
 /// This enumeration exists to simplify controller logic. Using this enumeration
 /// allows to write a single switch() statement instead of writing complicated
-/// complicated nested switch/if statements.
+/// nested switch/if statements.
 // -----------------------------------------------------------------------------
 enum CellID
 {
@@ -137,7 +142,8 @@ enum CellID
   RulesetCellID,
   EvenGameCellID,
   HandicapCellID,
-  AdvancedCellID
+  AdvancedCellID,
+  TimeSettingsCellID,
 };
 
 // -----------------------------------------------------------------------------
@@ -146,9 +152,11 @@ enum CellID
 @interface NewGameController()
 @property(nonatomic, assign) id<NewGameControllerDelegate> delegate;
 @property(nonatomic, assign) bool loadGame;
+@property(nonatomic, retain) TimeSettingsModel* archivedGameTimeSettingsModel;
 @property(nonatomic, assign) NewGameModel* theNewGameModel;
 @property(nonatomic, assign) PlayerModel* playerModel;
 @property(nonatomic, assign) bool advancedScreenWasShown;
+@property(nonatomic, assign) bool timeSettingsScreenWasShown;
 @property(nonatomic, assign) UIView* contentView;
 @property(nonatomic, assign) UISegmentedControl* segmentedControl;
 @property(nonatomic, assign) UITableView* tableView;
@@ -161,6 +169,30 @@ enum CellID
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a NewGameController instance of
+/// grouped style. The intent is to start a new game from scratch.
+// -----------------------------------------------------------------------------
++ (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
+{
+  return [NewGameController controllerWithDelegate:delegate
+                                          loadGame:false
+                                 timeSettingsModel:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a NewGameController instance of
+/// grouped style. The intent is to load an archived game. The archived game
+/// uses time settings stored in @a timeSettingsModel.
+// -----------------------------------------------------------------------------
++ (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
+                loadGameWithTimeSettingsModel:(TimeSettingsModel*)timeSettingsModel
+{
+  return [NewGameController controllerWithDelegate:delegate
+                                          loadGame:true
+                                 timeSettingsModel:timeSettingsModel];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor. Creates a NewGameController instance of
 /// grouped style.
 ///
 /// @a loadGame is true to indicate that the intent of starting the new game is
@@ -168,21 +200,31 @@ enum CellID
 /// should be started in the regular fashion. The two modes display different
 /// UI elements and trigger different operations when the user finally confirms
 /// starting the new game.
+///
+/// If @a loadgame is @e true then @a timeSettingsModel must be provided and
+/// must represent the time settings of the game to be loaded. If @a loadGame
+/// is @e false then @a timeSettingsModel is ignored.
 // -----------------------------------------------------------------------------
 + (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
                                      loadGame:(bool)loadGame
+                            timeSettingsModel:(TimeSettingsModel*)timeSettingsModel;
 {
+  [NewGameController postNotificationOnMainThread:newGameScreenWillAppear];
+
   NewGameController* controller = [[NewGameController alloc] initWithNibName:nil bundle:nil];
   if (controller)
   {
     [controller autorelease];
     controller.delegate = delegate;
     controller.loadGame = loadGame;
+    controller.archivedGameTimeSettingsModel = timeSettingsModel;
+
     NewGameModel* theNewGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
     controller.theNewGameModel = theNewGameModel;
     PlayerModel* playerModel = [Registry sharedRegistry].modelProvider.playerModel;
     controller.playerModel = playerModel;
     controller.advancedScreenWasShown = false;
+    controller.timeSettingsScreenWasShown = false;
 
     // Try to find some sensible defaults if player objects could not be
     // determined (e.g. because the UUIDs we remembered are no longer valid).
@@ -239,9 +281,12 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [NewGameController postNotificationOnMainThread:newGameScreenDidDisappear];
+
   self.delegate = nil;
   self.theNewGameModel = nil;
   self.playerModel = nil;
+  
   [super dealloc];
 }
 
@@ -266,15 +311,16 @@ enum CellID
 - (void) viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
-  if (self.advancedScreenWasShown)
+
+  if (self.advancedScreenWasShown || self.timeSettingsScreenWasShown)
   {
-    // We get here if the "Advanced settings" screeen is popped from the
-    // navigation stack
+    // We get here if the "Advanced settings" or "Time settings" screeen is
+    // popped from the navigation stack
     NSUInteger indexOfSectionToReload;
     if (self.loadGame)
-      indexOfSectionToReload = RulesetHandicapSection_LoadGame;
+      indexOfSectionToReload = (self.advancedScreenWasShown ? RulesetHandicapSection_LoadGame : TimedPlaySection_LoadGame);
     else
-      indexOfSectionToReload = RulesetHandicapSection;
+      indexOfSectionToReload = (self.advancedScreenWasShown ? RulesetHandicapSection : TimedPlaySection);
     NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:indexOfSectionToReload];
     [self performBlockOnMainThread:^{
       // When viewWillAppear is invoked the VC view is not yet visible which
@@ -286,6 +332,7 @@ enum CellID
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     } afterDelay:0.0];
     self.advancedScreenWasShown = false;
+    self.timeSettingsScreenWasShown = false;
   }
 }
 
@@ -466,8 +513,8 @@ enum CellID
       {
         case RulesetHandicapSection_LoadGame:
           return MaxRulesetHandicapSectionItem_LoadGame;
-        case AdvancedSection_LoadGame:
-          return MaxAdvancedSectionItem_LoadGame;
+        case TimedPlaySection_LoadGame:
+          return MaxTimedPlaySectionItem;
         default:
           break;
       }
@@ -483,8 +530,8 @@ enum CellID
             return MaxRulesetHandicapSectionItem_EvenGame;
           else
             return MaxRulesetHandicapSectionItem_UnevenGame;
-        case AdvancedSection:
-          return MaxAdvancedSectionItem;
+        case TimedPlaySection:
+          return MaxTimedPlaySectionItem;
         default:
           break;
       }
@@ -548,6 +595,10 @@ enum CellID
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       break;
     }
+    case TimeSettingsCellID:
+    {
+      cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+    }
     default:
     {
       assert(0);
@@ -584,6 +635,7 @@ enum CellID
       cell.textLabel.text = @"Computer plays white";
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.on = self.theNewGameModel.computerPlaysWhite ? YES : NO;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleComputerPlaysWhite:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -627,6 +679,7 @@ enum CellID
       cell.textLabel.text = @"Even game";
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.on = [self isEvenGame];
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleEvenGame:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -642,6 +695,18 @@ enum CellID
       cell.textLabel.text = @"Advanced settings";
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
+    }
+    case TimeSettingsCellID:
+    {
+      TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+      variableHeightCell.descriptionLabel.text = @"Time settings";
+      TimeSettingsModel* timeSettingsModel = (self.loadGame
+                                              ? self.archivedGameTimeSettingsModel
+                                              : self.theNewGameModel.timeSettingsModel);
+      variableHeightCell.valueLabel.text = [TimeDataUtilities timeSettingsModelSummary:timeSettingsModel];
+      cell.accessoryType = (self.loadGame && ! timeSettingsModel.timedPlayEnabled
+                            ? UITableViewCellAccessoryNone
+                            : UITableViewCellAccessoryDisclosureIndicator);
     }
     default:
     {
@@ -739,6 +804,29 @@ enum CellID
                                                                                                       loadGame:self.loadGame];
       [self.navigationController pushViewController:newGameAdvancedController animated:YES];
       self.advancedScreenWasShown = true;
+      return;
+    }
+    case TimeSettingsCellID:
+    {
+      if (self.loadGame && ! self.archivedGameTimeSettingsModel.timedPlayEnabled)
+        return;
+
+      bool readonlyMode;
+      TimeSettingsModel* timeSettingsModel;
+      if (self.loadGame)
+      {
+        readonlyMode = true;
+        timeSettingsModel = self.archivedGameTimeSettingsModel;
+      }
+      else
+      {
+        readonlyMode = false;
+        timeSettingsModel = self.theNewGameModel.timeSettingsModel;
+      }
+      TimeSettingsController* timeSettingsController = [[[TimeSettingsController alloc] initWithTimeSettingsModel:timeSettingsModel
+                                                                                                     readonlyMode:readonlyMode] autorelease];
+      [self.navigationController pushViewController:timeSettingsController animated:YES];
+      self.timeSettingsScreenWasShown = true;
       return;
     }
     default:
@@ -940,6 +1028,7 @@ enum CellID
     {
       if (self.loadGame)
       {
+        return AdvancedCellID;
       }
       else
       {
@@ -948,7 +1037,9 @@ enum CellID
           case EvenGameItem:
             return EvenGameCellID;
           case HandicapItem:
-            return HandicapCellID;
+            return ([self isEvenGame] ? AdvancedCellID : HandicapCellID);
+          case AdvancedItem:
+            return AdvancedCellID;
           default:
           {
             assert(0);
@@ -958,10 +1049,10 @@ enum CellID
       }
     }
   }
-  else if ((self.loadGame && AdvancedSection_LoadGame == indexPath.section) ||
-           (! self.loadGame && AdvancedSection == indexPath.section))
+  else if ((self.loadGame && TimedPlaySection_LoadGame == indexPath.section) ||
+           (! self.loadGame && TimedPlaySection == indexPath.section))
   {
-    return AdvancedCellID;
+    return TimeSettingsCellID;
   }
 
   NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine cell ID, loadGame = %d, indexPath.section = %ld, indexPath.row = %ld, game type: %d",
@@ -1445,6 +1536,24 @@ enum CellID
       @throw exception;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
++ (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

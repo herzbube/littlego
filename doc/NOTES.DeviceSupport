@@ -3,10 +3,14 @@ Purpose of this document
 This document has notes about the project's support for iOS/iPadOS devices. The
 oldest iOS/iPadOS version still supported is defined by
 IPHONEOS_DEPLOYMENT_TARGET (search keyword: deployment target). The source for
-the information which iOS versions support which devices is Wikipedia:
+the information which iOS versions support which devices is Wikipedia.
 - https://en.wikipedia.org/wiki/List_of_iPhone_models
 - https://en.wikipedia.org/wiki/List_of_iPad_models
 - https://en.wikipedia.org/wiki/IPod
+
+The source for logical and pixel screen resolutions is iOS Ref. For devices not
+listed on that site, the pixel resolution is taken from Wikipedia.
+- https://iosref.com/res
 
 iOS / device support
 --------------------
@@ -15,72 +19,129 @@ version is the last one to support the device. If the project stops supporting
 a given iOS version then all devices listed under that iOS version, and older
 iOS versions, will no longer be able to run the app.
 
+Each iPhone and iPad device list entry also shows the screen resolutions of the
+listed device(s). The format is "logical/point resolution (pixel resolution)".
+The screen resolution is interesting so that when changes are made to the UI,
+these changes can be tested on the devices with the most space-constrained
+screens. Currently those devices are:
+- iPhone SE 2nd / 3rd generation / iPhone 8 (375 × 667)
+- iPad Mini 5th generation / iPad 5th / 6th generation / iPad Pro 9.7 inch (768 × 1024)
+  iPad Mini 6th / 7th generation are slightly less wide, but higher (744 × 1133)
+
 Latest iOS/iPadOS (iOS/iPadOS 26 at the time this document was last updated)
 - iPhone 11 / 11 Pro / 11 Pro Max
-- iPhone SE 2nd generation / 3rd generation
+  414 × 896 (828 × 1792) / 375 × 812 (1125 × 2436) / 414 × 896 (1242 × 2688)
+- iPhone SE 2nd / 3rd generation
+  375 × 667 (750 × 1334) / 375 × 667 (750 × 1334)
 - iPhone 12 Mini / 12 / 12 Pro / 12 Pro Max
+  375 × 812 (1080 × 2340) / 390 × 844 (1170 × 2532) / 390 × 844 (1170 × 2532) / 428 × 926 (1284 × 2778)
 - iPhone 13 Mini / 13 / 13 Pro / 13 Pro Max
+  375 × 812 (1080 × 2340) / 390 × 844 (1170 × 2532) / 390 × 844 (1170 × 2532) / 428 × 926 (1284 × 2778)
 - iPhone 14 / 14 Plus / 14 Pro / 14 Pro Max
+  390 × 844 (1170 × 2532) / 428 × 926 (1284 × 2778) / 393 × 852 (1179 × 2556) / 430 × 932 (1290 × 2796)
 - iPhone 15 / 15 Plus / 15 Pro / 15 Pro Max
+  393 × 852 (1179 × 2556) / 430 × 932 (1290 × 2796) / 393 × 852 (1179 × 2556) / 430 × 932 (1290 × 2796)
 - iPhone 16 / 16 Plus / 16 Pro / 16 Pro Max / 16e
+  393 × 852 (1179 × 2556) / 430 × 932 (1290 × 2796) / ? × ? (1206 × 2622) / 440 × 956 (1320 × 2868) / 390 × 844 (1170 × 2532)
 - iPhone 17 / 17 Pro / 17 Pro Max
+  ? × ? (1206 × 2622) / ? × ? (1206 × 2622) / ? × ? (1320 × 2868)
 - iPhone Air
+  ? × ? (1260 × 2736)
 - iPad 8th / 9th / 10th / 11th generation
+  810 × 1080 (1620 × 2160) / 810 × 1080 (1620 × 2160) / 810 × 1080 (1640 × 2360) / 810 × 1080 (1640 × 2360)
 - iPad Mini 5th / 6th / 7th generation
-- iPad Air 3rd / 4th / 5th / 6th / 7th generation
+  768 × 1024 (1536 × 2048) / 744 × 1133 (1488 × 2266) / 744 × 1133 (1488 × 2266)
+- iPad Air 13 inch 6th / 7th generation
+  1024 × 1366 (2048 × 2732) / ? × ? (2048 × 2732)
+- iPad Air 11 inch 6th / 7th generation
+  820 × 1180 (1640 × 2360) / ? × ? (1640 × 2360)
+- iPad Air 3rd / 4th / 5th generation
+  834 × 1112 (1668 × 2224) / 820 × 1180 (1640 × 2360) / 820 × 1180 (1640 × 2360)
 - iPad Pro 11 inch 1st / 2nd / 3rd / 4th / 5th / 6th generation
+  834 × 1194 (1668 × 2388) / 834 × 1194 (1668 × 2388) / 834 × 1194 (1668 × 2388) / 834 × 1194 (1668 × 2388) / ? × ? (1668 × 2420) / 834 × 1210 (1668 × 2420)
 - iPad Pro 12.9 inch 3rd / 4th / 5th / 6th generation
+  1024 × 1366 (2048 × 2732) / 1024 × 1366 (2048 × 2732) / 1024 × 1366 (2048 × 2732) / 1024 × 1366 (2048 × 2732)
 - iPad Pro 13 inch 1st / 2nd generation
+  1032 × 1376 (2064 × 2752) / ? × ? (2064 × 2752)
 - iPad Pro 7th (M4) / 8th (M5) generation
+  ? × ? (? × ?) / ? × ? (? × ?)
 
 iOS/iPadOS 18
 - iPhone XS / XS Max
+  375 × 812 (1125 × 2436) / 414 × 896 (1242 × 2688)
 - iPhone XR
+  414 × 896 (828 × 1792)
 - iPad 7th generation
+  810 × 1080 (1620 × 2160)
 
 iOS/iPadOS 17
 - iPad 6th generation
-- iPad Pro 2nd generation (both 10.5 and 12.9 inch)
+  768 × 1024 (1536 × 2048)
+- iPad Pro 12.9 inch 2nd generation
+  1024 × 1366 (2048 × 2732)
+- iPad Pro 10.5 inch
+  834 × 1112 (1668 × 2224)
 
 iOS/iPadOS 16
 - iPhone 8 / 8 Plus
+  375 × 667 (750 × 1334) / 414 × 736 (1080 × 1920)
 - iPhone X
+  375 × 812 (1125 × 2436)
 - iPad Pro 9.7 inch
+  768 × 1024 (1536 × 2048)
 - iPad Pro 12.9 inch 1st generation
+  1024 × 1366 (2048 × 2732)
 - iPad 5th generation
+  768 × 1024 (1536 × 2048)
 
 iOS/iPadOS 15
 - iPhone 6S / 6S Plus
+  375 × 667 (750 × 1334) / 414 × 736 (1080 × 1920)
 - iPhone SE 1st generation
+  320 × 568 (640 × 1136)
 - iPhone 7 / 7 Plus
+  375 × 667 (750 × 1334) / 414 × 736 (1080 × 1920)
 - iPod Touch 7th generation (final iPod version before product was discontinued)
 - iPad Air 2
+  768 × 1024 (1536 × 2048)
 - iPad Mini 4
+  768 × 1024 (1536 × 2048)
 
 iOS/iPadOS 14, 13
 - None
 
 iOS/iPadOS 12
 - iPhone 6 / 6 Plus
+  375 × 667 (750 × 1334) / 414 × 736 (1080 × 1920)
 - iPhone 5S
+  320 × 568 (640 × 1136)
 - iPod Touch 6th generation
 - iPad Air 1st generation
+  768 × 1024 (1536 × 2048)
 - iPad Mini 2 and 3
+  768 × 1024 (1536 × 2048) / 768 × 1024 (1536 × 2048)
 
 iOS/iPadOS 11
 - None
 
 iOS/iPadOS 10
 - iPhone 5
+  320 × 568 (640 × 1136)
 - iPhone 5C
+  320 × 568 (640 × 1136)
 - iPad 4th generation
+  768 × 1024 (1536 × 2048)
 
 iOS/iPadOS 9 - minimum required version since app version 1.6.0 (February 26 2021)
 - iPhone 4S
+  320 × 480 (640 × 960)
 - iPod Touch 5th generation
 - iPad Mini 1st generation
+  768 × 1024 (768 × 1024)
 - iPad 2
+  768 × 1024 (768 × 1024)
 - iPad 3rd generation
+  768 × 1024 (1536 × 2048)
 
 No information about device support in older iOS versions was collected.
 

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2024 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2021-2024 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -261,6 +261,7 @@ enum OtherSectionItem
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Reverse variation ordering";
           accessoryView.on = self.sgfSettingsModel.reverseVariationOrdering;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleReverseVariationOrdering:) forControlEvents:UIControlEventValueChanged];
           break;
         }

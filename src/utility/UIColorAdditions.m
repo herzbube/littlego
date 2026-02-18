@@ -276,7 +276,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a color object whose hex code is "73C2FB", and whose alpha
-/// value is 1.0. This is the CSS color named "Non Photo Blue".
+/// value is 1.0. This is the CSS color named "Maya Blue".
 ///
 /// This is a shade of blue that can be used as an alternating color to
 /// nonPhotoBlueColor().
@@ -288,7 +288,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a color object whose hex code is "A4DDED", and whose alpha
-/// value is 1.0. This is the CSS color named "White Smoke".
+/// value is 1.0. This is the CSS color named "Non Photo Blue".
 ///
 /// This is a shade of blue that can be used as an alternating color to
 /// mayaBlueColor().

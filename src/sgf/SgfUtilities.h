@@ -17,6 +17,8 @@
 
 // Forward declarations
 @class SGFCDocumentReadResult;
+@class GoTimeSystem;
+@class TimeSettingsModel;
 
 
 // -----------------------------------------------------------------------------
@@ -47,5 +49,15 @@
 + (UIImage*) coloredIndicatorForMessage:(SGFCMessage*)message;
 + (SGFCGameResult) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason;
 + (enum GoGameHasEndedReason) goGameHasEndedReasonForGameResult:(SGFCGameResult)gameResult;
++ (NSString*) sgfTimeSystemIdentifierForTimeSystemType:(enum GoTimeSystemType)timeSystemType;
++ (enum GoTimeSystemType) timeSystemTypeForSgfTimeSystemIdentifier:(NSString*)sgfTimeSystemIdentifier;
++ (NSString*) sgfOvertimeStringForPeriodBasedTimeSystem:(GoTimeSystem*)periodBasedTimeSystem;
++ (GoTimeSystem*) periodBasedTimeSystemForSgfOvertimeString:(NSString*)sgfOvertimeString
+                                       absoluteTimeDuration:(double*)absoluteTimeDuration
+                             didConsumeAbsoluteTimeDuration:(bool*)didConsumeAbsoluteTimeDuration;
++ (NSString*) sgfDurationStringForDurationValue:(double)durationValue;
++ (double) durationValueFromSgfDurationString:(NSString*)sgfDurationString;
++ (TimeSettingsModel*) timeSettingsFromSgfGameInfoNode:(SGFCNode*)sgfGameInfoNode;
++ (TimeSettingsModel*) timeSettingsFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
 
 @end

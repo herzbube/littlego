@@ -56,6 +56,9 @@
     case SwitchCellType:
       cellID = @"SwitchCellType";
       break;
+    case SliderWithValueLabelAndStepperCellType:
+      cellID = @"SliderWithValueLabelAndStepperCellType";
+      break;
     case SliderWithValueLabelCellType:
       cellID = @"SliderWithValueLabelCellType";
       break;
@@ -108,14 +111,19 @@
   // Create the (autoreleased) cell object
   switch (type)
   {
+    case SliderWithValueLabelAndStepperCellType:
+    {
+      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier valueLabelHidden:false stepperHidden:false];
+      break;
+    }
     case SliderWithValueLabelCellType:
     {
-      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier valueLabelHidden:false];
+      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier valueLabelHidden:false stepperHidden:true];
       break;
     }
     case SliderWithoutValueLabelCellType:
     {
-      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier valueLabelHidden:true];
+      cell = [TableViewSliderCell cellWithReuseIdentifier:identifier valueLabelHidden:true stepperHidden:true];
       break;
     }
     case GridCellType:

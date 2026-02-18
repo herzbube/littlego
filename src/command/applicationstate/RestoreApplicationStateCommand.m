@@ -23,6 +23,7 @@
 #import "../playerinfluence/ToggleTerritoryStatisticsCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoTimeDataValidator.h"
 #import "../../go/GoUtilities.h"
 #import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
@@ -49,6 +50,8 @@
 
   [GoUtilities relinkMoves:unarchivedGame];
   [GoUtilities recalculateZobristHashes:unarchivedGame];
+  GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
+  [timeDataValidator validateTimeDataInGameTree:unarchivedGame];
 
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];
   // We want to keep the mode of the UI area "Play" from the previous session
@@ -57,6 +60,8 @@
   // sync'ed (it is irrelevant that we are not going to trigger the computer
   // player at all)
   command.shouldTriggerComputerPlayerIfItIsTheirTurn = false;
+  // Human player's clock will be started if necessary by TimedPlayController
+  command.shouldStartHumanPlayerClockIfItIsTheirTurn = false;
   [command submit];
 
   SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];

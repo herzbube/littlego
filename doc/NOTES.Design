@@ -3,10 +3,37 @@ Purpose of this document
 This document contains design notes on a variety of subjects.
 
 
-.xib design notes
------------------
-None. This project creates the entire UI programmatically and does not use any
-.xib files.
+Programmatic vs. configurative approach
+---------------------------------------
+This project prefers doing things programmatically, over doing things in a
+configurative way. One major instance of this preference is that this project
+does not use storyboard or xib files at all, but instead creates the entire
+UI programmatically.
+
+The main reasons for not using storyboards and xibs:
+- The content of a storyboard or xib file is XML. For a human programmer,
+  analyzing this XML content is at least difficult, if not impossible. In
+  contrast, analyzing code written in a programming language such as Objective-C
+  is much more feasible.
+- Modifying a storyboard or xib file requires a visual interface design tool
+  (e.g. Interface Builder). This can become a problem when such a tool is no
+  longer available. In particular, with the pace that Apple is continuously
+  evolving and changing their development environment, it may suddenly become
+  difficult to access a previously designed UI and/or convert it to a new
+  format. A programmatically created UI, in contrast, can always be accessed
+  and modified with a simple text editor.
+- Last, but definitely not least, is tracking the changes made to an existing
+  UI design in the version control system. Changes to source code are relatively
+  easy to read, whereas changes to XML content can quickly become
+  incomprehensible, in particular if the visual interface design tool does not
+  take great care in minimizing such changes. When the XML format changes,
+  minimizing changes to the actual content may not even be possible, leaving
+  the observer with just blobs of data changing in an opaque way.
+
+A general danger of the configurative approach is hiding how things work.
+Sometimes this is unavoidable (e.g. when Apple designs for an app capability to
+be defined via Info.plist), but can be mitigated if the configuration file is
+well known (Info.plist).
 
 
 UI elements design notes
@@ -63,11 +90,15 @@ View controller hierarchy for UITypePhone and UITypePad:
     +-- PlayRootViewNavigationController : UINavigationController
         +-- PlayRootViewControllerPhoneAndPad : PlayRootViewController
             +-- Portrait orientation
-            |   +-- StatusViewController (no child view controller)
-            |   |   +-- UILabel
-            |   |   +-- UIActivityIndicatorView
             |   +-- ResizableStackViewController
             |       +-- UIViewController (resizable pane 1)
+            |       |   +-- StatusAreaController
+            |       |   |   +-- StatusViewController (no child view controller)
+            |       |   |   |   +-- UILabel
+            |       |   |   |   +-- UIActivityIndicatorView
+            |       |   |   +-- TimeViewController
+            |       |   |   |   +-- TimeView (for black player)
+            |       |   |   |   +-- TimeView (for white player)
             |       |   +-- BoardViewController
             |       |   |   +-- PanGestureController
             |       |   |   +-- TapGestureController
@@ -94,9 +125,13 @@ View controller hierarchy for UITypePhone and UITypePad:
                         |   +-- ButtonBoxController : UICollectionViewController
                         |       +-- UICollectionView (board position navigation cells)
                         +-- MiddleColumnView
-                        |   +-- StatusViewController (no child view controller)
-                        |   |   +-- UILabel
-                        |   |   +-- UIActivityIndicatorView
+                        |   +-- StatusAreaController
+                        |   |   +-- StatusViewController (no child view controller)
+                        |   |   |   +-- UILabel
+                        |   |   |   +-- UIActivityIndicatorView
+                        |   |   +-- TimeViewController
+                        |   |   |   +-- TimeView (for black player)
+                        |   |   |   +-- TimeView (for white player)
                         |   +-- ResizableStackViewController
                         |       +-- UIViewController (resizable pane 1)
                         |       |   +-- BoardViewController
@@ -119,11 +154,15 @@ View controller hierarchy for UITypePhonePortraitOnly:
     MainTabBarController : UITabBarController
     +-- PlayRootViewNavigationController : UINavigationController
         +-- PlayRootViewControllerPhonePortraitOnly : PlayRootViewController
-            +-- StatusViewController (no child view controller)
-            |   +-- UILabel
-            |   +-- UIActivityIndicatorView
             +-- ResizableStackViewController
                 +-- UIViewController (resizable pane 1)
+                |   +-- StatusAreaController
+                |   |   +-- StatusViewController (no child view controller)
+                |   |   |   +-- UILabel
+                |   |   |   +-- UIActivityIndicatorView
+                |   |   +-- TimeViewController
+                |   |   |   +-- TimeView (for black player)
+                |   |   |   +-- TimeView (for white player)
                 |   +-- BoardViewController
                 |   |   +-- PanGestureController
                 |   |   +-- TapGestureController
@@ -603,3 +642,152 @@ Markup icon image view
                    If markup icon is not shown: 0
   => The width constraint's constant is dynamically adjusted.
 - [C0064] Height = Fixed height
+
+
+Timed play design
+-----------------
+Managing player clocks
+- The main problem with managing player clocks is that they can be suspended.
+  If this were not possible, then it would be as simple as in a real-world game
+  of Go: When a player's turn starts the clock starts, when a player's turn ends
+  the clock stops.
+- This app, however, does not strive to replicate this real-world scenario. This
+  app instead has the following goals:
+  - Let the user play a timed game, but in a relaxed non-tournament,
+    non-competitive environment where the user has the freedom to suspend
+    the clock whenever a distraction occurs or they choose to do so for any
+    other reason.
+  - To help with the above goal of a relaxed game, if the user performs an
+    action that would prevent them from playing a move in time, the app
+    automatically suspends the clock. One obvious example for this is when the
+    user sends the entire app to the background. Other examples, for when the
+    app is still in the foreground, are when the user switches to a different
+    tab or calls up the Game Info screen and no longer sees the game board, or
+    when the user calls up the "More game actions" menu and is no longer able
+    to interact with the game board to make a move. When the situation
+    "normalizes", i.e. the user is again able to interact with the game board
+    and make a move, the app automatically resumes the clock.
+- So the main problem that the app must solve is when to suspend clocks and when
+  to resume or stop a suspended clock.
+- A number of basic invariants are:
+  - If the game that is currently in progress does not use timed play, then the
+    app does not touch player clocks.
+  - If the current game uses timed play, ignore all attempts to change the state
+    of the clock of the player who is not next to move. This mainly is important
+    for direct user interaction in the UI, where the user attempts to suspend a
+    player clock, or resume a suspended player clock. The application logic that
+    governs game play should be correct and should never attempt to manipulate
+    the clock of the player when it's not their turn.
+  - If the current game uses timed play, but the time data stored in the
+    currently selected node is not valid, then the app does not touch player
+    clocks. See "Time data validation" below for details.
+- Inputs for player clock management (possibly incomplete):
+  - Application events (e.g. scene is deactivated or activated, tab is changed,
+    a screen is called up or dismissed, etc.) that indicate that a clock may
+    need to be suspended or resumed.
+  - Requests from various parts of the application logic to start or stop a
+    clock (e.g. a player's turn ended or started, the game ended).
+  - When the currently selected node changes, player clocks must be adjusted to
+    the situation of the newly selected node.
+  - Direct user interaction with the clock, i.e. the user wants to suspend a
+    started clock, or resume a suspended clock.
+  - The app also suspends and resumes the clock when it needs to perform
+    internal housekeeping. The only example so far is when the one-second timer
+    fires that keeps the user interface clock counting down.
+- Involved classes
+  - The central authority for managing player clocks is the class
+    TimedPlayController. It orchestrates all the inputs listed above to fulfill
+    the goals followed by the app, as outlined further up.
+  - The protocol PlayerClockService is used by various parts of the application
+    logic to request changes to the player clock state. TimedPlayController
+    implements the protocol and fulfills the requests according to its various
+    inputs. TimedPlayController may ignore a request if it violates a basic
+    invariant. While that may sound irritating, this is a conscious design
+    choice: Various parts of the application logic can be kept simpler if they
+    are allowed to assume that the game uses timed play and that they need to
+    manage a player clock. The actual decisions what to do with a request are
+    then deferred to TimedPlayController. For instance, if the game does not
+    actually use timed play, TimedPlayController can simply ignore the request.
+  - The GoPlayerTimeData class keeps the player's time data and provides the
+    actual player clock functionality.
+  - The GoTimeSystem class represents one of the time systems supported by the
+    app, and stores the parameters that govern timed play when this particular
+    time system is in effect. For instance, a GoTimeSystem instance may indicate
+    that Canadian Timing is being used, and that the user chose a certain
+    period duration <d>, and a number of moves per period <n>, when they started
+    the game.
+  - The GoTimeSettings class assembles two GoTimeSystem instances that govern
+    the game's timed play. The first GoTimeSystem instance indicates whether
+    main time is used, the second GoTimeSystem instance indicates whether
+    overtime is used (and which time system).
+  - The GoNodeTimeData class stores the time data after a move was played.
+    Instances are attached to GoNode, and their presence or absence indicate
+    the presence or absence of node-specific time data (following the same
+    concept as other classes, such as GoNodeMarkup, to indicate the presence or
+    absence of optional node data).
+  - The TimeSettingsCommand and TimeLeftCommand classes are used to configure
+    the GTP engine. The "Research" document contains a large amount of
+    information, not replicated here, about how Fuego handles timed play.
+  - The GoTimeDataValidator class is used to perform validation of time data
+    when a game is is loaded from the archive. Time data produced by this app
+    is always valid, but an SGF file produced by another Go program may contain
+    time data that this app does not understand (e.g. an unknown/custom time
+    system), or time data is missing that is required to guarantee that this
+    app's time-related functions work properly.
+- A number of UI-related classes (controllers, views) also exist to display time
+  data, but as these are always subject to change as the app evolves, they are
+  not mentioned here.
+
+
+Working with time data
+----------------------
+Handling of integer/fractional seconds
+- The SGF standard uses the Real value type for all time properties that deal
+  with durations.
+- The SGF standard does not impose any limits on the precision of a Real value.
+  In practice, though, SgfcKit and libsgfc++ implement the Real type with the
+  underlying primitive type double, so that is what this app is also using
+  throughout, to be able to represent SGF data accurately.
+- When writing SGF data, though, it does not really make sense to write out
+  fractional values with the maximum precision that double allows. For instance,
+  a BL or WL value saying the player had 7.415912389755249 seconds left after
+  they played their stone is non-sensical data. Although it looks very accurate,
+  in reality there is no practical use for that much accuracy.
+- This app therefore has to make a decision: How much precision makes sense? One
+  could argue that for humans a tenth of a second might still be noticeable. In
+  sports races sometimes even hundreds of a second are used. But Go is not a
+  sports race. A strong hint is coming from the GTP 2.0 specification: There the
+  "time_settings" and "time_left" commands are specified to take integer values
+  for durations, i.e. no fractions are possible, only whole seconds. This is
+  reflected in Fuego's implementation of these commands.
+- Ignoring the urge to have precision where none is needed, this app therefore
+  should only write SGF data with whole seconds, i.e. without fractions. This
+  goal is not achieved by rounding values at the time of writing SGF data,
+  though. Read on for the full concept.
+- For time-keeping purposes, the app still uses a player clock with the full
+  resolution possible by the double data type (actually NSTimeInterval, but that
+  is a typedef to double). The reason is that the clock is potentially suspended
+  and restarted many times when the user performs actions such as calling up a
+  menu or switching to a different tab, and these actions should not lead to
+  time already spent being rounded down or up.
+- However, when a player makes their move, the remaining time that is recorded
+  in a GoNodeTimeData object is rounded to a whole second. The method used is
+  rounding up, which is in favour of the player, because 1) it would be unfair
+  to cut off unspent time; and 2) rounding down could lead to zero remaining
+  time, which would incorrectly indicate that the player lost the game on time.
+- To remain consistent with the data recorded in the GoNodeTimeData objet, the
+  remaining time on the player clock is also rounded up.
+- As a result of having only rounded values in GoNodeTimeData objects, when the
+  app writes SGF data the values that go into the SGF data are automatically
+  also rounded. Thus the goal of having no fractions in SGF data is achieved.
+- To complete the goal, the app does not allow the user to set time limits with
+  fractional seconds when they start a new game.
+- The final question is: What to do with fractional values when reading SGF
+  data? Other programs that author SGF data may have different ideas about how
+  to handle precision, so this app must be able to deal with such data.
+- The decision is to preserve SGF data exactly as it is read, i.e. including
+  fractions. Thus when the user saves the game, the SGF data written will still
+  have the same fractions as in the original SGF data that was read, with only
+  potential minor differences due to precision handling when string data is
+  converted to floating point data, and back. Rounding is only done when the app
+  generates new data, i.e. when the user causes new moves to be played.

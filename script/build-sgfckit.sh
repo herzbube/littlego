@@ -42,6 +42,8 @@ CMAKE_SYSTEM_NAME="iOS"
 CMAKE_XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE="bitcode"
 
 LIBSGFCPLUSPLUS_SRC_DIR="$SRC_DIR/libsgfcplusplus"
+LIBSGFCPLUSPLUS_PATCH_FOLDER="$LIBSGFCPLUSPLUS_SRC_DIR/patch"
+LIBSGFCPLUSPLUS_SGFC_FOLDER="$LIBSGFCPLUSPLUS_SRC_DIR/sgfc"
 LIBSGFCPLUSPLUS_FRAMEWORK_NAME="libsgfcplusplus_static.framework"
 LIBSGFCPLUSPLUS_XCFRAMEWORK_NAME="libsgfcplusplus.xcframework"
 LIBSGFCPLUSPLUS_XCFRAMEWORK_DEST_DIR="$DEST_DIR/$LIBSGFCPLUSPLUS_XCFRAMEWORK_NAME"
@@ -66,6 +68,39 @@ SGFCKIT_XCFRAMEWORK_DEST_DIR="$DEST_DIR/$SGFCKIT_XCFRAMEWORK_NAME"
 # +------------------------------------------------------------------------
 PRE_BUILD_STEPS_SOFTWARE()
 {
+  echo "Cleaning up SGFC Git repository ..."
+  pushd "$LIBSGFCPLUSPLUS_SGFC_FOLDER" >/dev/null
+  # Remove everything not under version control...
+  git clean -dfx
+  RETVAL=$?
+  if test $RETVAL -eq 0; then
+    # Throw away local changes
+    git reset --hard
+    RETVAL=$?
+  fi
+  popd >/dev/null
+  if test $RETVAL -ne 0; then
+    return 1
+  fi
+
+  if test $(ls $LIBSGFCPLUSPLUS_PATCH_FOLDER/*.patch 2>/dev/null | wc -l) -gt 0; then
+    echo "Applying SGFC patches ..."
+    pushd "$LIBSGFCPLUSPLUS_SGFC_FOLDER" >/dev/null
+    for PATCH_FILE in $LIBSGFCPLUSPLUS_PATCH_FOLDER/*.patch; do
+      git apply "$PATCH_FILE"
+      RETVAL=$?
+      if test $RETVAL -ne 0; then
+        echo "Applying patch file $(basename $PATCH_FILE) failed."
+        break
+      fi
+    done
+    popd >/dev/null
+    if test $RETVAL -ne 0; then
+      return 1
+    fi
+    echo "Patches applied successfully."
+  fi
+
   echo "Cleaning up libsgfc++ Git repository ..."
   pushd "$LIBSGFCPLUSPLUS_SRC_DIR" >/dev/null
   # Remove everything not under version control...

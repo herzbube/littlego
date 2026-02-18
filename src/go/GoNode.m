@@ -23,6 +23,8 @@
 #import "GoNodeAnnotation.h"
 #import "GoNodeMarkup.h"
 #import "GoNodeSetup.h"
+#import "GoNodeTimeData.h"
+#import "GoTimeDataValidator.h"
 #import "GoZobristTable.h"
 #import "../utility/ExceptionUtility.h"
 
@@ -73,8 +75,13 @@
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
+  self.goNodeTimeData = nil;
 
   self.zobristHash = 0;
+
+  self.isTimeDataValid = GoTimeDataValidationResultInvalid.isTimeDataValid;
+  self.timeDataInvalidReason = GoTimeDataValidationResultInvalid.timeDataInvalidReason;
+  self.timeDataValidationMode = GoTimeDataValidationResultInvalid.timeDataValidationMode;
 
   self.nodeID = gNoObjectReferenceNodeID;
   self.firstChildNodeID = gNoObjectReferenceNodeID;
@@ -111,6 +118,7 @@
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
+  self.goNodeTimeData = nil;
 
   [super dealloc];
 }
@@ -125,12 +133,14 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@",
+  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@, %@, isTimeDataValid = %d, timeDataInvalidReason = %d, timeDataValidationMode = %d",
           self,
           _goNodeSetup ? _goNodeSetup : @"No setup",
           _goMove ? _goMove : @"No move",
           _goNodeAnnotation ? _goNodeAnnotation : @"No annotation",
-          _goNodeMarkup ? _goNodeMarkup : @"No markup"];
+          _goNodeMarkup ? _goNodeMarkup : @"No markup",
+          _goNodeTimeData ? _goNodeTimeData : @"No time data",
+          _isTimeDataValid, _timeDataInvalidReason, _timeDataValidationMode];
 }
 
 #pragma mark - NSCoding overrides
@@ -167,10 +177,17 @@
   self.goMove = [decoder decodeObjectOfClass:[GoMove class] forKey:goNodeGoMoveKey];
   self.goNodeAnnotation = [decoder decodeObjectOfClass:[GoNodeAnnotation class] forKey:goNodeGoNodeAnnotationKey];
   self.goNodeMarkup = [decoder decodeObjectOfClass:[GoNodeMarkup class] forKey:goNodeGoNodeMarkupKey];
+  self.goNodeTimeData = [decoder decodeObjectOfClass:[GoNodeTimeData class] forKey:goNodeGoNodeTimeDataKey];
 
   // The hash was not archived. Whoever is unarchiving this GoNode is
   // responsible for re-calculating the hash.
   self.zobristHash = 0;
+
+  // Time validity properties were not archived. Whoever is unarchiving this
+  // GoNode is responsible for re-calculating the properties.
+  self.isTimeDataValid = GoTimeDataValidationResultInvalid.isTimeDataValid;
+  self.timeDataInvalidReason = GoTimeDataValidationResultInvalid.timeDataInvalidReason;
+  self.timeDataValidationMode = GoTimeDataValidationResultInvalid.timeDataValidationMode;
 
   return self;
 }
@@ -213,6 +230,8 @@
     [encoder encodeObject:self.goNodeAnnotation forKey:goNodeGoNodeAnnotationKey];
   if (self.goNodeMarkup)
     [encoder encodeObject:self.goNodeMarkup forKey:goNodeGoNodeMarkupKey];
+  if (self.goNodeTimeData)
+    [encoder encodeObject:self.goNodeTimeData forKey:goNodeGoNodeTimeDataKey];
 
   // GoZobristTable is not archived, instead a new GoZobristTable object with
   // random values is created each time when a game is unarchived. Zobrist
@@ -220,6 +239,9 @@
   // This is the reason why we don't archive self.zobristHash here - it doesn't
   // make sense to archive an invalid value. A side effect of not archiving
   // self.zobristHash is that the overall archive becomes smaller.
+
+  // Time validity property values are not archived to reduce the size of the
+  // archive. The property values can be recalculated upon unarchiving.
 }
 
 #pragma mark - Public API - Node tree navigation
@@ -404,7 +426,8 @@
   return ((! self.goNodeSetup || self.goNodeSetup.isEmpty) &&
           ! self.goMove &&
           ! self.goNodeAnnotation &&
-          (! self.goNodeMarkup || ! self.goNodeMarkup.hasMarkup));
+          (! self.goNodeMarkup || ! self.goNodeMarkup.hasMarkup) &&
+          ! self.goNodeTimeData);
 }
 
 #pragma mark - Public API - Changing the board based upon the node's data
@@ -479,8 +502,8 @@
 /// trees dangling from all of these nodes, are discarded once no one holds
 /// a reference to them anymore.
 ///
-/// @exception InvalidArgumentException Is thrown if @a child is an ancestor of
-/// the receiver node, or if @a child is equal to the receiver node.
+/// @exception NSInvalidArgumentException Is thrown if @a child is an ancestor
+/// of the receiver node, or if @a child is equal to the receiver node.
 // -----------------------------------------------------------------------------
 - (void) setFirstChild:(GoNode*)child
 {
@@ -530,7 +553,7 @@
 /// be achieved by invoking insertChild:beforeReferenceChild:() and specifying
 /// @e nil as the @a referenceChild argument.
 ///
-/// @exception InvalidArgumentException Is thrown if @a child is @e nil, if
+/// @exception NSInvalidArgumentException Is thrown if @a child is @e nil, if
 /// @a child is an ancestor of the receiver node, or if @a child is equal to
 /// the receiver node.
 // -----------------------------------------------------------------------------
@@ -569,7 +592,7 @@
 /// moved, together with the entire sub tree dangling from it, from its current
 /// location to the new location.
 ///
-/// @exception InvalidArgumentException Is thrown if @a child is @e nil, if
+/// @exception NSInvalidArgumentException Is thrown if @a child is @e nil, if
 /// @a referenceChild is not @e nil but it's not a child of the node, if
 /// @a child is an ancestor of the receiver node, or if @a child is equal to
 /// the receiver node.
@@ -607,7 +630,7 @@
 /// @a child and the entire sub tree dangling from it, is discarded once no one
 /// holds a reference to it anymore.
 ///
-/// @exception InvalidArgumentException Is thrown if @a child is @e nil, or if
+/// @exception NSInvalidArgumentException Is thrown if @a child is @e nil, or if
 /// @a child is not a child of the receiver node.
 // -----------------------------------------------------------------------------
 - (void) removeChild:(GoNode*)child
@@ -632,10 +655,10 @@
 /// @a oldChild and the entire sub tree dangling from it, is discarded once no
 /// one holds a reference to it anymore.
 ///
-/// @exception InvalidArgumentException Is thrown if @a oldChild or @a newChild
-/// are @e nil, if @a oldChild is not a child of the receiver node, if
-/// @a newChild is an ancestor of the receiver node, or if @a newChild is equal
-/// to the receiver node.
+/// @exception NSInvalidArgumentException Is thrown if @a oldChild or
+/// @a newChild are @e nil, if @a oldChild is not a child of the receiver node,
+/// if @a newChild is an ancestor of the receiver node, or if @a newChild is
+/// equal to the receiver node.
 // -----------------------------------------------------------------------------
 - (void) replaceChild:(GoNode*)oldChild withNewChild:(GoNode*)newChild
 {
@@ -684,7 +707,7 @@
 /// trees dangling from all of these siblings, are discarded once no one
 /// holds a reference to them anymore.
 ///
-/// @exception InvalidArgumentException Is thrown if the receiver node is the
+/// @exception NSInvalidArgumentException Is thrown if the receiver node is the
 /// root node of a game tree, if @a nextSibling is not @e nil and an ancestor
 /// of the receiver node, or if @a nextSibling is equal to the receiver node.
 // -----------------------------------------------------------------------------
@@ -751,7 +774,7 @@
 /// same as if removeChild:() had been invoked on the node's parent with
 /// the receiver node as the argument.
 ///
-/// @exception InvalidArgumentException Is thrown if @a parent is a descendant
+/// @exception NSInvalidArgumentException Is thrown if @a parent is a descendant
 /// of the receiver node, or if @a parent is equal to the receiver node.
 // -----------------------------------------------------------------------------
 - (void) setParent:(GoNode*)parent

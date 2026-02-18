@@ -21,11 +21,11 @@
 #import "../boardposition/BoardPositionButtonBoxDataSource.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
-#import "../controller/StatusViewController.h"
 #import "../gameaction/GameActionButtonBoxDataSource.h"
 #import "../gameaction/GameActionManager.h"
 #import "../model/NodeTreeViewModel.h"
 #import "../nodetreeview/NodeTreeViewIntegration.h"
+#import "../statusarea/StatusAreaViewController.h"
 #import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../shared/LayoutManager.h"
@@ -51,7 +51,7 @@
 // Controllers and data sources
 @property(nonatomic, retain) ResizableStackViewController* resizableStackViewController;
 @property(nonatomic, retain) UIViewController* resizablePane1ViewController;
-@property(nonatomic, retain) StatusViewController* statusViewController;
+@property(nonatomic, retain) StatusAreaViewController* statusAreaViewController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) NodeTreeViewIntegration* nodeTreeViewIntegration;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
@@ -101,6 +101,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeChildViewControllersFromResizablePane1ViewController];
+
   self.woodenBackgroundView = nil;
   self.leftColumnView = nil;
   self.middleColumnView = nil;
@@ -110,7 +112,7 @@
 
   self.resizableStackViewController = nil;
   self.resizablePane1ViewController = nil;
-  self.statusViewController = nil;
+  self.statusAreaViewController = nil;
   self.boardViewController = nil;
   self.nodeTreeViewIntegration = nil;
   self.boardPositionButtonBoxController = nil;
@@ -145,8 +147,11 @@
   self.resizableStackViewController.spacingBetweenResizablePanes *= 2;
   self.resizableStackViewController.dragHandleThickness *= 1.5;
   self.resizableStackViewController.dragHandleGrabAreaMargin *= 2;
-  self.statusViewController = [[[StatusViewController alloc] initWithSizeOrientation:SizeOrientationLandscape] autorelease];
+  
+  self.statusAreaViewController = [[[StatusAreaViewController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
+  [self addChildViewControllersToResizablePane1ViewController];
+
   self.nodeTreeViewIntegration = [[[NodeTreeViewIntegration alloc] initWithResizableStackViewController:self.resizableStackViewController
                                                                                       nodeTreeViewModel:modelProvider.nodeTreeViewModel
                                                                                         uiSettingsModel:modelProvider.uiSettingsModel] autorelease];
@@ -212,31 +217,6 @@
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
-- (void) setBoardViewController:(BoardViewController*)boardViewController
-{
-  if (_boardViewController == boardViewController)
-    return;
-  if (_boardViewController)
-  {
-    [_boardViewController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_boardViewController removeFromParentViewController];
-    [_boardViewController release];
-    _boardViewController = nil;
-  }
-  if (boardViewController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self.resizablePane1ViewController addChildViewController:boardViewController];
-    [boardViewController didMoveToParentViewController:self.resizablePane1ViewController];
-    [boardViewController retain];
-    _boardViewController = boardViewController;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
 - (void) setBoardPositionButtonBoxController:(ButtonBoxController*)boardPositionButtonBoxController
 {
   if (_boardPositionButtonBoxController == boardPositionButtonBoxController)
@@ -282,6 +262,60 @@
     [gameActionButtonBoxController retain];
     _gameActionButtonBoxController = gameActionButtonBoxController;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adds all view controllers whose views are displayed in the view of
+/// @e resizablePane1ViewController as child view controllers to
+/// @e resizablePane1ViewController. Does nothing if view controllers to not
+/// exist, or @e resizablePane1ViewController does not exist.
+// -----------------------------------------------------------------------------
+- (void) addChildViewControllersToResizablePane1ViewController
+{
+  if (! self.resizablePane1ViewController)
+    return;
+
+  NSArray* resizablePane1ChildViewControllers = [self resizablePane1ChildViewControllers];
+  for (UIViewController* childViewController in resizablePane1ChildViewControllers)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self.resizablePane1ViewController addChildViewController:childViewController];
+    [childViewController didMoveToParentViewController:self.resizablePane1ViewController];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes all view controllers whose views are displayed in the view of
+/// @e resizablePane1ViewController from their parent view controller (which
+/// implicitly is @e resizablePane1ViewController). Does nothing if view
+/// controllers do not exist.
+// -----------------------------------------------------------------------------
+- (void) removeChildViewControllersFromResizablePane1ViewController
+{
+  NSArray* resizablePane1ChildViewControllers = [self resizablePane1ChildViewControllers];
+  for (UIViewController* childViewController in resizablePane1ChildViewControllers)
+  {
+    [childViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [childViewController removeFromParentViewController];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of controllers whose views are displayed in the view
+/// of @e resizablePane1ViewController. Returns an empty list if view
+/// controllers do not exist.
+// -----------------------------------------------------------------------------
+- (NSArray*) resizablePane1ChildViewControllers
+{
+  NSMutableArray* resizablePane1ChildViewControllers = [NSMutableArray array];
+
+  if (self.statusAreaViewController)
+    [resizablePane1ChildViewControllers addObject:self.statusAreaViewController];
+  if (self.boardViewController)
+    [resizablePane1ChildViewControllers addObject:self.boardViewController];
+
+  return resizablePane1ChildViewControllers;
 }
 
 #pragma mark - UIViewController overrides
@@ -355,8 +389,6 @@
   self.middleColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [self.woodenBackgroundView addSubview:self.middleColumnView];
 
-  [self.middleColumnView addSubview:self.statusViewController.statusView];
-
   [self.middleColumnView addSubview:self.resizableStackViewController.view];
 
   // This is a simple container view that takes up all the unused vertical
@@ -366,6 +398,7 @@
   self.boardContainerView.delegate = self;
   [self.boardContainerView addSubview:self.boardViewController.view];
 
+  [self.resizablePane1ViewController.view addSubview:self.statusAreaViewController.view];
   [self.resizablePane1ViewController.view addSubview:self.boardContainerView];
 }
 
@@ -529,15 +562,12 @@
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
-  self.statusViewController.statusView.translatesAutoresizingMaskIntoConstraints = NO;
   self.resizableStackViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  viewsDictionary[@"statusView"] = self.statusViewController.statusView;
   viewsDictionary[@"resizableStackView"] = self.resizableStackViewController.view;
 
-  [visualFormats addObject:@"H:|-[statusView]-|"];
   [visualFormats addObject:@"H:|-[resizableStackView]-|"];
-  [visualFormats addObject:@"V:|-[statusView]-[resizableStackView]-|"];
+  [visualFormats addObject:@"V:|-[resizableStackView]-|"];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.resizableStackViewController.view.superview];
 
@@ -552,10 +582,15 @@
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
+  self.statusAreaViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  viewsDictionary[@"statusAreaView"] = self.statusAreaViewController.view;
   viewsDictionary[@"boardContainerView"] = self.boardContainerView;
+
+  [visualFormats addObject:@"H:|-0-[statusAreaView]-0-|"];
   [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
-  [visualFormats addObject:@"V:|-[boardContainerView]-|"];
+  [visualFormats addObject:@"V:|-[statusAreaView]-[boardContainerView]-|"];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardContainerView.superview];
 
   [self setupAutoLayoutConstraintsBoardContainerView];
@@ -691,7 +726,6 @@
   UITraitCollection* traitCollection = self.traitCollection;
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
-  [UiUtilities applyTransparentStyleToView:self.statusViewController.statusView traitCollection:traitCollection];
   [self.nodeTreeViewIntegration updateColors:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.gameActionButtonBoxController.view traitCollection:traitCollection];
 }

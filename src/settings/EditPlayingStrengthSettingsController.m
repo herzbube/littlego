@@ -225,11 +225,13 @@ enum MaxGamesCategory
     {
       cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
       TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-      [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(threadCountDidChange:)];
       sliderCell.descriptionLabel.text = @"Number of threads";
       sliderCell.slider.minimumValue = fuegoThreadCountMinimum;
       sliderCell.slider.maximumValue = fuegoThreadCountMaximum;
       sliderCell.value = self.profile.fuegoThreadCount;
+      [sliderCell setDelegate:self
+         actionValueDidChange:@selector(threadCountDidChange:)
+               valueFormatter:nil];
       break;
     }
     case PonderingSection:
@@ -242,6 +244,7 @@ enum MaxGamesCategory
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Pondering";
           accessoryView.on = self.profile.fuegoPondering;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(togglePondering:) forControlEvents:UIControlEventValueChanged];
           break;
         }
@@ -249,11 +252,13 @@ enum MaxGamesCategory
         {
           cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxPonderTimeDidChange:)];
           sliderCell.descriptionLabel.text = @"Ponder time (minutes)";
           sliderCell.slider.minimumValue = fuegoMaxPonderTimeMinimum / 60;
           sliderCell.slider.maximumValue = fuegoMaxPonderTimeMaximum / 60;
           sliderCell.value = self.profile.fuegoMaxPonderTime / 60;
+          [sliderCell setDelegate:self
+             actionValueDidChange:@selector(maxPonderTimeDidChange:)
+                   valueFormatter:nil];
           break;
         }
         default:
@@ -271,6 +276,7 @@ enum MaxGamesCategory
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Reuse subtree";
       accessoryView.on = self.profile.fuegoReuseSubtree;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleReuseSubtree:) forControlEvents:UIControlEventValueChanged];
       // If pondering is on, the default value of reuse subtree ("on") must
       // not be changed by the user
@@ -288,11 +294,13 @@ enum MaxGamesCategory
         {
           cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(maxThinkingTimeDidChange:)];
           sliderCell.descriptionLabel.text = @"Thinking time (seconds)";
           sliderCell.slider.minimumValue = fuegoMaxThinkingTimeMinimum;
           sliderCell.slider.maximumValue = fuegoMaxThinkingTimeMaximum;
           sliderCell.value = self.profile.fuegoMaxThinkingTime;
+          [sliderCell setDelegate:self
+             actionValueDidChange:@selector(maxThinkingTimeDidChange:)
+                   valueFormatter:nil];
           break;
         }
         case FuegoMaxGamesItem:

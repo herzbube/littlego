@@ -46,6 +46,14 @@ const double gDefaultKomiTerritoryScoring = 6.5;
 // value that NSCoder::decodeIntForKey:() returns if an archive does not contain
 // the specified key. See GoNode implementation for details.
 const unsigned int gNoObjectReferenceNodeID = 0;
+// std::numeric_limits<int>::max(), because the GTP 2.0 specification defines
+// the parameters of the GTP commands "time_settings" and "time_left" to have
+// type int, and Fuego faithfully uses these types in its implementation.
+const double gMaximumRemainingTimeInSeconds = 2147483647;
+// std::numeric_limits<int>::max(), because the GTP 2.0 specification defines
+// the parameters of the GTP commands "time_settings" and "time_left" to have
+// type int, and Fuego faithfully uses these types in its implementation.
+const unsigned long gMaximumRemainingNumberOfMovesOrPeriods = 2147483647;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
@@ -82,7 +90,7 @@ NSString* askGtpEngineForDeadStonesStarts = @"AskGtpEngineForDeadStonesStarts";
 NSString* askGtpEngineForDeadStonesEnds = @"AskGtpEngineForDeadStonesEnds";
 // Panning gesture related notifications
 NSString* boardViewPanningGestureWillStart = @"BoardViewPanningGestureWillStart";
-NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";;
+NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";
 NSString* boardViewStoneLocationDidChange = @"BoardViewStoneLocationDidChange";
 NSString* boardViewMarkupLocationDidChange = @"BoardViewMarkupLocationDidChange";
 NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDidChange";
@@ -99,6 +107,7 @@ NSString* nodeMarkupDataDidChange = @"NodeMarkupDataDidChange";
 NSString* allMarkupDidDiscard = @"AllMarkupDidDiscard";
 // Game variation notifications
 NSString* numberOfBoardPositionsDidChange = @"NumberOfBoardPositionsDidChange";
+NSString* currentBoardPositionWillChange = @"CurrentBoardPositionWillChange";
 NSString* currentBoardPositionDidChange = @"CurrentBoardPositionDidChange";
 NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 NSString* currentGameVariationWillChange = @"CurrentGameVariationWillChange";
@@ -112,18 +121,40 @@ NSString* nodeTreeViewNodeSelectionStyleDidChange = @"NodeTreeViewNodeSelectionS
 NSString* nodeTreeViewSelectedGameVariationDidChange = @"NodeTreeViewSelectedGameVariationDidChange";
 NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChange";
 NSString* nodeTreeViewNodeSymbolDidChange = @"NodeTreeViewNodeSymbolDidChange";
-// Other notifications
-NSString* longRunningActionStarts = @"LongRunningActionStarts";
-NSString* longRunningActionEnds = @"LongRunningActionEnds";
-NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
-NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
-NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
+// Time based play notifications
+NSString* playerClockStateHasChanged = @"PlayerClockStateHasChanged";
+NSString* playerTimeDataHasChanged = @"PlayerTimeDataHasChanged";
+NSString* playerLostOnTime = @"PlayerLostOnTime";
+NSString* timeDataDidBecomeValid = @"TimeDataDidBecomeValid";
+NSString* timeDataDidBecomeInvalid = @"TimeDataDidBecomeInvalid";
+// Play area / board view notifications
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
 NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
+NSString* moreGameActionsPopupWillAppear = @"MoreGameActionsPopupWillAppear";
+NSString* moreGameActionsPopupDidDisappear = @"MoreGameActionsPopupDidDisappear";
+NSString* gameInfoScreenWillAppear = @"GameInfoScreenWillAppear";
+NSString* gameInfoScreenDidDisappear = @"GameInfoScreenDidDisappear";
+NSString* newGameScreenWillAppear = @"NewGameScreenWillAppear";
+NSString* newGameScreenDidDisappear = @"NewGameScreenDidDisappear";
+NSString* saveGameScreenWillAppear = @"SaveGameScreenWillAppear";
+NSString* saveGameScreenDidDisappear = @"SaveGameScreenDidDisappear";
+// @Territory statistics notifications
+NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
+NSString* territoryStatisticsGenerationWillBegin = @"TerritoryStatisticsGenerationWillBegin";
+NSString* territoryStatisticsGenerationDidEnd = @"TerritoryStatisticsGenerationDidEnd";
+// General UI notifications
+NSString* uiAreaDidChange = @"UiAreaDidChange";
 NSString* uiWillChangeLayoutOrientation = @"UiWillChangeLayoutOrientation";
 NSString* uiWillChangeInterfaceOrientation = @"UiWillChangeInterfaceOrientation";
+// Other notifications
+NSString* applicationSetupWillStart = @"ApplicationSetupWillStart";
+NSString* applicationSetupDidEnd = @"ApplicationSetupDidEnd";
+NSString* longRunningActionStarts = @"LongRunningActionStarts";
+NSString* longRunningActionEnds = @"LongRunningActionEnds";
+NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
+NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;
@@ -142,7 +173,7 @@ const CGFloat defaultMagnifyingGlassMagnification = 1.25f;
 
 // Computer assistance constants
 NSString* moveSuggestionColorKey = @"moveSuggestionColor";
-NSString* moveSuggestionTypeKey = @"moveSuggestionType";;
+NSString* moveSuggestionTypeKey = @"moveSuggestionType";
 NSString* moveSuggestionPointKey = @"moveSuggestionPoint";
 NSString* moveSuggestionErrorMessageKey = @"moveSuggestionErrorMessage";
 const int moveSuggestionAnimationRepeatCount = 3;
@@ -168,8 +199,12 @@ const unsigned int fuegoMaxPonderTimeMaximum = 3600;   // ditto
 const unsigned int fuegoMaxPonderTimeDefault = 300;    // ditto
 const bool fuegoReuseSubtreeDefault = false;
 const unsigned int fuegoMaxThinkingTimeMinimum = 1;
-const unsigned int fuegoMaxThinkingTimeMaximum = 120;  // not too high, user must be able to pick individual values
-                                                       // in the range from 1-10 seconds in the Settings tab
+// Not too high, user must be able to pick individual values in the range from
+// 1-10 seconds in the Settings tab. If this limit ever goes away, then the
+// next limit would be std::numeric_limits<int>::max(), because the GTP 2.0
+// specification defines the parameters of the GTP command "time_left" to have
+// type int, and Fuego faithfully uses these types in its implementation.
+const unsigned int fuegoMaxThinkingTimeMaximum = 120;
 const unsigned int fuegoMaxThinkingTimeDefault = 10;
 const unsigned long long fuegoMaxGamesMinimum = 1;
 const unsigned long long fuegoMaxGamesMaximum = 18446744073709551615ULL;  // std::numeric_limits<unsigned long long>::max();
@@ -350,6 +385,22 @@ NSString* scoringSystemKey = @"ScoringSystem";
 NSString* lifeAndDeathSettlingRuleKey = @"LifeAndDeathSettlingRule";
 NSString* disputeResolutionRuleKey = @"DisputeResolutionRule";
 NSString* fourPassesRuleKey = @"FourPassesRule";
+// Time settings (part of new game settings)
+NSString* timedPlayEnabledKey = @"TimedPlayEnabled";
+NSString* absoluteTimingEnabledKey = @"AbsoluteTimingEnabled";
+NSString* absoluteTimingDurationInSecondsKey = @"AbsoluteTimingDurationInSeconds";
+NSString* periodBasedTimeSystemEnabledKey = @"PeriodBasedTimeSystemEnabled";
+NSString* periodBasedTimeSystemTypeKey = @"PeriodBasedTimeSystemType";
+NSString* canadianTimingPeriodDurationInSecondsKey = @"CanadianTimingPeriodDurationInSeconds";
+NSString* canadianTimingNumberOfMovesKey = @"CanadianTimingNumberOfMoves";
+NSString* japaneseTimingPeriodDurationInSecondsKey = @"JapaneseTimingPeriodDurationInSeconds";
+NSString* japaneseTimingNumberOfPeriodsKey = @"JapaneseTimingNumberOfPeriods";
+NSString* fischerTimingInitialTimeDurationInSecondsKey = @"FischerTimingInitialTimeDurationInSeconds";
+NSString* fischerTimingExtraTimeDurationInSecondsKey = @"FischerTimingExtraTimeDurationInSeconds";
+NSString* steadyAverageTimingPeriodDurationInSecondsKey = @"SteadyAverageTimingPeriodDurationInSeconds";
+NSString* steadyAverageTimingNumberOfMovesKey = @"SteadyAverageTimingNumberOfMoves";
+NSString* totalAverageTimingPeriodDurationInSecondsKey = @"TotalAverageTimingPeriodDurationInSeconds";
+NSString* totalAverageTimingNumberOfMovesKey = @"TotalAverageTimingNumberOfMoves";
 // Players
 NSString* playerListKey = @"PlayerList";
 NSString* playerUUIDKey = @"UUID";
@@ -463,6 +514,15 @@ NSString* focusModeKey = @"FocusMode";
 NSString* gameVariationKey = @"GameVariation";
 NSString* newMoveInsertPolicyKey = @"NewMoveInsertPolicy";
 NSString* newMoveInsertPositionKey = @"NewMoveInsertPosition";
+// Timed play settings
+NSString* timedPlayKey = @"TimedPlay";
+NSString* autostartPlayerClockForNewGamesKey = @"AutostartPlayerClockForNewGames";
+NSString* autostartPlayerClockForArchiveGamesKey = @"AutostartPlayerClockForArchiveGames";
+NSString* autostartPlayerClockWhenTurnBeginsKey = @"AutostartPlayerClockWhenTurnBegins";
+NSString* canUserSuspendPlayerClocksKey = @"CanUserSuspendPlayerClocks";
+NSString* timeDataValidationModeKey = @"TimeDataValidationMode";
+NSString* hidePlayerClockViewForInvalidTimeSystemsKey = @"HidePlayerClockViewForInvalidTimeSystems";
+NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey = @"ShowTrueRemainingTimeAfterLastMoveWhenLostOnTime";
 
 // Constants for NSCoding
 // General constants
@@ -485,12 +545,22 @@ NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameReasonForComputerIsThinking = @"ReasonForComputerIsThinking";
 NSString* goGameBoardPositionKey = @"BoardPosition";
 NSString* goGameRulesKey = @"Rules";
+NSString* goGameTimeSettingsKey = @"TimeSettings";
 NSString* goGameDocumentKey = @"Document";
 NSString* goGameScoreKey = @"Score";
 NSString* goGameSetupFirstMoveColorKey = @"SetupFirstMoveColor";
 // GoPlayer keys
 NSString* goPlayerPlayerUUIDKey = @"PlayerUUID";
 NSString* goPlayerIsBlackKey = @"IsBlack";
+NSString* goPlayerTimeDataKey = @"TimeData";
+// GoPlayerTimeData keys
+NSString* goPlayerTimeDataTimeSettingsKey = @"TimeSettings";
+NSString* goPlayerTimeDataIsTimeDataForBlackPlayerKey = @"IsTimeDataForBlackPlayer";
+NSString* goPlayerTimeDataClockKey = @"Clock";
+NSString* goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey = @"IsRemainingTimeAbsoluteTime";
+NSString* goPlayerTimeDataRemainingTimeInSecondsKey = @"RemainingTimeInSeconds";
+NSString* goPlayerTimeDataRemainingNumberOfMovesKey = @"RemainingNumberOfMoves";
+NSString* goPlayerTimeDataRemainingNumberOfPeriodsKey = @"RemainingNumberOfPeriods";
 // GoMove keys
 NSString* goMoveTypeKey = @"Type";
 NSString* goMovePlayerKey = @"Player";
@@ -525,6 +595,7 @@ NSString* goNodeGoNodeSetupKey = @"GoNodeSetup";
 NSString* goNodeGoMoveKey = @"GoMove";
 NSString* goNodeGoNodeAnnotationKey = @"GoNodeAnnotation";
 NSString* goNodeGoNodeMarkupKey = @"GoNodeMarkup";
+NSString* goNodeGoNodeTimeDataKey = @"GoNodeTimeData";
 // GoNodeSetup keys
 NSString* goNodeSetupGameKey = @"Game";
 NSString* goNodeSetupBlackSetupStonesKey = @"BlackSetupStones";
@@ -547,6 +618,12 @@ NSString* goNodeMarkupSymbolsKey = @"Symbols";
 NSString* goNodeMarkupConnectionsKey = @"Connections";
 NSString* goNodeMarkupLabelsKey = @"Labels";
 NSString* goNodeMarkupDimmingsKey = @"Dimmings";
+// GoNodeTimeData keys
+NSString* goNodeTimeDataIsTimeDataForBlackPlayerKey = @"IsTimeDataForBlackPlayerKey";
+NSString* goNodeTimeDataIsRemainingTimeAbsoluteTimeKey = @"IsRemainingTimeAbsoluteTime";
+NSString* goNodeTimeDataRemainingTimeInSecondsKey = @"RemainingTimeInSeconds";
+NSString* goNodeTimeDataRemainingNumberOfMovesKey = @"RemainingNumberOfMoves";
+NSString* goNodeTimeDataRemainingNumberOfPeriodsKey = @"RemainingNumberOfPeriods";
 // GoNodeModel keys
 NSString* goNodeModelGameKey = @"Game";
 NSString* goNodeModelRootNodeKey = @"RootNode";
@@ -600,6 +677,22 @@ NSString* goGameRulesScoringSystemKey = @"ScoringSystem";
 NSString* goGameRulesLifeAndDeathSettlingRuleKey = @"LifeAndDeathSettlingRule";
 NSString* goGameRulesDisputeResolutionRuleKey = @"DisputeResolutionRule";
 NSString* goGameRulesFourPassesRuleKey = @"FourPassesRule";
+// GoClock keys
+NSString* goClockStateKey = @"State";
+NSString* goClockSuspendedReasonKey = @"SuspendedReason";
+NSString* goClockElapsedTimeInSecondsKey = @"ElapsedTimeInSeconds";
+// GoTimeSystem keys
+NSString* goTimeSystemGoTimeSystemTypeKey = @"GoTimeSystemType";
+NSString* goTimeSystemCustomTimeSystemDescriptionKey = @"CustomTimeSystemDescription";
+NSString* goTimeSystemNumberOfPeriodsKey = @"NumberOfPeriods";
+NSString* goTimeSystemPeriodDurationInSecondsKey = @"PeriodDurationInSeconds";
+NSString* goTimeSystemHasMinimumNumberOfMovesPerPeriodKey = @"HasMinimumNumberOfMovesPerPeriod";
+NSString* goTimeSystemMinimumNumberOfMovesPerPeriodKey = @"MinimumNumberOfMovesPerPeriod";
+NSString* goTimeSystemGoUnusedTimeHandlingKey = @"GoUnusedTimeHandling";
+NSString* goTimeSystemExtraTimeDurationInSecondsKey = @"ExtraTimeDurationInSeconds";
+// GoTimeSettings keys
+NSString* goTimeSettingsAbsoluteTimeSystemKey = @"AbsoluteTimeSystem";
+NSString* goTimeSettingsPeriodBasedTimeSystemKey = @"PeriodBasedTimeSystem";
 
 // Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";
@@ -648,6 +741,7 @@ NSString* annotationViewShortDescriptionLabelAccessibilityIdentifier = @"annotat
 NSString* annotationViewLongDescriptionLabelAccessibilityIdentifier = @"annotationViewLongDescriptionLabel";
 NSString* annotationViewEditDescriptionButtonAccessibilityIdentifier = @"annotationViewEditDescriptionButton";
 NSString* annotationViewRemoveDescriptionButtonAccessibilityIdentifier = @"annotationViewRemoveDescriptionButton";
+NSString* annotationViewTimeDataPageAccessibilityIdentifier = @"annotationViewTimeDataPage";
 
 // Other UI testing constants
 NSString* uiTestModeLaunchArgument = @"--ui-test-mode";

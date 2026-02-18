@@ -20,6 +20,7 @@
 @class SceneDelegate;
 @protocol MagnifyingGlassOwner;
 @protocol ModelProvider;
+@protocol PlayerClockService;
 @protocol WindowProvider;
 
 
@@ -57,5 +58,6 @@
 @property(nonatomic, assign) id<ModelProvider> modelProvider;
 @property(nonatomic, assign) id<MagnifyingGlassOwner> magnifyingGlassOwner;
 @property(nonatomic, assign) id<WindowProvider> windowProvider;
+@property(nonatomic, assign) id<PlayerClockService> playerClockService;
 
 @end

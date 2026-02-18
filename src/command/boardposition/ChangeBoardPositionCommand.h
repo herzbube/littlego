@@ -22,8 +22,8 @@
 // -----------------------------------------------------------------------------
 /// @brief The ChangeBoardPositionCommand class is responsible for changing the
 /// current board position to a new value within the current game variation.
-/// Use ChangeNodeSelectionCommand to change the current board position @b and
-/// also the current game variation.
+/// Use ChangeNodeSelectionAsyncCommand to change the current board position
+/// @b and also the current game variation.
 ///
 /// ChangeBoardPositionCommand is executed synchronously if the new board
 /// position is not more than a given maximum number of positions away from
@@ -48,6 +48,10 @@
 /// the result is a valid board position (i.e. either the first or the last
 /// board position of the game).
 ///
+/// ChangeBoardPositionCommand posts #currentBoardPositionWillChange before it
+/// actually changes the board position. Other changes to some Go model objects
+/// may already have happened.
+///
 /// After it has changed the board position, ChangeBoardPositionCommand performs
 /// the following additional operations:
 /// - Posts #currentBoardPositionDidChange to the default notification center
@@ -70,5 +74,16 @@
 - (id) initWithFirstBoardPosition;
 - (id) initWithLastBoardPosition;
 - (id) initWithOffset:(int)offset;
+
+/// @brief In a sequence of ChangeBoardPositionCommand instances, this property
+/// is @e true  to indicate that this ChangeBoardPositionCommand instance is the
+/// first in the sequence to be executed, or @e false if other
+/// ChangeBoardPositionCommand instances were executed before this instance.
+@property(atomic, assign) bool isFirstBoardPositionChange;
+/// @brief In a sequence of ChangeBoardPositionCommand instances, this property
+/// is @e true  to indicate that this ChangeBoardPositionCommand instance is the
+/// last in the sequence to be executed, or @e false if other
+/// ChangeBoardPositionCommand instances will be executed after this instance.
+@property(atomic, assign) bool isLastBoardPositionChange;
 
 @end

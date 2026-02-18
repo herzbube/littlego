@@ -28,9 +28,13 @@
 #import "GoNode.h"
 #import "GoNodeModel.h"
 #import "GoNodeSetup.h"
+#import "GoNodeTimeData.h"
 #import "GoPlayer.h"
+#import "GoPlayerTimeData.h"
 #import "GoPoint.h"
 #import "GoScore.h"
+#import "GoTimeSettings.h"
+#import "GoTimeDataValidator.h"
 #import "GoUtilities.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
@@ -38,6 +42,18 @@
 #import "../player/Player.h"
 #import "../utility/ExceptionUtility.h"
 #import "../utility/NSArrayAdditions.h"
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for GoGame.
+// -----------------------------------------------------------------------------
+@interface GoGame()
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) enum GoGameState state;
+@property(nonatomic, assign, readwrite) enum GoGameHasEndedReason reasonForGameHasEnded;
+//@}
+@end
 
 
 @implementation GoGame
@@ -81,6 +97,7 @@
   // GoNodeModel to be already around
   _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
   _rules = [[GoGameRules alloc] init];
+  _timeSettings = [[GoTimeSettings alloc] init];
   _document = [[GoGameDocument alloc] init];
   _score = [[GoScore alloc] initWithGame:self];
   self.setupFirstMoveColor = GoColorNone;
@@ -117,6 +134,10 @@
   _reasonForComputerIsThinking = [decoder decodeIntForKey:goGameReasonForComputerIsThinking];
   _boardPosition = [[decoder decodeObjectOfClass:[GoBoardPosition class] forKey:goGameBoardPositionKey] retain];
   _rules = [[decoder decodeObjectOfClass:[GoGameRules class] forKey:goGameRulesKey] retain];
+  _timeSettings = [[decoder decodeObjectOfClass:[GoTimeSettings class] forKey:goGameTimeSettingsKey] retain];
+  // Backward compatibility so we don't have to increase the NSCoding version
+  if (! _timeSettings)
+    _timeSettings = [[GoTimeSettings alloc] init];
   _document = [[decoder decodeObjectOfClass:[GoGameDocument class] forKey:goGameDocumentKey] retain];
   _score = [[decoder decodeObjectOfClass:[GoScore class] forKey:goGameScoreKey] retain];
   self.setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
@@ -156,6 +177,7 @@
   self.boardPosition = nil;
   self.nodeModel = nil;
   self.rules = nil;
+  self.timeSettings = nil;
   self.document = nil;
   self.score = nil;
 
@@ -202,6 +224,8 @@
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to the @e nextMovePlayer making a #GoMoveTypePlay.
 ///
+/// This method is used by unit tests only.
+///
 /// Creates a new node for the move being played and adds it to the current
 /// game variation.
 /// - If there are nodes in the current game variation after the one that
@@ -211,19 +235,26 @@
 ///   being played to the end of the current game variation.
 ///
 /// Invoking this method also has the following effects:
-/// - Sets the document dirty flag
+/// - Sets the document dirty flag.
+/// - Updates the player's and the node's time data when timed play is in
+///   effect. The caller must have stopped the player's clock before invoking
+///   this method, and it must have ensured that the player has not yet lost on
+///   time.
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
-///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center. If
-///   the insert policy in @a moveNodeCreationOptions is
+///   the move was played. Posts first #numberOfBoardPositionsDidChange, then
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange, to
+///   the default notification center. If the insert policy in
+///   @a moveNodeCreationOptions is
 ///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
 ///   #currentGameVariationWillChange and #currentGameVariationDidChange before
 ///   and after the board position notifications.
 ///
-/// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasStarted or
-/// #GoGameStateGameIsPaused.
+/// Raises an @e NSInternalInconsistencyException in the following cases:
+/// - If this method is invoked while this GoGame object is not in state
+///   #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
+/// - If timed play is in effect and the player's clock is still started.
+/// - If timed play is in effect and the player has already lost on time.
 ///
 /// @note Play when in paused state is allowed only because the computer
 /// player who is thinking at the time the game is paused must be able to
@@ -251,30 +282,39 @@
 ///   variation), or if these nodes are retained and the new node is inserted
 ///   into the game tree so that the new node will start a new game variation.
 ///   In the latter case, the insert position found in
-///   @a @a moveNodeCreationOptions determines where the new game variation
+///   @a moveNodeCreationOptions determines where the new game variation
 ///   will be branching off from the current board position node.
 /// - If there are no such nodes: Simply adds the new node created by the move
 ///   being played to the end of the current game variation.
 ///
 /// Invoking this method also has the following effects:
-/// - Sets the document dirty flag
+/// - Sets the document dirty flag.
+/// - Updates the player's and the node's time data when timed play is in
+///   effect. The caller must have stopped the player's clock before invoking
+///   this method, and it must have ensured that the player has not yet lost on
+///   time.
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
-///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center. If
-///   the insert policy in @a moveNodeCreationOptions is
+///   the move was played. Posts first #numberOfBoardPositionsDidChange, then
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange, to
+///   the default notification center. If the insert policy in
+///   @a moveNodeCreationOptions is
 ///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
 ///   #currentGameVariationWillChange and #currentGameVariationDidChange before
 ///   and after the board position notifications.
 ///
-/// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasStarted or
-/// #GoGameStateGameIsPaused. Is also raised if @a moveNodeCreationOptions
-/// uses insert policy #GoNewMoveInsertPolicyRetainFutureBoardPositions but
-/// fails to specify a valid insert position, or if it uses insert policy
-/// #GoNewMoveInsertPolicyReplaceFutureBoardPositions but attempts to specify
-/// an insert position that is not
-/// #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+/// Raises an @e NSInternalInconsistencyException in the following cases:
+/// - If this method is invoked while this GoGame object is not in state
+///   #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
+/// - If @a moveNodeCreationOptions uses insert policy
+///   #GoNewMoveInsertPolicyRetainFutureBoardPositions but fails to specify a
+///   valid insert position.
+/// - If @a moveNodeCreationOptions uses insert policy
+///   #GoNewMoveInsertPolicyReplaceFutureBoardPositions but attempts to specify
+///   an insert position that is not
+///   #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+/// - If timed play is in effect and the player's clock is still started.
+/// - If timed play is in effect and the player has already lost on time.
 ///
 /// @note Play when in paused state is allowed only because the computer
 /// player who is thinking at the time the game is paused must be able to
@@ -315,6 +355,17 @@
     @throw exception;
   }
 
+  GoPlayerTimeData* playerTimeData = self.nextMovePlayer.timeData;
+  if (playerTimeData)
+  {
+    // Raises an exception if clock is still started
+    if (playerTimeData.didPlayerLoseOnTime)
+    {
+      NSString* errorMessage = @"play:withMoveNodeCreationOptions: failed: player has lost on time";
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+  }
+
   enum GoMoveIsIllegalReason illegalReason;
   if (! [self isLegalMove:point isIllegalReason:&illegalReason])
   {
@@ -347,12 +398,17 @@
 
   GoNode* node = [GoNode node];
   node.goMove = move;
-  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];
+
+  [self addNodeToTreeAndUpdateBoardPosition:node
+                withMoveNodeCreationOptions:moveNodeCreationOptions
+                         withPlayerTimeData:playerTimeData];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to the @e nextMovePlayer making a #GoMoveTypePass.
+///
+/// This method is used by unit tests only.
 ///
 /// Creates a new node for the move being played and adds it to the current
 /// game variation.
@@ -363,12 +419,17 @@
 ///   being played at the end of the current game variation.
 ///
 /// Invoking this method also has the following effects:
-/// - Sets the document dirty flag
+/// - Sets the document dirty flag.
+/// - Updates the player's and the node's time data when timed play is in
+///   effect. The caller must have stopped the player's clock before invoking
+///   this method, and it must have ensured that the player has not yet lost on
+///   time.
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
-///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center. If
-///   the insert policy in @a moveNodeCreationOptions is
+///   the move was played. Posts first #numberOfBoardPositionsDidChange, then
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange, to
+///   the default notification center. If the insert policy in
+///   @a moveNodeCreationOptions is
 ///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
 ///   #currentGameVariationWillChange and #currentGameVariationDidChange before
 ///   and after the board position notifications.
@@ -376,9 +437,11 @@
 ///   playing this pass move, the right number of consecutive pass moves have
 ///   been made according to the game rules.
 ///
-/// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasStarted or
-/// #GoGameStateGameIsPaused.
+/// Raises an @e NSInternalInconsistencyException in the following cases:
+/// - If this method is invoked while this GoGame object is not in state
+///   #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
+/// - If timed play is in effect and the player's clock is still started.
+/// - If timed play is in effect and the player has already lost on time.
 ///
 /// Raises @e NSInvalidArgumentException if playing a #GoMoveTypePass by
 /// @e nextMovePlayer is not a legal move.
@@ -401,18 +464,23 @@
 ///   variation), or if these nodes are retained and the new node is inserted
 ///   into the game tree so that the new node will start a new game variation.
 ///   In the latter case, the insert position found in
-///   @a @a moveNodeCreationOptions determines where the new game variation
+///   @a moveNodeCreationOptions determines where the new game variation
 ///   will be branching off from the current board position node.
 /// - If there are no such nodes: Simply adds the new node created by the move
 ///   being played to the end of the current game variation.
 ///
 /// Invoking this method also has the following effects:
-/// - Sets the document dirty flag
+/// - Sets the document dirty flag.
+/// - Updates the player's and the node's time data when timed play is in
+///   effect. The caller must have stopped the player's clock before invoking
+///   this method, and it must have ensured that the player has not yet lost on
+///   time.
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
-///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center. If
-///   the insert policy in @a moveNodeCreationOptions is
+///   the move was played. Posts first #numberOfBoardPositionsDidChange, then
+///   #currentBoardPositionWillChange and #currentBoardPositionDidChange, to
+///   the default notification center. If the insert policy in
+///   @a moveNodeCreationOptions is
 ///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
 ///   #currentGameVariationWillChange and #currentGameVariationDidChange before
 ///   and after the board position notifications.
@@ -420,14 +488,18 @@
 ///   playing this pass move, the right number of consecutive pass moves have
 ///   been made according to the game rules.
 ///
-/// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasStarted or
-/// #GoGameStateGameIsPaused. Is also raised if @a moveNodeCreationOptions
-/// uses insert policy #GoNewMoveInsertPolicyRetainFutureBoardPositions but
-/// fails to specify a valid insert position, or if it uses insert policy
-/// #GoNewMoveInsertPolicyReplaceFutureBoardPositions but attempts to specify
-/// an insert position that is not
-/// #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+/// Raises an @e NSInternalInconsistencyException in the following cases:
+/// - If this method is invoked while this GoGame object is not in state
+///   #GoGameStateGameHasStarted or #GoGameStateGameIsPaused.
+/// - If @a moveNodeCreationOptions uses insert policy
+///   #GoNewMoveInsertPolicyRetainFutureBoardPositions but fails to specify a
+///   valid insert position.
+/// - If @a moveNodeCreationOptions uses insert policy
+///   #GoNewMoveInsertPolicyReplaceFutureBoardPositions but attempts to specify
+///   an insert position that is not
+///   #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+/// - If timed play is in effect and the player's clock is still started.
+/// - If timed play is in effect and the player has already lost on time.
 ///
 /// Raises @e NSInvalidArgumentException if playing a #GoMoveTypePass by
 /// @e nextMovePlayer is not a legal move.
@@ -453,6 +525,17 @@
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
+  GoPlayerTimeData* playerTimeData = self.nextMovePlayer.timeData;
+  if (playerTimeData)
+  {
+    // Raises an exception if clock is still started
+    if (playerTimeData.didPlayerLoseOnTime)
+    {
+      NSString* errorMessage = @"passWithMoveNodeCreationOptions: failed: player has lost on time";
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+  }
+
   enum GoMoveIsIllegalReason illegalReason;
   if (! [self isLegalPassMoveIllegalReason:&illegalReason])
   {
@@ -472,7 +555,10 @@
 
   GoNode* node = [GoNode node];
   node.goMove = move;
-  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];
+
+  [self addNodeToTreeAndUpdateBoardPosition:node
+                withMoveNodeCreationOptions:moveNodeCreationOptions
+                         withPlayerTimeData:playerTimeData];
 
   // This may change the game state. Such a change must occur after the move was
   // generated; this order is important for observer notifications.
@@ -481,10 +567,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Adds @a newNode to the game tree (possibly also discarding other
-/// nodes), possibly changes the current game variation, updates properties in
-/// GoBoardPosition to match the new state in the current game variation, and
-/// posts the notifications to the default notification center that are required
-/// to inform the rest of the system about the changes that took place.
+/// nodes), performs time handling using @a playerTimeData, possibly changes the
+/// current game variation, updates properties in GoBoardPosition to match the
+/// new state in the current game variation, and posts the notifications to the
+/// default notification center that are required to inform the rest of the
+/// system about the changes that took place.
 ///
 /// This is a private helper for play:withMoveNodeCreationOptions:() and
 /// passWithMoveNodeCreationOptions:(). See the documentation of these methods
@@ -494,6 +581,7 @@
 // -----------------------------------------------------------------------------
 - (void) addNodeToTreeAndUpdateBoardPosition:(GoNode*)newNode
                  withMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions
+                          withPlayerTimeData:(GoPlayerTimeData*)playerTimeData
 {
   bool shouldChangeCurrentGameVariation;
 
@@ -512,7 +600,7 @@
     if (nextBoardPosition >= self.nodeModel.numberOfNodes)
     {
       assert(0);
-      NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: nextBoardPosition = %d, numberOfNodes = %d", nextBoardPosition, self.nodeModel.numberOfNodes];
+      NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: nextBoardPosition = %d, numberOfNodes = %d", nextBoardPosition, self.nodeModel.numberOfNodes];
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
       return;
     }
@@ -553,7 +641,7 @@
           default:
           {
             assert(0);
-            NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unexpected insert position for GoNewMoveInsertPolicyRetainFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
+            NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: unexpected insert position for GoNewMoveInsertPolicyRetainFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
             [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
             return;
           }
@@ -576,7 +664,7 @@
         else
         {
           assert(0);
-          NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unexpected insert position for GoNewMoveInsertPolicyReplaceFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
+          NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: unexpected insert position for GoNewMoveInsertPolicyReplaceFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
           [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
           return;
         }
@@ -585,12 +673,17 @@
       default:
       {
         assert(0);
-        NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unknown insert policy, newMoveInsertPolicy = %d", newMoveInsertPolicy];
+        NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: unknown insert policy, newMoveInsertPolicy = %d", newMoveInsertPolicy];
         [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
         return;
       }
     }
   }
+
+  // Add time data to node before posting notifications, so that the node data
+  // is complete when observers are notified
+  [self updatePlayerTimeDataIfTimeDataIsValid:playerTimeData
+                         andAddTimeDataToNode:newNode];
 
   // At this point the new node exists in the node tree, but it is still missing
   // the Zobrist hash.
@@ -623,10 +716,15 @@
   if (newCurrentBoardPosition != newNumberOfBoardPositions - 1)
   {
     assert(0);
-    NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: board position mismatch, newCurrentBoardPosition  = %d, newNumberOfBoardPositions = %d", newCurrentBoardPosition, newNumberOfBoardPositions];
+    NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions:withPlayerTimeData: failed: board position mismatch, newCurrentBoardPosition  = %d, newNumberOfBoardPositions = %d", newCurrentBoardPosition, newNumberOfBoardPositions];
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     return;
   }
+
+  NSArray* currentBoardPositionNotificationObject = @[[NSNumber numberWithInt:oldCurrentBoardPosition],
+                                                      [NSNumber numberWithInt:newCurrentBoardPosition]];
+  [center postNotificationName:currentBoardPositionWillChange object:currentBoardPositionNotificationObject];
+
   self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
 
   // The Zobrist hash can be calculated only AFTER GoNode modifyBoard was
@@ -636,11 +734,65 @@
   // the notification about the board position change.
   [newNode calculateZobristHash:self];
 
-  [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
+  [center postNotificationName:currentBoardPositionDidChange object:currentBoardPositionNotificationObject];
 
   if (shouldChangeCurrentGameVariation)
   {
     [center postNotificationName:currentGameVariationDidChange object:nil];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Does nothing if @a playerTimeData is @e nil (assuming that the game
+/// does not use timed play). Performs time data handling if @a playerTimeData
+/// is not @e nil. @a newNode must have already been added to the node tree.
+///
+/// Time data handling consists of the following:
+/// - Check whether time data is valid at the place in the game tree where
+///   @a newNode is located.
+/// - If time data is not valid: Perform a validation on @a newNode to assign
+///   correct values to its time data validity properties.
+/// - If time data is valid: Adds a GoNodeTimeData object to @a newNode that
+///   captures time data from @a playerTimeData (e.g. how much time is
+///   remainining), and updates @a playerTimeData to prepare it for the next
+///   move by the player.
+// -----------------------------------------------------------------------------
+- (void) updatePlayerTimeDataIfTimeDataIsValid:(GoPlayerTimeData*)playerTimeData
+                          andAddTimeDataToNode:(GoNode*)newNode
+{
+  if (! playerTimeData)
+    return;
+
+  GoNode* parentNode = newNode.parent;
+  GoTimeDataValidationResult validationState = [GoTimeDataValidator validationStateOfNode:parentNode];
+
+  if (validationState.isTimeDataValid)
+  {
+    GoNodeTimeData* nodeTimeData = [[[GoNodeTimeData alloc] init] autorelease];
+    newNode.goNodeTimeData = nodeTimeData;
+
+    nodeTimeData.isTimeDataForBlackPlayer = playerTimeData.isTimeDataForBlackPlayer;
+    [playerTimeData updateAfterMoveWasPlayed:nodeTimeData];
+
+    // No need to perform a formal validation, the logic we implement always
+    // results in valid time data
+    newNode.isTimeDataValid = true;
+    newNode.timeDataInvalidReason = GoTimeDataValidationResultValid.timeDataInvalidReason;
+    newNode.timeDataValidationMode = validationState.timeDataValidationMode;
+  }
+  else
+  {
+    // If time data is not valid, then we expect that the clock in
+    // playerTimeData was not running => we don't need to update the time data
+    // in playerTimeData and we don't need to create a GoNodeTimeData object.
+
+    // Let GoTimeDataValidator do the validation using the same mode that was
+    // used last time. The outcome is guaranteed to be invalid time data, if
+    // for no other reason than that the node contains a move but no
+    // GoNodeTimeData object, but the invalid reason may also be different
+    // depending on the validation mode.
+    GoTimeDataValidator* timeDataValidator = [[[GoTimeDataValidator alloc] initWithTimeDataValidationMode:validationState.timeDataValidationMode] autorelease];
+    [timeDataValidator validateTimeDataInSubTree:newNode game:self];
   }
 }
 
@@ -666,13 +818,10 @@
     @throw exception;
   }
 
-  self.document.dirty = true;
-
   if (self.nextMoveColor == GoColorBlack)
-    self.reasonForGameHasEnded = GoGameHasEndedReasonWhiteWinsByResignation;
+    [self endGameWithReason:GoGameHasEndedReasonWhiteWinsByResignation];
   else
-    self.reasonForGameHasEnded = GoGameHasEndedReasonBlackWinsByResignation;
-  self.state = GoGameStateGameHasEnded;
+    [self endGameWithReason:GoGameHasEndedReasonBlackWinsByResignation];
 }
 
 // -----------------------------------------------------------------------------
@@ -1486,13 +1635,24 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   if (_reasonForComputerIsThinking == newValue)
     return;
-  _reasonForComputerIsThinking = newValue;
+
   NSString* notificationName;
+  enum GoGameComputerIsThinkingReason notificationReason;
   if (GoGameComputerIsThinkingReasonIsNotThinking == newValue)
+  {
     notificationName = computerPlayerThinkingStops;
+    notificationReason = _reasonForComputerIsThinking;
+  }
   else
+  {
     notificationName = computerPlayerThinkingStarts;
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self];
+    notificationReason = newValue;
+  }
+
+  _reasonForComputerIsThinking = newValue;
+
+  NSArray* notificationObject = @[self, @(notificationReason)];
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:notificationObject];
 }
 
 // -----------------------------------------------------------------------------
@@ -1611,6 +1771,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   [encoder encodeInt:self.reasonForComputerIsThinking forKey:goGameReasonForComputerIsThinking];
   [encoder encodeObject:self.boardPosition forKey:goGameBoardPositionKey];
   [encoder encodeObject:self.rules forKey:goGameRulesKey];
+  [encoder encodeObject:self.timeSettings forKey:goGameTimeSettingsKey];
   [encoder encodeObject:self.document forKey:goGameDocumentKey];
   [encoder encodeObject:self.score forKey:goGameScoreKey];
   [encoder encodeInt:self.setupFirstMoveColor forKey:goGameSetupFirstMoveColorKey];
@@ -1633,8 +1794,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// Invoking this method sets the document dirty flag if the game state changes.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
-/// while this GoGame object is not in state #GoGameStateGameHasStarted or
-/// #GoGameStateGameIsPaused.
+/// while this GoGame object is already in state #GoGameStateGameHasEnded.
 ///
 /// @note Invoking this method should not be necessary under normal
 /// circumstances. Specifically, pass() already invokes this method, so invoking
@@ -1642,14 +1802,10 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 // -----------------------------------------------------------------------------
 - (void) endGameDueToPassMovesIfGameRulesRequireIt
 {
-  if (GoGameStateGameHasStarted != self.state && GoGameStateGameIsPaused != self.state)
+  if (GoGameStateGameHasEnded == self.state)
   {
-    NSString* errorMessage = @"Pass is possible only while GoGame object is either in state GoGameStateGameHasStarted or GoGameStateGameIsPaused";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
+    NSString* errorMessage = @"endGameDueToPassMovesIfGameRulesRequireIt: Game is already in state GoGameStateGameHasEnded";
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
   int numberOfConsecutivePassMoves = 0;
@@ -1660,32 +1816,47 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     potentialPassMove = potentialPassMove.previous;
   }
 
-  bool didEndGame = true;
-
   // GoFourPassesRuleFourPassesEndTheGame has precedence over
   // GoLifeAndDeathSettlingRuleTwoPasses
   if (4 == numberOfConsecutivePassMoves && GoFourPassesRuleFourPassesEndTheGame == self.rules.fourPassesRule)
-  {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonFourPasses;
-    self.state = GoGameStateGameHasEnded;
-  }
+    [self endGameWithReason:GoGameHasEndedReasonFourPasses];
   else if (3 == numberOfConsecutivePassMoves && GoLifeAndDeathSettlingRuleThreePasses == self.rules.lifeAndDeathSettlingRule)
-  {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonThreePasses;
-    self.state = GoGameStateGameHasEnded;
-  }
+    [self endGameWithReason:GoGameHasEndedReasonThreePasses];
   else if (numberOfConsecutivePassMoves >= 2 && 0 == (numberOfConsecutivePassMoves % 2) && GoLifeAndDeathSettlingRuleTwoPasses == self.rules.lifeAndDeathSettlingRule)
+    [self endGameWithReason:GoGameHasEndedReasonTwoPasses];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Ends the game (i.e. sets it to state #GoGameStateGameHasEnded) with
+/// @a reason.
+///
+/// Invoking this method sets the document dirty flag.
+///
+/// @exception NSInvalidArgumentException is raised if @a reason is
+/// #GoGameHasEndedReasonNotYetEnded.
+///
+/// @exception NSInternalInconsistencyException is raised if this method is
+/// invoked while this GoGame object is already in state
+/// #GoGameStateGameHasEnded.
+// -----------------------------------------------------------------------------
+- (void) endGameWithReason:(enum GoGameHasEndedReason)reason
+{
+  if (GoGameStateGameHasEnded == self.state)
   {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
-    self.state = GoGameStateGameHasEnded;
-  }
-  else
-  {
-    didEndGame = false;
+    NSString* errorMessage = @"endGameWithReason: Game is already in state GoGameStateGameHasEnded";
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
-  if (didEndGame)
-    self.document.dirty = true;
+  if (reason == GoGameHasEndedReasonNotYetEnded)
+  {
+    NSString* errorMessage = @"endGameWithReason: cannot end game with reason GoGameHasEndedReasonNotYetEnded";
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+  }
+
+  self.document.dirty = true;
+
+  self.reasonForGameHasEnded = reason;
+  self.state = GoGameStateGameHasEnded;
 }
 
 // -----------------------------------------------------------------------------
@@ -1908,8 +2079,12 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 - (void) addEmptyNodeToCurrentGameVariation
 {
   GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+  GoPlayerTimeData* playerTimeData = self.nextMovePlayer.timeData;
+
   GoNode* node = [GoNode node];
-  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:options];
+  [self addNodeToTreeAndUpdateBoardPosition:node
+                withMoveNodeCreationOptions:options
+                         withPlayerTimeData:playerTimeData];
 }
 
 // -----------------------------------------------------------------------------

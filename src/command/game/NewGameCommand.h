@@ -20,6 +20,7 @@
 
 // Forward declarations
 @class GoGame;
+@class GoTimeSettings;
 
 
 // -----------------------------------------------------------------------------
@@ -58,5 +59,6 @@
 @property(nonatomic, assign) bool shouldSetupGtpHandicapAndKomi;
 @property(nonatomic, assign) bool shouldSetupComputerPlayer;
 @property(nonatomic, assign) bool shouldTriggerComputerPlayerIfItIsTheirTurn;
+@property(nonatomic, assign) bool shouldStartHumanPlayerClockIfItIsTheirTurn;
 
 @end

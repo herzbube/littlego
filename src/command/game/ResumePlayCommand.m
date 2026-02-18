@@ -22,6 +22,7 @@
 #import "../../go/GoGameRules.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -60,6 +61,14 @@
   {
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
+  }
+
+  // Start clock after application state has been saved so that a firing timer
+  // does not interfere with the saving
+  if (! game.nextMovePlayerIsComputerPlayer)
+  {
+    [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                              reason:PlayerClockStartReasonHumanPlayerTurnBegins];
   }
 
   if (game.nextMovePlayerIsComputerPlayer)

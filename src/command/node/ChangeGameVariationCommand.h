@@ -38,7 +38,7 @@
 /// - Update the game state to match the end of the new game variation.
 /// - Mark the application state as having changed, so that the game variation
 ///   can be restored when the application launches the next time. Whoever
-///   executes ChangeNodeSelectionCommand is responsible for actually saving
+///   executes ChangeGameVariationCommand is responsible for actually saving
 ///   the application state to disk.
 ///
 /// ChangeGameVariationCommand relies on the current board position matching

@@ -29,6 +29,7 @@
 #import "GoNodeModel.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
+#import "GoNodeTimeData.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
 
@@ -857,6 +858,19 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains a move played by the player indicated by @a color. Returns @a node
+/// if it contains a move. Returns @e nil if no move can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentMove:(GoNode*)node playedBy:(enum GoColor)color
+{
+  node = [GoUtilities nodeWithMostRecentMove:node];
+  while (node && node.goMove.player.color != color)
+    node = [GoUtilities nodeWithMostRecentMove:node.parent];
+  return node;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Examines the successors of @a node (excluding @a node) in the current
 /// game variation available from @a game. Returns the first node found that
 /// contains a move. Returns @e nil if no move can be found.
@@ -1015,11 +1029,67 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains time data. Returns @e nil if no time data can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentTimeData:(GoNode*)node
+{
+  while (node)
+  {
+    if (node.goNodeTimeData)
+      return node;
+    node = node.parent;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains time data for the player indicated by @a color. Returns @e nil if
+/// no time data can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentTimeData:(GoNode*)node forPlayer:(enum GoColor)color
+{
+  bool isTimeDataForBlackPlayer = (color == GoColorBlack ? true : false);
+  node = [GoUtilities nodeWithMostRecentTimeData:node];
+  while (node && node.goNodeTimeData.isTimeDataForBlackPlayer != isTimeDataForBlackPlayer)
+    node = [GoUtilities nodeWithMostRecentTimeData:node.parent];
+  return node;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains either a move or time data. Returns @e nil if no move and no time
+/// data can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentMoveOrTimeData:(GoNode*)node
+{
+  while (node)
+  {
+    if (node.goMove || node.goNodeTimeData)
+      return node;
+    node = node.parent;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns true if the content of @a node warrants showing an "info"
 /// indicator to the user when displaying an overview of @a node.
 // -----------------------------------------------------------------------------
 + (bool) showInfoIndicatorForNode:(GoNode*)node
 {
+  // Time data is not considered special enough to show an "info" indicator,
+  // so we don't check for the presence of GoNodeTimeData.
+  // - In a game without timed play, no time data is expected to be present. If
+  //   it ***IS*** present then that is remarkable because the SGF authoring
+  //   program did something strange, but for the user it is hardly of any
+  //   interest.
+  // - In a game with timed play, time data is expected to be present in
+  //   ***EVERY*** node that contains a move. Showing the "info" indicator
+  //   would therefore become meaningless and obscure the presence of things
+  //   that are of real interest to the user.
+
   GoMove* move = node.goMove;
   if (move && move.goMoveValuation != GoMoveValuationNone)
     return true;

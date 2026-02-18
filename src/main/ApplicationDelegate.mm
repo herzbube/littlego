@@ -51,6 +51,8 @@
 #import "../play/model/MarkupModel.h"
 #import "../play/model/NodeTreeViewModel.h"
 #import "../play/model/ScoringModel.h"
+#import "../play/model/TimedPlayModel.h"
+#import "../play/timedplay/TimedPlayController.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
 #import "../diagnostics/CrashReportingModel.h"
@@ -77,6 +79,7 @@
 // -----------------------------------------------------------------------------
 @interface ApplicationDelegate()
 @property(nonatomic, retain) DDFileLogger* fileLogger;
+@property(nonatomic, retain) TimedPlayController* timedPlayController;
 @end
 
 
@@ -107,6 +110,7 @@
 @synthesize markupModel = _markupModel;
 @synthesize nodeTreeViewModel = _nodeTreeViewModel;
 @synthesize gameVariationModel = _gameVariationModel;
+@synthesize timedPlayModel = _timedPlayModel;
 
 #pragma mark - Initialization and deallocation
 
@@ -160,6 +164,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 
   self.gtpClient = nil;
   self.gtpEngine = nil;
+
   // Observes BoardViewModel, so must be deallocated first
   self.boardViewMetrics = nil;
   self.theNewGameModel = nil;
@@ -182,7 +187,11 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.markupModel = nil;
   self.nodeTreeViewModel = nil;
   self.gameVariationModel = nil;
+  self.timedPlayModel = nil;
+
   self.fileLogger = nil;
+  self.timedPlayController = nil;
+
   [BoardPositionNavigationManager releaseSharedNavigationManager];
   [GameActionManager releaseSharedGameActionManager];
   [BoardViewCGLayerCache releaseSharedCache];
@@ -190,6 +199,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [LongRunningActionCounter releaseSharedCounter];
   [ApplicationStateManager releaseSharedManager];
   [LayoutManager releaseSharedManager];
+
   if (self == sharedDelegate)
     sharedDelegate = nil;
 
@@ -256,6 +266,8 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self setupSound];
   // Has no dependencies
   [self setupFuego];
+  // Depends on setupRegistry
+  [self setupTimedPlay];
 
   return YES;
 }
@@ -499,6 +511,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   self.markupModel = [[[MarkupModel alloc] init] autorelease];
   self.nodeTreeViewModel = [[[NodeTreeViewModel alloc] init] autorelease];
   self.gameVariationModel = [[[GameVariationModel alloc] init] autorelease];
+  self.timedPlayModel = [[[TimedPlayModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -517,6 +530,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   [self.markupModel readUserDefaults];
   [self.nodeTreeViewModel readUserDefaults];
   [self.gameVariationModel readUserDefaults];
+  [self.timedPlayModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
@@ -555,6 +569,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   [self.markupModel writeUserDefaults];
   [self.nodeTreeViewModel writeUserDefaults];
   [self.gameVariationModel writeUserDefaults];
+  [self.timedPlayModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------
@@ -603,6 +618,15 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
 
   sharedRegistry.applicationDelegate = self;
   sharedRegistry.modelProvider = self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the objects used to manage timed play.
+// -----------------------------------------------------------------------------
+- (void) setupTimedPlay
+{
+  Registry* sharedRegistry = [Registry sharedRegistry];
+  self.timedPlayController = [[[TimedPlayController alloc] initWithRegistry:sharedRegistry] autorelease];
 }
 
 #pragma mark - Public helper methods

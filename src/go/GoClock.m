@@ -1,0 +1,338 @@
+// -----------------------------------------------------------------------------
+// Copyright 2025 Patrick Näf (herzbube@herzbube.ch)
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// -----------------------------------------------------------------------------
+
+
+// Project includes
+#import "GoClock.h"
+#import "GoClockAdditions.h"
+#import "../utility/ExceptionUtility.h"
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for GoClock.
+// -----------------------------------------------------------------------------
+@interface GoClock()
+/// @name Private properties
+//@{
+/// @brief Timestamp when the clock was started.
+@property(nonatomic, retain) NSDate* startDate;
+//@}
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) enum GoClockState state;
+@property(nonatomic, assign, readwrite) enum GoClockSuspendedReason suspendedReason;
+//@}
+@end
+
+
+@implementation GoClock
+
+#pragma mark - Initialization and deallocation
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoClock object with state #GoClockStateStopped.
+///
+/// @note This is the designated initializer of GoClock.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.state = GoClockStateStopped;
+  self.suspendedReason = GoClockSuspendedReasonNotSuspended;
+  self.startDate = nil;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+
+  self.state = [decoder decodeIntForKey:goClockStateKey];
+  self.suspendedReason = [decoder decodeIntForKey:goClockSuspendedReasonKey];
+  if (self.state == GoClockStateStarted)
+  {
+    double elapsedTimeInSeconds = [decoder decodeDoubleForKey:goClockElapsedTimeInSecondsKey];
+    self.startDate = [NSDate dateWithTimeIntervalSinceNow:-elapsedTimeInSeconds];
+  }
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoClock object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.startDate = nil;
+
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeInt:self.state forKey:goClockStateKey];
+  [encoder encodeInt:self.suspendedReason forKey:goClockSuspendedReasonKey];
+  if (self.state == GoClockStateStarted)
+  {
+    double elapsedTimeInSeconds = [self elapsedTimeInSecondsSinceClockWasStarted:@"encodeWithCoder"];
+    [encoder encodeDouble:elapsedTimeInSeconds forKey:goClockElapsedTimeInSecondsKey];
+  }
+}
+
+#pragma mark - Public API
+
+// -----------------------------------------------------------------------------
+/// @brief Starts the clock when it is stopped.
+///
+/// Raises an @e NSInternalInconsistencyException if the clock is not stopped,
+/// i.e. if it is started or suspended.
+// -----------------------------------------------------------------------------
+- (void) start;
+{
+  NSString* operationName = @"start";
+  [self throwIfClockDoesNotHaveState:GoClockStateStopped operationName:operationName];
+
+  [self startUnconditionally];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Suspends the clock when it is started, because of @a reason. Returns
+/// the time in seconds that has elapsed since the clock was last started.
+///
+/// Raises an @e NSInternalInconsistencyException if the clock is not started,
+/// i.e. if it is stopped or suspended.
+// -----------------------------------------------------------------------------
+- (double) suspend:(enum GoClockSuspendedReason)reason
+{
+  NSString* operationName = @"suspend";
+  [self throwIfClockDoesNotHaveState:GoClockStateStarted operationName:operationName];
+
+  double elapsedTimeInSeconds = [self elapsedTimeInSecondsSinceClockWasStarted:operationName];
+
+  self.state = GoClockStateSuspended;
+  self.suspendedReason = reason;
+  self.startDate = nil;
+
+  return elapsedTimeInSeconds;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resumes the clock when it is suspended.
+///
+/// Raises an @e NSInternalInconsistencyException if the clock is not suspended,
+/// i.e. if it is stopped or started.
+// -----------------------------------------------------------------------------
+- (void) resume
+{
+  NSString* operationName = @"resume";
+  [self throwIfClockDoesNotHaveState:GoClockStateSuspended operationName:operationName];
+
+  self.state = GoClockStateStarted;
+  self.suspendedReason = GoClockSuspendedReasonNotSuspended;
+  self.startDate = [NSDate now];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Stops the clock when it is started or suspended. If the clock was
+/// started, returns the time in seconds that has elapsed since the clock was
+/// last started. If the clock was suspended, returns 0.0.
+///
+/// Raises an @e NSInternalInconsistencyException if the clock is not started
+/// or suspended, i.e. if it is stopped.
+// -----------------------------------------------------------------------------
+- (double) stop
+{
+  NSString* operationName = @"stop";
+  [self throwIfClockHasState:GoClockStateStopped operationName:operationName];
+
+  double elapsedTimeInSeconds = [self elapsedTimeInSecondsSinceClockWasStarted:operationName];
+
+  self.state = GoClockStateStopped;
+  self.suspendedReason = GoClockSuspendedReasonNotSuspended;
+  self.startDate = nil;
+
+  return elapsedTimeInSeconds;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Restarts the clock when it is started or suspended. If the clock was
+/// started, returns the time in seconds that has elapsed since the clock was
+/// last started. If the clock was suspended, returns 0.0.
+///
+/// This method is a convenience method, equivalent to invoking stop() and
+/// then start().
+///
+/// Raises an @e NSInternalInconsistencyException if the clock is not started or
+/// suspended, i.e. if it is stopped.
+// -----------------------------------------------------------------------------
+- (double) restart
+{
+  NSString* operationName = @"restart";
+  [self throwIfClockHasState:GoClockStateStopped operationName:operationName];
+
+  double elapsedTimeInSeconds = [self elapsedTimeInSecondsSinceClockWasStarted:operationName];
+
+  [self startUnconditionally];
+
+  return elapsedTimeInSeconds;
+}
+
+#pragma mark - Private helper methods
+
+// -----------------------------------------------------------------------------
+/// @brief Starts the clock regardless of what its previous state was.
+// -----------------------------------------------------------------------------
+- (void) startUnconditionally
+{
+  self.state = GoClockStateStarted;
+  self.suspendedReason = GoClockSuspendedReasonNotSuspended;
+  self.startDate = [NSDate now];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates and returns the time in seconds that has elapsed since the
+/// clock was last started. Returns 0.0 if the clock is suspended or stopped.
+/// The calculation is performed on behalf of the operation named
+/// @a operationName.
+// -----------------------------------------------------------------------------
+- (double) elapsedTimeInSecondsSinceClockWasStarted:(NSString*)operationName
+{
+  if (self.state == GoClockStateStarted)
+  {
+    [self throwIfStartDateIsMissing:operationName];
+    return [[NSDate now] timeIntervalSinceDate:self.startDate];
+  }
+  else
+  {
+    return 0.0;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Raises an @e NSInternalInconsistencyException if self.state is
+/// not @a state. The exception is raised on behalf of the operation named
+/// @a operationName.
+// -----------------------------------------------------------------------------
+- (void) throwIfClockDoesNotHaveState:(enum GoClockState)expectedState
+                        operationName:(NSString*)operationName
+{
+  if (self.state == expectedState)
+    return;
+
+  NSString* expectedStateAsString = [GoClock stringForState:expectedState];
+  NSString* actualStateAsString = [GoClock stringForState:self.state];
+  NSString* errorMessage = [NSString stringWithFormat:@"%@ failed, clock expected to be %@, but is %@", operationName, expectedStateAsString, actualStateAsString];
+  [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Raises an @e NSInternalInconsistencyException if self.state is
+/// @a state. The exception is raised on behalf of the operation named
+/// @a operationName.
+// -----------------------------------------------------------------------------
+- (void) throwIfClockHasState:(enum GoClockState)unexpectedState
+                operationName:(NSString*)operationName
+{
+  if (self.state != unexpectedState)
+    return;
+
+  NSString* unexpectedStateAsString = [GoClock stringForState:unexpectedState];
+  NSString* errorMessage = [NSString stringWithFormat:@"%@ failed, clock expected not to be %@, but is %@", operationName, unexpectedStateAsString, unexpectedStateAsString];
+  [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Raises an @e NSInternalInconsistencyException if self.startDate is
+/// @e nil. The exception is raised on behalf of the operation named
+/// @a operationName.
+// -----------------------------------------------------------------------------
+- (void) throwIfStartDateIsMissing:(NSString*)operationName
+{
+  if (self.startDate)
+    return;
+
+  NSString* errorMessage = [NSString stringWithFormat:@"%@ failed, clock is running but start date is missing", operationName];
+  [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a state.
+///
+/// Raises an @e NSInternalInconsistencyException if @a state is not an element
+/// of the enumeration #GoClockState.
+// -----------------------------------------------------------------------------
++ (NSString*) stringForState:(enum GoClockState)state
+{
+  switch (state)
+  {
+    case GoClockStateStopped:
+      return @"stopped";
+    case GoClockStateStarted:
+      return @"started";
+    case GoClockStateSuspended:
+      return @"suspended";
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"Invalid clock state %d"
+                                                  argumentValue:state];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
+      return @"";
+  }
+}
+
+#pragma mark - GoClockAdditions
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the state of this GoClock instance with the supplied
+/// arguments.
+///
+/// This method is used by unit tests only.
+// -----------------------------------------------------------------------------
+- (void) setClockState:(enum GoClockState)state
+       suspendedReason:(enum GoClockSuspendedReason)suspendedReason
+             startDate:(NSDate*)startDate
+{
+  self.state = state;
+  self.suspendedReason = suspendedReason;
+  self.startDate = startDate;
+}
+
+@end

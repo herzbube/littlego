@@ -1986,3 +1986,40 @@ Board setup user preferences test
 - Tap a handicap stone
   - Check that the "Change handicap" alert is not shown.
   - Check that the handicap stone is removed and the intersection becomes empty.
+
+Time data validation
+- The following table lists all GoTimeDataInvalidReason values and which .sgf
+  files (found in "sgf/Invalid time data") contain data that matches the
+  reasons.
+
+
+GoTimeDataInvalidReason enum value                                                     File
+----------------------------------------------------------------------------------------------------------------------------------------
+GoTimeDataInvalidReasonGameDoesNotUseTimedPlay                                         Any file without a TM, OT, BL, WL, OB and OW property
+GoTimeDataInvalidReasonCustomTimeSystem                                                01-invalid-time-data-ot-property-contains-unsupported-value.sgf
+GoTimeDataInvalidReasonAbsoluteTimeDurationExceedsMaximum                              02-invalid-time-data-tm-absolute-time-exceeds-maximum.sgf
+GoTimeDataInvalidReasonPeriodDurationExceedsMaximum                                    03-invalid-time-data-ot-period-duration-exceeds-maximum.sgf
+GoTimeDataInvalidReasonExtraTimeDurationExceedsMaximum                                 04-invalid-time-data-ot-extra-time-duration-exceeds-maximum.sgf
+GoTimeDataInvalidReasonMinimumNumberOfMovesPerPeriodExceedsMaximum                     05-invalid-time-data-ot-number-of-moves-exceeds-maximum.sgf
+GoTimeDataInvalidReasonNumberOfPeriodsExceedsMaximum                                   06-invalid-time-data-ot-number-of-periods-exceeds-maximum.sgf
+GoTimeDataInvalidReasonMoveNodeHasNoTimeData                                           07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonNonMoveNodeHasTimeData                                          07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonMoveAndTimeDataPlayerMismatch                                   07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonAbsoluteTimeDataFoundWithoutAbsoluteTimeSystem                  08-invalid-time-data-ot-property-various-problems.sgf
+GoTimeDataInvalidReasonPeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem            09-invalid-time-data-tm-property-various-problems.sgf
+GoTimeDataInvalidReasonRemainingTimeNegative                                           07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonAbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData       07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingAbsoluteTimeIsIncreasing                               07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingTimeHigherThanAbsoluteTimeSystemAllows                 07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingTimeHigherThanPeriodTimeSystemAllows                   07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfMovesHigherThanPeriodBasedTimeSystemAllows     07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfPeriodsHigherThanPeriodBasedTimeSystemAllows   10-invalid-time-data-ot-japanese-timing-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfMovesNotConstant                               11-invalid-time-data-ot-fischer-timing-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfMovesConstant                                  07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfMovesDecreasedButRemainingTimeIncreased        07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfMovesIncreasedButRemainingTimeDecreased        07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfPeriodsIsIncreasing                            10-invalid-time-data-ot-japanese-timing-various-problems.sgf
+GoTimeDataInvalidReasonRemainingTimeHigherThanExtraTimeAllows                          11-invalid-time-data-ot-fischer-timing-various-problems.sgf
+GoTimeDataInvalidReasonRemainingTimeExceedsMaximum                                     07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfMovesExceedsMaximum                            07-invalid-time-data-tm-and-ot-properties-various-problems.sgf
+GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum                          10-invalid-time-data-ot-japanese-timing-various-problems.sgf

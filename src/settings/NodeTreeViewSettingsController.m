@@ -215,6 +215,7 @@ enum FocusModeSectionItem
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           cell.textLabel.text = @"Display tree view";
           accessoryView.on = self.nodeTreeViewModel.displayNodeTreeView;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleDisplayNodeTreeView:) forControlEvents:UIControlEventValueChanged];
           break;
         }
@@ -241,6 +242,7 @@ enum FocusModeSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Align moves";
       accessoryView.on = self.nodeTreeViewModel.alignMoveNodes;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleAlignMoveNodes:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -250,6 +252,7 @@ enum FocusModeSectionItem
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Condense moves";
       accessoryView.on = self.nodeTreeViewModel.condenseMoveNodes;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleCondenseMoveNodes:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -270,6 +273,7 @@ enum FocusModeSectionItem
         UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
         cell.textLabel.text = @"Focus on selected node";
         accessoryView.on = self.nodeTreeViewModel.focusMode != NodeTreeViewFocusModeDisabled;
+        [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
         [accessoryView addTarget:self action:@selector(toggleEnableFocusMode:) forControlEvents:UIControlEventValueChanged];
       }
       else

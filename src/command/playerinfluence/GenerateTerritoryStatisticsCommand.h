@@ -21,8 +21,13 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The GenerateTerritoryStatisticsCommand class is responsible for
-/// submitting a command to the GTP engine that generates territory statistics.
-/// Command execution occurs synchronously.
+/// submitting a command to the GTP engine that generates territory statistics
+/// based on the current board state. GenerateTerritoryStatisticsCommand also
+/// executes UpdateTerritoryStatisticsCommand to update the board with the newly
+/// collected statistics. Command execution occurs synchronously.
+///
+/// GenerateTerritoryStatisticsCommand executes successfully but does nothing if
+/// the user preference to display player influence is turned off.
 ///
 /// GenerateTerritoryStatisticsCommand currently uses the "reg_genmove" GTP
 /// command to generate territory statistics. "reg_genmove" does not actually

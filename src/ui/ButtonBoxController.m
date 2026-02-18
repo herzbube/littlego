@@ -33,7 +33,6 @@
 @property(nonatomic, assign) CGSize buttonSize;
 @property(nonatomic, assign) CGFloat rowSpacing;
 @property(nonatomic, assign) CGFloat columnSpacing;
-@property(nonatomic, assign) UIEdgeInsets margins;
 @property(nonatomic, assign) CGSize sectionSeparatorSize;
 @property(nonatomic, assign) UIEdgeInsets sectionInsets;
 @end

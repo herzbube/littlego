@@ -69,15 +69,16 @@
 ///
 /// Do @b not use KVO to observe @e currentBoardPosition and
 /// @e numberOfBoardPositions for changes. Instead react to the notifications
-/// #currentBoardPositionDidChange and #numberOfBoardPositionsDidChange being
-/// posted to the default notification center. The reason is that at the time
-/// when KVO triggers the state of other objects besides GoPoint and
-/// GoBoardRegion might not yet be up-to-date. Only the use of notifications
-/// guarantees that an observer will see the correct state of all Go model
-/// objects.
+/// #currentBoardPositionWillChange, #currentBoardPositionDidChange and
+/// #numberOfBoardPositionsDidChange being  posted to the default notification
+/// center. The reason is that at the time when KVO triggers the state of other
+/// objects besides GoPoint and GoBoardRegion might not yet be up-to-date. Only
+/// the use of notifications guarantees that an observer will see the correct
+/// state of all Go model objects.
 ///
 /// Clients that modify @e currentBoardPosition and/or @e numberOfBoardPositions
-/// are responsible for posting the notifications #currentBoardPositionDidChange
+/// are responsible for posting the notifications
+/// #currentBoardPositionWillChange, #currentBoardPositionDidChange
 /// and/or #numberOfBoardPositionsDidChange to the global notification center
 /// once they have finished updating the state of all Go model objects.
 ///

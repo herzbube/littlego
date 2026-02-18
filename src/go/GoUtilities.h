@@ -59,12 +59,16 @@
 + (void) recalculateZobristHashes:(GoGame*)game;
 + (void) relinkMoves:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentMove:(GoNode*)node;
++ (GoNode*) nodeWithMostRecentMove:(GoNode*)node playedBy:(enum GoColor)color;
 + (GoNode*) nodeWithNextMove:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (bool) nodeWithNextMoveExists:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (int) numberOfMovesBeforeNode:(GoNode*)node;
 + (int) numberOfMovesAfterNode:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentSetup:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentBoardStateChange:(GoNode*)node;
++ (GoNode*) nodeWithMostRecentTimeData:(GoNode*)node;
++ (GoNode*) nodeWithMostRecentTimeData:(GoNode*)node forPlayer:(enum GoColor)color;
++ (GoNode*) nodeWithMostRecentMoveOrTimeData:(GoNode*)node;
 + (bool) showInfoIndicatorForNode:(GoNode*)node;
 + (bool) showHotspotIndicatorForNode:(GoNode*)node;
 + (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node inGame:(GoGame*)game;

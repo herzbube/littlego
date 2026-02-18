@@ -1,0 +1,38 @@
+// -----------------------------------------------------------------------------
+// Copyright 2026 Patrick Näf (herzbube@herzbube.ch)
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// -----------------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+/// @brief The InvalidTimeDataViewController class is responsible for displaying
+/// information about why the time data in the currently selected node is
+/// invalid.
+///
+/// InvalidTimeDataViewController supports two modes:
+/// - In "clock view" mode, InvalidTimeDataViewController applies the typical
+///   "transparent style" to its view, letting it appear as a framed rectangle
+///   with translucent background.
+/// - In "node time data view" mode, InvalidTimeDataViewController does not
+///   apply the "transparent style" to its view, assuming that its view will
+///   be embedded in an appropriately styled superview.
+// -----------------------------------------------------------------------------
+@interface InvalidTimeDataViewController : UIViewController
+{
+}
+
+- (id) initWithClockView;
+- (id) initWithNodeTimeDataView;
+
+@end

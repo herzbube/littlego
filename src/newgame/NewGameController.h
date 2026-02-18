@@ -21,6 +21,7 @@
 
 // Forward declarations
 @class NewGameController;
+@class TimeSettingsModel;
 
 
 // -----------------------------------------------------------------------------
@@ -72,8 +73,9 @@
 {
 }
 
++ (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate;
 + (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
-                                     loadGame:(bool)loadGame;
+                loadGameWithTimeSettingsModel:(TimeSettingsModel*)timeSettingsModel;
 
 - (void) rematchWithAlertPresenter:(UIViewController*)alertPresenter;
 

@@ -171,11 +171,13 @@ enum ResetCannedCommandsSectionItem
         case LogSizeItem:
           cell = [TableViewCellFactory cellWithType:SliderWithValueLabelCellType tableView:tableView];
           TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(logSizeDidChange:)];
           sliderCell.descriptionLabel.text = @"GTP log size";
           sliderCell.slider.minimumValue = gtpLogSizeMinimum;
           sliderCell.slider.maximumValue = gtpLogSizeMaximum;
           sliderCell.value = self.logModel.gtpLogSize;
+          [sliderCell setDelegate:self
+             actionValueDidChange:@selector(logSizeDidChange:)
+                   valueFormatter:nil];
           break;
         default:
           assert(0);

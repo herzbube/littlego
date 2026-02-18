@@ -182,6 +182,7 @@ enum ContactSectionItem
       cell.textLabel.text = @"Collect crash data";
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.on = self.crashReportingModel.collectCrashData;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleCollectData:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -191,6 +192,7 @@ enum ContactSectionItem
       cell.textLabel.text = @"Automatic report";
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.on = self.crashReportingModel.automaticReport;
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleAutomaticReport:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -204,6 +206,7 @@ enum ContactSectionItem
           cell.textLabel.text = @"Allow contact";
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
           accessoryView.on = self.crashReportingModel.allowContact;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleAllowContact:) forControlEvents:UIControlEventValueChanged];
           break;
         }

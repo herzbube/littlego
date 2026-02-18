@@ -18,10 +18,8 @@
 // Project includes
 #import "NewGameCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
+#import "../timedplay/TimeSettingsCommand.h"
 #import "../ChangeUIAreaPlayModeCommand.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../main/ModelProvider.h"
-#import "../../main/Registry.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../gtp/GtpUtilities.h"
@@ -29,9 +27,18 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameRules.h"
 #import "../../go/GoPlayer.h"
+#import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoTimeDataValidator.h"
+#import "../../go/GoTimeSettings.h"
+#import "../../go/GoTimeSystem.h"
 #import "../../go/GoUtilities.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../play/model/BoardSetupModel.h"
+#import "../../play/model/TimeSettingsModel.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../player/Player.h"
 #import "../../player/PlayerModel.h"
 #import "../../newgame/NewGameModel.h"
@@ -69,12 +76,15 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.prefabricatedGame = game;
   self.shouldResetUIAreaPlayMode = true;
   self.shouldHonorAutoEnableBoardSetupMode = true;
   self.shouldSetupGtpHandicapAndKomi = true;
   self.shouldSetupComputerPlayer = true;
   self.shouldTriggerComputerPlayerIfItIsTheirTurn = true;
+  self.shouldStartHumanPlayerClockIfItIsTheirTurn = true;
+
   return self;
 }
 
@@ -92,15 +102,18 @@
   [self newGame];
   [self setupGtpRules];
   [self setupGtpBoard];
+  [self setupGtpTimeSettings];
   if (self.shouldSetupGtpHandicapAndKomi)
     [self setupGtpHandicapAndKomi];
   if (self.shouldSetupComputerPlayer)
     [GtpUtilities setupComputerPlayer];
 
+  GoGame* game = [GoGame sharedGame];
+  bool nextMovePlayerIsComputerPlayer = game.nextMovePlayerIsComputerPlayer;
   bool shouldTriggerComputerPlayer = (self.shouldTriggerComputerPlayerIfItIsTheirTurn &&
-                                      [GoGame sharedGame].nextMovePlayerIsComputerPlayer);
-  if (shouldTriggerComputerPlayer)
-    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+                                      nextMovePlayerIsComputerPlayer);
+  bool shouldStartHumanPlayerClock = (self.shouldStartHumanPlayerClockIfItIsTheirTurn &&
+                                      ! nextMovePlayerIsComputerPlayer);
 
   bool shouldConsiderAutoEnablingBoardSetupMode = (self.shouldResetUIAreaPlayMode &&
                                                    self.shouldHonorAutoEnableBoardSetupMode &&
@@ -109,6 +122,17 @@
   {
     if ([Registry sharedRegistry].modelProvider.boardSetupModel.autoEnableBoardSetupMode)
       [self setUIAreaPlayMode:UIAreaPlayModeBoardSetup];
+  }
+
+  if (shouldTriggerComputerPlayer)
+  {
+    // The command will start the computer player's clock
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+  }
+  else if (shouldStartHumanPlayerClock)
+  {
+    [[Registry sharedRegistry].playerClockService startClockOfPlayer:game.nextMovePlayer
+                                                              reason:PlayerClockStartReasonNewGameHumanPlayerTurnBegins];
   }
 
   return true;
@@ -130,9 +154,17 @@
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
-  // Send this while the old GoGame object is still around and fully functional
-  // (the old game is nil if this happens during application startup)
   GoGame* oldGame = [GoGame sharedGame];
+  if (oldGame)
+  {
+    // We can ignore the return value because the game will be deallocated
+    [[Registry sharedRegistry].playerClockService stopClockOfPlayer:oldGame.nextMovePlayer
+                                                             reason:PlayerClockStopReasonPlayerTurnEnds];
+  }
+
+  // Send goGameWillCreate while the old GoGame object is still around and
+  // fully functional (the old game is nil if this happens during application
+  // startup)
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameWillCreate object:oldGame];
 
   // Create the new GoGame object (unless a pre-fabricated object was supplied)
@@ -151,6 +183,7 @@
   }
 
   // Replace the delegate's reference; an old GoGame object is now deallocated
+  // unless something still has a strong reference to it
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   appDelegate.game = newGame;
   DDLogVerbose(@"%@: Assigned game object to app delegate", [self shortDescription]);
@@ -190,13 +223,31 @@
       newGame.rules.disputeResolutionRule = newGameModel.disputeResolutionRule;
       newGame.rules.fourPassesRule = newGameModel.fourPassesRule;
     }
+
+    newGame.timeSettings = [newGameModel.timeSettingsModel goTimeSettingsRepresentation];
+    if (newGame.timeSettings.isGameUsingTimedPlay)
+    {
+      GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
+                                                                     isTimeDataForBlackPlayer:true] autorelease];
+      GoPlayerTimeData* whitePlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:newGame.timeSettings
+                                                                     isTimeDataForBlackPlayer:false] autorelease];
+      newGame.playerBlack.timeData = blackPlayerTimeData;
+      newGame.playerWhite.timeData = whitePlayerTimeData;
+    }
+    if (! newGame.timeSettings.hasNoTimeSystems)
+    {
+      GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
+      [timeDataValidator validateTimeDataInGameTree:newGame];
+    }
   }
+  
   DDLogVerbose((@"%@: Game object configuration: board = %@, "
                 "komi = %.1f, handicapPoints = %@, "
                 "playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), "
                 "type = %d, "
                 "koRule = %d, scoringSystem = %d, "
-                "lifeAndDeathSettlingRule = %d, disputeResolutionRule = %d, fourPassesRule = %d"),
+                "lifeAndDeathSettlingRule = %d, disputeResolutionRule = %d, fourPassesRule = %d, "
+                "absoluteTimeSystem = %@, period-based time system = %@"),
                [self shortDescription],
                newGame.board,
                newGame.komi,
@@ -210,7 +261,9 @@
                newGame.rules.scoringSystem,
                newGame.rules.lifeAndDeathSettlingRule,
                newGame.rules.disputeResolutionRule,
-               newGame.rules.fourPassesRule);
+               newGame.rules.fourPassesRule,
+               newGame.timeSettings.absoluteTimeSystem,
+               newGame.timeSettings.periodBasedTimeSystem);
 
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what
@@ -380,7 +433,6 @@
   }
   NSString* commandString = [NSString stringWithFormat:@"go_param_rules japanese_scoring %d", japaneseScoring];
   [[GtpCommand command:commandString] submit];
-  
 }
 
 // -----------------------------------------------------------------------------
@@ -421,6 +473,15 @@
   GoBoard* board = [GoGame sharedGame].board;
   [[GtpCommand command:@"clear_board"] submit];
   [[GtpCommand command:[NSString stringWithFormat:@"boardsize %d", board.size]] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs time settings setup of the GTP engine.
+// -----------------------------------------------------------------------------
+- (void) setupGtpTimeSettings
+{
+  // Must be invoked before any moves were played. See class documentation.
+  [[[[TimeSettingsCommand alloc] init] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------

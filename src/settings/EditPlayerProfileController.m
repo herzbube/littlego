@@ -332,6 +332,7 @@ enum ProfileNotesSectionItem
           cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
           cell.textLabel.text = @"Human player";
           UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+          [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
           [accessoryView addTarget:self action:@selector(toggleIsHuman:) forControlEvents:UIControlEventValueChanged];
           accessoryView.on = self.player.human;
           // Player type can be changed only if player is not currently playing a game

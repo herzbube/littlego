@@ -34,8 +34,6 @@
 {
 }
 
-- (id) initWithSizeOrientation:(enum SizeOrientation)sizeOrientation;
-
 - (UIView*) statusView;
 
 @end

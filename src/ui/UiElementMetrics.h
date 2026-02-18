@@ -60,8 +60,8 @@
 + (CGSize) tableViewFooterViewSizeForStyle:(UITableViewStyle)tableViewStyle;
 + (int) splitViewControllerLeftPaneWidth;
 + (CGSize) customButtonTouchAreaSize;
-+ (CGFloat) statusLabelFontSizeForUiType:(enum UIType)uiType;
++ (CGFloat) statusAreaLabelFontSizeForUiType:(enum UIType)uiType;
 + (CGFloat) annotationViewLabelFontSizeForUiType:(enum UIType)uiType;
-+ (CGFloat) annotationViewIconHeightForUiType:(enum UIType)uiType;
++ (CGFloat) iconHeightForUiType:(enum UIType)uiType;
 
 @end

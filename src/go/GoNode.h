@@ -21,6 +21,7 @@
 @class GoNodeAnnotation;
 @class GoNodeMarkup;
 @class GoNodeSetup;
+@class GoNodeTimeData;
 
 
 // -----------------------------------------------------------------------------
@@ -41,6 +42,46 @@
 /// @e children) and methods (e.g. isDescendantOfNode:(), isAncestorOfNode:())
 /// are in some way or other based on the three primitive properties and require
 /// a certain amount of processing time for calculation.
+///
+///
+/// @par Time data validity
+///
+/// The properties @e isTimeDataValid and @e timeDataInvalidReason store
+/// information about the validity of time data in the node, while the
+/// property @e timeDataValidationMode indicates which mode was used for the
+/// validation.
+///
+/// Note that there are a few invalid reasons that refer to a problem with the
+/// game's time system(s) - in these cases the invalidity is not caused by the
+/// time data in the node. In these cases, already the root node will indicate
+/// that time data is invalid. Because the root node never has a GoNodeTimeData
+/// object, this is another reason why time validity is not stored in
+/// GoNodeTimeData.
+///
+/// Time data validity information is important when new moves are played.
+/// If time data is valid in the currently selected node at the time when a
+/// move is played, then it makes sense to continue recording time data for the
+/// new move. The information is not archived, because it can be easily
+/// recalculated upon unarchiving.
+///
+/// Time data is considered valid if it allows the app to support timed play.
+/// In general this means all of the following conditions must be met:
+/// - There is at least one time system that is supported by the app.
+/// - And there is no time system that the app does not support.
+/// - And the time data in a node is consistent.
+/// - And the time data in a node does not contradict the rules of the time
+///   system(s).
+///
+/// The mode that is used to perform the validation influences the scope and
+/// strictness of the checks. See the enumeration #GoTimeDataValidationMode
+/// for the possible modes, and an overview of what the individual modes do.
+///
+/// After initialization, the time data in a GoNode object is considered
+/// invalid. The properties @e isTimeDataValid, @e timeDataInvalidReason and
+/// @e timeDataValidationMode hold the values @e true, -1 and -1, respectively,
+/// which corresponds to the values of the constant
+/// #GoTimeDataValidationResultInvalid. Once the time data in a node
+/// has been validated, the properties receive their actual values.
 // -----------------------------------------------------------------------------
 @interface GoNode : NSObject <NSSecureCoding>
 {
@@ -147,8 +188,9 @@
 /// A node is empty if it has no setup data (property @e goNodeSetup is @e nil
 /// or the GoNodeSetup object's property @e isEmpty is @e true), no move data
 /// (property @e goMove is @e nil), no annotation data (property
-/// @e goNodeAnnotation is @e nil) and no markup data (property @e goNodeMarkup
-/// is @e nil or the GoNodeMarkup object's property @e hasMarkup is @e false).
+/// @e goNodeAnnotation is @e nil), no markup data (property @e goNodeMarkup
+/// is @e nil or the GoNodeMarkup object's property @e hasMarkup is @e false)
+/// and no time data (property @e goNodeTimeData is @e nil).
 @property(nonatomic, assign, getter=isEmpty, readonly) bool empty;
 
 /// @brief The game setup data associated with this node. @e nil if this node
@@ -166,11 +208,45 @@
 /// @brief The markup data associated with this node. @e nil if this
 /// node has no associated markup data. The default value is @e nil.
 @property(nonatomic, retain) GoNodeMarkup* goNodeMarkup;
+
+/// @brief The time data associated with this node. @e nil if this
+/// node has no associated time data. The default value is @e nil.
+@property(nonatomic, retain) GoNodeTimeData* goNodeTimeData;
 //@}
 
 /// @brief Zobrist hash that identifies the board position created by this node.
 /// Zobrist hashes are used to detect ko, and especially superko.
 @property(nonatomic, assign) long long zobristHash;
+
+/// @name Time data validity
+//@{
+/// @brief True if the time data in this node is valid. False if time data is
+/// not valid. In the latter case, the value of property
+/// @e timeDataInvalidReason indicates the reason why the time data is not
+/// valid.
+///
+/// The default value after initialization is false.
+///
+/// See the class documentation for details about time (in)validity.
+@property(nonatomic, assign) bool isTimeDataValid;
+
+/// @brief If property @e isTimeDataValid is false, indicates the reason why
+/// the time data is not valid. If property @e isTimeDataValid is true, this
+/// property has value -1.
+///
+/// The default value after initialization is -1.
+///
+/// See the class documentation for details about time (in)validity.
+@property(nonatomic, assign) enum GoTimeDataInvalidReason timeDataInvalidReason;
+
+/// @brief The mode that was used when this node's time data was validated the
+/// last time.
+///
+/// The default value after initialization is -1.
+///
+/// See the class documentation for details about time (in)validity.
+@property(nonatomic, assign) enum GoTimeDataValidationMode timeDataValidationMode;
+//@}
 
 /// @name Changing the board based upon the node's data
 //@{

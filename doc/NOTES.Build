@@ -7,11 +7,11 @@ used by the project.
 
 Xcode version
 -------------
-Since version 2.0.0, the current build should work out of the box for
+Since version 2.1.0, the current build should work out of the box for
 
-  Intel Mac
-  Xcode 15.1
-  iOS base SDK 17.2
+  Silicon Mac
+  Xcode 26.0.1
+  iOS base SDK 26.0
 
 If you want to build with a different setup you will probably encounter errors.
 The most important thing to keep in mind is that the Xcode project's base SDK
@@ -44,6 +44,7 @@ list of configurations that have worked in the past:
 - Xcode 10.1, iOS base SDK 12.1, available in 1.4.x and 1.5.x
 - Xcode 12.3, iOS base SDK 14.3, available in 1.6.x
 - Xcode 13.2.1, iOS base SDK 15.2, available in 1.7.x
+- Xcode 15.1, iOS base SDK 17.2, available in 2.0.x
 
 
 Device builds
@@ -356,7 +357,7 @@ image installation as follows:
 When you now try again to run the build Xcode should display this message for
 a few moments:
 
-  Planes Objekt is busy: Fetching debug symbols for Planes Objekt
+  <Device name> is busy: Fetching debug symbols for <Device name>
 
 After that the build should run just fine.
 

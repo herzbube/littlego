@@ -38,6 +38,7 @@
 #import "../../main/Registry.h"
 #import "../../play/model/BoardViewModel.h"
 #import "../../play/model/ScoringModel.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
@@ -65,8 +66,12 @@
   self = [super init];
   if (! self)
     return nil;
+
+  [MoreGameActionsController postNotificationOnMainThread:moreGameActionsPopupWillAppear];
+
   self.delegate = aDelegate;
   self.modalMaster = aController;
+
   return self;
 }
 
@@ -76,8 +81,11 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [MoreGameActionsController postNotificationOnMainThread:moreGameActionsPopupDidDisappear];
+
   self.delegate = nil;
   self.modalMaster = nil;
+
   [super dealloc];
 }
 
@@ -283,7 +291,7 @@
         break;
       }
       case MoreGameActionsButtonUndoResign:
-      case MoreGameActionsButtonUndoTimeout:
+      case MoreGameActionsButtonUndoLostOnTime:
       case MoreGameActionsButtonUndoForfeit:
       {
         if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring)
@@ -302,9 +310,9 @@
             break;
           case GoGameHasEndedReasonBlackWinsOnTime:
           case GoGameHasEndedReasonWhiteWinsOnTime:
-            if (iterButtonIndex != MoreGameActionsButtonUndoTimeout)
+            if (iterButtonIndex != MoreGameActionsButtonUndoLostOnTime)
               continue;
-            title = @"Undo timeout";
+            title = @"Undo lost on time";
             break;
           case GoGameHasEndedReasonBlackWinsByForfeit:
           case GoGameHasEndedReasonWhiteWinsByForfeit:
@@ -315,7 +323,7 @@
           default:
             continue;
         }
-        alertActionBlock = ^(UIAlertAction* action) { [self revertGameStateFromEndedToInProgress]; };
+        alertActionBlock = ^(UIAlertAction* action) { [self revertGameStateFromEndedToInProgress:iterButtonIndex]; };
         break;
       }
       case MoreGameActionsButtonSaveGame:
@@ -514,7 +522,6 @@
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
   [self.delegate moreGameActionsControllerDidFinish:self];
-
 }
 
 // -----------------------------------------------------------------------------
@@ -526,8 +533,16 @@
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
+
     GoGame* game = [GoGame sharedGame];
     DDLogInfo(@"%@ resigns", [NSString stringWithGoColor:game.nextMoveColor]);
+
+    if (! game.nextMovePlayerIsComputerPlayer)
+    {
+      [[Registry sharedRegistry].playerClockService stopClockOfPlayer:game.nextMovePlayer
+                                                                reason:PlayerClockStopReasonPlayerResigns];
+    }
+
     [game resign];
   }
   @finally
@@ -553,24 +568,50 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Undo resign", "Undo timeout" or
-/// "Undo forfeit" button. Causes the state of the game to revert from
-/// "has ended" to one of the various "in progress" states.
+/// "Undo forfeit" button. @a moreGameActionsButton indicates which button was
+/// tapped. Causes the state of the game to revert from "has ended" to one of
+/// the various "in progress" states.
+///
+/// In a computer vs. computer game, the game is paused after this method
+/// returns. In a human vs. computer game it may be the computer player's turn.
+/// The computer player is not triggered, though, to give the user the
+/// flexibility to do further changes of the game.
 // -----------------------------------------------------------------------------
-- (void) revertGameStateFromEndedToInProgress
+- (void) revertGameStateFromEndedToInProgress:(enum MoreGameActionsButton)moreGameActionsButton
 {
+  GoGame* game = [GoGame sharedGame];
+  GoPlayer* nextMovePlayer = game.nextMovePlayer;
+
   @try
   {
-    [[ApplicationStateManager sharedManager] beginSavePoint];
-    GoGame* game = [GoGame sharedGame];
-    [game revertStateFromEndedToInProgress];
     DDLogInfo(@"Revert game state from 'ended' to 'in progress'");
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+    [game revertStateFromEndedToInProgress];
+
+    id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
+
+    if (moreGameActionsButton == MoreGameActionsButtonUndoLostOnTime)
+    {
+      [playerClockService resetClockOfPlayer:nextMovePlayer
+                                      reason:PlayerClockResetReasonRevertLostOnTime];
+    }
   }
   @finally
   {
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
+
   [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
+
+  // Start clock after application state has been saved so that a firing timer
+  // does not interfere with the saving
+  if (! game.nextMovePlayerIsComputerPlayer)
+  {
+    [[Registry sharedRegistry].playerClockService startClockOfPlayer:nextMovePlayer
+                                                              reason:PlayerClockStartReasonHumanPlayerTurnBegins];
+  }
+
   [self.delegate moreGameActionsControllerDidFinish:self];
 }
 
@@ -580,6 +621,8 @@
 // -----------------------------------------------------------------------------
 - (void) saveGame
 {
+  [MoreGameActionsController postNotificationOnMainThread:saveGameScreenWillAppear];
+
   ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
   NSString* defaultGameName = [model uniqueGameNameForGame:[GoGame sharedGame]];
   EditTextController* editTextController = [[EditTextController controllerWithText:defaultGameName
@@ -597,7 +640,7 @@
 - (void) newGame
 {
   // This controller manages the actual "New Game" view
-  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:false] retain];
+  NewGameController* newGameController = [[NewGameController controllerWithDelegate:self] retain];
   [self.modalMaster presentNavigationControllerWithRootViewController:newGameController];
   [newGameController release];
 }
@@ -609,7 +652,7 @@
 // -----------------------------------------------------------------------------
 - (void) newGameRematch
 {
-  NewGameController* newGameController = [[[NewGameController controllerWithDelegate:self loadGame:false] retain] autorelease];
+  NewGameController* newGameController = [[[NewGameController controllerWithDelegate:self] retain] autorelease];
   [newGameController rematchWithAlertPresenter:self.modalMaster];
 }
 
@@ -666,12 +709,16 @@
     {
       void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
+        [MoreGameActionsController postNotificationOnMainThread:saveGameScreenDidDisappear];
+
         [self doSaveGame:editTextController.text gameAlreadyExists:true];
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
 
       void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
+        [MoreGameActionsController postNotificationOnMainThread:saveGameScreenDidDisappear];
+
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
 
@@ -690,7 +737,11 @@
   }
 
   if (moreGameActionsControllerDidFinish)
+  {
+    [MoreGameActionsController postNotificationOnMainThread:saveGameScreenDidDisappear];
+
     [self.delegate moreGameActionsControllerDidFinish:self];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -722,6 +773,26 @@
   }
 
   [self.delegate moreGameActionsControllerDidFinish:self];
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
++ (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

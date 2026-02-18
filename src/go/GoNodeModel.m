@@ -239,7 +239,7 @@
 /// If @a nextSibling is @e nil then @a child is inserted as the last child of
 /// @a parent.
 ///
-/// @exception InvalidArgumentException Is thrown if @a node is @e nil, if
+/// @exception NSInvalidArgumentException Is thrown if @a node is @e nil, if
 /// @a nextSibling is not @e nil but is not a child of @a parent, if @a node
 /// is equal to @a parent, or if @a node is already part of a game tree.
 // -----------------------------------------------------------------------------

@@ -18,6 +18,7 @@
 // Project includes
 #import "GameInfoViewController.h"
 #import "../model/BoardViewModel.h"
+#import "../model/TimeSettingsModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -27,6 +28,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoTimeSettings.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ModelProvider.h"
@@ -42,6 +44,8 @@
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/NSStringAdditions.h"
+#import "../../utility/TimeDataUtilities.h"
+
 
 // Constants
 NSString* disputeResolutionRuleText_GameInfoViewController = @"Dispute resolution";
@@ -56,6 +60,7 @@ enum GameInfoTableViewSection
   MaxSectionScoreInfoType,
   GameStateSection = 0,
   GameInfoSection,
+  TimeSettingsSection,
   PlayersProfileSection,
   MoveStatisticsSection,
   MaxSectionGameInfoType,
@@ -119,6 +124,19 @@ enum GameInfoSectionItem
   MaxGameInfoSectionItem
 };
 
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the TimeSettingsSection.
+// -----------------------------------------------------------------------------
+enum TimeSettingsSectionItem
+{
+  NoTimedPlayItem,
+  MaxTimeSettingsSectionItem_NoTimedPlay,
+  MaintimeDescriptionItem = NoTimedPlayItem,
+  OvertimeDescriptionItem,
+  MaxTimeSettingsSectionItem_TimedPlay,
+};
+
 // -----------------------------------------------------------------------------
 /// @brief Enumerates items in the PlayersProfileSection.
 // -----------------------------------------------------------------------------
@@ -168,6 +186,7 @@ enum BoardPositionSectionItem
 /// twice (e.g. the first time when #playersAndProfilesWillReset is received,
 /// the second time when GameInfoViewController is deallocated).
 @property(nonatomic, assign) bool kvoNotificationRespondersAreInstalled;
+@property(nonatomic, retain) TimeSettingsModel* timeSettingsModel;
 @end
 
 
@@ -186,10 +205,17 @@ enum BoardPositionSectionItem
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
+  [GameInfoViewController postNotificationOnMainThread:gameInfoScreenWillAppear];
+
   self.gameInfoViewControllerCreator = nil;
   self.tableView = nil;
   self.boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
   self.kvoNotificationRespondersAreInstalled = false;
+  self.timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
+
+  [self.timeSettingsModel updateWithGoTimeSettings:[GoGame sharedGame].timeSettings];
+
   return self;
 }
 
@@ -198,11 +224,15 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [GameInfoViewController postNotificationOnMainThread:gameInfoScreenDidDisappear];
+
   [self removeNotificationResponders];
   self.tableView = nil;
   self.boardViewModel = nil;
+  self.timeSettingsModel = nil;
   [self.gameInfoViewControllerCreator gameInfoViewControllerWillDeallocate:self];
   self.gameInfoViewControllerCreator = nil;
+
   [super dealloc];
 }
 
@@ -356,6 +386,11 @@ enum BoardPositionSectionItem
             return MaxGameStateSectionItem - 1;  // don't need to display whose turn it is
         case GameInfoSection:
           return MaxGameInfoSectionItem;
+        case TimeSettingsSection:
+          if ([GoGame sharedGame].timeSettings.hasNoTimeSystems)
+            return MaxTimeSettingsSectionItem_NoTimedPlay;
+          else
+            return MaxTimeSettingsSectionItem_TimedPlay;
         case PlayersProfileSection:
           if ([GoGame sharedGame].type == GoGameTypeHumanVsHuman)
             return MaxPlayersProfileSectionItem;
@@ -402,6 +437,8 @@ enum BoardPositionSectionItem
           return @"Game state";
         case GameInfoSection:
           return @"Game information";
+        case TimeSettingsSection:
+          return @"Time settings";
         case PlayersProfileSection:
           return @"Players";
         case MoveStatisticsSection:
@@ -734,6 +771,7 @@ enum BoardPositionSectionItem
         case DisputeResolutionRuleItem:
         {
           TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+          variableHeightCell.descriptionLabelWidthPercentage = 0.5;
           variableHeightCell.descriptionLabel.text = disputeResolutionRuleText_GameInfoViewController;
           variableHeightCell.valueLabel.text = [NSString stringWithDisputeResolutionRule:game.rules.disputeResolutionRule];
           break;
@@ -763,6 +801,43 @@ enum BoardPositionSectionItem
         {
           assert(0);
           break;
+        }
+      }
+      break;
+    }
+    case TimeSettingsSection:
+    {
+      if (game.timeSettings.hasNoTimeSystems)
+      {
+        cell = [TableViewCellFactory cellWithType:VariableHeightCellType
+                                        tableView:tableView];
+        TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+        variableHeightCell.descriptionLabelWidthPercentage = 0.5;
+        variableHeightCell.descriptionLabel.text = @"Time settings";
+        variableHeightCell.valueLabel.text = [TimeDataUtilities timeSettingsModelSummary:self.timeSettingsModel];
+      }
+      else
+      {
+        cell = [TableViewCellFactory cellWithType:VariableHeightCellType
+                                        tableView:tableView];
+        TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+        variableHeightCell.descriptionLabelWidthPercentage = 0.3;
+
+        if (indexPath.row == MaintimeDescriptionItem)
+        {
+          variableHeightCell.descriptionLabel.text = @"Main time";
+          if (self.timeSettingsModel.absoluteTimingEnabled)
+            variableHeightCell.valueLabel.text = [TimeDataUtilities absoluteTimeSystemSummary:self.timeSettingsModel];
+          else
+            variableHeightCell.valueLabel.text = @"None";
+        }
+        else
+        {
+          variableHeightCell.descriptionLabel.text = @"Overtime";
+          if (self.timeSettingsModel.periodBasedTimeSystemEnabled)
+            variableHeightCell.valueLabel.text = [TimeDataUtilities periodBasedTimeSystemSummary:self.timeSettingsModel];
+          else
+            variableHeightCell.valueLabel.text = @"None";
         }
       }
       break;
@@ -877,6 +952,7 @@ enum BoardPositionSectionItem
   else
   {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.accessoryType = UITableViewCellAccessoryNone;
   }
   return cell;
 }
@@ -1287,6 +1363,24 @@ enum BoardPositionSectionItem
     [self setupKVONotificationResponders];
   else
     [self removeKVONotificationResponders];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts the notification with the specified name to the global
+/// notification center. This method makes sure that the notification is posted
+/// synchronously and on the main thread.
+// -----------------------------------------------------------------------------
++ (void) postNotificationOnMainThread:(NSString*)notificationName
+{
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(postNotificationOnMainThread:)
+                           withObject:notificationName
+                        waitUntilDone:YES];
+    return;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 }
 
 @end

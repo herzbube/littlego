@@ -29,6 +29,12 @@
 ///
 /// UpdateTerritoryStatisticsCommand executes successfully but does nothing if
 /// the user preference to display player influence is turned off.
+///
+/// UpdateTerritoryStatisticsCommand fails if the GTP engine is not currently
+/// configured to collect territory statistics (cf.
+/// ToggleTerritoryStatisticsCommand). There is a known case where this happens:
+/// If ToggleTerritoryStatisticsCommand is executed while a "genmove" or a
+/// similarly long-running GTP command is still running.
 // -----------------------------------------------------------------------------
 @interface UpdateTerritoryStatisticsCommand : CommandBase
 {

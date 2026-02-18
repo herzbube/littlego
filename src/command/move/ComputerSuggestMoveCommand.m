@@ -42,7 +42,7 @@
 /// @a color is the color of the player for which a move suggestion should be
 /// generated. @a color must not be @e GoColorNone.
 ///
-/// @exception NSInvalidArgumentException Is raised if @a color i
+/// @exception NSInvalidArgumentException Is raised if @a color is
 /// @e GoColorNone.
 ///
 /// @note This is the designated initializer of ComputerSuggestMoveCommand.
@@ -81,6 +81,11 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // Fuego's handler for the "reg_genmove" GTP command ignores the clock (see
+  // GoGtpEngine::CmdRegGenMove()), instead it operates with the
+  // fuegoMaxThinkingTime time limit (see GtpEngineProfile). Because of this,
+  // we don't need to submit a TimeLeftCommand.
+
   NSString* colorString;
   if (self.color == GoColorBlack)
     colorString = @"B";

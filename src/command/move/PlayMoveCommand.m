@@ -33,6 +33,7 @@
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../play/model/GameVariationModel.h"
+#import "../../play/timedplay/PlayerClockService.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UIViewControllerAdditions.h"
@@ -133,6 +134,61 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  bool success;
+
+  // Abort and don't try to play the move if the player has lost on time. We
+  // expect that someone else reacts to the notification that is posted when
+  // a player loses on time.
+  success = [self stopPlayerClockIfGameUsesTimedPlay];
+  if (! success)
+    return false;
+
+  success = [self submitPlayCommandToGtpEngine];
+  if (! success)
+    return false;
+
+  success = [self updateGoGame];
+  if (! success)
+    return false;
+
+  // Game may have ended as a result of the last move (e.g. 2x pass)
+  if (self.game.state != GoGameStateGameHasEnded)
+  {
+    if (self.game.nextMovePlayerIsComputerPlayer)
+      success = [self triggerComputerPlayer];
+    else
+      success = [self startPlayerClockIfGameUsesTimedPlay];
+  }
+
+  return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief If the game uses timed play, stops the clock of the player who is
+/// playing a move. Returns false if the player lost on time, otherwise returns
+/// true. Does not do anything and returns true if the game does not use timed
+/// play.
+///
+/// A return value false is unexpected - the user should no longer be able to
+/// play a move once they have lost. There is a chance, though, that it happens,
+/// because time runs out between the moment when the user submits the move and
+/// the time we stop the clock in this method.
+///
+/// Private helper of doIt().
+// -----------------------------------------------------------------------------
+- (bool) stopPlayerClockIfGameUsesTimedPlay
+{
+  id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
+  enum PlayerClockServiceOperationResult result = [playerClockService stopClockOfPlayer:self.game.nextMovePlayer
+                                                                                 reason:PlayerClockStopReasonPlayerTurnEnds];
+  return (result == PlayerClockServiceOperationResultGameContinues);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper of doIt().
+// -----------------------------------------------------------------------------
+- (bool) submitPlayCommandToGtpEngine
+{
   // Must get this before updating the game model
   NSString* colorForMove = self.game.nextMovePlayer.colorString;
 
@@ -161,73 +217,6 @@ enum AlertType
     self.failedGtpResponse = command.response.parsedResponse;
     [self handleGtpEngineRejectedCommand];
     return false;
-  }
-
-  @try
-  {
-    [[ApplicationStateManager sharedManager] beginSavePoint];
-    [[LongRunningActionCounter sharedCounter] increment];
-
-    GoMoveNodeCreationOptions* options;
-    GameVariationModel* gameVariationModel = [Registry sharedRegistry].modelProvider.gameVariationModel;
-    if (gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
-      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:gameVariationModel.newMoveInsertPosition];
-    else
-      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
-
-    switch (self.moveType)
-    {
-      case GoMoveTypePlay:
-      {
-        [self.game play:self.point withMoveNodeCreationOptions:options];
-        break;
-      }
-      case GoMoveTypePass:
-      {
-        [self.game passWithMoveNodeCreationOptions:options];
-        break;
-      }
-      default:
-      {
-        NSString* errorMessage = [NSString stringWithFormat:@"Unexpected move type %d", self.moveType];
-        DDLogError(@"%@: %@", [self shortDescription], errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
-      }
-    }
-  }
-  @catch (NSException* exception)
-  {
-    DDLogError(@"%@: Exception name: %@. Exception reason: %@.", [self shortDescription], [exception name], [exception reason]);
-    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
-    return false;
-  }
-  @finally
-  {
-    [[ApplicationStateManager sharedManager] applicationStateDidChange];
-    [[ApplicationStateManager sharedManager] commitSavePoint];
-    [[LongRunningActionCounter sharedCounter] decrement];
-  }
-
-  [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
-
-  // Let computer continue playing if the game state allows it and it is
-  // actually a computer player's turn
-  switch (self.game.state)
-  {
-    case GoGameStateGameHasEnded:
-    {
-      // Game has ended as a result of the last move (e.g. 2x pass)
-      break;
-    }
-    default:
-    {
-      if (self.game.nextMovePlayerIsComputerPlayer)
-        [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
-      break;
-    }
   }
 
   return true;
@@ -348,6 +337,84 @@ enum AlertType
 - (void) sendBugReportDidFinish:(SendBugReportController*)sendBugReportController
 {
   [self autorelease];  // balance retain that is sent before bug report controller runs
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper of doIt().
+// -----------------------------------------------------------------------------
+- (bool) updateGoGame
+{
+  @try
+  {
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+    [[LongRunningActionCounter sharedCounter] increment];
+
+    GoMoveNodeCreationOptions* options;
+    GameVariationModel* gameVariationModel = [Registry sharedRegistry].modelProvider.gameVariationModel;
+    if (gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
+      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:gameVariationModel.newMoveInsertPosition];
+    else
+      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+
+    switch (self.moveType)
+    {
+      case GoMoveTypePlay:
+      {
+        [self.game play:self.point withMoveNodeCreationOptions:options];
+        break;
+      }
+      case GoMoveTypePass:
+      {
+        [self.game passWithMoveNodeCreationOptions:options];
+        break;
+      }
+      default:
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Unexpected move type %d", self.moveType];
+        DDLogError(@"%@: %@", [self shortDescription], errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+    }
+  }
+  @catch (NSException* exception)
+  {
+    DDLogError(@"%@: Exception name: %@. Exception reason: %@.", [self shortDescription], [exception name], [exception reason]);
+    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+    return false;
+  }
+  @finally
+  {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
+    [[ApplicationStateManager sharedManager] commitSavePoint];
+    [[LongRunningActionCounter sharedCounter] decrement];
+  }
+
+  [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper of doIt().
+// -----------------------------------------------------------------------------
+- (bool) triggerComputerPlayer
+{
+  return [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper of doIt().
+// -----------------------------------------------------------------------------
+- (bool) startPlayerClockIfGameUsesTimedPlay
+{
+  id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
+  [playerClockService startClockOfPlayer:self.game.nextMovePlayer
+                                  reason:PlayerClockStartReasonHumanPlayerTurnBegins];
+
+  return true;
 }
 
 @end

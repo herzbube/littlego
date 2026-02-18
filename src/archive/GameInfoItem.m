@@ -17,9 +17,11 @@
 
 // Project includes
 #import "GameInfoItem.h"
+#import "../play/model/TimeSettingsModel.h"
 #import "../sgf/SgfUtilities.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
+#import "../utility/TimeDataUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -62,6 +64,8 @@ enum SummarySectionItem
   WhitePlayerNameSummaryItem,
   GameResultSummaryItem,
   BoardSizeSummaryItem,
+  TimeLimitSummaryItem,
+  OvertimeInformationSummaryItem,
   MaxSummarySectionItem
 };
 
@@ -164,6 +168,7 @@ enum DataSourceInfoSectionItem
 
 // From here on re-declarations of public properties to make them readwrite
 @property(nonatomic, retain, readwrite) SGFCGoGameInfo* goGameInfo;
+@property(nonatomic, retain, readwrite) TimeSettingsModel* timeSettingsModel;
 @property(nonatomic, retain, readwrite) NSString* descriptiveText;
 @property(nonatomic, retain, readwrite) NSString* titleText;
 
@@ -553,6 +558,16 @@ enum DataSourceInfoSectionItem
           cell = [self boardSizeCellWithTableView:tableView];
           break;
         }
+        case TimeLimitSummaryItem:
+        {
+          cell = [self timeLimitCellWithTableView:tableView];
+          break;
+        }
+        case OvertimeInformationSummaryItem:
+        {
+          cell = [self overtimeInformationCellWithTableView:tableView];
+          break;
+        }
         default:
         {
           assert(0);
@@ -609,9 +624,9 @@ enum DataSourceInfoSectionItem
           switch (row)
           {
             case TimeLimitInSecondsItem:
-              return [self value1CellWithTableView:tableView itemName:@"Time limit" itemValue:self.timeLimitInSecondsAsString];
+              return [self timeLimitCellWithTableView:tableView];
             case OvertimeInformationItem:
-              return [self variableHeightCellWithTableView:tableView itemName:@"Overtime" itemValue:self.overtimeInformation];
+              return [self overtimeInformationCellWithTableView:tableView];
             case OpeningInformationItem:
               return [self variableHeightCellWithTableView:tableView itemName:@"Opening" itemValue:self.openingInformation];
             default:
@@ -758,6 +773,7 @@ enum DataSourceInfoSectionItem
     self.gameResult = SGFCGameResultMake(SGFCGameResultTypeUnknownResult, SGFCWinTypeWinWithScore, 0.0, NO);
     self.gameResultHasData = false;
 
+    self.timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
     self.timeLimitInSecondsAsString = missingStringValue;
     self.timeLimitInSeconds = 0.0;
     self.timeLimitInSecondsHasData = false;
@@ -837,16 +853,24 @@ enum DataSourceInfoSectionItem
                                         hasData:&_gameResultHasData];
     self.gameResult = goGameInfo.gameResult;
 
+    self.timeSettingsModel = [SgfUtilities timeSettingsFromSgfGameInfo:goGameInfo];
     NSString* formattedTimeLimitInSeconds;
-    if (goGameInfo.timeLimitInSeconds != 0.0)
-      formattedTimeLimitInSeconds = [NSString stringWithFormat:@"%.1f", goGameInfo.timeLimitInSeconds];
+    if (self.timeSettingsModel.timedPlayEnabled && self.timeSettingsModel.absoluteTimingEnabled)
+      formattedTimeLimitInSeconds = [TimeDataUtilities absoluteTimeSystemSummary:self.timeSettingsModel];
     else
       formattedTimeLimitInSeconds = @"";
     self.timeLimitInSecondsAsString = [self stringValue:formattedTimeLimitInSeconds
                              forMissingDataDisplayStyle:missingDataDisplayStyle
                                                 hasData:&_timeLimitInSecondsHasData];
-    self.timeLimitInSeconds = goGameInfo.timeLimitInSeconds;
-    self.overtimeInformation = [self stringValue:goGameInfo.overtimeInformation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_overtimeInformationHasData];
+    self.timeLimitInSeconds = self.timeSettingsModel.absoluteTimingDurationInSeconds;
+    NSString* formattedOvertimeInformation;
+    if (self.timeSettingsModel.timedPlayEnabled && self.timeSettingsModel.periodBasedTimeSystemEnabled)
+      formattedOvertimeInformation = [TimeDataUtilities periodBasedTimeSystemSummary:self.timeSettingsModel];
+    else
+      formattedOvertimeInformation = @"";
+    self.overtimeInformation = [self stringValue:formattedOvertimeInformation
+                      forMissingDataDisplayStyle:missingDataDisplayStyle
+                                         hasData:&_overtimeInformationHasData];
     self.openingInformation = [self stringValue:goGameInfo.openingInformation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_openingInformationHasData];
 
     self.blackPlayerName = [self stringValue:goGameInfo.blackPlayerName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerNameHasData];
@@ -922,6 +946,10 @@ enum DataSourceInfoSectionItem
     _summarySectionItems[@(summarySectionRow++)] = @(WhitePlayerNameSummaryItem);
   if (self.gameResultHasData)
     _summarySectionItems[@(summarySectionRow++)] = @(GameResultSummaryItem);
+  if (self.timeLimitInSecondsHasData)
+    _summarySectionItems[@(summarySectionRow++)] = @(TimeLimitSummaryItem);
+  if (self.overtimeInformationHasData)
+    _summarySectionItems[@(summarySectionRow++)] = @(OvertimeInformationSummaryItem);
 
   self.basicInfoSectionItems = [NSMutableDictionary dictionary];
   NSUInteger basicInfoSectionRow = 0;
@@ -1069,6 +1097,20 @@ enum DataSourceInfoSectionItem
   return [self variableHeightCellWithTableView:tableView itemName:@"Result" itemValue:self.gameResultAsString];
 }
 
+- (UITableViewCell*) timeLimitCellWithTableView:(UITableView*)tableView
+{
+  TableViewVariableHeightCell* cell = [self variableHeightCellWithTableView:tableView itemName:@"Main time" itemValue:self.timeLimitInSecondsAsString];
+  cell.descriptionLabelWidthPercentage = 0.3;
+  return cell;
+}
+
+- (UITableViewCell*) overtimeInformationCellWithTableView:(UITableView*)tableView
+{
+  TableViewVariableHeightCell* cell = [self variableHeightCellWithTableView:tableView itemName:@"Overtime" itemValue:self.overtimeInformation];
+  cell.descriptionLabelWidthPercentage = 0.3;
+  return cell;
+}
+
 - (UITableViewCell*) value1CellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
@@ -1077,7 +1119,7 @@ enum DataSourceInfoSectionItem
   return cell;
 }
 
-- (UITableViewCell*) variableHeightCellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
+- (TableViewVariableHeightCell*) variableHeightCellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
 {
   TableViewVariableHeightCell* cell = (TableViewVariableHeightCell*)[TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
   cell.descriptionLabel.text = itemName;

@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class TimeSettingsModel;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The NewGameModel class provides user defaults data to its clients
@@ -60,5 +63,6 @@
 @property(nonatomic, assign) enum GoLifeAndDeathSettlingRule lifeAndDeathSettlingRule;
 @property(nonatomic, assign) enum GoDisputeResolutionRule disputeResolutionRule;
 @property(nonatomic, assign) enum GoFourPassesRule fourPassesRule;
+@property(nonatomic, retain) TimeSettingsModel* timeSettingsModel;
 
 @end

@@ -22,6 +22,7 @@
 #import "../main/ModelProvider.h"
 #import "../main/Registry.h"
 #import "../newgame/NewGameModel.h"
+#import "../play/model/TimeSettingsModel.h"
 #import "../player/PlayerModel.h"
 #import "../player/GtpEngineProfileModel.h"
 
@@ -49,6 +50,7 @@
   id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
   [modelProvider.playerModel resetToRegistrationDomainDefaults];
   [modelProvider.gtpEngineProfileModel resetToRegistrationDomainDefaults];
+
   // Preserve those user preferences in NewGameModel that are not related to
   // players and profiles
   NewGameModel* newGameModel = modelProvider.theNewGameModel;
@@ -58,13 +60,28 @@
   enum GoBoardSize boardSize = newGameModel.boardSize;
   int handicap = newGameModel.handicap;
   double komi = newGameModel.komi;
+  enum GoKoRule koRule = newGameModel.koRule;
+  enum GoScoringSystem scoringSystem = newGameModel.scoringSystem;
+  enum GoLifeAndDeathSettlingRule lifeAndDeathSettlingRule = newGameModel.lifeAndDeathSettlingRule;
+  enum GoDisputeResolutionRule disputeResolutionRule = newGameModel.disputeResolutionRule;
+  enum GoFourPassesRule fourPassesRule = newGameModel.fourPassesRule;
+  NSMutableDictionary* timeSettingsDictionary = [NSMutableDictionary dictionary];
+  [newGameModel.timeSettingsModel writeToDictionary:timeSettingsDictionary];
+
   [newGameModel resetToRegistrationDomainDefaults];
+
   newGameModel.gameType = gameType;
   newGameModel.gameTypeLastSelected = gameTypeLastSelected;
   newGameModel.computerPlaysWhite = computerPlaysWhite;
   newGameModel.boardSize = boardSize;
   newGameModel.handicap = handicap;
   newGameModel.komi = komi;
+  newGameModel.koRule = koRule;
+  newGameModel.scoringSystem = scoringSystem;
+  newGameModel.lifeAndDeathSettlingRule = lifeAndDeathSettlingRule;
+  newGameModel.disputeResolutionRule = disputeResolutionRule;
+  newGameModel.fourPassesRule = fourPassesRule;
+  [newGameModel.timeSettingsModel readFromDictionary:timeSettingsDictionary];
 }
 
 // -----------------------------------------------------------------------------

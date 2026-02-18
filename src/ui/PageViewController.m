@@ -60,7 +60,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor that returns a PageViewController configured
 /// to display @a viewControllers. The initial view controller being displayed
-/// is the first element in @a viewControllers.
+/// is @a initialViewController.
 // -----------------------------------------------------------------------------
 + (PageViewController*) pageViewControllerWithViewControllers:(NSArray*)viewControllers
                                         initialViewController:(UIViewController*)initialViewController

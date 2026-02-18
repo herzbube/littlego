@@ -100,7 +100,7 @@
 ///
 /// So far nothing surprising. The main change comes when the detail text label
 /// is no longer shown. When that happens the main text label gets all the
-/// vertical, with the text being vertically centered. The captured stones label
+/// height, with the text being vertically centered. The captured stones label
 /// cannot appear in this layout because the detail text label is only then not
 /// visible when the node does not contain a move.
 ///
