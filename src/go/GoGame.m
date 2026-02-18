@@ -44,9 +44,6 @@
 #import "../utility/NSArrayAdditions.h"
 
 
-// TODO xxx update unit tests for new property timeSettings
-
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoGame.
 // -----------------------------------------------------------------------------

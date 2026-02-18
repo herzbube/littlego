@@ -59,6 +59,7 @@
 - (void) testIsLegalMoveSituationalSuperko;
 - (void) testIsLegalPassMoveIllegalReason;
 - (void) testEndGameDueToPassMovesIfGameRulesRequireIt;
+- (void) testEndGameWithReason;
 - (void) testRevertStateFromEndedToInProgress;
 - (void) testSwitchNextMoveColor;
 - (void) testToggleHandicapPoint;

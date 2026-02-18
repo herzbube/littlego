@@ -160,7 +160,11 @@
   XCTAssertNil(testee.goMove);
   XCTAssertNil(testee.goNodeAnnotation);
   XCTAssertNil(testee.goNodeMarkup);
+  XCTAssertNil(testee.goNodeTimeData);
   XCTAssertEqual(0, testee.zobristHash);
+  XCTAssertFalse(testee.isTimeDataValid);
+  XCTAssertEqual(-1, testee.timeDataInvalidReason);
+  XCTAssertEqual(-1, testee.timeDataValidationMode);
 }
 
 // -----------------------------------------------------------------------------

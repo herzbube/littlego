@@ -392,17 +392,17 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 /// @brief Internal backend method. Performs no parameter validation, this is
 /// the job of the public callers.
 // -----------------------------------------------------------------------------
-- (void) validateTimeDataInNodeTreeInternal:(GoNode*)node
+- (void) validateTimeDataInNodeTreeInternal:(GoNode*)startingNode
                                        game:(GoGame*)game
 
 {
   TimeDataValidationContext context;
-  [self setupTimeDataValidationContext:&context withNode:node game:game];
+  [self setupTimeDataValidationContext:&context withNode:startingNode game:game];
 
   NSMutableArray* stack = [NSMutableArray array];
   NSNull* nullValue = [NSNull null];
 
-  context.currentNode = node;
+  context.currentNode = startingNode;
 
   while (true)
   {
@@ -418,6 +418,12 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
     if (stack.count > 0)
     {
       [self popContextData:&context fromStack:stack nullValue:nullValue];
+
+      // We may not be iterating the entire tree, so the starting node may not
+      // be the root node and it may therefore have siblings => stop the
+      // iteration when we are back on the starting node
+      if (context.currentNode == startingNode)
+        break;
 
       context.currentNode = context.currentNode.nextSibling;
     }
@@ -442,15 +448,15 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   TimeDataValidationContext context;
   [self setupTimeDataValidationContext:&context withNode:nodeModel.rootNode game:game];
 
-  GoNode* node = nil;
-  for (int nodeIndex = 0;
-       nodeIndex < numberOfNodes && node != lastNodeToValidate;
-       nodeIndex++)
+  for (int nodeIndex = 0; nodeIndex < numberOfNodes; nodeIndex++)
   {
     context.currentNode = [nodeModel nodeAtIndex:nodeIndex];
 
     [self visitNode:&context];
     [self updatePredecessorNodeTimeData:&context];
+
+    if (context.currentNode == lastNodeToValidate)
+      break;
   }
 }
 
@@ -590,7 +596,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
   GoTimeDataValidationResult validationResult = validateTimeSettings(timeSettings);
   timeSettings.isTimeDataValid = validationResult.isTimeDataValid;
   timeSettings.timeDataInvalidReason = validationResult.timeDataInvalidReason;
-  timeSettings.timeDataValidationMode = validationResult.timeDataValidationMode;
+  timeSettings.timeDataValidationMode = self.timeDataValidationMode;
   return validationResult;
 }
 
@@ -639,7 +645,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 
   context->currentNode.isTimeDataValid = context->nodeValidationResult.isTimeDataValid;
   context->currentNode.timeDataInvalidReason = context->nodeValidationResult.timeDataInvalidReason;
-  context->currentNode.timeDataValidationMode = context->nodeValidationResult.timeDataValidationMode;
+  context->currentNode.timeDataValidationMode = self.timeDataValidationMode;
 
   if (self.timeDataValidationMode == GoTimeDataValidationModePedantic)
     context->previousNodeValidationResult = context->nodeValidationResult;
@@ -1032,7 +1038,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
       // GoUnusedTimeHandlingUseForExtraMoves, i.e. remaining number of moves
       // may stay 0 until all remaining time has been used.
       if (currentNodeTimeData.remainingNumberOfMoves == predecessorNodeTimeData.remainingNumberOfMoves &&
-          (currentNodeTimeData.remainingNumberOfMoves >= 0 || predecessorNodeTimeData.remainingNumberOfMoves >= 0))
+          currentNodeTimeData.remainingNumberOfMoves > 0)
       {
         return GoTimeDataValidationResultMake(false, GoTimeDataInvalidReasonRemainingNumberOfMovesConstant, timeDataValidationMode);
       }

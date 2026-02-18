@@ -29,9 +29,6 @@
 #import "../utility/ExceptionUtility.h"
 
 
-// TODO xxx update unit tests for new property goNodeTimeData and time data validity
-
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoNode.
 // -----------------------------------------------------------------------------
@@ -444,7 +441,6 @@
     [self.goMove doIt];
   else if (self.goNodeSetup)
     [self.goNodeSetup applySetup];
-  // TODO xxx consider modifying GoPlayerTimeData
 }
 
 // -----------------------------------------------------------------------------
@@ -456,7 +452,6 @@
     [self.goMove undo];
   else if (self.goNodeSetup)
     [self.goNodeSetup revertSetup];
-  // TODO xxx consider modifying GoPlayerTimeData
 }
 
 #pragma mark - Public API - Calculating the Zobrist hash

@@ -19,8 +19,6 @@
 #import "GoTimeSystem.h"
 #import "../utility/ExceptionUtility.h"
 
-// TODO xxx Add unit tests
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoTimeSystem.

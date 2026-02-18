@@ -17,9 +17,9 @@
 
 // Project includes
 #import "GoClock.h"
+#import "GoClockAdditions.h"
 #import "../utility/ExceptionUtility.h"
 
-// TODO xxx Add unit tests
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoClock.
@@ -316,6 +316,23 @@
       // exception is thrown)
       return @"";
   }
+}
+
+#pragma mark - GoClockAdditions
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the state of this GoClock instance with the supplied
+/// arguments.
+///
+/// This method is used by unit tests only.
+// -----------------------------------------------------------------------------
+- (void) setClockState:(enum GoClockState)state
+       suspendedReason:(enum GoClockSuspendedReason)suspendedReason
+             startDate:(NSDate*)startDate
+{
+  self.state = state;
+  self.suspendedReason = suspendedReason;
+  self.startDate = startDate;
 }
 
 @end

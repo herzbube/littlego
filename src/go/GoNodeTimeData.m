@@ -18,8 +18,6 @@
 // Project includes
 #import "GoNodeTimeData.h"
 
-// TODO xxx Add unit tests
-
 
 @implementation GoNodeTimeData
 

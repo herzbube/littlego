@@ -20,6 +20,7 @@
 #import "GoClock.h"
 #import "GoNode.h"
 #import "GoNodeTimeData.h"
+#import "GoPlayerTimeDataAdditions.h"
 #import "GoTimeSettings.h"
 #import "GoTimeSystem.h"
 #import "GoUtilities.h"
@@ -27,7 +28,6 @@
 
 
 // TODO xxx Review synchronization, e.g. timer/Fuego/user triggers could overlap
-// TODO xxx Add unit tests
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoPlayerTimeData.
@@ -60,6 +60,9 @@
 /// @a isTimeDataForBlackPlayer indicates whether the object holds data for the
 /// black or the white player. The clock is not running.
 ///
+/// @exception NSInvalidArgumentException Is raised if @a goTimeSettings is
+/// @e nil.
+///
 /// @note This is the designated initializer of GoPlayerTimeData.
 // -----------------------------------------------------------------------------
 - (id) initWithTimeSettings:(GoTimeSettings*)goTimeSettings
@@ -70,12 +73,18 @@
   if (! self)
     return nil;
 
+  if (! goTimeSettings)
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"GoTimeSettings object is nil"];
+
   self.goTimeSettings = goTimeSettings;
   self.goClock = [[[GoClock alloc] init] autorelease];
 
   self.isTimeDataForBlackPlayer = isTimeDataForBlackPlayer;
+  self.isRemainingTimeAbsoluteTime = true;
+  self.remainingTimeInSeconds = 0.0;
+  self.remainingNumberOfMoves = 0;
+  self.remainingNumberOfPeriods = 0;
 
-  // Initializes the remaining properties
   [self updateWithTimeSettingsTimeData];
 
   return self;
@@ -349,6 +358,14 @@
   return self.goClock.suspendedReason;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief The type of the time system that is currently in effect.
+// -----------------------------------------------------------------------------
+- (enum GoTimeSystemType) effectiveTimeSystemType
+{
+  return [self effectiveTimeSystem].goTimeSystemType;
+}
+
 #pragma mark - Clock handling
 
 // -----------------------------------------------------------------------------
@@ -392,19 +409,19 @@
       [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
     }
 
-    double elapsedTimeInSecondsSinceClockWasStarted;
-    if (self.goClock.state == GoClockStateStarted)
-    {
-      elapsedTimeInSecondsSinceClockWasStarted = [self.goClock suspend:reason];
-    }
-    else
+    if (self.goClock.state == GoClockStateStopped)
     {
       // GoClock doesn't allow going directly from stopped to suspended. Instead
       // it forces us to first start the clock, and then suspend it.
       [self.goClock start];
       [self.goClock suspend:reason];
-      elapsedTimeInSecondsSinceClockWasStarted = 0.0;
+
+      [self postNotificationOnMainThread:playerClockStateHasChanged];
+
+      return;
     }
+
+    double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock suspend:reason];
 
     [self postNotificationOnMainThread:playerClockStateHasChanged];
 
@@ -431,6 +448,13 @@
   {
     if (self.goClock.state == GoClockStateStopped)
       return;
+
+    if (self.goClock.state == GoClockStateSuspended)
+    {
+      [self.goClock stop];
+      [self postNotificationOnMainThread:playerClockStateHasChanged];
+      return;
+    }
 
     double elapsedTimeInSecondsSinceClockWasStarted = [self.goClock stop];
 
@@ -613,21 +637,27 @@
   if (self.isRemainingTimeAbsoluteTime)
   {
     if (! periodBasedTimeSystem.supportsTimedPlay)
+    {
+      // From a rules-based point of view, Absolute Timing is not period-based.
+      // But for this app's internal logic (e.g. see GoTimeSystem), Absolute
+      // Timing is just another time system with one period. To keep in line
+      // with the logic of countDownPeriodsWithTimeSystem:(), we set the
+      // remaining number of periods to zero (assuming the value was 1 before).
+      self.remainingNumberOfPeriods = 0;
       return GoPeriodDurationElapsedResultTypeGameLostOnTime;
+    }
 
     self.isRemainingTimeAbsoluteTime = false;
     self.remainingTimeInSeconds += periodBasedTimeSystem.periodDurationInSeconds;
     self.remainingNumberOfPeriods = periodBasedTimeSystem.numberOfPeriods;
-    if (periodBasedTimeSystem.hasMinimumNumberOfMovesPerPeriod)
-      self.remainingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
-    else
-      self.remainingNumberOfMoves = 0;
+    self.remainingNumberOfMoves = periodBasedTimeSystem.minimumNumberOfMovesPerPeriod;
 
     if (self.remainingTimeInSeconds > 0)
       return GoPeriodDurationElapsedResultTypeGameContinues;
   }
 
   // At this point self.remainingTimeInSeconds is guaranteed to be <= 0
+  assert(self.remainingTimeInSeconds <= 0);
 
   if (periodBasedTimeSystem.hasMinimumNumberOfMovesPerPeriod &&
       self.remainingNumberOfMoves == 0 &&

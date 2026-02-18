@@ -25,9 +25,6 @@
 #import "../newgame/NewGameModel.h"
 
 
-// TODO xxx update unit tests for new property timeData
-
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoPlayer.
 // -----------------------------------------------------------------------------
