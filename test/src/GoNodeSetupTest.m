@@ -34,7 +34,7 @@
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
-  GoNodeSetup* testee = [[[GoNodeSetup alloc] init] autorelease];
+  GoNodeSetup* testee = [[[GoNodeSetup alloc] initWithGame:m_game] autorelease];
 
   XCTAssertTrue(testee.isEmpty);
   XCTAssertNil(testee.blackSetupStones);
@@ -94,7 +94,7 @@
   GoPoint* point1 = [board pointAtVertex:@"A1"];
   GoPoint* point2 = [board pointAtVertex:@"B1"];
 
-  GoNodeSetup* testee = [[[GoNodeSetup alloc] init] autorelease];
+  GoNodeSetup* testee = [[[GoNodeSetup alloc] initWithGame:m_game] autorelease];
   XCTAssertNil(testee.blackSetupStones);
 
   NSArray* newBlackSetupStones = @[point1];
@@ -133,7 +133,7 @@
   GoPoint* point1 = [board pointAtVertex:@"A1"];
   GoPoint* point2 = [board pointAtVertex:@"B1"];
 
-  GoNodeSetup* testee = [[[GoNodeSetup alloc] init] autorelease];
+  GoNodeSetup* testee = [[[GoNodeSetup alloc] initWithGame:m_game] autorelease];
   XCTAssertNil(testee.whiteSetupStones);
 
   NSArray* newWhiteSetupStones = @[point1];
@@ -172,7 +172,7 @@
   GoPoint* point1 = [board pointAtVertex:@"A1"];
   GoPoint* point2 = [board pointAtVertex:@"B1"];
 
-  GoNodeSetup* testee = [[[GoNodeSetup alloc] init] autorelease];
+  GoNodeSetup* testee = [[[GoNodeSetup alloc] initWithGame:m_game] autorelease];
   XCTAssertNil(testee.noSetupStones);
 
   NSArray* newNoSetupStones = @[point1];
@@ -213,7 +213,7 @@
   GoBoardRegion* mainRegion = point1.region;
   XCTAssertEqual(mainRegion, point2.region);
 
-  GoNodeSetup* testee = [[[GoNodeSetup alloc] init] autorelease];
+  GoNodeSetup* testee = [[[GoNodeSetup alloc] initWithGame:m_game] autorelease];
 
   // Applying no setup information succeeds
   [testee applySetup];
@@ -356,7 +356,7 @@
   [testee revertSetup];
   XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
 
-  testee = [[[GoNodeSetup alloc] init] autorelease];
+  testee = [[[GoNodeSetup alloc] initWithGame:m_game] autorelease];
   XCTAssertThrowsSpecificNamed([testee revertSetup],
                                NSException, NSInternalInconsistencyException, @"revertSetup failed, applySetup not invoked");
 
@@ -618,7 +618,7 @@
   XCTAssertThrowsSpecificNamed([testee updatePreviousSetupInformationAfterHandicapStonesDidChange:m_game],
                                NSException, NSInternalInconsistencyException, @"updatePreviousSetupInformationAfterHandicapStonesDidChange: with handicap stone intersection already occupied by black setup stone");
 
-  testee = [[[GoNodeSetup alloc] init] autorelease];
+  testee = [[[GoNodeSetup alloc] initWithGame:m_game] autorelease];
   XCTAssertThrowsSpecificNamed([testee updatePreviousSetupInformationAfterHandicapStonesDidChange:nil],
                                NSException, NSInvalidArgumentException, @"updatePreviousSetupInformationAfterHandicapStonesDidChange: with nil object");
 }
