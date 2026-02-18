@@ -43,7 +43,7 @@
   // connectedScenes from UIApplication, then check each scene whether it's a
   // UIWindowScene, then select the UIWindowScene which has a window that is
   // the key window.
-  return [Registry sharedRegistry].windowProvider.window.windowScene.interfaceOrientation;
+  return [Registry sharedRegistry].windowProvider.window.windowScene.effectiveGeometry.interfaceOrientation;
 }
 
 + (bool) interfaceOrientationIsPortrait
