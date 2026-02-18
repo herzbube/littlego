@@ -180,6 +180,241 @@ View controller hierarchy for UITypePhonePortraitOnly:
                         +-- NodeTreeView
 
 
+Command relationships
+---------------------
+This section provides an overview of all commands, which source executes each
+command, and which other commands a command executes (and therefore depends on).
+For the latter, only the directly executed commands are listed - showing the
+entire execution tree would make the list unwieldy and difficult to maintain.
+
+
+User / non-command sources
++-- BackupGameToSgfCommand (after MoreGameActionsButtonResign)
++-- ChangeAndDiscardCommand (GameActionDiscardBoardPosition)
++-- ChangeAnnotationDataCommand (various annotations changes)
++-- ChangeBoardPositionCommand (board position navigation)
++-- ChangeNodeSelectionAsyncCommand (tap in node tree view)
++-- ChangeUIAreaPlayModeCommand (MoreGameActionsButtonBoardSetup, GameActionScoringStart)
++-- CleanBackupSgfCommand (prepareForUiTests, before starting a new game)
++-- ComputerSuggestMoveCommand (GameActionComputerSuggestMove)
++-- DeleteGameCommand (delete game in archive view)
++-- DiscardAllMarkupCommand (GameActionDiscardAllMarkup)
++-- DiscardAllSetupCommand (GameActionDiscardAllSetup)
++-- GenerateDiagnosticsInformationFileCommand (generate diagnostics file)
++-- GenerateTerritoryStatisticsCommand (MoreGameActionsButtonUpdatePlayerInfluence)
++-- HandleBoardSetupInteractionCommand (handles a board setup interaction at a tap location)
++-- HandleDocumentInteractionCommand (document interaction)
++-- HandleMarkupEditingInteractionCommand (handles a markup editing interaction at a tap location)
++-- InterruptComputerCommand (GameActionInterrupt)
++-- LoadGameCommand (load game)
++-- LoadSgfCommand (view game)
++-- NewGameCommand (new game, restore application state if all other options fail)
++-- PauseGameCommand (GameActionPause, scene deactivation)
++-- PlayCommand (place stone at intersection)
++-- RenameGameCommand (rename game)
++-- ResetPlayersAndProfilesCommand (reset in settings)
++-- RestoreApplicationStateCommand (restore application state from archive)
++-- RestoreBugReportUserDefaultsCommand (app launch if diagnostics launch mode)
++-- RestoreGameFromSgfCommand (restore application state from .sgf file if restore from archive failed)
++-- ResumePlayCommand (MoreGameActionsButtonResumePlay)
++-- SaveApplicationStateCommand (save application state)
++-- SaveGameCommand (MoreGameActionsButtonSaveGame)
++-- SetupApplicationCommand (scene connect / app launch)
++-- SetupFirstMoveColorCommand (set up side to play first)
++-- SetupUserManualCommand (set up user manual if viewed for the first time)
++-- ToggleScoringStateOfStoneGroupCommand (toggle dead stone / seki state)
++-- ToggleTerritoryStatisticsCommand (enabling/disabling player influence user preference)
+
+
+BackupGameToSgfCommand
++-- SaveSgfCommand
+
+ChangeAndDiscardCommand
++-- ChangeBoardPositionCommand
+|   ...
++-- BackupGameToSgfCommand
+    ...
+
+ChangeAnnotationDataCommand (only user interaction)
++-- BackupGameToSgfCommand
+    ...
+
+ChangeBoardPositionCommand
++-- SyncGTPEngineCommand
++-- ChangeUIAreaPlayModeCommand
+    ...
+
+ChangeGameVariationCommand (only other commands)
+
+ChangeNodeSelectionAsyncCommand (only user interaction)
++-- ChangeGameVariationCommand
++-- ChangeBoardPositionCommand
+    ...
+
+ChangeUIAreaPlayModeCommand
++-- ResumePlayCommand
+    ...
+
+CleanBackupSgfCommand
+
+ComputerPlayMoveCommand (only other commands)
++-- BackupGameToSgfCommand
+|   ...
++-- CleanBackupSgfCommand
++-- NewGameCommand
+|   ...
++-- SaveGameCommand
+|   ...
++-- TimeLeftCommand
++-- UpdateTerritoryStatisticsCommand
+
+ComputerSuggestMoveCommand (only user interaction)
+
+ContinueGameCommand (only other commands)
++-- ComputerPlayMoveCommand
+    ...
+
+DeleteGameCommand (only user interaction)
+
+DiscardAllMarkupCommand (only user interaction)
++-- BackupGameToSgfCommand
+    ...
+
+DiscardAllSetupCommand (only user interaction)
++-- BackupGameToSgfCommand
+|   ...
++-- ChangeAndDiscardCommand
+|   ...
++-- SyncGTPEngineCommand
+
+GenerateDiagnosticsInformationFileCommand (only user interaction)
++-- SaveSgfCommand
+
+GenerateTerritoryStatisticsCommand (only user interaction)
++-- UpdateTerritoryStatisticsCommand
+
+HandleBoardSetupInteractionCommand (only user interaction)
++-- BackupGameToSgfCommand
+|   ...
++-- ChangeAndDiscardCommand
+|   ...
++-- SyncGTPEngineCommand
+
+HandleDocumentInteractionCommand (only user interaction)
+
+HandleMarkupEditingInteractionCommand (only user interaction)
++-- BackupGameToSgfCommand
+   ...
+
+InterruptComputerCommand (only user interaction)
+
+LoadGameCommand
++-- NewGameCommand
+|   ...
++-- BackupGameToSgfCommand
+|   ...
++-- CleanBackupSgfCommand
++-- SyncGTPEngineCommand
++-- ComputerPlayMoveCommand
+    ...
+
+LoadOpeningBookCommand (only other commands)
+
+LoadSgfCommand
+
+NewGameCommand
++-- ComputerPlayMoveCommand
+|   ...
++-- ChangeUIAreaPlayModeCommand
+|   ...
++-- TimeSettingsCommand
+
+PauseGameCommand (only user interaction)
+
+PlayCommand (only user interaction)
++-- ContinueGameCommand
+|   ...
++-- ComputerPlayMoveCommand
+|   ...
++-- PlayMoveCommand
+    ...
+
+PlayMoveCommand (only other commands)
++-- ComputerPlayMoveCommand
+|   ...
++-- BackupGameToSgfCommand
+|   ...
++-- SyncGTPEngineCommand
+
+RenameGameCommand (only user interaction)
+
+ResetPlayersAndProfilesCommand (only user interaction)
++-- CleanBackupSgfCommand
++-- NewGameCommand
+    ...
+
+RestoreApplicationStateCommand (only user interaction)
++-- UnarchiveGameCommand
++-- SyncGTPEngineCommand
++-- NewGameCommand
+|   ...
++-- ToggleTerritoryStatisticsCommand
+
+RestoreBugReportApplicationStateCommand (only other commands)
++-- SyncGTPEngineCommand
+
+RestoreBugReportUserDefaultsCommand (only user interaction)
+
+RestoreGameFromSgfCommand (only user interaction)
++-- LoadGameCommand
+|   ...
++-- LoadSgfCommand
+
+ResumePlayCommand
++-- ComputerPlayMoveCommand
+    ...
+
+SaveApplicationStateCommand (only user interaction)
+
+SaveGameCommand
++-- SaveSgfCommand
+
+SaveSgfCommand (only other commands)
+
+SetAdditiveKnowledgeTypeCommand (only other commands)
+
+SetupApplicationCommand (only user interaction)
++-- ChangeUIAreaPlayModeCommand
+|   ...
++-- RestoreBugReportApplicationStateCommand
+|   ...
++-- LoadOpeningBookCommand
++-- SetAdditiveKnowledgeTypeCommand
+
+SetupFirstMoveColorCommand (only user interaction)
++-- BackupGameToSgfCommand
+|   ...
++-- ChangeAndDiscardCommand
+|   ...
++-- SyncGTPEngineCommand
+
+SetupUserManualCommand (only user interaction)
+
+SyncGTPEngineCommand (only other commands)
+
+TimeLeftCommand (only other commands)
+
+TimeSettingsCommand (only other commands)
+
+ToggleScoringStateOfStoneGroupCommand (only user interaction)
+
+ToggleTerritoryStatisticsCommand
+
+UnarchiveGameCommand (only other commands)
+
+UpdateTerritoryStatisticsCommand (only other commands)
+
+
 Working with .sgf files
 -----------------------
 In older versions of the app .sgf files used to be loaded and saved by the
