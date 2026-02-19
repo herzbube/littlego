@@ -643,20 +643,6 @@
 /// produced by online-go.com: that platform encodes the initial duration in
 /// the SGF property TM, even though that property is intended to be used for
 /// absolute time.
-///
-/// @note The notations provided as examples in the SGF specification
-/// ("5 mins Japanese style, 1 move / min", "25 moves / 10 min") are currently
-/// not supported because they are poorly structured. Ignoring the fact that
-/// they are also incomplete (the first example does not specify the number of
-/// periods/lifes, the second example does not specify the time system), an
-/// attempt to recognize data in poorly structured @a sgfOvertimeString might
-/// look for regex patterns like these:
-/// - "[0-9\.]+ min(s)?" => indicates a period duration
-/// - "[0-9]+ move(s)?" => indicates a minimum number of moves
-/// - "[0-9]+ period(s)?" => indicates a number of periods
-/// - "[0-9]+ extra" => indicates an extra time duration
-/// - The time system could be derived if a keywords is found anywhere in the
-///   string.
 // -----------------------------------------------------------------------------
 + (GoTimeSystem*) periodBasedTimeSystemForSgfOvertimeString:(NSString*)sgfOvertimeString
                                        absoluteTimeDuration:(double*)absoluteTimeDuration
@@ -665,6 +651,171 @@
   if (didConsumeAbsoluteTimeDuration)
     *didConsumeAbsoluteTimeDuration = false;
 
+  GoTimeSystem* timeSystem = [SgfUtilities canadianTimeSystemForSgfOvertimeStringInSgfNotation:sgfOvertimeString];
+  if (timeSystem.goTimeSystemType == GoTimeSystemTypeCanadian)
+    return timeSystem;
+
+  return [SgfUtilities periodBasedTimeSystemForSgfOvertimeStringInAppNotation:sgfOvertimeString
+                                                         absoluteTimeDuration:absoluteTimeDuration
+                                               didConsumeAbsoluteTimeDuration:didConsumeAbsoluteTimeDuration];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Parses @a sgfOvertimeString (assumed to be the value of the SGF
+/// property OT) and returns the result as GoTimeSystem object. The parsing
+/// assumes that one of the notations is used that is shown in the examples in
+/// the FF4 SGF specification. Note that not all example notations are
+/// supported.
+///
+/// The returned object has #GoTimeSystemTypeCanadian if parsing of
+/// @a sgfOvertimeString succeeds and the values that result from parsing are
+/// valid. The returned object has #GoTimeSystemTypeCustom if parsing of
+/// @a sgfOvertimeString fails, or if the values that result from parsing are
+/// invalid (e.g. period duration zero).
+///
+/// The FF4 SGF specification shows the following examples for OT strings:
+/// - "5 mins Japanese style, 1 move / min"
+/// - "25 moves / 10 min"
+///
+/// The first of these notations is ambiguous and not supported by the current
+/// implementation of this method. Is the period duration 1 minute (as implied
+/// by "1 move / min") or 5 minutes (as implied by "5 mins")? If the period
+/// duration is 5 minutes, what then does "1 move / min" mean? If the period
+/// duration is 1 minute, does "5 mins" then actually mean "5 periods"?
+///
+/// The second of these notations does not specify the time system, but assuming
+/// that Canadian Timing is used, it can be considered as complete. GoGui has
+/// been observed to use this notation, with the variation of using different
+/// time units:
+/// - "<n> moves / <n> min"
+/// - "<n> moves / <n> sec"
+///
+/// The current implementation of this method expands on this and recognizes
+/// these patterns:
+/// - "<n> moves / <n> h", indicating "hours" as the time unit
+/// - "<n> moves / <n> m", indicating "minutes" as the time unit
+/// - "<n> moves / <n> s", indicating "seconds" as the time unit
+///
+/// To remain flexible, the current implementation accepts any amount of
+/// whitespace (minimum 1 character) in between the tokens, "moves" can also
+/// be "move" (singular), and any characters after the single time unit
+/// character are ignored. Sensible values would be "hour", "hours", "minute",
+/// "minutes", "second" or "seconds".
+///
+/// For future implementations, an attempt to recognize data in a poorly
+/// structured @a sgfOvertimeString might look for regex patterns like these:
+/// - "[0-9\.]+ min(s)?" => indicates a period duration
+/// - "[0-9]+ move(s)?" => indicates a minimum number of moves
+/// - "[0-9]+ period(s)?" => indicates a number of periods
+/// - "[0-9]+ extra" => indicates an extra time duration
+/// - The time system could be derived if a keyword is found anywhere in the
+///   string.
+// -----------------------------------------------------------------------------
++ (GoTimeSystem*) canadianTimeSystemForSgfOvertimeStringInSgfNotation:(NSString*)sgfOvertimeString
+{
+  NSString* pattern = @"^([0-9]+)(\\s+moves?\\s+/\\s+)([0-9\\.]+)(\\s+)((s|m|h))(.*)$";
+  //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  //                     |       |                    |          |     |       +-- Rest of time unit
+  //                     |       |                    |          |     +-- Time unit identifier
+  //                     |       |                    |          +-- Whitespace separator, minimum 1 character
+  //                     |       |                    +-- Second number
+  //                     |       |
+  //                     |       +-- Blurb separator " moves / "
+  //                     +-- First number
+  //
+  // Notes:
+  // - The first and second number patterns don't accept negative numbers.
+  // - The second number pattern accepts fractional values.
+  // - The second number pattern matches on ".", i.e. no digits. Below
+  //   this will be converted into the double value 0.0.
+  // - The blurb separator pattern accepts any amount of whitespace (minimum 1
+  //   character), not just single space characters.
+  // - The blurb separator pattern matches "move" as well as "moves" (although
+  //   "moves" is the expected case).
+  // - The time unit identifier pattern results in "s", "m" or "h", indicating
+  //   the respective time units "seconds", "minutes" and "hours".
+
+  NSError* error = nil;
+  NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                         options:0
+                                                                           error:&error];
+  NSRange entireString = NSMakeRange(0, sgfOvertimeString.length);
+  NSArray* matches = [regex matchesInString:sgfOvertimeString
+                                    options:0
+                                      range:entireString];
+  if (matches.count == 0)
+    return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+
+  NSTextCheckingResult* theMatch = matches[0];
+
+  NSRange minimumNumberOfMovesRange = [theMatch rangeAtIndex:1];
+  NSString* minimumNumberOfMovesString = [sgfOvertimeString substringWithRange:minimumNumberOfMovesRange];
+  NSInteger minimumNumberOfMoves = [minimumNumberOfMovesString integerValue];
+  if (minimumNumberOfMoves == 0)
+    return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+
+  NSRange periodDurationRange = [theMatch rangeAtIndex:3];
+  NSString* periodDurationString = [sgfOvertimeString substringWithRange:periodDurationRange];
+  double periodDuration = [periodDurationString doubleValue];
+  if (periodDuration == 0.0)
+    return [[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:sgfOvertimeString] autorelease];
+
+  NSRange timeUnitIdentifierRange = [theMatch rangeAtIndex:5];
+  NSString* timeUnitIdentifierString = [sgfOvertimeString substringWithRange:timeUnitIdentifierRange];
+  double periodDurationInSeconds;
+  if ([timeUnitIdentifierString isEqualToString:@"s"])
+    periodDurationInSeconds = periodDuration;
+  else if ([timeUnitIdentifierString isEqualToString:@"m"])
+    periodDurationInSeconds = periodDuration * 60;
+  else
+    periodDurationInSeconds = periodDuration * 3600;
+
+  return [[[GoTimeSystem alloc] initWithGoTimeSystemType:GoTimeSystemTypeCanadian
+                                 periodDurationInSeconds:periodDurationInSeconds
+                           minimumNumberOfMovesPerPeriod:minimumNumberOfMoves] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Parses @a sgfOvertimeString (assumed to be the value of the SGF
+/// property OT) and returns the result as GoTimeSystem object. The parsing
+/// assumes that a notation is used that is partially also supported by KGS and
+/// online-go.com, but was enhanced for this app to also support
+/// #GoTimeSystemTypeSteadyAverage and #GoTimeSystemTypeTotalAverage.
+///
+/// The returned object has #GoTimeSystemTypeCustom if @a sgfOvertimeString is
+/// not recognized as a time system that the app supports, or if the values
+/// that result from parsing are invalid (e.g. period duration zero).
+///
+/// In some cases, if this method is unable to find a duration in
+/// @a sgfOvertimeString, it will try to use the value of
+/// @a absoluteTimeDuration as a substitute. If the caller passes @e nil for
+/// @a absoluteTimeDuration then this method will not attempt a substitution.
+///
+/// This method sets @a didConsumeAbsoluteTimeDuration to indicate whether or
+/// not it performed substitution. The caller may pass @e nil for
+/// @a didConsumeAbsoluteTimeDuration if it is not interested in whether
+/// or not substitution takes place.
+///
+/// @note This method attempts substitution only if it identifies the time
+/// system as #GoTimeSystemTypeFischer. This is to support SGF content
+/// produced by online-go.com: that platform encodes the initial duration in
+/// the SGF property TM, even though that property is intended to be used for
+/// absolute time.
+///
+/// The current implementation of this method recognizes these patterns:
+/// - "<number-of-moves-or-periods>/<period-duration> <time-system-identifier>"
+/// - "<number-of-moves-or-periods>x<period-duration> <time-system-identifier>"
+/// - "<extra-time-duration> <time-system-identifier>"
+///
+/// Japanese Timing is the only time system expected to use the "x" separator,
+/// but the current implementation does not enforce this. Fischer Timing is
+/// the only time system expected to use the third pattern. Time system
+/// identifiers are parsed in timeSystemTypeForSgfTimeSystemIdentifier:().
+// -----------------------------------------------------------------------------
++ (GoTimeSystem*) periodBasedTimeSystemForSgfOvertimeStringInAppNotation:(NSString*)sgfOvertimeString
+                                                    absoluteTimeDuration:(double*)absoluteTimeDuration
+                                          didConsumeAbsoluteTimeDuration:(bool*)didConsumeAbsoluteTimeDuration
+{
   NSString* pattern = @"^([0-9\\.]+)(([/x])([0-9\\.]+))?(\\s+)(.+)$";
   //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   //                     |          ||     |            |     +-- Time system identifier, minimum 1 character
