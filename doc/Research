@@ -1734,6 +1734,136 @@ Problematic behaviours of Fuego that can lead to time management bugs:
     the time handling should still be correct.
   - Fixed in fuego-on-ios: https://github.com/herzbube/fuego-on-ios/issues/30
 
+Recording the game result in SGF
+--------------------------------
+The SGF standard provides two features to store the result of a Go game:
+- The RE property stores the overall game result. The SGF standard has a very
+  clear specification how the value of this property must be formed. The
+  interpretation of the value is fully implemented in libsgfc++ / SgfcKit.
+- The Go-specific properties TB and TW each store a list of points that define
+  the black and white territory, respectively. This is used to provide
+  information how to arrive at the overall game result.
+
+Game variation notes:
+- Every game variation can have its own game result. One variation could end
+  with a resignation, while another could end with a loss on time, and a third
+  could end with two pass moves plus a score.
+- The "RE" property is a game info property.
+- SGF allows to have several game info properties in a game tree, given the
+  following conditions (quotes from the specification):
+  - Game infos are stored at the nodes where a game first becomes
+    distinguishable from all other games in the tree.
+  - There may be only one game info node on any path within the tree.
+- If the "RE" property were the only game info property, the app could indeed
+  store multiple game info nodes in one SGF file, according to the rules above.
+- There are, however, many more game info properties, almost all of which
+  contain data that describes all of the game variations. Only a few examples:
+  - Various properties with information about the players.
+  - Various properties with information about the game as a whole (e.g.
+    property RU which describes the rules of the game).
+  - Property ON which provides information about the opening played.
+- The conclusion is that there can only be multiple game info nodes, and
+  therefore multiple RE properties, in the same game tree if the variations are
+  actually truly independent games.
+- For the purposes of this app, this therefore means that the app can store only
+  a single RE property for all variations of the game.
+- But which result should be stored in the RE property? The most sensible
+  decision is to store the result of the game's main variation in the RE
+  property. Rationale:
+  - Game variations represent analytical branches, or alternative lines of play,
+    within the same game. They are used for exploring or analyzing the same
+    game.
+  - The RE property belongs to the actual game that was played (stored in the
+    main variation), which has one definitive result.
+
+TB/TW property notes
+- Unlike the RE property, the TB/TW properties are NOT game info properties.
+- This means that these properties can occur anywhere in the game tree: In the
+  root node, in the game info node, and also in later nodes.
+- Furthermore there is no restriction on how many times TB/TW properties can
+  occur. This means that the app can store several sets of scoring.
+- Within a given node
+  - TB or TW can appear alone or together.
+  - The same point is only allowed to appear once.
+- SGFC provides error handling for the latter case: If SGFC finds that a point
+  appears multiple times, it keeps the first and deletes all later appearances.
+  For each deletion an error message like the following is output:
+    Line:9 Col:33 - Error 38: Markup <TB> position not unique ([partially] deleted) - value(s): [ab]
+  In this example the point "ab" appeared twice and the second appearance was
+  deleted.
+- What is the property type of TB/TW?
+  - The FF4 version of the SGF standard does not assign a property type at all.
+      Propertytype:  -
+    But it does the same for many of the game-agnostic properties, e.g. all
+    node annotation and almost all markup properties.
+  - SGFC uses the function Do_Markup() to perform parsing and error handling.
+  - libsgfc++ assigns SgfcPropertyCategory::Markup.
+  - This possibly comes from the fact that the FF1 and FF3 versions of the SGF
+    standard lists the properties in a section which has the lead-in sentence:
+      "Sets of board points can be marked as territory, as secure stones, or
+       just as a region of the board (e.g. to designate eye space)"
+    "Secure stones" refers to the property SC, and "region of the board" to the
+    property RG, both no longer part of FF4.
+- An overview of how the app's scoring feature works
+  - When scoring mode is enabled, all regions are marked as not belonging to a
+    territory and stone groups are marked as alive.
+  - An initial territory assignment is then performed: Alive stone groups
+    (i.e. initially all of them) are assigned to the territory of the player
+    who played the stone, empty regions are assigned to a territory according
+    to the logic described in the GoScore class documentation (not replicated
+    here).
+  - The app then allows the user to mark stone groups as alive, dead, or as
+    "in seki", one group at a time.
+  - If the "Mark dead stones intelligently" setting is enabled, the app makes
+    conclusions about the status of other stone groups than the one marked by
+    the user.
+  - Based on the new status of all stone groups, the app then recalculates the
+    new territory assignments.
+- Translating from the result of the app's scoring to TB/TW points works like
+  this:
+  - Stone is alive or "in seki"         => Add to TB/TW of the same color.
+  - Stone is dead                       => Add to TB/TW of the opposing color.
+  - Intersection is empty and territory => Add to TB/TW of the same color.
+  - Intersection is empty and neutral   => Don't add to TB/TW.
+- Translating from TB/TW points to the result of the app's scoring works like
+  this:
+  - Perform the usual initialization at the beginning of a scoring run, i.e.
+    all stone groups are marked alive and an initial territory assignment is
+    performed. This counteracts incomplete SGF data, i.e. TB/TW values don't
+    account for all points on the board.
+  - Process TB/TW points one by one. Each point causes one or more stone
+    groups to be marked as alive or dead.
+    - Point has stone of the same color as the property     => Mark stone group as alive.
+    - Point has stone of the opposing color as the property => Mark stone group as dead.
+    - Point is empty intersection                           => Mark adjacent stone groups of same color as alive.
+                                                               Mark adjacent stone groups of opposing color as dead.
+    - No "in seki" markings can result here.
+  - If a stone group already has the state that the marking tries to achieve,
+    nothing happens. Otherwise the stone group state is toggled from dead to
+    alive, or vice versa.
+  - Markings by a later point override the markings of earlier points.
+  - Once all points have been processed, perform territory assignment based
+    on the new stone group states. Ignore the "Mark dead stones intelligently"
+    setting - this is reserved for interactive use.
+- Considerations of the TB/TW points processing algorithm
+  - Neutral territory is possible if alive stone groups of both colors are
+    adjacent.
+  - When doing a round-trip to SGF and back, stone groups previously marked as
+    "in seki" are alive after the roundtrip.
+    - TODO xxx Verify whether this has an effect when territory scoring is used.
+      Reason is that for territory scoring, an alive stone group counts as
+      territory for the player, whereas an "in seki" stone group is neutral.
+      However, IIRC in territory scoring stone groups are not counted, so it
+      may not matter.
+    - TODO xxx Verify the effect on dame points (empty intersections adjacent
+      to seki stones). Dame points don't count for both scoring systems, but
+      when translating "in seki" to "alive" after the round-trip previous dame
+      points may now count as territory if they are entirely surrounded by
+      previous "in seki" stones.
+  - The "last wins" principle causes inconsistencies in the SGF data to not be
+    a problem for the app. The user may see inconsistent territory as a result,
+    or the calculated score may deviate from the value of the RE property.
+
 
 Redesigning the drawing mechanism in PlayView (v0.8)
 ----------------------------------------------------
