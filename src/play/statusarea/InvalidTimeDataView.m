@@ -129,6 +129,8 @@
 
   if (self.isTimeDataValid)
     self.invalidReasonDescriptionLabel.text = @"Time data is valid";
+  else if (self.timeDataInvalidReason == GoTimeDataInvalidReasonGameDoesNotUseTimedPlay)
+    self.invalidReasonDescriptionLabel.text = @"No time data.";
   else
     self.invalidReasonDescriptionLabel.text = [NSString stringWithFormat:@"No time data. Reason: %d.", self.timeDataInvalidReason];
 }

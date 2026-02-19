@@ -298,7 +298,10 @@ enum CellId
 {
   [super viewDidLoad];
 
-  self.title = [NSString stringWithFormat:@"No time data reason %d", self.currentNode.timeDataInvalidReason];
+  if (self.currentNode.timeDataInvalidReason == GoTimeDataInvalidReasonGameDoesNotUseTimedPlay)
+    self.title = @"No time data";
+  else
+    self.title = [NSString stringWithFormat:@"No time data reason %d", self.currentNode.timeDataInvalidReason];
   self.navigationItem.title = self.title;
 
   // This controller is always presented by a navigation controller. If the
@@ -568,7 +571,10 @@ enum CellId
   switch (section)
   {
     case InvalidReasonSection:
-      return @"Problem description";
+      if (self.currentNode.timeDataInvalidReason == GoTimeDataInvalidReasonGameDoesNotUseTimedPlay)
+        return @"Description"; // without time systems we don't have a "problem"
+      else
+        return @"Problem description";
     case CustomPeriodBasedTimeSystemSection:
     case TimeSettingsSection:
       return @"Game time settings";

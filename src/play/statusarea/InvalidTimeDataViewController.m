@@ -22,6 +22,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoNode.h"
+#import "../../go/GoTimeSettings.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
@@ -279,7 +280,13 @@
   GoNode* currentNode = game.boardPosition.currentNode;
 
   self.invalidTimeDataView.isTimeDataValid = currentNode.isTimeDataValid;
-  self.invalidTimeDataView.timeDataInvalidReason = currentNode.timeDataInvalidReason;
+
+  // If no time systems are configured at all, then no time data validation
+  // has taken place => we have to set the reason ourselves.
+  if (game.timeSettings.hasNoTimeSystems)
+    self.invalidTimeDataView.timeDataInvalidReason = GoTimeDataInvalidReasonGameDoesNotUseTimedPlay;
+  else
+    self.invalidTimeDataView.timeDataInvalidReason = currentNode.timeDataInvalidReason;
 }
 
 #pragma mark - Button handlers
