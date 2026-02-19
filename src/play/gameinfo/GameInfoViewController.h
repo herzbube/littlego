@@ -15,10 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "../../settings/EditPlayerProfileController.h"
-#import "../../ui/TableViewGridCell.h"
-
 // Forward declarations
 @class GameInfoViewController;
 
@@ -38,10 +34,7 @@
 /// @brief The GameInfoViewController class is responsible for managing user
 /// interaction on the "Game Info" view.
 // -----------------------------------------------------------------------------
-@interface GameInfoViewController : UIViewController <UITableViewDelegate,
-                                                      UITableViewDataSource,
-                                                      TableViewGridCellDelegate,
-                                                      EditPlayerProfileDelegate>
+@interface GameInfoViewController : UIViewController
 {
 }
 

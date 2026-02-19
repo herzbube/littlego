@@ -16,8 +16,8 @@
 
 
 // Project includes
-#import "GameInfoViewController.h"
 #import "../controller/MoreGameActionsController.h"
+#import "../gameinfo/GameInfoViewController.h"
 #import "../../ui/ItemPickerController.h"
 
 // Forward declarations

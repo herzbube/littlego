@@ -1204,4 +1204,38 @@
   return NodeTreeViewCellSymbolEmpty;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a move.
+///
+/// Examples:
+/// - Black played at D4
+/// - White passed
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfMove:(GoMove*)move
+{
+  NSString* playerColorString;
+  GoPlayer* player = move.player;
+  if (player.isBlack)
+    playerColorString = @"Black";
+  else
+    playerColorString = @"White";
+  switch (move.type)
+  {
+    case GoMoveTypePlay:
+    {
+      return [NSString stringWithFormat:@"%@ played at %@",
+              playerColorString,
+              move.point.vertex.string];
+    }
+    case GoMoveTypePass:
+    {
+      return [playerColorString stringByAppendingString:@" passed"];
+    }
+    default:
+    {
+      return @"n/a";
+    }
+  }
+}
+
 @end
