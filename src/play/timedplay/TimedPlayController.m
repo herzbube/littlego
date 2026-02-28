@@ -19,6 +19,9 @@
 #import "TimedPlayController.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameInfo.h"
+#import "../../go/GoGameResult.h"
+#import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeDataValidator.h"
@@ -766,7 +769,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   if (self.isGameEnded)
   {
     DDLogWarn(@"%@: Received playerLostOnTime notification, but game has already ended with reason %d", self, self.game.reasonForGameHasEnded);
-    [self.game revertStateFromEndedToInProgress];
+    [self.game revertStateFromEndedToInProgress:false];
   }
 
   GoPlayerTimeData* playerTimeData = notification.object;
@@ -774,6 +777,17 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
                                       ? GoGameHasEndedReasonWhiteWinsOnTime
                                       : GoGameHasEndedReasonBlackWinsOnTime);
   [self.game endGameWithReason:reason];
+
+  // TODO xxx can this be moved to endGameWithReason:?
+  GoGameResult* gameResult = self.game.gameInfo.gameResult;
+  if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.game.nodeModel.isMainVariation)
+  {
+    gameResult.dataType = GoGameResultDataTypeStructuredData;
+    gameResult.gameResultType = (playerTimeData.isTimeDataForBlackPlayer
+                                 ? GoGameResultTypeWhiteWin
+                                 : GoGameResultTypeBlackWin);
+    gameResult.winType = GoGameResultWinTypeWinOnTime;
+  }
 }
 
 #pragma mark - PlayerClockService implementation

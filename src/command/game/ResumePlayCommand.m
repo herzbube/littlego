@@ -55,7 +55,7 @@
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
-    [game revertStateFromEndedToInProgress];
+    [game revertStateFromEndedToInProgress:true];
   }
   @finally
   {

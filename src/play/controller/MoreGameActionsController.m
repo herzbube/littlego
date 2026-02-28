@@ -586,7 +586,8 @@
   {
     DDLogInfo(@"Revert game state from 'ended' to 'in progress'");
     [[ApplicationStateManager sharedManager] beginSavePoint];
-    [game revertStateFromEndedToInProgress];
+    
+    [game revertStateFromEndedToInProgress:true];
 
     id<PlayerClockService> playerClockService = [Registry sharedRegistry].playerClockService;
 

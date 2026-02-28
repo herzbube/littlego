@@ -26,6 +26,8 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
+#import "../../go/GoGameInfo.h"
+#import "../../go/GoGameResult.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAdditions.h"
@@ -1761,9 +1763,9 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 #pragma mark - Step 6: Setup game result
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the result for the new game. Does nothing if the SGF file
-/// does not contain a game result, or if the game result cannot be mapped to a
-/// result supported by the app.
+/// @brief Sets up the result for the new game. Also ends the game with a
+/// specific reason if the game result can be mapped to a #GoGameHasEndedReason
+/// value.
 ///
 /// GoGame may already be in state #GoGameStateGameHasEnded due to moves played
 /// in the current variation. An explicit game result in the SGF file overrides
@@ -1777,20 +1779,17 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 - (bool) setupGameResult:(NSString**)errorMessage
 {
   GoGame* game = [GoGame sharedGame];
+  game.gameInfo.gameResult = [SgfUtilities gameResultFromFromSgfString:self.sgfGoGameInfo.rawGameResult];
 
-  SGFCGameResult sgfGameResult = self.sgfGoGameInfo.gameResult;
-  if (sgfGameResult.IsValid)
+  enum GoGameHasEndedReason reasonForGameHasEnded = [GoUtilities goGameHasEndedReasonForGameResult:game.gameInfo.gameResult];
+
+  // Some GoGameResult values actually cannot be mapped to a corresponding
+  // GoGameHasEndedReason value
+  if (reasonForGameHasEnded != GoGameHasEndedReasonNotYetEnded)
   {
-    enum GoGameHasEndedReason reasonForGameHasEnded = [SgfUtilities goGameHasEndedReasonForGameResult:sgfGameResult];
-
-    // Some SGFCGameResult values actually cannot be mapped to a corresponding
-    // GoGameHasEndedReason value
-    if (reasonForGameHasEnded != GoGameHasEndedReasonNotYetEnded)
-    {
-      if (game.state == GoGameStateGameHasEnded)
-        [game revertStateFromEndedToInProgress];
-      [game endGameWithReason:reasonForGameHasEnded];
-    }
+    if (game.state == GoGameStateGameHasEnded)
+      [game revertStateFromEndedToInProgress:false];
+    [game endGameWithReason:reasonForGameHasEnded];
   }
 
   return true;

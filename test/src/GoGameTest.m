@@ -25,6 +25,8 @@
 #import <go/GoGame.h>
 #import <go/GoGameAdditions.h>
 #import <go/GoGameDocument.h>
+#import <go/GoGameInfo.h>
+#import <go/GoGameResult.h>
 #import <go/GoMove.h>
 #import <go/GoMoveAdditions.h>
 #import <go/GoMoveNodeCreationOptions.h>
@@ -504,7 +506,7 @@
   XCTAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
                               NSException, NSInternalInconsistencyException, @"handicap set after game has ended");
   // Can set handicap if game has not ended
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   m_game.handicapPoints = handicapPoints;
   XCTAssertNotEqual(m_game.zobristHashAfterHandicap, 0);
   XCTAssertEqual(m_game.zobristHashAfterHandicap, m_game.nodeModel.rootNode.zobristHash);
@@ -861,12 +863,12 @@
 
   // Can resume play an arbitrary number of times; each time two passes are made
   // the game ends GoGameHasEndedReasonTwoPasses
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
@@ -882,7 +884,7 @@
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
@@ -891,7 +893,7 @@
   // playing. In other words, in the UI there is no way to resume play as we
   // do where, so this test is somewhat contrived.
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
@@ -909,7 +911,7 @@
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonThreePasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   [m_game pass];
   // GoGameHasEndedReasonFourPasses
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
@@ -998,7 +1000,7 @@
 
   // GoMoveAdditions lets us write the moveNumber property - actually generating
   // the maximum number of moves would be rather slow
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   GoMove* lastMove = m_game.lastMove;
   lastMove.moveNumber = maximumNumberOfMoves;
   XCTAssertThrowsSpecificNamed([m_game play:[m_game.board pointAtVertex:@"B1"]],
@@ -1079,7 +1081,7 @@
 
   // GoMoveAdditions lets us write the moveNumber property - actually generating
   // the maximum number of moves would be rather slow
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   GoMove* lastMove = m_game.lastMove;
   lastMove.moveNumber = maximumNumberOfMoves;
   XCTAssertThrowsSpecificNamed([m_game pass],
@@ -1426,10 +1428,39 @@
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   XCTAssertFalse(m_game.document.isDirty);
 
-  // Can start game with resign
+  // Can immediately resign without playing a move
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
   [m_game resign];
   XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
   XCTAssertTrue(m_game.document.isDirty);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+
+  // Manual update policy prevents the game result update
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  m_game.gameInfo.gameResult.updatePolicy = GoGameResultUpdatePolicyManual;
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  [m_game resign];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+
+  // Non-main variation prevents the game result update
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [m_game pass];
+  m_game.boardPosition.currentBoardPosition = 0;
+  XCTAssertTrue(m_game.nodeModel.isMainVariation);
+  // Create new game variation and switch the current game variation to it
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:GoNewMoveInsertPositionNewVariationAtBottom];
+  [m_game passWithMoveNodeCreationOptions:options];
+  XCTAssertFalse(m_game.nodeModel.isMainVariation);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game resign];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+
   // Resign in other situations already tested
 
   XCTAssertThrowsSpecificNamed([m_game resign],
@@ -1849,6 +1880,44 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the endGameIfNecessary() method.
+// -----------------------------------------------------------------------------
+- (void) testEndGameIfNecessary
+{
+  // Game result takes precedence over moves if we're on the main variation
+  [m_game pass];
+  [m_game pass];
+  [m_game revertStateFromEndedToInProgress:false];
+  m_game.gameInfo.gameResult.dataType = GoGameResultDataTypeStructuredData;
+  m_game.gameInfo.gameResult.gameResultType = GoGameResultTypeWhiteWin;
+  m_game.gameInfo.gameResult.winType = GoGameResultWinTypeWinByResignation;
+  [m_game endGameIfNecessary];
+  XCTAssertEqual(m_game.state, GoGameStateGameHasEnded);
+  XCTAssertEqual(m_game.reasonForGameHasEnded, GoGameHasEndedReasonWhiteWinsByResignation);
+
+  // Game result is ignored if we're not on the main variation
+  m_game.boardPosition.currentBoardPosition = 0;
+  XCTAssertTrue(m_game.nodeModel.isMainVariation);
+  [m_game revertStateFromEndedToInProgress:false];
+  // Create new game variation and switch the current game variation to it
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:GoNewMoveInsertPositionNewVariationAtBottom];
+  [m_game passWithMoveNodeCreationOptions:options];
+  XCTAssertFalse(m_game.nodeModel.isMainVariation);
+  [m_game pass];
+  [m_game revertStateFromEndedToInProgress:false];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+  [m_game endGameIfNecessary];
+  XCTAssertEqual(m_game.state, GoGameStateGameHasEnded);
+  XCTAssertEqual(m_game.reasonForGameHasEnded, GoGameHasEndedReasonTwoPasses);
+
+  // We know that endGameIfNecessary() invokes
+  // endGameDueToPassMovesIfGameRulesRequireIt() => avoid test duplication, see
+  // testEndGameDueToPassMovesIfGameRulesRequireIt() for the rest of the tests
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exercises the endGameDueToPassMovesIfGameRulesRequireIt() method.
 ///
 /// Tests are almost identical to those in testReasonForGameHasEnded().
@@ -1863,7 +1932,7 @@
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
@@ -1879,7 +1948,7 @@
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
@@ -1888,7 +1957,7 @@
   // playing. In other words, in the UI there is no way to resume play as we
   // do where, so this test is somewhat contrived.
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
@@ -1906,7 +1975,7 @@
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonThreePasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
   [m_game pass];
   // GoGameHasEndedReasonFourPasses
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
@@ -1938,10 +2007,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the revertStateFromEndedToInProgress() method.
+/// @brief Exercises the revertStateFromEndedToInProgress:() method.
 // -----------------------------------------------------------------------------
 - (void) testRevertStateFromEndedToInProgress
 {
+  // Revert on main variation after two pass moves, without updating game result
   XCTAssertEqual(GoGameTypeHumanVsHuman, m_game.type);
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   [m_game pass];
@@ -1950,10 +2020,25 @@
   XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
   XCTAssertTrue(m_game.document.isDirty);
   m_game.document.dirty = false;
-  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   XCTAssertFalse(m_game.document.isDirty);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
 
+  // Revert on main variation after two pass moves, with updating game result
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game revertStateFromEndedToInProgress:true];
+  // Reverting game state after two passes has no effect on game result
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+
+  // Revert on main variation after resign, without updating game result
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
@@ -1962,11 +2047,74 @@
   XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
   XCTAssertTrue(m_game.document.isDirty);
   m_game.document.dirty = false;
-  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   XCTAssertTrue(m_game.document.isDirty);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
 
-  XCTAssertThrowsSpecificNamed([m_game revertStateFromEndedToInProgress],
+  // Revert on main variation after resign, with updating game result
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [m_game resign];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game revertStateFromEndedToInProgress:true];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+
+  // Revert on main variation after resign, with updating game result, but
+  // manual update policy prevents the update
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [m_game resign];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  m_game.gameInfo.gameResult.updatePolicy = GoGameResultUpdatePolicyManual;
+  [m_game revertStateFromEndedToInProgress:true];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+
+  // Revert on non-main variation after resign, with updating game result, but
+  // no update occurs because it's not the main variation
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [m_game pass];
+  [m_game resign];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeBlackWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+  m_game.boardPosition.currentBoardPosition = 0;
+  XCTAssertTrue(m_game.nodeModel.isMainVariation);
+  [m_game revertStateFromEndedToInProgress:false];
+  // Create new game variation and switch the current game variation to it
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:GoNewMoveInsertPositionNewVariationAtBottom];
+  [m_game passWithMoveNodeCreationOptions:options];
+  XCTAssertFalse(m_game.nodeModel.isMainVariation);
+  // Result is still sync'ed to the resign from the main variation
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeBlackWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+  // Resign on the non-main variation as well
+  [m_game resign];
+  [m_game revertStateFromEndedToInProgress:true];
+  // Because we're not on the main variation, the game result is not updated
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeBlackWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  XCTAssertThrowsSpecificNamed([m_game revertStateFromEndedToInProgress:false],
                               NSException, NSInternalInconsistencyException, @"game already reverted");
 
   // Currently no more tests possible because we can't simulate
@@ -2097,7 +2245,7 @@
   [m_game resign];
   XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
                                NSException, NSInternalInconsistencyException, @"game aleady has ended");
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
 
   // Toggle is allowed for computer vs. computer games in paused state
   m_game.type = GoGameTypeComputerVsComputer;
@@ -2425,7 +2573,7 @@
   [m_game resign];
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
                                NSException, NSInternalInconsistencyException, @"game aleady has ended");
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
 
   // Change is allowed for computer vs. computer games in paused state
   m_game.type = GoGameTypeComputerVsComputer;
@@ -2508,7 +2656,7 @@
   [m_game resign];
   XCTAssertThrowsSpecificNamed([m_game discardAllSetup],
                                NSException, NSInternalInconsistencyException, @"game aleady has ended");
-  [m_game revertStateFromEndedToInProgress];
+  [m_game revertStateFromEndedToInProgress:false];
 
   // Discard is allowed for computer vs. computer games in paused state
   m_game.type = GoGameTypeComputerVsComputer;

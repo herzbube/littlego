@@ -823,10 +823,26 @@
     @throw exception;
   }
 
+  enum GoGameResultType gameResultType;
   if (self.nextMoveColor == GoColorBlack)
+  {
     [self endGameWithReason:GoGameHasEndedReasonWhiteWinsByResignation];
+    gameResultType = GoGameResultTypeWhiteWin;
+  }
   else
+  {
     [self endGameWithReason:GoGameHasEndedReasonBlackWinsByResignation];
+    gameResultType = GoGameResultTypeBlackWin;
+  }
+
+  // TODO xxx can this be moved to endGameWithReason:?
+  GoGameResult* gameResult = self.gameInfo.gameResult;
+  if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.nodeModel.isMainVariation)
+  {
+    gameResult.dataType = GoGameResultDataTypeStructuredData;
+    gameResult.gameResultType = gameResultType;
+    gameResult.winType = GoGameResultWinTypeWinByResignation;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -1778,6 +1794,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   [encoder encodeObject:self.rules forKey:goGameRulesKey];
   [encoder encodeObject:self.timeSettings forKey:goGameTimeSettingsKey];
   [encoder encodeObject:self.document forKey:goGameDocumentKey];
+  [encoder encodeObject:self.gameInfo forKey:goGameGameInfoKey];
   [encoder encodeObject:self.score forKey:goGameScoreKey];
   [encoder encodeInt:self.setupFirstMoveColor forKey:goGameSetupFirstMoveColorKey];
   // GoZobristTable is not archived, instead a new GoZobristTable object with
@@ -1787,6 +1804,77 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   // here - it doesn't make sense to archive an invalid value. A side effect of
   // not archiving self.zobristHashAfterHandicap is that the overall archive
   // becomes smaller.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Ends the game (i.e. sets it to state #GoGameStateGameHasEnded) if
+/// evaluating the Go model data associated with this GoGame indicates that it
+/// is necessary. Does nothing otherwise. If this method ends the game, it also
+/// sets @e reasonForGameHasEnded to indicate the reason why the game has ended.
+///
+/// Evaluating the Go model data works as follows:
+/// - Only if the current game variation is the main variation: Examines the
+///   GoGameResult object associated with this GoGame. If the GoGameResult
+///   object's data indicates that the player resigned, has lost the game on
+///   time, or forfeited the game, then the game is ended with the corresponding
+///   reason.
+/// - Regardless of whether the current game variation is the main variation:
+///   Examines the most recent moves played in the current game variations.
+///   If at least two consecutive pass moves were played, and if the game rules
+///   require the game to end because of this, then the game is ended, with the
+///   reason set to indicate the number of pass moves that were detected.
+///
+/// Invoking this method sets the document dirty flag if the game state changes.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is already in state #GoGameStateGameHasEnded.
+///
+/// @note The pass methods already set the game state, so invoking this method
+/// after a pass move is not necessary.
+// -----------------------------------------------------------------------------
+- (void) endGameIfNecessary
+{
+  if (self.nodeModel.isMainVariation)
+  {
+    GoGameResult* gameResult = self.gameInfo.gameResult;
+    if (gameResult.dataType == GoGameResultDataTypeStructuredData)
+    {
+      switch (gameResult.gameResultType)
+      {
+        case GoGameResultTypeBlackWin:
+        case GoGameResultTypeWhiteWin:
+        {
+          switch (gameResult.winType)
+          {
+            case GoGameResultWinTypeWinByResignation:
+              [self endGameWithReason:(gameResult.gameResultType == GoGameResultTypeBlackWin
+                                       ? GoGameHasEndedReasonBlackWinsByResignation
+                                       : GoGameHasEndedReasonWhiteWinsByResignation)];
+              return;
+            case GoGameResultWinTypeWinOnTime:
+              [self endGameWithReason:(gameResult.gameResultType == GoGameResultTypeBlackWin
+                                       ? GoGameHasEndedReasonBlackWinsOnTime
+                                       : GoGameHasEndedReasonWhiteWinsOnTime)];
+              return;
+            case GoGameResultWinTypeWinByForfeit:
+              [self endGameWithReason:(gameResult.gameResultType == GoGameResultTypeBlackWin
+                                       ? GoGameHasEndedReasonBlackWinsByForfeit
+                                       : GoGameHasEndedReasonWhiteWinsByForfeit)];
+              return;
+            default:
+              break;
+          }
+          break;
+        }
+        default:
+        {
+          break;
+        }
+      }
+    }
+  }
+
+  [self endGameDueToPassMovesIfGameRulesRequireIt];
 }
 
 // -----------------------------------------------------------------------------
@@ -1890,8 +1978,14 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// document dirty flag to be set. For instance, if three pass moves caused
 /// the game to end, then the document dirty flag needs to be reset by
 /// discarding the third pass move.
+///
+/// In addition, if the game has ended due to resignation, win on time or win
+/// by forfeit, the GoGameResult object associated with this GoGame is updated
+/// to match the new game state if @a updateGameResultIfNecessary is @e true,
+/// and if the current game variation is the main variation, and if the
+/// GoGameResult's update policy allows automatic updates.
 // -----------------------------------------------------------------------------
-- (void) revertStateFromEndedToInProgress
+- (void) revertStateFromEndedToInProgress:(bool)updateGameResultIfNecessary
 {
   if (GoGameStateGameHasEnded != self.state)
   {
@@ -1911,6 +2005,17 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     case GoGameHasEndedReasonWhiteWinsOnTime:
     case GoGameHasEndedReasonBlackWinsByForfeit:
     case GoGameHasEndedReasonWhiteWinsByForfeit:
+      if (updateGameResultIfNecessary)
+      {
+        GoGameResult* gameResult = self.gameInfo.gameResult;
+        if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.nodeModel.isMainVariation)
+        {
+          // Ideally the current game result matches the current end state,
+          // but we don't check for it. If there's any mismatch, we get rid
+          // of it now.
+          gameResult.dataType = GoGameResultDataTypeNoResult;
+        }
+      }
       self.document.dirty = true;
       break;
     default:

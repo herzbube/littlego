@@ -58,6 +58,7 @@
 - (void) testIsLegalMovePositionalSuperko;
 - (void) testIsLegalMoveSituationalSuperko;
 - (void) testIsLegalPassMoveIllegalReason;
+- (void) testEndGameIfNecessary;
 - (void) testEndGameDueToPassMovesIfGameRulesRequireIt;
 - (void) testEndGameWithReason;
 - (void) testRevertStateFromEndedToInProgress;

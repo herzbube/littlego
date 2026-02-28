@@ -22,7 +22,12 @@
 #import "../move/PlayMoveCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameInfo.h"
+#import "../../go/GoGameResult.h"
 #import "../../go/GoNodeModel.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
+#import "../../play/model/GameVariationModel.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -45,6 +50,7 @@ enum PlayCommandType
 @property(nonatomic, assign) enum PlayCommandType playCommandType;
 @property(nonatomic, assign) enum GoMoveType moveType;
 @property(nonatomic, retain) GoPoint* point;
+@property(nonatomic, assign) bool didRevertStateFromEndedToInProgress;
 @end
 
 
@@ -113,6 +119,7 @@ enum PlayCommandType
   self.playCommandType = aPlayCommandType;
   self.moveType = -1;
   self.point = nil;
+  self.didRevertStateFromEndedToInProgress = false;
 
   return self;
 }
@@ -138,7 +145,8 @@ enum PlayCommandType
     // GoGame does not allow moves to be played if the game state is
     // GoGameStateGameHasEnded => revert to "not ended" if necessary.
     // The game state can be GoGameStateGameHasEnded if the user is currently
-    // viewing a board position that is not the last board position. The
+    // viewing a board position that is not the last board position. In that
+    // case the new move is expected to create a new game variation. The
     // game state may become GoGameStateGameHasEnded again after the move
     // was played.
     bool success = [self revertGameStateIfNecessary];
@@ -152,6 +160,13 @@ enum PlayCommandType
     if (! success)
     {
       DDLogError(@"%@: Aborting because playCommand failed", [self shortDescription]);
+      return false;
+    }
+
+    success = [self updateGameResultIfNecessary];
+    if (! success)
+    {
+      DDLogError(@"%@: Aborting because updateGameResultIfNecessary failed", [self shortDescription]);
       return false;
     }
 
@@ -170,7 +185,24 @@ enum PlayCommandType
 {
   GoGame* game = [GoGame sharedGame];
   if (GoGameStateGameHasEnded == game.state)
-    [game revertStateFromEndedToInProgress];
+  {
+    // If the current game variation is the main variation, the game result
+    // needs to be updated in the following cases:
+    // - If the new move replaces future nodes, which means we modify the main
+    //   variation without changing to a different game variation.
+    // - If the new move creates a new game variation, and that new game
+    //   variation becomes the main variation (e.g. because of
+    //   #GoNewMoveInsertPositionNewVariationAtTop).
+    //
+    // However, the logic that evaluates GoNewMoveInsertPolicy and
+    // GoNewMoveInsertPosition is encapsulated in GoGame, and we don't want to
+    // replicate that logic here. We therefore postpone the decision whether to
+    // update the game result until after the move was played and we can examine
+    // the situation.
+    self.didRevertStateFromEndedToInProgress = true;
+
+    [game revertStateFromEndedToInProgress:false];
+  }
   return true;
 }
 
@@ -226,6 +258,54 @@ enum PlayCommandType
   {
     return false;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (bool) updateGameResultIfNecessary
+{
+  if (! self.didRevertStateFromEndedToInProgress)
+    return true;
+
+  GoGame* game = [GoGame sharedGame];
+
+  // The move that was played may have ended the game again with a reason that
+  // caused the game result to be updated already => in that case we don't have
+  // to do anything. At least the following scenarios are conceivable, maybe
+  // even more exist:
+  // - The computer player resigns
+  // - The computer player took too long for its move and the game meanwhile
+  //   was ended by the app's time-keeping service (Fuego should always play
+  //   before time is up, but the scenario may be real because of unexpected
+  //   time effects)
+  if (game.state == GoGameStateGameHasEnded)
+  {
+    switch (game.reasonForGameHasEnded)
+    {
+      case GoGameHasEndedReasonBlackWinsByResignation:
+      case GoGameHasEndedReasonWhiteWinsByResignation:
+      case GoGameHasEndedReasonBlackWinsOnTime:
+      case GoGameHasEndedReasonWhiteWinsOnTime:
+      case GoGameHasEndedReasonBlackWinsByForfeit:
+      case GoGameHasEndedReasonWhiteWinsByForfeit:
+        return true;
+      default:
+        break;
+    }
+  }
+
+  // The game result only needs to be updated if the main variation was
+  // changed, or a new game variation has become the main variation
+  if (! game.nodeModel.isMainVariation)
+    return true;
+
+  GoGameResult* gameResult = game.gameInfo.gameResult;
+  if (gameResult.updatePolicy != GoGameResultUpdatePolicyAutomatic)
+    return false;
+
+  gameResult.dataType = GoGameResultDataTypeNoResult;
+  return true;
 }
 
 @end
