@@ -547,6 +547,7 @@ NSString* goGameBoardPositionKey = @"BoardPosition";
 NSString* goGameRulesKey = @"Rules";
 NSString* goGameTimeSettingsKey = @"TimeSettings";
 NSString* goGameDocumentKey = @"Document";
+NSString* goGameGameInfoKey = @"GameInfo";
 NSString* goGameScoreKey = @"Score";
 NSString* goGameSetupFirstMoveColorKey = @"SetupFirstMoveColor";
 // GoPlayer keys
@@ -693,6 +694,15 @@ NSString* goTimeSystemExtraTimeDurationInSecondsKey = @"ExtraTimeDurationInSecon
 // GoTimeSettings keys
 NSString* goTimeSettingsAbsoluteTimeSystemKey = @"AbsoluteTimeSystem";
 NSString* goTimeSettingsPeriodBasedTimeSystemKey = @"PeriodBasedTimeSystem";
+// GoGameInfo keys
+NSString* goGameInfoGameResultKey = @"GameResult";
+// GoGameResult keys
+NSString* goGameResultDataTypeKey = @"DataType";
+NSString* goGameResultSgfStringKey = @"SgfString";
+NSString* goGameResultGameResultTypeKey = @"GameResultType";
+NSString* goGameResultWinTypeKey = @"WinType";
+NSString* goGameResultScoreKey = @"Score";
+NSString* goGameResultUpdatePolicyKey = @"UpdatePolicy";
 
 // Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";

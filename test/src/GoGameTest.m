@@ -34,9 +34,14 @@
 #import <go/GoNodeMarkup.h>
 #import <go/GoNodeModel.h>
 #import <go/GoNodeSetup.h>
+#import <go/GoNodeTimeData.h>
 #import <go/GoPlayer.h>
+#import <go/GoPlayerTimeData.h>
+#import <go/GoPlayerTimeDataAdditions.h>
 #import <go/GoPoint.h>
 #import <go/GoScore.h>
+#import <go/GoTimeSettings.h>
+#import <go/GoTimeSystem.h>
 #import <go/GoUtilities.h>
 #import <command/game/NewGameCommand.h>
 #import <main/ApplicationDelegate.h>
@@ -85,6 +90,7 @@
   XCTAssertNotNil(m_game.rules);
   XCTAssertNotNil(m_game.document);
   XCTAssertFalse(m_game.document.isDirty);
+  XCTAssertNotNil(m_game.gameInfo);
   XCTAssertNotNil(m_game.score);
   XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
   long long hashForEmptyBoard = 0;
@@ -102,7 +108,7 @@
 ///
 /// Some test setup is needed to make sure that all possible sub-objects to
 /// be archived/unarchived are present. To help with this, here is how the
-/// object tree looks like:
+/// object tree looks like (properties that are stored with encodeObject):
 ///
 /// @verbatim
 /// GoGame
@@ -111,7 +117,6 @@
 ///   - starPoints: NSArray of GoPoint
 /// - handicapPoints: NSArray of GoPoint
 /// - playerBlack: GoPlayer
-///   - uuid: NSString
 /// - playerWhite: GoPlayer
 /// - nodeModel: GoNodeModel
 ///   - game: GoGame
@@ -137,16 +142,24 @@
 ///       - mutableLabels: NSMutableDictionary with NSString keys and NSArray
 ///         values (containing an NSNumber and an NSString)
 ///       - mutableDimmings: NSMutableArray of NSString
+///     - goNodeTimeData: GoNodeTimeData
 ///   - nodeDictionary: NSDictionary with NSNumber keys and GoNode values
 ///   - nodeList: NSMutableArray of GoNode
 /// - boardPosition: GoBoardPosition
 ///   - game: GoGame
 /// - rules: GoGameRules
 ///   - No child objects
+/// - timeSettings: GoTimeSettings
 /// - document: GoGameDocument
 ///   - documentName: NSString
+/// - gameInfo: GoGameInfo
+///   - Too many properties to enumerate
 /// - score: GoScore
 ///   - game: GoGame
+///
+/// GoPlayer (linked to from various places in the tree above)
+/// - uuid: NSString
+/// - timeData: GoPlayerTimeData
 ///
 /// GoPoint (linked to from various places in the tree above)
 /// - vertex: GoVertex
@@ -155,6 +168,17 @@
 /// - region: GoBoardRegion
 ///   - points: NSMutableArray of GoPoint
 ///   - cachedAdjacentRegions: NSArray of GoBoardRegion
+///
+/// GoPlayerTimeData (linked to from various places in the tree above)
+/// - timeSettings: GoTimeSettings
+/// - goClock: GoClock
+///
+/// GoTimeSettings (linked to from various places in the tree above)
+/// - absoluteTimeSystem: GoTimeSystem
+/// - periodBasedTimeSystem: GoTimeSystem
+///
+/// GoTimeSystem (linked to from various places in the tree above)
+/// - customTimeSystemDescription: NSString
 /// @endverbatim
 // -----------------------------------------------------------------------------
 - (void) testInitWithCoder
@@ -189,9 +213,21 @@
   // Make sure that the following moves result in a capture
   [archivedGame changeSetupFirstMoveColor:GoColorBlack];
 
+  // Set up timed play before playing any moves, to make sure that GoGame
+  // creates GoNodeTimeData when a move is played
+  archivedGame.timeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:[[[GoTimeSystem alloc] initWithAbsoluteTimeDurationInSeconds:42.0] autorelease]
+                                                            periodBasedTimeSystem:[[[GoTimeSystem alloc] initWithCustomTimeSystemDescription:@"foo"] autorelease]] autorelease];
+  archivedGame.playerBlack.timeData = [[GoPlayerTimeData alloc] initWithTimeSettings:archivedGame.timeSettings isTimeDataForBlackPlayer:true];
+  archivedGame.playerBlack.timeData = [[GoPlayerTimeData alloc] initWithTimeSettings:archivedGame.timeSettings isTimeDataForBlackPlayer:false];
+  archivedGame.nodeModel.rootNode.isTimeDataValid = true;
+
+  // GoPlayerTimeData goClock
+  [archivedGame.playerBlack.timeData suspendClockIfNotSuspended:GoClockSuspendedReasonUserAction];
+
   // GoNode goMove
   // GoMove player
   // GoMove point
+  // GoNode goNodeTimeData
   [archivedGame play:pointA1];  // B
   // GoMove capturedStones
   [archivedGame play:pointA2];  // W captures B at A1
@@ -272,8 +308,12 @@
   GoBoardPosition* unarchivedBoardPosition = unarchivedGame.boardPosition;
   XCTAssertNotNil(unarchivedBoardPosition);
   XCTAssertNotNil(unarchivedGame.rules);
+  GoTimeSettings* unarchivedTimeSettings = unarchivedGame.timeSettings;
+  XCTAssertNotNil(unarchivedTimeSettings);
   GoGameDocument* unarchivedGameDocument = unarchivedGame.document;
   XCTAssertNotNil(unarchivedGameDocument);
+  GoGameInfo* unarchivedGameInfo = unarchivedGame.gameInfo;
+  XCTAssertNotNil(unarchivedGameInfo);
   GoScore* unarchivedScore = unarchivedGame.score;
   XCTAssertNotNil(unarchivedScore);
 
@@ -288,6 +328,15 @@
   XCTAssertNotNil(unarchivedGame.playerBlack.player);
   XCTAssertNotNil(unarchivedGame.playerBlack.player.uuid);
   XCTAssertTrue([unarchivedGame.playerBlack.player.uuid isEqualToString:archivedGame.playerBlack.player.uuid]);
+  GoPlayerTimeData* unarchivedBlackPlayerTimeData = unarchivedGame.playerBlack.timeData;
+  XCTAssertNotNil(unarchivedBlackPlayerTimeData);
+
+  // GoPlayerTimeData
+  XCTAssertNotNil(unarchivedBlackPlayerTimeData.goTimeSettings);
+  XCTAssertEqual(unarchivedBlackPlayerTimeData.goTimeSettings, unarchivedTimeSettings);
+  // Indirectly proves that goClock in GoPlayerTimeData has been unarchived
+  XCTAssertEqual(unarchivedBlackPlayerTimeData.clockState, GoClockStateSuspended);
+  XCTAssertEqual(unarchivedBlackPlayerTimeData.clockSuspendedReason, GoClockSuspendedReasonUserAction);
 
   // GoNodeModel
   GoNode* unarchivedRootNode = unarchivedNodeModel.rootNode;
@@ -349,6 +398,10 @@
   // GoBoardPosition
   // Indirectly proves that game in GoBoardPosition has been unarchived
   XCTAssertNotNil(unarchivedBoardPosition.currentNode);
+
+  // GoTimeSettings
+  XCTAssertEqual(unarchivedTimeSettings.absoluteTimeSystem.goTimeSystemType, GoTimeSystemTypeAbsolute);
+  XCTAssertTrue([unarchivedTimeSettings.periodBasedTimeSystem.customTimeSystemDescription isEqualToString:archivedGame.timeSettings.periodBasedTimeSystem.customTimeSystemDescription]);
 
   // GoGameDocument
   XCTAssertTrue([unarchivedGameDocument.documentName isEqualToString:archivedGame.document.documentName]);

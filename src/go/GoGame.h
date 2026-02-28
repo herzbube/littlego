@@ -19,6 +19,7 @@
 @class GoBoard;
 @class GoBoardPosition;
 @class GoGameDocument;
+@class GoGameInfo;
 @class GoGameRules;
 @class GoMove;
 @class GoMoveNodeCreationOptions;
@@ -206,6 +207,9 @@
 /// @brief Represents this GoGame as a document that can be saved to / loaded
 /// from disk.
 @property(nonatomic, retain) GoGameDocument* document;
+/// @brief Stroes game info properties that do not have an effect on the actual
+/// game play.
+@property(nonatomic, retain) GoGameInfo* gameInfo;
 /// @brief The GoScore object that provides scoring information about this
 /// GoGame.
 @property(nonatomic, retain) GoScore* score;

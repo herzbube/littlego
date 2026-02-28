@@ -22,6 +22,8 @@
 #import "GoBoardRegion.h"
 #import "GoGameAdditions.h"
 #import "GoGameDocument.h"
+#import "GoGameInfo.h"
+#import "GoGameResult.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
 #import "GoMoveNodeCreationOptions.h"
@@ -99,6 +101,7 @@
   _rules = [[GoGameRules alloc] init];
   _timeSettings = [[GoTimeSettings alloc] init];
   _document = [[GoGameDocument alloc] init];
+  _gameInfo = [[GoGameInfo alloc] init];
   _score = [[GoScore alloc] initWithGame:self];
   self.setupFirstMoveColor = GoColorNone;
   _zobristHashAfterHandicap = 0;
@@ -139,6 +142,7 @@
   if (! _timeSettings)
     _timeSettings = [[GoTimeSettings alloc] init];
   _document = [[decoder decodeObjectOfClass:[GoGameDocument class] forKey:goGameDocumentKey] retain];
+  _gameInfo = [[decoder decodeObjectOfClass:[GoGameInfo class] forKey:goGameGameInfoKey] retain];
   _score = [[decoder decodeObjectOfClass:[GoScore class] forKey:goGameScoreKey] retain];
   self.setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
   // The hash was not archived. Whoever is unarchiving this GoGame is
@@ -179,6 +183,7 @@
   self.rules = nil;
   self.timeSettings = nil;
   self.document = nil;
+  self.gameInfo = nil;
   self.score = nil;
 
   [super dealloc];

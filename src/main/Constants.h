@@ -2800,6 +2800,7 @@ extern NSString* goGameBoardPositionKey;
 extern NSString* goGameRulesKey;
 extern NSString* goGameTimeSettingsKey;
 extern NSString* goGameDocumentKey;
+extern NSString* goGameGameInfoKey;
 extern NSString* goGameScoreKey;
 extern NSString* goGameSetupFirstMoveColorKey;
 // GoPlayer keys
@@ -2947,6 +2948,15 @@ extern NSString* goTimeSystemExtraTimeDurationInSecondsKey;
 // GoTimeSettings keys
 extern NSString* goTimeSettingsAbsoluteTimeSystemKey;
 extern NSString* goTimeSettingsPeriodBasedTimeSystemKey;
+// GoGameInfo keys
+extern NSString* goGameInfoGameResultKey;
+// GoGameResult keys
+extern NSString* goGameResultDataTypeKey;
+extern NSString* goGameResultSgfStringKey;
+extern NSString* goGameResultGameResultTypeKey;
+extern NSString* goGameResultWinTypeKey;
+extern NSString* goGameResultScoreKey;
+extern NSString* goGameResultUpdatePolicyKey;
 //@}
 
 // -----------------------------------------------------------------------------
