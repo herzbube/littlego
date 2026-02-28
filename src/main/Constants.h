@@ -2885,6 +2885,7 @@ extern NSString* goNodeModelNodeDictionaryKey;
 extern NSString* goNodeModelNodeListKey;
 extern NSString* goNodeModelNumberOfNodesKey;
 extern NSString* goNodeModelNumberOfMovesKey;
+extern NSString* goNodeModelIsMainVariationKey;
 // GoPoint keys
 extern NSString* goPointVertexKey;
 extern NSString* goPointBoardKey;

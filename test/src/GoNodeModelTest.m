@@ -60,6 +60,7 @@
   XCTAssertNotNil(nodeModel.leafNode);
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
 }
 
 // -----------------------------------------------------------------------------
@@ -79,9 +80,10 @@
   XCTAssertEqualObjects(rootNode.lastChild, node);
   XCTAssertEqualObjects(node.parent, rootNode);
   XCTAssertNil(node.nextSibling);
+  XCTAssertTrue(testee.isMainVariation);
 
   // nextSibling is nil, lastChild of parent is not nil
-  [self setupGameTree:rootNode];
+  [self setupGameTree:testee];
   node = [GoNode node];
   XCTAssertNotNil(rootNode.lastChild);
   XCTAssertNotEqualObjects(rootNode.lastChild, node);
@@ -89,9 +91,10 @@
   XCTAssertEqualObjects(rootNode.lastChild, node);
   XCTAssertEqualObjects(node.parent, rootNode);
   XCTAssertNil(node.nextSibling);
+  XCTAssertTrue(testee.isMainVariation);
 
   // nextSibling is not nil, insert before firstChild of parent
-  [self setupGameTree:rootNode];
+  [self setupGameTree:testee];
   node = [GoNode node];
   GoNode* originalFirstChild = rootNode.firstChild;
   XCTAssertNotNil(originalFirstChild);
@@ -100,9 +103,11 @@
   XCTAssertEqualObjects(rootNode.firstChild, node);
   XCTAssertEqualObjects(node.parent, rootNode);
   XCTAssertEqualObjects(node.nextSibling, originalFirstChild);
+  // The current variation is no longer the main variation
+  XCTAssertFalse(testee.isMainVariation);
 
   // nextSibling is not nil, insert after firstChild of parent
-  [self setupGameTree:rootNode];
+  [self setupGameTree:testee];
   node = [GoNode node];
   GoNode* originalNextSiblingOfFirstChild = rootNode.firstChild.nextSibling;
   XCTAssertNotNil(originalNextSiblingOfFirstChild);
@@ -112,6 +117,7 @@
   XCTAssertEqualObjects(rootNode.firstChild.nextSibling, node);
   XCTAssertEqualObjects(node.parent, rootNode);
   XCTAssertEqualObjects(node.nextSibling, originalNextSiblingOfFirstChild);
+  XCTAssertTrue(testee.isMainVariation);
 }
 
 // -----------------------------------------------------------------------------
@@ -124,20 +130,23 @@
 
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
   XCTAssertEqual(rootNode, nodeModel.leafNode);
 
   // Changing to variation works when node tree consists of only the root node
   [nodeModel changeToMainVariation];
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
   XCTAssertEqual(rootNode, nodeModel.leafNode);
 
-  [self setupGameTree:rootNode];
+  // Calls changeToMainVariation for us
+  [self setupGameTree:nodeModel];
 
-  [nodeModel changeToMainVariation];
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
 
   // Changing the linkage of nodes in the game tree does not automatically
@@ -145,6 +154,7 @@
   [rootNode.firstChild setFirstChild:nil];
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
 
   // changeToMainVariation updates GoNodeModel according to the current game
@@ -152,7 +162,17 @@
   [nodeModel changeToMainVariation];
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+
+  // Calls changeToMainVariation for us
+  [self setupGameTree:nodeModel];
+  XCTAssertTrue(nodeModel.isMainVariation);
+  [nodeModel changeToVariationContainingNode:nodeModel.rootNode.lastChild];
+  // The current variation is no longer the main variation
+  XCTAssertFalse(nodeModel.isMainVariation);
+  [nodeModel changeToMainVariation];
+  XCTAssertTrue(nodeModel.isMainVariation);
 }
 
 // -----------------------------------------------------------------------------
@@ -165,20 +185,23 @@
 
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
   XCTAssertEqual(rootNode, nodeModel.leafNode);
 
   // Changing to variation works when node tree consists of only the root node
   [nodeModel changeToVariationContainingNode:rootNode];
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
   XCTAssertEqual(rootNode, nodeModel.leafNode);
 
-  [self setupGameTree:rootNode];
+  [self setupGameTree:nodeModel];
 
   [nodeModel changeToVariationContainingNode:rootNode];
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
 
   // Changing the linkage of nodes in the game tree does not automatically
@@ -186,6 +209,7 @@
   [rootNode.firstChild setFirstChild:nil];
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
 
   // changeToVariationContainingNode: updates GoNodeModel according to the
@@ -193,16 +217,20 @@
   [nodeModel changeToVariationContainingNode:rootNode];
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
 
   [nodeModel changeToVariationContainingNode:rootNode.lastChild];
   XCTAssertEqual(nodeModel.numberOfNodes, 3);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  // The current variation is no longer the main variation
+  XCTAssertFalse(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
 
   [nodeModel changeToVariationContainingNode:rootNode.firstChild];
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
 
   XCTAssertThrowsSpecificNamed([nodeModel changeToVariationContainingNode:nil],
@@ -220,7 +248,7 @@
   GoNodeModel* nodeModel = m_game.nodeModel;
   GoNode* rootNode = nodeModel.rootNode;
 
-  [self setupGameTree:rootNode];
+  [self setupGameTree:nodeModel];
   [nodeModel changeToVariationContainingNode:rootNode];
   GoNode* leafNode = nodeModel.leafNode;
 
@@ -260,14 +288,23 @@
 /// testChangeToVariationContainingNode(),
 /// testAncestorOfNodeInCurrentVariation() and
 /// testCreateVariationWithNodeNextSiblingParent().
+///
+/// When this method returns, @a nodeModel is set up with the main variation as
+/// the current variation.
 // -----------------------------------------------------------------------------
-- (void) setupGameTree:(GoNode*)rootNode
+- (void) setupGameTree:(GoNodeModel*)nodeModel
 {
   // Schema of tree being built:
   // o--o--o--o
   // |  +--o
   // +--o--o
   //    +--o
+
+  GoNode* rootNode = nodeModel.rootNode;
+
+  // Make sure the game tree can be set up multiple times
+  while (rootNode.hasChildren)
+    [rootNode removeChild:rootNode.lastChild];
 
   GoNode* mainVariationNode0 = rootNode;
   GoNode* mainVariationNode1 = [GoNode node];
@@ -289,6 +326,8 @@
   [mainVariationNode1 appendChild:variation3Node2];
   GoNode* variation4Node2 = [GoNode node];
   [secondaryVariationNode1 appendChild:variation4Node2];
+
+  [nodeModel changeToMainVariation];
 }
 
 // -----------------------------------------------------------------------------
@@ -353,6 +392,7 @@
 
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   GoNode* rootNode = nodeModel.rootNode;
   XCTAssertNil(rootNode.firstChild);
 
@@ -362,6 +402,7 @@
   XCTAssertTrue(m_game.document.isDirty);
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertNotNil(rootNode.firstChild);
   XCTAssertEqual(rootNode.firstChild, node1);
   XCTAssertEqual(node1.parent, rootNode);
@@ -375,6 +416,7 @@
   XCTAssertTrue(m_game.document.isDirty);
   XCTAssertEqual(nodeModel.numberOfNodes, 3);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertNotNil(node1.firstChild);
   XCTAssertEqual(node1.firstChild, node2);
   XCTAssertEqual(node2.parent, node1);
@@ -395,7 +437,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the discardNodesFromIndex:() method.
+/// @brief Exercises the discardNodesFromIndex:() method in simple scenarios
+/// without next or previous siblings.
 // -----------------------------------------------------------------------------
 - (void) testDiscardNodesFromIndex
 {
@@ -417,6 +460,7 @@
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 3);
   XCTAssertTrue(m_game.document.isDirty);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual(nodeModel.rootNode.firstChild, node1);
   XCTAssertEqual(node1.parent, nodeModel.rootNode);
   XCTAssertEqual(node1.firstChild, node2);
@@ -441,6 +485,7 @@
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
   XCTAssertTrue(m_game.document.isDirty);
+  XCTAssertTrue(nodeModel.isMainVariation);
   // Linking is broken between new leaf node and the first node to be discarded
   XCTAssertNil(node1.firstChild);
   XCTAssertNil(node2.parent);
@@ -452,12 +497,14 @@
   [nodeModel discardNodesFromIndex:1];
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertNil(nodeModel.rootNode.firstChild);
   XCTAssertNil(node1.parent);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the discardLeafNode() method.
+/// @brief Exercises the discardLeafNode() method in simple scenarios without
+/// next or previous siblings.
 // -----------------------------------------------------------------------------
 - (void) testDiscardLeafNode
 {
@@ -490,11 +537,13 @@
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
   XCTAssertTrue(m_game.document.isDirty);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertNil(node1.firstChild);
   XCTAssertNil(node2.parent);
   [nodeModel discardLeafNode];
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertNil(nodeModel.rootNode.firstChild);
   XCTAssertNil(node1.parent);
 
@@ -503,7 +552,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the discardAllNodes() method.
+/// @brief Exercises the discardAllNodes() method in simple scenarios without
+/// next or previous siblings.
 // -----------------------------------------------------------------------------
 - (void) testDiscardAllNodes
 {
@@ -537,6 +587,7 @@
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
   XCTAssertTrue(m_game.document.isDirty);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertNil(nodeModel.rootNode.firstChild);
   XCTAssertNil(node1.parent);
   XCTAssertEqual(node1.firstChild, node2);
@@ -624,6 +675,7 @@
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeC);
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqualObjects(self.nodeA.lastChild, self.nodeI);
   XCTAssertEqualObjects(self.nodeF.nextSibling, self.nodeI);
 
@@ -635,6 +687,7 @@
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeH);
   XCTAssertEqual(nodeModel.numberOfNodes, 5);
   XCTAssertEqual(nodeModel.numberOfMoves, 2);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeF], 2);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeG], 3);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeH], 4);
@@ -657,6 +710,7 @@
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeC);
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqualObjects(nodeModel.rootNode.lastChild, self.nodeJ);
   XCTAssertEqualObjects(self.nodeA.nextSibling, self.nodeJ);
 
@@ -667,6 +721,7 @@
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeE);
   XCTAssertEqual(nodeModel.numberOfNodes, 5);
   XCTAssertEqual(nodeModel.numberOfMoves, 3);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeD], 3);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeE], 4);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeC], -1);
@@ -687,6 +742,7 @@
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeC);
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqualObjects(self.nodeB.lastChild, self.nodeD);
   XCTAssertEqualObjects(self.nodeC.nextSibling, self.nodeD);
 
@@ -697,6 +753,7 @@
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeJ);
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeJ], 1);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeA], -1);
   XCTAssertEqualObjects(nodeModel.rootNode.firstChild, self.nodeJ);
@@ -713,10 +770,12 @@
   // Arrange
   [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
   GoNodeModel* nodeModel = m_game.nodeModel;
+  XCTAssertTrue(nodeModel.isMainVariation);
   [nodeModel changeToVariationContainingNode:self.nodeE];
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeE);
   XCTAssertEqual(nodeModel.numberOfNodes, 5);
   XCTAssertEqual(nodeModel.numberOfMoves, 3);
+  XCTAssertFalse(nodeModel.isMainVariation);
   XCTAssertEqualObjects(self.nodeB.firstChild, self.nodeC);
   XCTAssertEqualObjects(self.nodeB.lastChild, self.nodeD);
   XCTAssertEqualObjects(self.nodeC.nextSibling, self.nodeD);
@@ -729,6 +788,8 @@
   XCTAssertEqual(nodeModel.leafNode, self.nodeC);
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  // Current variation becomes main variation
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeC], 3);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeD], -1);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeE], -1);
@@ -747,22 +808,25 @@
   // Arrange
   [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
   GoNodeModel* nodeModel = m_game.nodeModel;
+  XCTAssertTrue(nodeModel.isMainVariation);
   [nodeModel changeToVariationContainingNode:self.nodeI];
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeI);
   XCTAssertEqual(nodeModel.numberOfNodes, 3);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertFalse(nodeModel.isMainVariation);
   XCTAssertEqualObjects(self.nodeA.firstChild, self.nodeB);
   XCTAssertEqualObjects(self.nodeA.lastChild, self.nodeI);
   XCTAssertEqualObjects(self.nodeB.nextSibling, self.nodeF);
   XCTAssertEqualObjects(self.nodeF.nextSibling, self.nodeI);
 
-  // Act
+  // Act 1
   [nodeModel discardLeafNode];
 
-  // Assert
+  // Assert 1
   XCTAssertEqual(nodeModel.leafNode, self.nodeH);
   XCTAssertEqual(nodeModel.numberOfNodes, 5);
   XCTAssertEqual(nodeModel.numberOfMoves, 2);
+  XCTAssertFalse(nodeModel.isMainVariation);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeF], 2);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeG], 3);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeH], 4);
@@ -772,6 +836,16 @@
   XCTAssertEqualObjects(self.nodeB.nextSibling, self.nodeF);
   XCTAssertNil(self.nodeF.nextSibling);
   XCTAssertNil(self.nodeI.parent);
+
+  // Act + Assert 2
+  [nodeModel discardLeafNode]; // self.nodeH
+  XCTAssertFalse(nodeModel.isMainVariation);
+  [nodeModel discardLeafNode]; // self.nodeG
+  XCTAssertFalse(nodeModel.isMainVariation);
+  [nodeModel discardLeafNode]; // self.nodeF
+  // Main variation becomes the current variation once we have discarded all
+  // leaf nodes
+  XCTAssertTrue(nodeModel.isMainVariation);
 }
 
 // -----------------------------------------------------------------------------
@@ -783,10 +857,12 @@
   // Arrange
   [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
   GoNodeModel* nodeModel = m_game.nodeModel;
+  XCTAssertTrue(nodeModel.isMainVariation);
   [nodeModel changeToVariationContainingNode:self.nodeJ];
   XCTAssertEqualObjects(nodeModel.leafNode, self.nodeJ);
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertFalse(nodeModel.isMainVariation);
   XCTAssertEqualObjects(nodeModel.rootNode.firstChild, self.nodeA);
   XCTAssertEqualObjects(nodeModel.rootNode.lastChild, self.nodeJ);
   XCTAssertEqualObjects(self.nodeA.nextSibling, self.nodeJ);
@@ -798,6 +874,8 @@
   XCTAssertEqual(nodeModel.leafNode, self.nodeC);
   XCTAssertEqual(nodeModel.numberOfNodes, 4);
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  // Main variation becomes the current variation
+  XCTAssertTrue(nodeModel.isMainVariation);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeA], 1);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeB], 2);
   XCTAssertEqual([nodeModel indexOfNode:self.nodeC], 3);
@@ -890,6 +968,14 @@
   [nodeModel discardAllNodes];
   XCTAssertNotNil(nodeModel.leafNode);
   XCTAssertEqual(nodeModel.leafNode, rootNode);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e isMainvariation property.
+// -----------------------------------------------------------------------------
+- (void) testIsMainVariation
+{
+  // The property and its update behaviour is tested as part of the other tests
 }
 
 @end

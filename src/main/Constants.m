@@ -632,6 +632,7 @@ NSString* goNodeModelNodeDictionaryKey = @"NodeDictionary";
 NSString* goNodeModelNodeListKey = @"NodeList";
 NSString* goNodeModelNumberOfNodesKey = @"NumberOfNodes";
 NSString* goNodeModelNumberOfMovesKey = @"NumberOfMoves";
+NSString* goNodeModelIsMainVariationKey = @"IsMainVariation";
 // GoPoint keys
 NSString* goPointVertexKey = @"Vertex";
 NSString* goPointBoardKey = @"Board";

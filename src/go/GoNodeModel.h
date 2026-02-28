@@ -86,4 +86,10 @@
 /// change value after property @e numberOfNodes.
 @property(nonatomic, assign, readonly) int numberOfMoves;
 
+/// @brief Returns @e true if the current variation is the main variation, i.e.
+/// the variation that consists of the root node of the game tree and all of
+/// its @e firstChild descendants. Returns @e false if the current variation is
+/// not the main variation.
+@property(nonatomic, assign, readonly) bool isMainVariation;
+
 @end

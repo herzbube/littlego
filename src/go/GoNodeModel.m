@@ -37,6 +37,7 @@
 @property(nonatomic, retain, readwrite) GoNode* rootNode;
 @property(nonatomic, assign, readwrite) int numberOfNodes;
 @property(nonatomic, assign, readwrite) int numberOfMoves;
+@property(nonatomic, assign, readwrite) bool isMainVariation;
 //@}
 @end
 
@@ -63,6 +64,7 @@
   self.nodeList = [NSMutableArray arrayWithObject:self.rootNode];
   self.numberOfNodes = 1;
   self.numberOfMoves = 0;
+  self.isMainVariation = true;
 
   return self;
 }
@@ -101,6 +103,7 @@
   self.nodeList = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [GoNode class]]] forKey:goNodeModelNodeListKey];
   self.numberOfNodes = [decoder decodeIntForKey:goNodeModelNumberOfNodesKey];
   self.numberOfMoves = [decoder decodeIntForKey:goNodeModelNumberOfMovesKey];
+  self.isMainVariation = [decoder decodeBoolForKey:goNodeModelIsMainVariationKey];
 
   return self;
 }
@@ -142,6 +145,7 @@
   [encoder encodeObject:self.nodeList forKey:goNodeModelNodeListKey];
   [encoder encodeInt:self.numberOfNodes forKey:goNodeModelNumberOfNodesKey];
   [encoder encodeInt:self.numberOfMoves forKey:goNodeModelNumberOfMovesKey];
+  [encoder encodeBool:self.isMainVariation forKey:goNodeModelIsMainVariationKey];
 }
 
 #pragma mark - NSCoding support
@@ -265,6 +269,10 @@
 
   // GoNode performs most of the error handling for us
   [parent insertChild:node beforeReferenceChild:nextSibling];
+
+  // It might be possible to optimize and not call this in certain situations,
+  // but getting it right seems to be more trouble than it's worth
+  [self updateIsMainVariation];
 }
 
 // -----------------------------------------------------------------------------
@@ -297,16 +305,22 @@
   }
 
   NSMutableArray* newNodeList = [NSMutableArray arrayWithObject:node];
+  bool newIsMainVariation = true;
   int newNumberOfMoves = node.goMove ? 1 : 0;
 
+  GoNode* childNode = node;
   GoNode* parent = node.parent;
   while (parent)
   {
     [newNodeList insertObject:parent atIndex:0];
 
+    if (parent.firstChild != childNode)
+      newIsMainVariation = false;
+
     if (parent.goMove)
       newNumberOfMoves++;
 
+    childNode = parent;
     parent = parent.parent;
   }
 
@@ -335,6 +349,10 @@
 
   self.numberOfNodes = newNumberOfNodes;
   self.numberOfMoves = newNumberOfMoves;
+  // We could also invoke updateIsMainVariation(), but calculating the new value
+  // ourselves is more efficient (updateIsMainVariation() would need another
+  // iteration over self.nodeList).
+  self.isMainVariation = newIsMainVariation;
 }
 
 // -----------------------------------------------------------------------------
@@ -449,6 +467,9 @@
   self.numberOfNodes = (int)_nodeList.count;
   if (node.goMove)
     self.numberOfMoves = self.numberOfMoves + 1;
+
+  // No need to update isMainVariation - adding a node to the current variation
+  // does not change the variation's status
 }
 
 // -----------------------------------------------------------------------------
@@ -536,6 +557,7 @@
   [_nodeList removeObjectsInRange:rangeToDiscard];
 
   GoNode* nodeToAdd = nextSiblingOfFirstNodeToDiscard ? nextSiblingOfFirstNodeToDiscard : previousSiblingOfFirstNodeToDiscard;
+  bool isMainVariationNeedsUpdate = nodeToAdd != nil;
   while (nodeToAdd)
   {
     [_nodeList addObject:nodeToAdd];
@@ -553,6 +575,9 @@
   self.numberOfNodes = (int)_nodeList.count;
   if (numberOfMovesToDiscard != 0)
     self.numberOfMoves = self.numberOfMoves - numberOfMovesToDiscard;
+
+  if (isMainVariationNeedsUpdate)
+    [self updateIsMainVariation];
 }
 
 // -----------------------------------------------------------------------------
@@ -600,6 +625,26 @@
 - (GoNode*) leafNode
 {
   return [_nodeList lastObject];
+}
+
+#pragma mark Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the @e isMainVariation property according to the current
+/// node list.
+// -----------------------------------------------------------------------------
+- (void) updateIsMainVariation
+{
+  for (GoNode* node in _nodeList)
+  {
+    if (node.parent && node.parent.firstChild != node)
+    {
+      self.isMainVariation = false;
+      return;
+    }
+  }
+
+  self.isMainVariation = true;
 }
 
 @end
