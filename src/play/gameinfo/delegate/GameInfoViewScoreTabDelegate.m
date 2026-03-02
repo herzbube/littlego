@@ -19,13 +19,17 @@
 #import "GameInfoViewScoreTabDelegate.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
+#import "../../../go/GoGameInfo.h"
+#import "../../../go/GoGameResult.h"
 #import "../../../go/GoGameRules.h"
 #import "../../../go/GoScore.h"
 #import "../../../go/GoUtilities.h"
 #import "../../../main/ModelProvider.h"
 #import "../../../main/Registry.h"
 #import "../../../ui/TableViewCellFactory.h"
+#import "../../../ui/TableViewVariableHeightCell.h"
 #import "../../../ui/UiSettingsModel.h"
+#import "../../../ui/UIViewControllerAdditions.h"
 #import "../../../utility/NSStringAdditions.h"
 
 
@@ -36,6 +40,7 @@
 enum GameInfoScoreTabTableViewSection
 {
   ScoreSection,
+  GameResultSection,
   MaxSection,
 };
 
@@ -57,6 +62,16 @@ enum ScoreSectionItem
 };
 
 // -----------------------------------------------------------------------------
+/// @brief Enumerates items in the GameResultSection.
+// -----------------------------------------------------------------------------
+enum GameResultSectionItem
+{
+  GameResultSummaryItem,
+  UseScoreAsGameResultItem,
+  MaxGameResultSection,
+};
+
+// -----------------------------------------------------------------------------
 /// @brief Enumerates columns in the ScoreSection.
 // -----------------------------------------------------------------------------
 enum ScoreSectionColumn
@@ -73,6 +88,10 @@ enum ScoreSectionColumn
 /// GameInfoViewScoreTabDelegate.
 // -----------------------------------------------------------------------------
 @interface GameInfoViewScoreTabDelegate()
+@property(nonatomic, assign) UIViewController* presentingViewController;
+@property(nonatomic, assign) UITableView* tableView;
+@property(nonatomic, assign) EditGameResultController* editGameResultController;
+@property(nonatomic, assign) bool gameResultDataDidChange;
 @end
 
 
@@ -85,12 +104,18 @@ enum ScoreSectionColumn
 ///
 /// @note This is the designated initializer of GameInfoViewScoreTabDelegate.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithPresentingViewController:(UIViewController*)presentingViewController
+                              tableView:(UITableView*)tableView
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
+
+  self.presentingViewController = presentingViewController;
+  self.tableView = tableView;
+  self.editGameResultController = nil;
+  self.gameResultDataDidChange = false;
 
   return self;
 }
@@ -101,6 +126,24 @@ enum ScoreSectionColumn
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  // This GameInfoViewScoreTabDelegate is deallocated while
+  // EditGameResultController is still presented if the game info view is
+  // popped directly from the navigation stack => for unknown reasons, UiKit in
+  // that case does not deallocate view controllers at the top of the navigation
+  // stack first, but immediately deallocates GameInfoViewController.
+  // - Scenario 1: User taps the tab bar item.
+  // - Scenario 2: A new game is created and the app programmatically pops the
+  //   navigation stack.
+  // In all cases we remove ourselves as the delegate of
+  // EditGameResultController so that EditGameResultController does not attempt
+  // to notify us after we are already deallocated.
+  if (self.editGameResultController)
+    self.editGameResultController.delegate = nil;
+
+  self.presentingViewController = nil;
+  self.tableView = nil;
+  self.editGameResultController = nil;
+
   [super dealloc];
 }
 
@@ -119,7 +162,10 @@ enum ScoreSectionColumn
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return MaxScoreSectionItem;
+  if (section == ScoreSection)
+    return MaxScoreSectionItem;
+  else
+    return MaxGameResultSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -127,29 +173,36 @@ enum ScoreSectionColumn
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
-  bool nodeWithNextMoveExists = [GoUtilities nodeWithNextMoveExists:boardPosition.currentNode inCurrentGameVariation:game];
-  NSString* titlePartOne = nil;
-  if (nodeWithNextMoveExists)
-    titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
-
-  NSString* titlePartTwo = nil;
-  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  if (section == ScoreSection)
   {
-    if (GoScoringSystemAreaScoring == game.rules.scoringSystem)
-      titlePartTwo = @"Stone count";
-    else
-      titlePartTwo = @"Dead stone count";
-    titlePartTwo = [titlePartTwo stringByAppendingString:@" and territory score are not available because you are not in scoring mode."];
-  }
+    GoGame* game = [GoGame sharedGame];
+    GoBoardPosition* boardPosition = game.boardPosition;
+    bool nodeWithNextMoveExists = [GoUtilities nodeWithNextMoveExists:boardPosition.currentNode inCurrentGameVariation:game];
+    NSString* titlePartOne = nil;
+    if (nodeWithNextMoveExists)
+      titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
 
-  if (titlePartOne && titlePartTwo)
-    return [NSString stringWithFormat:@"%@\n\n%@", titlePartOne, titlePartTwo];
-  else if (titlePartOne)
-    return titlePartOne;
+    NSString* titlePartTwo = nil;
+    if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+    {
+      if (GoScoringSystemAreaScoring == game.rules.scoringSystem)
+        titlePartTwo = @"Stone count";
+      else
+        titlePartTwo = @"Dead stone count";
+      titlePartTwo = [titlePartTwo stringByAppendingString:@" and territory score are not available because you are not in scoring mode."];
+    }
+
+    if (titlePartOne && titlePartTwo)
+      return [NSString stringWithFormat:@"%@\n\n%@", titlePartOne, titlePartTwo];
+    else if (titlePartOne)
+      return titlePartOne;
+    else
+      return titlePartTwo;
+  }
   else
-    return titlePartTwo;
+  {
+    return @"The overall game result is recorded when you save the game to the archive. If there are several game variations, the overall game result refers to the outcome of the game that is played out in the main variation.";
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -167,30 +220,76 @@ enum ScoreSectionColumn
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView scoreInfoTypeCellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell;
-  switch (indexPath.row)
+  UITableViewCell* cell = nil;
+
+  switch (indexPath.section)
   {
-    case ResultItem:
+    case ScoreSection:
     {
-      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-      cell.textLabel.text = [[GoGame sharedGame].score resultString];
-      cell.textLabel.textAlignment = NSTextAlignmentCenter;
-      cell.textLabel.numberOfLines = 0;
+      switch (indexPath.row)
+      {
+        case ResultItem:
+        {
+          cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.textLabel.text = [[GoGame sharedGame].score resultString];
+          cell.textLabel.textAlignment = NSTextAlignmentCenter;
+          cell.textLabel.numberOfLines = 0;
+          break;
+        }
+        default:
+        {
+          cell = [TableViewCellFactory cellWithType:GridCellType tableView:tableView];
+          TableViewGridCell* gridCell = (TableViewGridCell*)cell;
+          // Remember which row this is so that the delegate methods know what to do
+          gridCell.tag = indexPath.row;
+          gridCell.delegate = self;
+          // Triggers delegate methods
+          [gridCell setupCellContent];
+          break;
+        }
+      }
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    }
+    case GameResultSection:
+    {
+      switch (indexPath.row)
+      {
+        case GameResultSummaryItem:
+        {
+          cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+          TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+
+          GoGameResult* gameResult = [GoGame sharedGame].gameInfo.gameResult;
+          variableHeightCell.descriptionLabel.text = @"Game result";
+          variableHeightCell.valueLabel.text = [GoUtilities stringWithDescriptionOfGameResult:gameResult];
+          variableHeightCell.descriptionLabelWidthPercentage = 0.4;
+
+          variableHeightCell.selectionStyle = UITableViewCellSelectionStyleBlue;
+          variableHeightCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        case UseScoreAsGameResultItem:
+        {
+          cell = [TableViewCellFactory cellWithType:ActionTextCellType tableView:tableView];
+          cell.textLabel.text = @"Use score as game result";
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
       break;
     }
     default:
     {
-      cell = [TableViewCellFactory cellWithType:GridCellType tableView:tableView];
-      TableViewGridCell* gridCell = (TableViewGridCell*)cell;
-      // Remember which row this is so that the delegate methods know what to do
-      gridCell.tag = indexPath.row;
-      gridCell.delegate = self;
-      // Triggers delegate methods
-      [gridCell setupCellContent];
+      assert(0);
       break;
     }
   }
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
   return cell;
 }
 
@@ -202,6 +301,74 @@ enum ScoreSectionColumn
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
+  if (indexPath.section != GameResultSection)
+    return;
+
+  switch (indexPath.row)
+  {
+    case GameResultSummaryItem:
+    {
+      GoGame* game = [GoGame sharedGame];
+      GoGameResult* gameResult = game.gameInfo.gameResult;
+      self.editGameResultController = [EditGameResultController controllerWithGameResult:gameResult
+                                                                                delegate:self];
+      [self.presentingViewController.navigationController pushViewController:self.editGameResultController animated:YES];
+      break;
+    }
+    case UseScoreAsGameResultItem:
+    {
+      GoGame* game = [GoGame sharedGame];
+      GoScore* score = game.score;
+      GoGameResult* gameResult = game.gameInfo.gameResult;
+      switch (score.result)
+      {
+        case GoGameResultNone:
+        {
+          gameResult.dataType = GoGameResultDataTypeNoResult;
+          break;
+        }
+        case GoGameResultBlackHasWon:
+        {
+          gameResult.dataType = GoGameResultDataTypeStructuredData;
+          gameResult.gameResultType = GoGameResultTypeBlackWin;
+          gameResult.winType = GoGameResultWinTypeWinWithScore;
+          gameResult.score = score.totalScoreBlack - score.totalScoreWhite;
+          break;
+        }
+        case GoGameResultWhiteHasWon:
+        {
+          gameResult.dataType = GoGameResultDataTypeStructuredData;
+          gameResult.gameResultType = GoGameResultTypeWhiteWin;
+          gameResult.winType = GoGameResultWinTypeWinWithScore;
+          gameResult.score = score.totalScoreWhite - score.totalScoreBlack;
+          break;
+        }
+        case GoGameResultTie:
+        {
+          gameResult.dataType = GoGameResultDataTypeStructuredData;
+          gameResult.gameResultType = GoGameResultTypeDraw;
+          break;
+        }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:GameResultSummaryItem
+                                                  inSection:GameResultSection];
+      [tableView reloadRowsAtIndexPaths:@[indexPath]
+                       withRowAnimation:UITableViewRowAnimationAutomatic];
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
+  }
 }
 
 #pragma mark - TableViewGridCellDelegate overrides
@@ -396,6 +563,37 @@ enum ScoreSectionColumn
     }
   }
   return @"";
+}
+
+#pragma mark - EditGameResultDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief EditGameResultDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) editGameResultController:(EditGameResultController*)controller gameResultDidChange:(GoGameResult*)gameResult
+{
+  // At this point self.tableView is not visible => we should not tell it to
+  // reload parts of its data yet. Instead we wait until editing finishes and
+  // EditGameResultController is dismissed
+  self.gameResultDataDidChange = true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditGameResultDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) editGameResultController:(EditGameResultController*)controller gameResultEditingDidFinish:(GoGameResult*)gameResult
+{
+  if (! self.gameResultDataDidChange)
+    return;
+  self.gameResultDataDidChange = false;
+
+  self.editGameResultController = nil;
+  
+  NSUInteger sectionIndex = GameResultSection;
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:GameResultSummaryItem inSection:sectionIndex];
+  NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
+  [self.tableView reloadRowsAtIndexPaths:indexPaths
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 @end

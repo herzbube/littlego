@@ -33,7 +33,7 @@
   return [self initWithDataType:GoGameResultDataTypeNoResult
                       sgfString:nil
                  gameResultType:GoGameResultTypeUnknownResult
-                        winType:GoGameResultWinTypeWinWithScore
+                        winType:GoGameResultWinTypeWinWithoutScore
                           score:0.0];
 }
 
@@ -121,8 +121,6 @@
 /// black or the white player wins and is used to derive the game result type.
 /// @a winType is set to #GoGameResultWinTypeWinWithScore. The update policy is
 /// #GoGameResultUpdatePolicyAutomatic.
-///
-/// @exception NSInvalidArgumentException Is raised if @a score is negative.
 // -----------------------------------------------------------------------------
 - (id) initWithPlayerWin:(bool)blackPlayerWins
                    score:(double)score
@@ -144,18 +142,6 @@
 ///   @e nil.
 /// - If @a dataType is not #GoGameResultDataTypeSgfString and @a sgfString is
 ///   not @e nil.
-/// - If @a periodDurationInSeconds is 0 (zero) or less and @a goTimeSystemType
-///   is not #GoTimeSystemTypeNone or #GoTimeSystemTypeCustom
-/// - If @a minimumNumberOfMovesPerPeriod is 0 (zero) although
-///   @a hasMinimumNumberOfMovesPerPeriod is true.
-/// - If @a minimumNumberOfMovesPerPeriod is not 0 (zero) although
-///   @a hasMinimumNumberOfMovesPerPeriod is false.
-/// - If @a extraTimeDurationInSeconds is 0 (zero) or less although
-///   @a goUnusedTimeHandling is #GoUnusedTimeHandlingAddExtraTime.
-/// - If @a goTimeSystemType is #GoTimeSystemTypeCustom but
-///   @a customTimeSystemDescription is @e nil.
-/// - If @a goTimeSystemType is not #GoTimeSystemTypeCustom but
-///   @a customTimeSystemDescription is not @e nil.
 ///
 /// @note This is the designated initializer of GoGameResult.
 // -----------------------------------------------------------------------------
@@ -181,11 +167,9 @@
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
   }
 
-  if (score < 0)
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to initialize GoGameResult, invalid score %f, score must not be negative", score];
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
-  }
+  // We accept all score values - even negative ones - so that all SGF data
+  // (even strange data) is preserved when it makes a round-trip through
+  // GoGameResult.
 
   self.dataType = dataType;
   self.sgfString = sgfString;

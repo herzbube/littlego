@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "../EditGameResultController.h"
 #import "../../../ui/TableViewGridCell.h"
 
 
@@ -25,8 +26,12 @@
 // -----------------------------------------------------------------------------
 @interface GameInfoViewScoreTabDelegate : NSObject <UITableViewDelegate,
                                                     UITableViewDataSource,
-                                                    TableViewGridCellDelegate>
+                                                    TableViewGridCellDelegate,
+                                                    EditGameResultDelegate>
 {
 }
+
+- (id) initWithPresentingViewController:(UIViewController*)presentingViewController
+                              tableView:(UITableView*)tableView;
 
 @end

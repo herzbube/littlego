@@ -33,6 +33,7 @@
 #import "GoNodeTimeData.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
+#import "../utility/NSStringAdditions.h"
 
 
 @implementation GoUtilities
@@ -1253,21 +1254,16 @@
     }
     case GoGameResultDataTypeSgfString:
     {
-      return [NSString stringWithFormat:@"Cannot interpret result string: \"%@\"", gameResult.sgfString];
+      return [NSString stringWithFormat:@"Cannot interpret result text \"%@\"", gameResult.sgfString];
     }
     case GoGameResultDataTypeStructuredData:
     {
+      NSString* gameResultAsString = [NSString stringWithGameResultType:gameResult.gameResultType];
       switch (gameResult.gameResultType)
       {
         case GoGameResultTypeBlackWin:
         case GoGameResultTypeWhiteWin:
         {
-          NSString* gameResultAsString;
-          if (gameResult.gameResultType == GoGameResultTypeBlackWin)
-            gameResultAsString = @"Black wins";
-          else
-            gameResultAsString = @"White wins";
-
           switch (gameResult.winType)
           {
             case GoGameResultWinTypeWinWithScore:
@@ -1290,12 +1286,8 @@
           }
           return gameResultAsString;
         }
-        case GoGameResultTypeDraw:
-          return @"Game is a tie";
-        case GoGameResultTypeNoResult:
-          return @"No result / Suspended play";
-        case GoGameResultTypeUnknownResult:
-          return @"Unknown result";
+        default:
+          return gameResultAsString;
       }
     }
   }

@@ -18,6 +18,7 @@
 // Project includes
 #import "GoNodeMarkup.h"
 #import "../utility/ExceptionUtility.h"
+#import "../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -674,19 +675,11 @@
 // -----------------------------------------------------------------------------
 + (int) labelAsNumberMarkerValue:(NSString*)labelText
 {
-  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
-  // Parses the text as an integer number
-  numberFormatter.numberStyle = NSNumberFormatterNoStyle;
-  // If the string contains any characters other than numerical digits or
-  // locale-appropriate group or decimal separators, parsing will fail.
-  // Leading/trailing space is ignored.
-  // Returns nil if parsing fails.
-  NSNumber* number = [numberFormatter numberFromString:labelText];
-  if (! number)
+  int numberMarkerValue;
+  bool success = [labelText tryConvertToIntValue:&numberMarkerValue];
+  if (! success)
     return -1;
-
-  int numberMarkerValue = [number intValue];
-  if (numberMarkerValue >= gMinimumNumberMarkerValue && numberMarkerValue <= gMaximumNumberMarkerValue)
+  else if (numberMarkerValue >= gMinimumNumberMarkerValue && numberMarkerValue <= gMaximumNumberMarkerValue)
     return numberMarkerValue;
   else
     return -1;

@@ -154,8 +154,16 @@
     return;
   }
 
-  if (self.topViewController == viewController)
-    [self popViewControllerAnimated:YES];
+  NSUInteger indexOfViewController = [self.viewControllers indexOfObject:viewController];
+  if (indexOfViewController != NSNotFound)
+  {
+    // Other view controllers (e.g. EditGameResultController) may be displayed
+    // on top of the supplied view controller, so it's not enough to just pop
+    // the top-most view controller
+    NSUInteger indexOfNewTopViewController = indexOfViewController - 1;
+    UIViewController* newTopViewController = [self.viewControllers objectAtIndex:indexOfNewTopViewController];
+    [self popToViewController:newTopViewController animated:NO];
+  }
 }
 
 // -----------------------------------------------------------------------------
