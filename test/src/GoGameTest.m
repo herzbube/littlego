@@ -849,9 +849,6 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Exercises the @e reasonForGameHasEnded property.
-///
-/// Tests are almost identical to those in
-/// testEndGameDueToPassMovesIfGameRulesRequireIt().
 // -----------------------------------------------------------------------------
 - (void) testReasonForGameHasEnded
 {
@@ -1932,11 +1929,17 @@
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress:false];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game revertStateFromEndedToInProgress:true];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
 
   // If GoFourPassesRuleFourPassesEndTheGame is active it will cause the game
   // to end with reason GoGameHasEndedReasonFourPasses when the second pair of
@@ -1948,8 +1951,12 @@
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress:false];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game revertStateFromEndedToInProgress:true];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
   [m_game pass];
   [m_game pass];
   // If the game has ended with reason GoGameHasEndedReasonFourPasses, the UI
@@ -1957,11 +1964,16 @@
   // playing. In other words, in the UI there is no way to resume play as we
   // do where, so this test is somewhat contrived.
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress:false];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
+  [m_game revertStateFromEndedToInProgress:true];
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
 
   // The UI does not allow GoLifeAndDeathSettlingRuleThreePasses and
   // GoFourPassesRuleFourPassesEndTheGame to be active at the same time, so this
@@ -1975,12 +1987,44 @@
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonThreePasses, m_game.reasonForGameHasEnded);
-  [m_game revertStateFromEndedToInProgress:false];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game revertStateFromEndedToInProgress:true];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
   [m_game pass];
   // GoGameHasEndedReasonFourPasses
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
 
-  XCTAssertThrowsSpecificNamed([m_game endGameDueToPassMovesIfGameRulesRequireIt],
+  // Manual update policy prevents the game result update
+  newGameModel.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleTwoPasses;
+  newGameModel.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  m_game.gameInfo.gameResult.updatePolicy = GoGameResultUpdatePolicyManual;
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+
+  // Non-main variation prevents the game result update
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [m_game pass];
+  m_game.boardPosition.currentBoardPosition = 0;
+  XCTAssertTrue(m_game.nodeModel.isMainVariation);
+  // Create new game variation and switch the current game variation to it
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:GoNewMoveInsertPositionNewVariationAtBottom];
+  [m_game passWithMoveNodeCreationOptions:options];
+  XCTAssertFalse(m_game.nodeModel.isMainVariation);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game pass];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+
+  XCTAssertThrowsSpecificNamed([m_game endGameDueToPassMovesIfGameRulesRequireIt:true],
                               NSException, NSInternalInconsistencyException, @"attempt to end game after game is already ended");
 }
 
@@ -1989,20 +2033,55 @@
 // -----------------------------------------------------------------------------
 - (void) testEndGameWithReason
 {
-  XCTAssertThrowsSpecificNamed([m_game endGameWithReason:GoGameHasEndedReasonNotYetEnded],
+  XCTAssertThrowsSpecificNamed([m_game endGameWithReason:GoGameHasEndedReasonNotYetEnded updateGameResultIfNecessary:true],
                                NSException, NSInvalidArgumentException, @"invalid reason");
 
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   XCTAssertFalse(m_game.document.dirty);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
 
-  [m_game endGameWithReason:GoGameHasEndedReasonFourPasses];
+  [m_game endGameWithReason:GoGameHasEndedReasonFourPasses updateGameResultIfNecessary:false];
 
   XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
   XCTAssertTrue(m_game.document.dirty);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
 
-  XCTAssertThrowsSpecificNamed([m_game endGameWithReason:GoGameHasEndedReasonTwoPasses],
+  // Update game result
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game endGameWithReason:GoGameHasEndedReasonFourPasses updateGameResultIfNecessary:true];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
+
+  // Manual update policy prevents the game result update
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  m_game.gameInfo.gameResult.updatePolicy = GoGameResultUpdatePolicyManual;
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  [m_game endGameWithReason:GoGameHasEndedReasonFourPasses updateGameResultIfNecessary:true];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+
+  // Non-main variation prevents the game result update
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [m_game pass];
+  m_game.boardPosition.currentBoardPosition = 0;
+  XCTAssertTrue(m_game.nodeModel.isMainVariation);
+  // Create new game variation and switch the current game variation to it
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:GoNewMoveInsertPositionNewVariationAtBottom];
+  [m_game passWithMoveNodeCreationOptions:options];
+  XCTAssertFalse(m_game.nodeModel.isMainVariation);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
+  [m_game endGameWithReason:GoGameHasEndedReasonFourPasses updateGameResultIfNecessary:true];
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+
+  XCTAssertThrowsSpecificNamed([m_game endGameWithReason:GoGameHasEndedReasonTwoPasses updateGameResultIfNecessary:true],
                                NSException, NSInternalInconsistencyException, @"game has already ended");
 }
 
@@ -2020,19 +2099,22 @@
   XCTAssertEqual(GoGameStateGameHasEnded, m_game.state);
   XCTAssertTrue(m_game.document.isDirty);
   m_game.document.dirty = false;
-  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
   XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
   [m_game revertStateFromEndedToInProgress:false];
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   XCTAssertFalse(m_game.document.isDirty);
-  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
 
   // Revert on main variation after two pass moves, with updating game result
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   [m_game pass];
   [m_game pass];
-  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeNoResult);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
   XCTAssertEqual(m_game.gameInfo.gameResult.updatePolicy, GoGameResultUpdatePolicyAutomatic);
   [m_game revertStateFromEndedToInProgress:true];
   // Reverting game state after two passes has no effect on game result

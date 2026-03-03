@@ -19,8 +19,6 @@
 #import "TimedPlayController.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoGameInfo.h"
-#import "../../go/GoGameResult.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
@@ -776,18 +774,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   enum GoGameHasEndedReason reason = (playerTimeData.isTimeDataForBlackPlayer
                                       ? GoGameHasEndedReasonWhiteWinsOnTime
                                       : GoGameHasEndedReasonBlackWinsOnTime);
-  [self.game endGameWithReason:reason];
-
-  // TODO xxx can this be moved to endGameWithReason:?
-  GoGameResult* gameResult = self.game.gameInfo.gameResult;
-  if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.game.nodeModel.isMainVariation)
-  {
-    gameResult.dataType = GoGameResultDataTypeStructuredData;
-    gameResult.gameResultType = (playerTimeData.isTimeDataForBlackPlayer
-                                 ? GoGameResultTypeWhiteWin
-                                 : GoGameResultTypeBlackWin);
-    gameResult.winType = GoGameResultWinTypeWinOnTime;
-  }
+  [self.game endGameWithReason:reason updateGameResultIfNecessary:true];
 }
 
 #pragma mark - PlayerClockService implementation

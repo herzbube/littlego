@@ -21,6 +21,7 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameResult.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
 #import "GoNode.h"
@@ -33,7 +34,6 @@
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 #import "../play/model/ScoringModel.h"
-#import "../sgf/SgfUtilities.h"
 #import "../ui/UiSettingsModel.h"
 #import "../utility/NSStringAdditions.h"
 
@@ -456,10 +456,10 @@
   if (! [GoUtilities nodeWithNextMoveExists:self.game.boardPosition.currentNode inCurrentGameVariation:self.game]
       && GoGameStateGameHasEnded == self.game.state)
   {
-    SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:self.game.reasonForGameHasEnded];
-    if (gameResult.IsValid)
+    GoGameResult* gameResult = [GoUtilities gameResultForGoGameHasEndedReason:self.game.reasonForGameHasEnded];
+    if (gameResult.dataType == GoGameResultDataTypeStructuredData)
     {
-      NSString* gameResultString = [SgfUtilities stringForSgfGameResult:gameResult];
+      NSString* gameResultString = [GoUtilities stringWithDescriptionOfGameResult:gameResult];
       resultString = [NSString stringWithFormat:@"%@ / %@", gameResultString, resultString];
     }
   }

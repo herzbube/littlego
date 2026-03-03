@@ -1704,7 +1704,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   // that this may be overridden later if the SGF file contains a SGFCGameResult
   // that can be mapped to one of the app's recognized game endings
   // (e.g. resignation).
-  [game endGameDueToPassMovesIfGameRulesRequireIt];
+  [game endGameDueToPassMovesIfGameRulesRequireIt:true];
 
   return true;
 }
@@ -1789,7 +1789,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   {
     if (game.state == GoGameStateGameHasEnded)
       [game revertStateFromEndedToInProgress:false];
-    [game endGameWithReason:reasonForGameHasEnded];
+    [game endGameWithReason:reasonForGameHasEnded updateGameResultIfNecessary:false];
   }
 
   return true;

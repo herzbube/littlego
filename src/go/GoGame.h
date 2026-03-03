@@ -82,8 +82,8 @@
 - (bool) isLegalPassMoveByColor:(enum GoColor)color illegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalPassMoveByColor:(enum GoColor)color afterNode:(GoNode*)node illegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (void) endGameIfNecessary;
-- (void) endGameDueToPassMovesIfGameRulesRequireIt;
-- (void) endGameWithReason:(enum GoGameHasEndedReason)reason;
+- (void) endGameDueToPassMovesIfGameRulesRequireIt:(bool)updateGameResultIfNecessary;
+- (void) endGameWithReason:(enum GoGameHasEndedReason)reason updateGameResultIfNecessary:(bool)updateGameResultIfNecessary;
 - (void) revertStateFromEndedToInProgress:(bool)updateGameResultIfNecessary;
 - (void) switchNextMoveColor;
 - (void) toggleHandicapPoint:(GoPoint*)point;

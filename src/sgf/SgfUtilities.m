@@ -158,72 +158,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a string representation of the content of @a sgfGameResult.
-/// Returns an empty string if the game result is not valid.
-// -----------------------------------------------------------------------------
-+ (NSString*) stringForSgfGameResult:(SGFCGameResult)sgfGameResult
-{
-  if (! sgfGameResult.IsValid)
-    return @"";
-
-  switch (sgfGameResult.GameResultType)
-  {
-    case SGFCGameResultTypeBlackWin:
-    case SGFCGameResultTypeWhiteWin:
-    {
-      NSString* gameResultAsString;
-      if (sgfGameResult.GameResultType == SGFCGameResultTypeBlackWin)
-        gameResultAsString = @"Black wins";
-      else
-        gameResultAsString = @"White wins";
-
-      switch (sgfGameResult.WinType)
-      {
-        case SGFCWinTypeWinWithScore:
-          gameResultAsString = [gameResultAsString stringByAppendingFormat:@" by %.1f", sgfGameResult.Score];
-          break;
-        case SGFCWinTypeWinWithoutScore:
-          break;
-        case SGFCWinTypeWinByResignation:
-          gameResultAsString = [gameResultAsString stringByAppendingString:@" by resignation"];
-          break;
-        case SGFCWinTypeWinOnTime:
-          gameResultAsString = [gameResultAsString stringByAppendingString:@" on time"];
-          break;
-        case SGFCWinTypeWinByForfeit:
-          gameResultAsString = [gameResultAsString stringByAppendingString:@" by forfeit"];
-          break;
-        default:
-          assert(0);
-          break;
-      }
-
-      return gameResultAsString;
-    }
-    case SGFCGameResultTypeDraw:
-    {
-      return @"Game is a tie";
-    }
-    case SGFCGameResultTypeNoResult:
-    {
-      return @"No result / Suspended play";
-    }
-    case SGFCGameResultTypeUnknownResult:
-    {
-      return @"Unknown result";
-    }
-    default:
-    {
-      assert(0);
-      break;
-    }
-  }
-
-  // If this happens there is a coding error above
-  return @"";
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Returns a string representation of the content of @a sgfGoPlayerRank.
 /// Returns an empty string if the SGFCGoPlayerRank is not valid.
 // -----------------------------------------------------------------------------
@@ -404,58 +338,6 @@
     }
     return nonCriticalWarningImage;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Maps the app-specific enum value @a goGameHasEndedReason to an
-/// SGFCGameResult struct. If no mapping is possible the returned struct has
-/// the @e IsValid property set to NO.
-// -----------------------------------------------------------------------------
-+ (SGFCGameResult) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason
-{
-  SGFCGameResultType gameResultType;
-  SGFCWinType winType;
-  BOOL isValid;
-  switch (goGameHasEndedReason)
-  {
-    case GoGameHasEndedReasonBlackWinsByResignation:
-      gameResultType = SGFCGameResultTypeBlackWin;
-      winType = SGFCWinTypeWinByResignation;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonWhiteWinsByResignation:
-      gameResultType = SGFCGameResultTypeWhiteWin;
-      winType = SGFCWinTypeWinByResignation;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonBlackWinsOnTime:
-      gameResultType = SGFCGameResultTypeBlackWin;
-      winType = SGFCWinTypeWinOnTime;;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonWhiteWinsOnTime:
-      gameResultType = SGFCGameResultTypeWhiteWin;
-      winType = SGFCWinTypeWinOnTime;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonBlackWinsByForfeit:
-      gameResultType = SGFCGameResultTypeBlackWin;
-      winType = SGFCWinTypeWinByForfeit;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonWhiteWinsByForfeit:
-      gameResultType = SGFCGameResultTypeWhiteWin;
-      winType = SGFCWinTypeWinByForfeit;
-      isValid = YES;
-      break;
-    default:
-      gameResultType = SGFCGameResultTypeUnknownResult;
-      winType = SGFCWinTypeWinWithScore;
-      isValid = NO;
-      break;
-  }
-
-  return SGFCGameResultMake(gameResultType, winType, 0.0, isValid);
 }
 
 // -----------------------------------------------------------------------------

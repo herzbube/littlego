@@ -567,7 +567,7 @@
 
   // This may change the game state. Such a change must occur after the move was
   // generated; this order is important for observer notifications.
-  [self endGameDueToPassMovesIfGameRulesRequireIt];
+  [self endGameDueToPassMovesIfGameRulesRequireIt:true];
 }
 
 // -----------------------------------------------------------------------------
@@ -823,26 +823,10 @@
     @throw exception;
   }
 
-  enum GoGameResultType gameResultType;
   if (self.nextMoveColor == GoColorBlack)
-  {
-    [self endGameWithReason:GoGameHasEndedReasonWhiteWinsByResignation];
-    gameResultType = GoGameResultTypeWhiteWin;
-  }
+    [self endGameWithReason:GoGameHasEndedReasonWhiteWinsByResignation updateGameResultIfNecessary:true];
   else
-  {
-    [self endGameWithReason:GoGameHasEndedReasonBlackWinsByResignation];
-    gameResultType = GoGameResultTypeBlackWin;
-  }
-
-  // TODO xxx can this be moved to endGameWithReason:?
-  GoGameResult* gameResult = self.gameInfo.gameResult;
-  if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.nodeModel.isMainVariation)
-  {
-    gameResult.dataType = GoGameResultDataTypeStructuredData;
-    gameResult.gameResultType = gameResultType;
-    gameResult.winType = GoGameResultWinTypeWinByResignation;
-  }
+    [self endGameWithReason:GoGameHasEndedReasonBlackWinsByResignation updateGameResultIfNecessary:true];
 }
 
 // -----------------------------------------------------------------------------
@@ -1834,47 +1818,23 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 // -----------------------------------------------------------------------------
 - (void) endGameIfNecessary
 {
+  // IMPORTANT: This method must NOT update the game result - this method is
+  // invoked in a context where the game end state is set after a game variation
+  // changes, not in a context where the game end state is set due to game play
+  // (e.g. a pass move, a player resigns, etc.).
+  const bool updateGameResultIfNecessary = false;
+
   if (self.nodeModel.isMainVariation)
   {
-    GoGameResult* gameResult = self.gameInfo.gameResult;
-    if (gameResult.dataType == GoGameResultDataTypeStructuredData)
+    enum GoGameHasEndedReason reason = [GoUtilities goGameHasEndedReasonForGameResult:self.gameInfo.gameResult];
+    if (reason != GoGameHasEndedReasonNotYetEnded)
     {
-      switch (gameResult.gameResultType)
-      {
-        case GoGameResultTypeBlackWin:
-        case GoGameResultTypeWhiteWin:
-        {
-          switch (gameResult.winType)
-          {
-            case GoGameResultWinTypeWinByResignation:
-              [self endGameWithReason:(gameResult.gameResultType == GoGameResultTypeBlackWin
-                                       ? GoGameHasEndedReasonBlackWinsByResignation
-                                       : GoGameHasEndedReasonWhiteWinsByResignation)];
-              return;
-            case GoGameResultWinTypeWinOnTime:
-              [self endGameWithReason:(gameResult.gameResultType == GoGameResultTypeBlackWin
-                                       ? GoGameHasEndedReasonBlackWinsOnTime
-                                       : GoGameHasEndedReasonWhiteWinsOnTime)];
-              return;
-            case GoGameResultWinTypeWinByForfeit:
-              [self endGameWithReason:(gameResult.gameResultType == GoGameResultTypeBlackWin
-                                       ? GoGameHasEndedReasonBlackWinsByForfeit
-                                       : GoGameHasEndedReasonWhiteWinsByForfeit)];
-              return;
-            default:
-              break;
-          }
-          break;
-        }
-        default:
-        {
-          break;
-        }
-      }
+      [self endGameWithReason:reason updateGameResultIfNecessary:updateGameResultIfNecessary];
+      return;
     }
   }
 
-  [self endGameDueToPassMovesIfGameRulesRequireIt];
+  [self endGameDueToPassMovesIfGameRulesRequireIt:updateGameResultIfNecessary];
 }
 
 // -----------------------------------------------------------------------------
@@ -1883,6 +1843,11 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// game rules require the game to end because of this. Does nothing otherwise.
 /// If this method ends the game, it also sets @e reasonForGameHasEnded
 /// according to the game rules.
+///
+/// In addition, the GoGameResult object associated with this GoGame is updated
+/// to match the new game state if @a updateGameResultIfNecessary is @e true,
+/// @b and if the current game variation is the main variation, @b and if the
+/// GoGameResult's update policy allows automatic updates.
 ///
 /// Invoking this method sets the document dirty flag if the game state changes.
 ///
@@ -1893,7 +1858,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// circumstances. Specifically, pass() already invokes this method, so invoking
 /// it again is not necessary.
 // -----------------------------------------------------------------------------
-- (void) endGameDueToPassMovesIfGameRulesRequireIt
+- (void) endGameDueToPassMovesIfGameRulesRequireIt:(bool)updateGameResultIfNecessary
 {
   if (GoGameStateGameHasEnded == self.state)
   {
@@ -1912,16 +1877,21 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   // GoFourPassesRuleFourPassesEndTheGame has precedence over
   // GoLifeAndDeathSettlingRuleTwoPasses
   if (4 == numberOfConsecutivePassMoves && GoFourPassesRuleFourPassesEndTheGame == self.rules.fourPassesRule)
-    [self endGameWithReason:GoGameHasEndedReasonFourPasses];
+    [self endGameWithReason:GoGameHasEndedReasonFourPasses updateGameResultIfNecessary:updateGameResultIfNecessary];
   else if (3 == numberOfConsecutivePassMoves && GoLifeAndDeathSettlingRuleThreePasses == self.rules.lifeAndDeathSettlingRule)
-    [self endGameWithReason:GoGameHasEndedReasonThreePasses];
+    [self endGameWithReason:GoGameHasEndedReasonThreePasses updateGameResultIfNecessary:updateGameResultIfNecessary];
   else if (numberOfConsecutivePassMoves >= 2 && 0 == (numberOfConsecutivePassMoves % 2) && GoLifeAndDeathSettlingRuleTwoPasses == self.rules.lifeAndDeathSettlingRule)
-    [self endGameWithReason:GoGameHasEndedReasonTwoPasses];
+    [self endGameWithReason:GoGameHasEndedReasonTwoPasses updateGameResultIfNecessary:updateGameResultIfNecessary];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Ends the game (i.e. sets it to state #GoGameStateGameHasEnded) with
 /// @a reason.
+///
+/// In addition, the GoGameResult object associated with this GoGame is updated
+/// to match the new game state if @a updateGameResultIfNecessary is @e true,
+/// @b and if the current game variation is the main variation, @b and if the
+/// GoGameResult's update policy allows automatic updates.
 ///
 /// Invoking this method sets the document dirty flag.
 ///
@@ -1932,7 +1902,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// invoked while this GoGame object is already in state
 /// #GoGameStateGameHasEnded.
 // -----------------------------------------------------------------------------
-- (void) endGameWithReason:(enum GoGameHasEndedReason)reason
+- (void) endGameWithReason:(enum GoGameHasEndedReason)reason updateGameResultIfNecessary:(bool)updateGameResultIfNecessary
 {
   if (GoGameStateGameHasEnded == self.state)
   {
@@ -1947,6 +1917,13 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   }
 
   self.document.dirty = true;
+
+  if (updateGameResultIfNecessary)
+  {
+    GoGameResult* gameResult = self.gameInfo.gameResult;
+    if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.nodeModel.isMainVariation)
+      self.gameInfo.gameResult = [GoUtilities gameResultForGoGameHasEndedReason:reason];
+  }
 
   self.reasonForGameHasEnded = reason;
   self.state = GoGameStateGameHasEnded;
@@ -1979,10 +1956,9 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// the game to end, then the document dirty flag needs to be reset by
 /// discarding the third pass move.
 ///
-/// In addition, if the game has ended due to resignation, win on time or win
-/// by forfeit, the GoGameResult object associated with this GoGame is updated
+/// In addition, the GoGameResult object associated with this GoGame is updated
 /// to match the new game state if @a updateGameResultIfNecessary is @e true,
-/// and if the current game variation is the main variation, and if the
+/// @b and if the current game variation is the main variation, @b and if the
 /// GoGameResult's update policy allows automatic updates.
 // -----------------------------------------------------------------------------
 - (void) revertStateFromEndedToInProgress:(bool)updateGameResultIfNecessary
@@ -2005,21 +1981,17 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     case GoGameHasEndedReasonWhiteWinsOnTime:
     case GoGameHasEndedReasonBlackWinsByForfeit:
     case GoGameHasEndedReasonWhiteWinsByForfeit:
-      if (updateGameResultIfNecessary)
-      {
-        GoGameResult* gameResult = self.gameInfo.gameResult;
-        if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.nodeModel.isMainVariation)
-        {
-          // Ideally the current game result matches the current end state,
-          // but we don't check for it. If there's any mismatch, we get rid
-          // of it now.
-          gameResult.dataType = GoGameResultDataTypeNoResult;
-        }
-      }
       self.document.dirty = true;
       break;
     default:
       break;
+  }
+
+  if (updateGameResultIfNecessary)
+  {
+    GoGameResult* gameResult = self.gameInfo.gameResult;
+    if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.nodeModel.isMainVariation)
+      gameResult.dataType = GoGameResultDataTypeNoResult;
   }
 
   self.reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;

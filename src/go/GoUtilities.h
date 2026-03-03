@@ -76,5 +76,6 @@
 + (NSString*) stringWithDescriptionOfMove:(GoMove*)move;
 + (NSString*) stringWithDescriptionOfGameResult:(GoGameResult*)gameResult;
 + (enum GoGameHasEndedReason) goGameHasEndedReasonForGameResult:(GoGameResult*)gameResult;
++ (GoGameResult*) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason;
 
 @end

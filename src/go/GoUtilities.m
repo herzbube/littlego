@@ -1349,4 +1349,34 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Maps the app-specific enum value @a goGameHasEndedReason to a
+/// GoGameResult object. If no mapping is possible the returned struct has
+/// the @e dataType property set to #GoGameResultDataTypeNoResult.
+// -----------------------------------------------------------------------------
++ (GoGameResult*) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason
+{
+  switch (goGameHasEndedReason)
+  {
+    case GoGameHasEndedReasonBlackWinsByResignation:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:true winType:GoGameResultWinTypeWinByResignation] autorelease];
+    case GoGameHasEndedReasonWhiteWinsByResignation:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:false winType:GoGameResultWinTypeWinByResignation] autorelease];
+    case GoGameHasEndedReasonBlackWinsOnTime:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:true winType:GoGameResultWinTypeWinOnTime] autorelease];
+    case GoGameHasEndedReasonWhiteWinsOnTime:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:false winType:GoGameResultWinTypeWinOnTime] autorelease];
+    case GoGameHasEndedReasonBlackWinsByForfeit:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:true winType:GoGameResultWinTypeWinByForfeit] autorelease];
+    case GoGameHasEndedReasonWhiteWinsByForfeit:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:false winType:GoGameResultWinTypeWinByForfeit] autorelease];
+    case GoGameHasEndedReasonTwoPasses:
+    case GoGameHasEndedReasonThreePasses:
+    case GoGameHasEndedReasonFourPasses:
+      return [[[GoGameResult alloc] initWithNoPlayerWin:GoGameResultTypeUnknownResult] autorelease];
+    default:
+      return [[[GoGameResult alloc] init] autorelease];
+  }
+}
+
 @end
