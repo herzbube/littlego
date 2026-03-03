@@ -25,6 +25,8 @@
 #import "../../gtp/GtpUtilities.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameInfo.h"
+#import "../../go/GoGameResult.h"
 #import "../../go/GoGameRules.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
@@ -37,6 +39,7 @@
 #import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../play/model/BoardSetupModel.h"
+#import "../../play/model/MiscellaneousModel.h"
 #import "../../play/model/TimeSettingsModel.h"
 #import "../../play/timedplay/PlayerClockService.h"
 #import "../../player/Player.h"
@@ -192,7 +195,9 @@
   // by the client.
   if (! self.prefabricatedGame)
   {
-    NewGameModel* newGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
+    id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+
+    NewGameModel* newGameModel = modelProvider.theNewGameModel;
     newGame.board = [GoBoard boardWithDefaultSize];
     newGame.komi = newGameModel.komi;
     newGame.handicapPoints = [GoUtilities pointsForHandicap:newGameModel.handicap inGame:newGame];
@@ -223,6 +228,8 @@
       newGame.rules.disputeResolutionRule = newGameModel.disputeResolutionRule;
       newGame.rules.fourPassesRule = newGameModel.fourPassesRule;
     }
+
+    newGame.gameInfo.gameResult.updatePolicy = modelProvider.miscellaneousModel.gameResultUpdatePolicy;
 
     newGame.timeSettings = [newGameModel.timeSettingsModel goTimeSettingsRepresentation];
     if (newGame.timeSettings.isGameUsingTimedPlay)

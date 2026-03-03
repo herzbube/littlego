@@ -110,7 +110,7 @@
     [center postNotificationName:currentGameVariationWillChange object:nil];
 
     if (game.state == GoGameStateGameHasEnded)
-      [game revertStateFromEndedToInProgress];
+      [game revertStateFromEndedToInProgress:false];
 
     [nodeModel changeToVariationContainingNode:self.node];
 
@@ -137,7 +137,7 @@
       [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
     }
 
-    [game endGameDueToPassMovesIfGameRulesRequireIt];
+    [game endGameIfNecessary];
 
     [center postNotificationName:currentGameVariationDidChange object:nil];
   }

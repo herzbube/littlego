@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2026 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2026 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,23 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "../EditGameResultController.h"
-#import "../../../ui/TableViewGridCell.h"
-
-
 // -----------------------------------------------------------------------------
-/// @brief The GameInfoViewScoreTabDelegate class is responsible for managing
-/// the "Score" tab in the "Game Info" screen.
+/// @brief The MiscellaneousModel class provides user defaults data to its
+/// clients that are related to miscellaneous topics.
 // -----------------------------------------------------------------------------
-@interface GameInfoViewScoreTabDelegate : NSObject <UITableViewDelegate,
-                                                    UITableViewDataSource,
-                                                    TableViewGridCellDelegate,
-                                                    EditGameResultDelegate>
+@interface MiscellaneousModel : NSObject
 {
 }
 
-- (id) initWithPresentingViewController:(UIViewController*)presentingViewController
-                              tableView:(UITableView*)tableView;
+- (id) init;
+
+- (void) readUserDefaults;
+- (void) writeUserDefaults;
+
+@property(nonatomic, assign) enum GoGameResultUpdatePolicy gameResultUpdatePolicy;
 
 @end

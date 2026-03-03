@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class SGFCDocumentReadResult;
+@class GoGameResult;
 @class GoTimeSystem;
 @class TimeSettingsModel;
 
@@ -40,15 +41,12 @@
 + (NSString*) stringForSgfBoardSize:(SGFCBoardSize)sgfBoardSize;
 + (enum GoBoardSize) goBoardSizeForSgfBoardSize:(SGFCBoardSize)sgfBoardSize errorMessage:(NSString**)errorMessage;
 + (void) parseSgfGameDates:(NSArray*)sgfGameDates dateArray:(NSArray**)dateArray stringArray:(NSArray**)stringArray;
-+ (NSString*) stringForSgfGameResult:(SGFCGameResult)sgfGameResult;
 + (NSString*) stringForSgfGoPlayerRank:(SGFCGoPlayerRank)sgfGoPlayerRank;
 + (UIColor*) colorForLoadResultWithNoMessages;
 + (UIColor*) colorForLoadResultWithMessagesOfType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage;
 + (UIImage*) coloredIndicatorForLoadResult:(SGFCDocumentReadResult*)loadResult;
 + (UIColor*) colorForMessageType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage;
 + (UIImage*) coloredIndicatorForMessage:(SGFCMessage*)message;
-+ (SGFCGameResult) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason;
-+ (enum GoGameHasEndedReason) goGameHasEndedReasonForGameResult:(SGFCGameResult)gameResult;
 + (NSString*) sgfTimeSystemIdentifierForTimeSystemType:(enum GoTimeSystemType)timeSystemType;
 + (enum GoTimeSystemType) timeSystemTypeForSgfTimeSystemIdentifier:(NSString*)sgfTimeSystemIdentifier;
 + (NSString*) sgfOvertimeStringForPeriodBasedTimeSystem:(GoTimeSystem*)periodBasedTimeSystem;
@@ -59,5 +57,7 @@
 + (double) durationValueFromSgfDurationString:(NSString*)sgfDurationString;
 + (TimeSettingsModel*) timeSettingsFromSgfGameInfoNode:(SGFCNode*)sgfGameInfoNode;
 + (TimeSettingsModel*) timeSettingsFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
++ (GoGameResult*) gameResultFromFromSgfString:(NSString*)rePropertyValue;
++ (NSString*) sgfStringFromGameResult:(GoGameResult*)gameResult;
 
 @end

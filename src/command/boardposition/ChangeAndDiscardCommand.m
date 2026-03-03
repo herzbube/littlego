@@ -76,10 +76,10 @@
         return false;
       }
 
-      success = [self discardNodesIfNecessary];
+      success = [self discardNodesAndEndGameIfNecessary];
       if (! success)
       {
-        DDLogError(@"%@: Aborting because discardNodesIfNecessary failed", [self shortDescription]);
+        DDLogError(@"%@: Aborting because discardNodesAndEndGameIfNecessary failed", [self shortDescription]);
         return false;
       }
     }
@@ -217,7 +217,7 @@
 {
   GoGame* game = [GoGame sharedGame];
   if (GoGameStateGameHasEnded == game.state)
-    [game revertStateFromEndedToInProgress];
+    [game revertStateFromEndedToInProgress:true];
   return true;
 }
 
@@ -229,8 +229,11 @@
 /// method expects that the current node was changed before this method was
 /// invoked, so that the discard operation does what is documented in the
 /// class documentation.
+///
+/// After the discard, ends the game if necessary, as described in the class
+/// documentation.
 // -----------------------------------------------------------------------------
-- (bool) discardNodesIfNecessary
+- (bool) discardNodesAndEndGameIfNecessary
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
@@ -274,6 +277,16 @@
     [center postNotificationName:currentGameVariationDidChange object:nil];
 
   [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
+
+  // Manage the game state after everything else, to reflect the order in which
+  // things happen when pass moves are played. Notes:
+  // - The discard may have resulted in the game variation changing from a
+  //   non-main variation to the main variation => in that case the game result
+  //   may indicate e.g. a resignation, so if we are now on the main variation
+  //   we must consider the game result.
+  // - But if we are now on a non-main variation the game result must
+  //   ***NOT*** be considered.
+  [game endGameIfNecessary];
 
   return true;
 }

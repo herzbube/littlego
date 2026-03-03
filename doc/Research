@@ -1850,12 +1850,12 @@ TB/TW property notes
     adjacent.
   - When doing a round-trip to SGF and back, stone groups previously marked as
     "in seki" are alive after the roundtrip.
-    - TODO xxx Verify whether this has an effect when territory scoring is used.
+    - TODO Verify whether this has an effect when territory scoring is used.
       Reason is that for territory scoring, an alive stone group counts as
       territory for the player, whereas an "in seki" stone group is neutral.
       However, IIRC in territory scoring stone groups are not counted, so it
       may not matter.
-    - TODO xxx Verify the effect on dame points (empty intersections adjacent
+    - TODO Verify the effect on dame points (empty intersections adjacent
       to seki stones). Dame points don't count for both scoring systems, but
       when translating "in seki" to "alive" after the round-trip previous dame
       points may now count as territory if they are entirely surrounded by

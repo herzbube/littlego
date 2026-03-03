@@ -17,6 +17,8 @@
 
 // Project includes
 #import "GameInfoItem.h"
+#import "../go/GoGameResult.h"
+#import "../go/GoUtilities.h"
 #import "../play/model/TimeSettingsModel.h"
 #import "../sgf/SgfUtilities.h"
 #import "../ui/TableViewCellFactory.h"
@@ -847,8 +849,12 @@ enum DataSourceInfoSectionItem
                forMissingDataDisplayStyle:missingDataDisplayStyle
                                   hasData:&_komiHasData];
     self.komi = goGameInfo.komi;
-    self.gameResultAsString = [self stringValue:[SgfUtilities stringForSgfGameResult:goGameInfo.gameResult]
-                              withFallbackValue:goGameInfo.rawGameResult
+
+    GoGameResult* goGameResult = [SgfUtilities gameResultFromFromSgfString:goGameInfo.rawGameResult];
+    NSString* descriptionOfGameResult = (goGameResult.dataType == GoGameResultDataTypeNoResult
+                                         ? nil // use our own placeholder string, not the one from GoUtilities
+                                         : [GoUtilities stringWithDescriptionOfGameResult:goGameResult]);
+    self.gameResultAsString = [self stringValue:descriptionOfGameResult
                      forMissingDataDisplayStyle:missingDataDisplayStyle
                                         hasData:&_gameResultHasData];
     self.gameResult = goGameInfo.gameResult;

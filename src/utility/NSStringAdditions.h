@@ -52,5 +52,10 @@
 + (BOOL) nullableString:(NSString*)string1 isEqualToNullableString:(NSString*)string2;
 + (NSString*) stringWithPeriodBasedTimeSystemType:(enum GoTimeSystemType)periodBasedTimeSystemType;
 + (NSString*) shortStringWithPeriodBasedTimeSystemType:(enum GoTimeSystemType)periodBasedTimeSystemType;
++ (NSString*) stringWithGameResultType:(enum GoGameResultType)gameResultType;
++ (NSString*) stringWithWinType:(enum GoGameResultWinType)winType;
++ (NSString*) stringWithScore:(double)score;
+- (bool) tryConvertToIntValue:(int*)intValue;
+- (bool) tryConvertToDoubleValue:(double*)doubleValue;
 
 @end

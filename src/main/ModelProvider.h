@@ -29,6 +29,7 @@
 @class LoggingModel;
 @class MagnifyingViewModel;
 @class MarkupModel;
+@class MiscellaneousModel;
 @class NewGameModel;
 @class NodeTreeViewModel;
 @class PlayerModel;
@@ -100,5 +101,7 @@
 @property(nonatomic, retain) GameVariationModel* gameVariationModel;
 /// @brief Model object that stores attributes related to timed play.
 @property(nonatomic, retain) TimedPlayModel* timedPlayModel;
+/// @brief Model object that stores attributes related to miscellaneous topics.
+@property(nonatomic, retain) MiscellaneousModel* miscellaneousModel;
 
 @end

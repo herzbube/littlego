@@ -598,4 +598,107 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a gameResultType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithGameResultType:(enum GoGameResultType)gameResultType
+{
+  switch (gameResultType)
+  {
+    case GoGameResultTypeBlackWin:
+      return @"Black wins";
+    case GoGameResultTypeWhiteWin:
+      return @"White wins";
+    case GoGameResultTypeDraw:
+      return @"Game is a tie";
+    case GoGameResultTypeNoResult:
+      return @"No result / Suspended play";
+    case GoGameResultTypeUnknownResult:
+      return @"Unknown result";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a winType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithWinType:(enum GoGameResultWinType)winType
+{
+  switch (winType)
+  {
+    case GoGameResultWinTypeWinWithScore:
+      return @"With score";
+    case GoGameResultWinTypeWinWithoutScore:
+      return @"Without score";
+    case GoGameResultWinTypeWinByResignation:
+      return @"By resignation";
+    case GoGameResultWinTypeWinOnTime:
+      return @"On time";
+    case GoGameResultWinTypeWinByForfeit:
+      return @"By forfeit";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the score value @a score represented as string.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithScore:(double)score
+{
+  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
+  numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+  numberFormatter.usesGroupingSeparator = NO;
+  return [numberFormatter stringFromNumber:[NSNumber numberWithDouble:score]];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Tries to convert this string into an int value. If conversion is
+/// successful, returns @e true and fills @a intValue with the conversion
+/// result (@a intValue must not be @e nil). If conversion fails, returns
+/// @e false and does not change the value of @a intValue.
+// -----------------------------------------------------------------------------
+- (bool) tryConvertToIntValue:(int*)intValue
+{
+  if (self.length == 0)
+    return false;
+
+  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
+  // Parses the text as an integer number. 1234.5678 is parsed as 1234.
+  numberFormatter.numberStyle = NSNumberFormatterNoStyle;
+  // If the string contains any characters other than numerical digits or
+  // locale-appropriate group or decimal separators, parsing will fail.
+  // Leading/trailing space is ignored.
+  // Returns nil if parsing fails.
+  NSNumber* number = [numberFormatter numberFromString:self];
+  if (! number)
+    return false;
+
+  *intValue = [number intValue];
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Tries to convert this string into a double value. If conversion is
+/// successful, returns @e true and fills @a doubleValue with the conversion
+/// result (@a doubleValue must not be @e nil). If conversion fails, returns
+/// @e false and does not change the value of @a doubleValue.
+// -----------------------------------------------------------------------------
+- (bool) tryConvertToDoubleValue:(double*)doubleValue
+{
+  if (self.length == 0)
+    return false;
+
+  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
+  // Parses the text as a decimal number
+  numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+  // If the string contains any characters other than numerical digits or
+  // locale-appropriate group or decimal separators, parsing will fail.
+  // Leading/trailing space is ignored.
+  // Returns nil if parsing fails.
+  NSNumber* number = [numberFormatter numberFromString:self];
+  if (! number)
+    return false;
+
+  *doubleValue = [number doubleValue];
+  return true;
+}
+
 @end

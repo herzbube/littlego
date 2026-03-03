@@ -48,5 +48,6 @@
 - (void) testNumberOfMoves;
 - (void) testRootNode;
 - (void) testLeafNode;
+- (void) testIsMainVariation;
 
 @end

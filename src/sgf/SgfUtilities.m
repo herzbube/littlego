@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SgfUtilities.h"
+#import "../go/GoGameResult.h"
 #import "../go/GoTimeSettings.h"
 #import "../go/GoTimeSystem.h"
 #import "../play/model/TimeSettingsModel.h"
@@ -154,72 +155,6 @@
 
   *dateArray = mutableDateArray;
   *stringArray = mutableStringArray;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a string representation of the content of @a sgfGameResult.
-/// Returns an empty string if the game result is not valid.
-// -----------------------------------------------------------------------------
-+ (NSString*) stringForSgfGameResult:(SGFCGameResult)sgfGameResult
-{
-  if (! sgfGameResult.IsValid)
-    return @"";
-
-  switch (sgfGameResult.GameResultType)
-  {
-    case SGFCGameResultTypeBlackWin:
-    case SGFCGameResultTypeWhiteWin:
-    {
-      NSString* gameResultAsString;
-      if (sgfGameResult.GameResultType == SGFCGameResultTypeBlackWin)
-        gameResultAsString = @"Black wins";
-      else
-        gameResultAsString = @"White wins";
-
-      switch (sgfGameResult.WinType)
-      {
-        case SGFCWinTypeWinWithScore:
-          gameResultAsString = [gameResultAsString stringByAppendingFormat:@" by %.1f", sgfGameResult.Score];
-          break;
-        case SGFCWinTypeWinWithoutScore:
-          break;
-        case SGFCWinTypeWinByResignation:
-          gameResultAsString = [gameResultAsString stringByAppendingString:@" by resignation"];
-          break;
-        case SGFCWinTypeWinOnTime:
-          gameResultAsString = [gameResultAsString stringByAppendingString:@" on time"];
-          break;
-        case SGFCWinTypeWinByForfeit:
-          gameResultAsString = [gameResultAsString stringByAppendingString:@" by forfeit"];
-          break;
-        default:
-          assert(0);
-          break;
-      }
-
-      return gameResultAsString;
-    }
-    case SGFCGameResultTypeDraw:
-    {
-      return @"Game is a tie";
-    }
-    case SGFCGameResultTypeNoResult:
-    {
-      return @"No result / Suspended play";
-    }
-    case SGFCGameResultTypeUnknownResult:
-    {
-      return @"Unknown result";
-    }
-    default:
-    {
-      assert(0);
-      break;
-    }
-  }
-
-  // If this happens there is a coding error above
-  return @"";
 }
 
 // -----------------------------------------------------------------------------
@@ -403,97 +338,6 @@
     }
     return nonCriticalWarningImage;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Maps the app-specific enum value @a goGameHasEndedReason to an
-/// SGFCGameResult struct. If no mapping is possible the returned struct has
-/// the @e IsValid property set to NO.
-// -----------------------------------------------------------------------------
-+ (SGFCGameResult) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason
-{
-  SGFCGameResultType gameResultType;
-  SGFCWinType winType;
-  BOOL isValid;
-  switch (goGameHasEndedReason)
-  {
-    case GoGameHasEndedReasonBlackWinsByResignation:
-      gameResultType = SGFCGameResultTypeBlackWin;
-      winType = SGFCWinTypeWinByResignation;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonWhiteWinsByResignation:
-      gameResultType = SGFCGameResultTypeWhiteWin;
-      winType = SGFCWinTypeWinByResignation;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonBlackWinsOnTime:
-      gameResultType = SGFCGameResultTypeBlackWin;
-      winType = SGFCWinTypeWinOnTime;;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonWhiteWinsOnTime:
-      gameResultType = SGFCGameResultTypeWhiteWin;
-      winType = SGFCWinTypeWinOnTime;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonBlackWinsByForfeit:
-      gameResultType = SGFCGameResultTypeBlackWin;
-      winType = SGFCWinTypeWinByForfeit;
-      isValid = YES;
-      break;
-    case GoGameHasEndedReasonWhiteWinsByForfeit:
-      gameResultType = SGFCGameResultTypeWhiteWin;
-      winType = SGFCWinTypeWinByForfeit;
-      isValid = YES;
-      break;
-    default:
-      gameResultType = SGFCGameResultTypeUnknownResult;
-      winType = SGFCWinTypeWinWithScore;
-      isValid = NO;
-      break;
-  }
-
-  return SGFCGameResultMake(gameResultType, winType, 0.0, isValid);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Maps the SGFCGameResult struct @a gameResult to a value from the
-/// app-specific enum GoGameHasEndedReason. Returns
-/// #GoGameHasEndedReasonNotYetEnded if no mapping is possible.
-// -----------------------------------------------------------------------------
-+ (enum GoGameHasEndedReason) goGameHasEndedReasonForGameResult:(SGFCGameResult)gameResult
-{
-  if (! gameResult.IsValid)
-    return GoGameHasEndedReasonNotYetEnded;
-
-  switch (gameResult.GameResultType)
-  {
-    case SGFCGameResultTypeBlackWin:
-    case SGFCGameResultTypeWhiteWin:
-      switch (gameResult.WinType)
-      {
-        case SGFCWinTypeWinByResignation:
-          if (gameResult.GameResultType == SGFCGameResultTypeBlackWin)
-            return GoGameHasEndedReasonBlackWinsByResignation;
-          else
-            return GoGameHasEndedReasonWhiteWinsByResignation;
-        case SGFCWinTypeWinOnTime:
-          if (gameResult.GameResultType == SGFCGameResultTypeBlackWin)
-            return GoGameHasEndedReasonBlackWinsOnTime;
-          else
-            return GoGameHasEndedReasonWhiteWinsOnTime;
-        case SGFCWinTypeWinByForfeit:
-          if (gameResult.GameResultType == SGFCGameResultTypeBlackWin)
-            return GoGameHasEndedReasonBlackWinsByForfeit;
-          else
-            return GoGameHasEndedReasonWhiteWinsByForfeit;
-        default:
-          return GoGameHasEndedReasonNotYetEnded;
-      }
-    default:
-      return GoGameHasEndedReasonNotYetEnded;
-  }  
 }
 
 // -----------------------------------------------------------------------------
@@ -1062,6 +906,127 @@
   TimeSettingsModel* timeSettingsModel = [[[TimeSettingsModel alloc] init] autorelease];
   [timeSettingsModel updateWithGoTimeSettings:goTimeSettings];
   return timeSettingsModel;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoGameResult object that is populated with the game result
+/// taken from the value of @a rePropertyValue.
+///
+/// @a rePropertyValue refers to the value of the SGF game info properties RE.
+/// The value @e nil indicates that the property is not present.
+///
+/// If @a rePropertyValue is an empty string, this is also treated as the
+/// absence of the property, assuming that the value in this case is not coming
+/// directly from the SGF data but has passed through some intermediate
+/// processing (e.g. SGFCGameInfo).
+// -----------------------------------------------------------------------------
++ (GoGameResult*) gameResultFromFromSgfString:(NSString*)rePropertyValue
+{
+  if (! rePropertyValue || rePropertyValue.length == 0)
+    return [[[GoGameResult alloc] init] autorelease];
+
+  SGFCGameResult gameResult = SGFCGameResultFromPropertyValue(rePropertyValue);
+  if (! gameResult.IsValid)
+    return [[[GoGameResult alloc] initWithSgfString:rePropertyValue] autorelease];
+
+  switch (gameResult.GameResultType)
+  {
+    case SGFCGameResultTypeBlackWin:
+    case SGFCGameResultTypeWhiteWin:
+    {
+      bool blackPlayerWins = (gameResult.GameResultType == SGFCGameResultTypeBlackWin);
+      switch (gameResult.WinType)
+      {
+        case SGFCWinTypeWinWithScore:
+          return [[[GoGameResult alloc] initWithPlayerWin:blackPlayerWins score:gameResult.Score] autorelease];
+        case SGFCWinTypeWinWithoutScore:
+          return [[[GoGameResult alloc] initWithNoScorePlayerWin:blackPlayerWins winType:GoGameResultWinTypeWinWithoutScore] autorelease];
+        case SGFCWinTypeWinByResignation:
+          return [[[GoGameResult alloc] initWithNoScorePlayerWin:blackPlayerWins winType:GoGameResultWinTypeWinByResignation] autorelease];
+        case SGFCWinTypeWinOnTime:
+          return [[[GoGameResult alloc] initWithNoScorePlayerWin:blackPlayerWins winType:GoGameResultWinTypeWinOnTime] autorelease];
+        case SGFCWinTypeWinByForfeit:
+          return [[[GoGameResult alloc] initWithNoScorePlayerWin:blackPlayerWins winType:GoGameResultWinTypeWinByForfeit] autorelease];
+      }
+      break;
+    }
+    case SGFCGameResultTypeDraw:
+    {
+      return [[[GoGameResult alloc] initWithNoPlayerWin:GoGameResultTypeDraw] autorelease];
+    }
+    case SGFCGameResultTypeNoResult:
+    {
+      return [[[GoGameResult alloc] initWithNoPlayerWin:GoGameResultTypeNoResult] autorelease];}
+    case SGFCGameResultTypeUnknownResult:
+    {
+      return [[[GoGameResult alloc] initWithNoPlayerWin:GoGameResultTypeUnknownResult] autorelease];
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representing @a gameResult that can be used as the
+/// value of the SGF property RE. Returns @e nil if the @e dataType property
+/// of @a gameResult has the value #GoGameResultDataTypeNoResult.
+// -----------------------------------------------------------------------------
++ (NSString*) sgfStringFromGameResult:(GoGameResult*)gameResult
+{
+  switch (gameResult.dataType)
+  {
+    case GoGameResultDataTypeNoResult:
+    {
+      return nil;
+    }
+    case GoGameResultDataTypeSgfString:
+    {
+      return gameResult.sgfString;
+    }
+    case GoGameResultDataTypeStructuredData:
+    {
+      SGFCGameResultType sgfcGameResultType;
+      switch (gameResult.gameResultType)
+      {
+        case GoGameResultTypeBlackWin:
+          sgfcGameResultType = SGFCGameResultTypeBlackWin;
+          break;
+        case GoGameResultTypeWhiteWin:
+          sgfcGameResultType = SGFCGameResultTypeWhiteWin;
+          break;
+        case GoGameResultTypeDraw:
+          sgfcGameResultType = SGFCGameResultTypeDraw;
+          break;
+        case GoGameResultTypeNoResult:
+          sgfcGameResultType = SGFCGameResultTypeNoResult;
+          break;
+        case GoGameResultTypeUnknownResult:
+          sgfcGameResultType = SGFCGameResultTypeUnknownResult;
+          break;
+      }
+
+      SGFCWinType sgfcWinType;
+      switch (gameResult.winType)
+      {
+        case GoGameResultWinTypeWinWithScore:
+          sgfcWinType = SGFCWinTypeWinWithScore;
+          break;
+        case GoGameResultWinTypeWinWithoutScore:
+          sgfcWinType = SGFCWinTypeWinWithoutScore;
+          break;
+        case GoGameResultWinTypeWinByResignation:
+          sgfcWinType = SGFCWinTypeWinByResignation;
+          break;
+        case GoGameResultWinTypeWinOnTime:
+          sgfcWinType = SGFCWinTypeWinOnTime;
+          break;
+        case GoGameResultWinTypeWinByForfeit:
+          sgfcWinType = SGFCWinTypeWinByForfeit;
+          break;
+      }
+
+      SGFCGameResult sgfcGameResult = SGFCGameResultMake(sgfcGameResultType, sgfcWinType, gameResult.score, true);
+      return SGFCGameResultToPropertyValue(sgfcGameResult);
+    }
+  }
 }
 
 @end

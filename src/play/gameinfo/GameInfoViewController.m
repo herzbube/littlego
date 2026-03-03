@@ -183,7 +183,8 @@
   {
     case ScoreInfoType:
     {
-      GameInfoViewScoreTabDelegate* delegate = [[[GameInfoViewScoreTabDelegate alloc] init] autorelease];
+      GameInfoViewScoreTabDelegate* delegate = [[[GameInfoViewScoreTabDelegate alloc] initWithPresentingViewController:self
+                                                                                                             tableView:self.tableView] autorelease];
       self.tableView.delegate = delegate;
       self.tableView.dataSource = delegate;
       self.gameInfoViewTableViewDelegate = delegate;

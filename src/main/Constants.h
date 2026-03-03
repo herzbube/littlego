@@ -1200,6 +1200,98 @@ enum GoTimeDataInvalidReason
   GoTimeDataInvalidReasonRemainingNumberOfPeriodsExceedsMaximum,
 };
 
+/// @brief Enumerates the kinds of data that a GoGameResult object can hold.
+///
+/// @ingroup go
+enum GoGameResultDataType
+{
+  /// @brief The data stored by the GoGameResult object does not represent a
+  /// game result.
+  GoGameResultDataTypeNoResult,
+
+  /// @brief The GoGameResult object holds a game result that is described by a
+  /// string that was read from SGF data. The string does not conform to the
+  /// format mandated by the FF4 SGF specification and can therefore not be
+  /// parsed and transformed into structured data.
+  GoGameResultDataTypeSgfString,
+
+  /// @brief The GoGameResult object holds a game result that is described by
+  /// structured data, i.e. at least a #GoGameResultType value, possibly
+  /// accompanied by a #GoGameResultWinType value and a score value to further
+  /// describe the game result in more detail.
+  GoGameResultDataTypeStructuredData,
+};
+
+/// @brief GoGameResultType enumerates the main result types with which a game
+/// can end. Depending on the enumeration value, additional values are needed
+/// to determine the exact nature of the game result.
+///
+/// @ingroup go
+enum GoGameResultType
+{
+  /// @brief The black player wins the game. The nature of the win is detailed
+  /// by an accompanying GoGameResultWinType value.
+  GoGameResultTypeBlackWin,
+  /// @brief The white player wins. The nature of the win is detailed
+  /// by an accompanying GoGameResultWinType value.
+  GoGameResultTypeWhiteWin,
+  /// @brief The game ends with a draw (jigo).
+  GoGameResultTypeDraw,
+  /// @brief The game ends with no result, or with suspended play.
+  GoGameResultTypeNoResult,
+  /// @brief The game ends with an unknown result.
+  GoGameResultTypeUnknownResult,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameResultTypeFirst = GoGameResultTypeBlackWin,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameResultTypeLast = GoGameResultTypeUnknownResult,
+};
+
+/// @brief GoGameResultWinType enumerates how a player can win a game. A
+/// GoGameResultWinType value is used to accompany a game result type value of
+/// either #GoGameResultTypeBlackWin or #GoGameResultTypeWhiteWin.
+///
+/// @ingroup go
+enum GoGameResultWinType
+{
+  /// @brief The player wins the game by normal play. A score was established.
+  /// The actual score is detailed by an accompanying non-negative numeric
+  /// value.
+  GoGameResultWinTypeWinWithScore,
+  /// @brief The player wins the game by normal play. No score was established,
+  /// or the score was not recorded.
+  GoGameResultWinTypeWinWithoutScore,
+  /// @brief The player wins the game by resignation.
+  GoGameResultWinTypeWinByResignation,
+  /// @brief The player wins the game on time.
+  GoGameResultWinTypeWinOnTime,
+  /// @brief The player wins the game by forfeit.
+  GoGameResultWinTypeWinByForfeit,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameResultWinTypeFirst = GoGameResultWinTypeWinWithScore,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameResultWinTypeLast = GoGameResultWinTypeWinByForfeit,
+};
+
+/// @brief Enumerates ways how the data in a GoGameResult object can be updated.
+///
+/// @ingroup go
+enum GoGameResultUpdatePolicy
+{
+  /// @brief The app is allowed to automatically update the GoGameResult
+  /// object's data, based on game results obtained from game play, overwriting
+  /// any previously established game result.
+  ///
+  /// Example: If the black player resigns, the app is allowed to set the
+  /// GoGameResult object's data with #GoGameResultTypeBlackWin
+  /// and #GoGameResultWinTypeWinByResignation.
+  GoGameResultUpdatePolicyAutomatic,
+
+  /// @brief The app is not allowed to automatically update the GoGameResult
+  /// object's data. The data may only be manually updated by the user.
+  GoGameResultUpdatePolicyManual
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -2772,6 +2864,9 @@ extern NSString* canUserSuspendPlayerClocksKey;
 extern NSString* timeDataValidationModeKey;
 extern NSString* hidePlayerClockViewForInvalidTimeSystemsKey;
 extern NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey;
+// Miscellaneous settings
+extern NSString* miscellaneousKey;
+extern NSString* gameResultUpdatePolicyKey;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -2800,6 +2895,7 @@ extern NSString* goGameBoardPositionKey;
 extern NSString* goGameRulesKey;
 extern NSString* goGameTimeSettingsKey;
 extern NSString* goGameDocumentKey;
+extern NSString* goGameGameInfoKey;
 extern NSString* goGameScoreKey;
 extern NSString* goGameSetupFirstMoveColorKey;
 // GoPlayer keys
@@ -2884,6 +2980,7 @@ extern NSString* goNodeModelNodeDictionaryKey;
 extern NSString* goNodeModelNodeListKey;
 extern NSString* goNodeModelNumberOfNodesKey;
 extern NSString* goNodeModelNumberOfMovesKey;
+extern NSString* goNodeModelIsMainVariationKey;
 // GoPoint keys
 extern NSString* goPointVertexKey;
 extern NSString* goPointBoardKey;
@@ -2947,6 +3044,15 @@ extern NSString* goTimeSystemExtraTimeDurationInSecondsKey;
 // GoTimeSettings keys
 extern NSString* goTimeSettingsAbsoluteTimeSystemKey;
 extern NSString* goTimeSettingsPeriodBasedTimeSystemKey;
+// GoGameInfo keys
+extern NSString* goGameInfoGameResultKey;
+// GoGameResult keys
+extern NSString* goGameResultDataTypeKey;
+extern NSString* goGameResultSgfStringKey;
+extern NSString* goGameResultGameResultTypeKey;
+extern NSString* goGameResultWinTypeKey;
+extern NSString* goGameResultScoreKey;
+extern NSString* goGameResultUpdatePolicyKey;
 //@}
 
 // -----------------------------------------------------------------------------

@@ -21,6 +21,7 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameResult.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
 #import "GoNode.h"
@@ -32,6 +33,7 @@
 #import "GoNodeTimeData.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
+#import "../utility/NSStringAdditions.h"
 
 
 @implementation GoUtilities
@@ -1235,6 +1237,145 @@
     {
       return @"n/a";
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameResult. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameResult:(GoGameResult*)gameResult
+{
+  switch (gameResult.dataType)
+  {
+    case GoGameResultDataTypeNoResult:
+    {
+      return @"<Result not set>";
+    }
+    case GoGameResultDataTypeSgfString:
+    {
+      return [NSString stringWithFormat:@"Cannot interpret result text \"%@\"", gameResult.sgfString];
+    }
+    case GoGameResultDataTypeStructuredData:
+    {
+      NSString* gameResultAsString = [NSString stringWithGameResultType:gameResult.gameResultType];
+      switch (gameResult.gameResultType)
+      {
+        case GoGameResultTypeBlackWin:
+        case GoGameResultTypeWhiteWin:
+        {
+          switch (gameResult.winType)
+          {
+            case GoGameResultWinTypeWinWithScore:
+              gameResultAsString = [gameResultAsString stringByAppendingFormat:@" by %.1f", gameResult.score];
+              break;
+            case GoGameResultWinTypeWinWithoutScore:
+              break;
+            case GoGameResultWinTypeWinByResignation:
+              gameResultAsString = [gameResultAsString stringByAppendingString:@" by resignation"];
+              break;
+            case GoGameResultWinTypeWinOnTime:
+              gameResultAsString = [gameResultAsString stringByAppendingString:@" on time"];
+              break;
+            case GoGameResultWinTypeWinByForfeit:
+              gameResultAsString = [gameResultAsString stringByAppendingString:@" by forfeit"];
+              break;
+            default:
+              assert(0);
+              break;
+          }
+          return gameResultAsString;
+        }
+        default:
+          return gameResultAsString;
+      }
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps the data stored in @a gameResult onto a single value from the
+/// app-specific enum GoGameHasEndedReason. Returns
+/// #GoGameHasEndedReasonNotYetEnded if no mapping is possible.
+// -----------------------------------------------------------------------------
++ (enum GoGameHasEndedReason) goGameHasEndedReasonForGameResult:(GoGameResult*)gameResult
+{
+  switch (gameResult.dataType)
+  {
+    case GoGameResultDataTypeNoResult:
+    case GoGameResultDataTypeSgfString:
+    {
+      return GoGameHasEndedReasonNotYetEnded;
+    }
+    case GoGameResultDataTypeStructuredData:
+    {
+      switch (gameResult.gameResultType)
+      {
+        case GoGameResultTypeBlackWin:
+        case GoGameResultTypeWhiteWin:
+        {
+          switch (gameResult.winType)
+          {
+            case GoGameResultWinTypeWinByResignation:
+            {
+              return (gameResult.gameResultType == GoGameResultTypeBlackWin
+                      ? GoGameHasEndedReasonBlackWinsByResignation
+                      : GoGameHasEndedReasonWhiteWinsByResignation);
+            }
+            case GoGameResultWinTypeWinOnTime:
+            {
+              return (gameResult.gameResultType == GoGameResultTypeBlackWin
+                      ? GoGameHasEndedReasonBlackWinsOnTime
+                      : GoGameHasEndedReasonWhiteWinsOnTime);
+            }
+            case GoGameResultWinTypeWinByForfeit:
+            {
+              return (gameResult.gameResultType == GoGameResultTypeBlackWin
+                      ? GoGameHasEndedReasonBlackWinsByForfeit
+                      : GoGameHasEndedReasonWhiteWinsByForfeit);
+            }
+            default:
+            {
+              return GoGameHasEndedReasonNotYetEnded;
+            }
+          }
+        }
+        default:
+        {
+          return GoGameHasEndedReasonNotYetEnded;
+        }
+      }
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps the app-specific enum value @a goGameHasEndedReason to a
+/// GoGameResult object. If no mapping is possible the returned struct has
+/// the @e dataType property set to #GoGameResultDataTypeNoResult.
+// -----------------------------------------------------------------------------
++ (GoGameResult*) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason
+{
+  switch (goGameHasEndedReason)
+  {
+    case GoGameHasEndedReasonBlackWinsByResignation:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:true winType:GoGameResultWinTypeWinByResignation] autorelease];
+    case GoGameHasEndedReasonWhiteWinsByResignation:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:false winType:GoGameResultWinTypeWinByResignation] autorelease];
+    case GoGameHasEndedReasonBlackWinsOnTime:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:true winType:GoGameResultWinTypeWinOnTime] autorelease];
+    case GoGameHasEndedReasonWhiteWinsOnTime:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:false winType:GoGameResultWinTypeWinOnTime] autorelease];
+    case GoGameHasEndedReasonBlackWinsByForfeit:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:true winType:GoGameResultWinTypeWinByForfeit] autorelease];
+    case GoGameHasEndedReasonWhiteWinsByForfeit:
+      return [[[GoGameResult alloc] initWithNoScorePlayerWin:false winType:GoGameResultWinTypeWinByForfeit] autorelease];
+    case GoGameHasEndedReasonTwoPasses:
+    case GoGameHasEndedReasonThreePasses:
+    case GoGameHasEndedReasonFourPasses:
+      return [[[GoGameResult alloc] initWithNoPlayerWin:GoGameResultTypeUnknownResult] autorelease];
+    default:
+      return [[[GoGameResult alloc] init] autorelease];
   }
 }
 

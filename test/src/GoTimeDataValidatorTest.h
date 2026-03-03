@@ -54,8 +54,6 @@
 - (void) testVisitNodeTimeData_RemainingNumberOfMovesExceedsMaximum;
 - (void) testVisitNodeTimeData_RemainingNumberOfPeriodsExceedsMaximum;
 - (void) testVisitNodeTimeData_RemainingTimeNegative;
-- (void) testVisitNodeTimeData_RemainingNumberOfMovesNegative;
-- (void) testVisitNodeTimeData_RemainingNumberOfPeriodsNegative;
 - (void) testVisitNodeTimeData_AbsoluteTimeDataFoundWithoutAbsoluteTimeSystem;
 - (void) testVisitNodeTimeData_AbsoluteTimeSystemDataFoundAfterPeriodBasedTimeSystemData;
 - (void) testVisitNodeTimeData_PeriodBasedTimeDataFoundWithoutPeriodBasedTimeSystem;

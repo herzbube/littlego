@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoGame;
+@class GoGameResult;
 @class GoGameRules;
 @class GoMove;
 @class GoNode;
@@ -73,5 +74,8 @@
 + (bool) showHotspotIndicatorForNode:(GoNode*)node;
 + (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node inGame:(GoGame*)game;
 + (NSString*) stringWithDescriptionOfMove:(GoMove*)move;
++ (NSString*) stringWithDescriptionOfGameResult:(GoGameResult*)gameResult;
++ (enum GoGameHasEndedReason) goGameHasEndedReasonForGameResult:(GoGameResult*)gameResult;
++ (GoGameResult*) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason;
 
 @end

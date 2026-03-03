@@ -523,6 +523,9 @@ NSString* canUserSuspendPlayerClocksKey = @"CanUserSuspendPlayerClocks";
 NSString* timeDataValidationModeKey = @"TimeDataValidationMode";
 NSString* hidePlayerClockViewForInvalidTimeSystemsKey = @"HidePlayerClockViewForInvalidTimeSystems";
 NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey = @"ShowTrueRemainingTimeAfterLastMoveWhenLostOnTime";
+// Miscellaneous settings
+NSString* miscellaneousKey = @"Miscellaneous";
+NSString* gameResultUpdatePolicyKey = @"GameResultUpdatePolicy";
 
 // Constants for NSCoding
 // General constants
@@ -547,6 +550,7 @@ NSString* goGameBoardPositionKey = @"BoardPosition";
 NSString* goGameRulesKey = @"Rules";
 NSString* goGameTimeSettingsKey = @"TimeSettings";
 NSString* goGameDocumentKey = @"Document";
+NSString* goGameGameInfoKey = @"GameInfo";
 NSString* goGameScoreKey = @"Score";
 NSString* goGameSetupFirstMoveColorKey = @"SetupFirstMoveColor";
 // GoPlayer keys
@@ -631,6 +635,7 @@ NSString* goNodeModelNodeDictionaryKey = @"NodeDictionary";
 NSString* goNodeModelNodeListKey = @"NodeList";
 NSString* goNodeModelNumberOfNodesKey = @"NumberOfNodes";
 NSString* goNodeModelNumberOfMovesKey = @"NumberOfMoves";
+NSString* goNodeModelIsMainVariationKey = @"IsMainVariation";
 // GoPoint keys
 NSString* goPointVertexKey = @"Vertex";
 NSString* goPointBoardKey = @"Board";
@@ -693,6 +698,15 @@ NSString* goTimeSystemExtraTimeDurationInSecondsKey = @"ExtraTimeDurationInSecon
 // GoTimeSettings keys
 NSString* goTimeSettingsAbsoluteTimeSystemKey = @"AbsoluteTimeSystem";
 NSString* goTimeSettingsPeriodBasedTimeSystemKey = @"PeriodBasedTimeSystem";
+// GoGameInfo keys
+NSString* goGameInfoGameResultKey = @"GameResult";
+// GoGameResult keys
+NSString* goGameResultDataTypeKey = @"DataType";
+NSString* goGameResultSgfStringKey = @"SgfString";
+NSString* goGameResultGameResultTypeKey = @"GameResultType";
+NSString* goGameResultWinTypeKey = @"WinType";
+NSString* goGameResultScoreKey = @"Score";
+NSString* goGameResultUpdatePolicyKey = @"UpdatePolicy";
 
 // Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2026 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2026 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,23 +15,22 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "../EditGameResultController.h"
-#import "../../../ui/TableViewGridCell.h"
+// Forward declarations
+@class GoGameResult;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GameInfoViewScoreTabDelegate class is responsible for managing
-/// the "Score" tab in the "Game Info" screen.
+/// @brief The GoGameInfo class stores "game info" properties, i.e. information
+/// that describes the game in a general way and that does not have any
+/// influence on the game logic. Most (if not all) of the properties have
+/// direct correspondences in SGF.
+///
+/// @ingroup go
 // -----------------------------------------------------------------------------
-@interface GameInfoViewScoreTabDelegate : NSObject <UITableViewDelegate,
-                                                    UITableViewDataSource,
-                                                    TableViewGridCellDelegate,
-                                                    EditGameResultDelegate>
+@interface GoGameInfo : NSObject <NSSecureCoding>
 {
 }
 
-- (id) initWithPresentingViewController:(UIViewController*)presentingViewController
-                              tableView:(UITableView*)tableView;
+@property(nonatomic, retain) GoGameResult* gameResult;
 
 @end

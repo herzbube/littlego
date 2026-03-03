@@ -19,6 +19,7 @@
 #import "TimedPlayController.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeDataValidator.h"
@@ -766,14 +767,14 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
   if (self.isGameEnded)
   {
     DDLogWarn(@"%@: Received playerLostOnTime notification, but game has already ended with reason %d", self, self.game.reasonForGameHasEnded);
-    [self.game revertStateFromEndedToInProgress];
+    [self.game revertStateFromEndedToInProgress:false];
   }
 
   GoPlayerTimeData* playerTimeData = notification.object;
   enum GoGameHasEndedReason reason = (playerTimeData.isTimeDataForBlackPlayer
                                       ? GoGameHasEndedReasonWhiteWinsOnTime
                                       : GoGameHasEndedReasonBlackWinsOnTime);
-  [self.game endGameWithReason:reason];
+  [self.game endGameWithReason:reason updateGameResultIfNecessary:true];
 }
 
 #pragma mark - PlayerClockService implementation

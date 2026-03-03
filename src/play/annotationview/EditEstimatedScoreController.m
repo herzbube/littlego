@@ -232,14 +232,14 @@
     NSString* scoreValueAsText;
     if (self.currentScoreValue > 0.0)
     {
-      scoreValueAsText = [self scoreValueAsText:self.currentScoreValue];
+      scoreValueAsText = [NSString stringWithScore:self.currentScoreValue];
     }
     else
     {
       // Use a non-zero value to avoid an ugly initial validation error in
       // EditTextController. The user didn't do anything wrong, so don't
       // confront her.
-      scoreValueAsText = [self scoreValueAsText:1.0];
+      scoreValueAsText = [NSString stringWithScore:1.0];
     }
 
     EditTextController* editTextController = [[EditTextController controllerWithText:scoreValueAsText
@@ -493,33 +493,12 @@
 // -----------------------------------------------------------------------------
 - (double) textAsScoreValue:(NSString*)text
 {
-  if (text.length == 0)
+  double scoreValue;
+  bool success = [text tryConvertToDoubleValue:&scoreValue];
+  if (success)
+    return scoreValue;
+  else
     return -1.0f;
-
-  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
-  // Parses the text as a decimal number
-  numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-  // If the string contains any characters other than numerical digits or
-  // locale-appropriate group or decimal separators, parsing will fail.
-  // Leading/trailing space is ignored.
-  // Returns nil if parsing fails.
-  NSNumber* number = [numberFormatter numberFromString:text];
-  if (! number)
-    return -1.0f;
-
-  double scoreValue = [number doubleValue];
-  return scoreValue;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the score value @a scoreValue represented as string.
-// -----------------------------------------------------------------------------
-- (NSString*) scoreValueAsText:(double)scoreValue
-{
-  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
-  numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-  numberFormatter.usesGroupingSeparator = NO;
-  return [numberFormatter stringFromNumber:[NSNumber numberWithDouble:scoreValue]];
 }
 
 @end

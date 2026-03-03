@@ -19,6 +19,8 @@
 #import "SaveSgfCommand.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameInfo.h"
+#import "../../go/GoGameResult.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
@@ -127,6 +129,8 @@
   [self addKomiAndHandicapPropertiesToGameInfoNode:gameInfoNode
                               withValuesFromGoGame:goGame
                                          boardSize:boardSize];
+  [self addGameInfoPropertiesToGameInfoNode:gameInfoNode
+                       withValuesFromGoGame:goGame];
   [self addPlayerNamesToGameInfoNode:gameInfoNode
                 withValuesFromGoGame:goGame];
   [self addTimeDataToGameInfoNode:gameInfoNode
@@ -194,21 +198,23 @@
           withValuesFromGoPoints:handicapPoints
                        boardSize:boardSize];
   }
+}
 
-  if (goGame.state == GoGameStateGameHasEnded)
+// -----------------------------------------------------------------------------
+/// @brief Private helper for createSgfDocument:errorMessage:()
+// -----------------------------------------------------------------------------
+- (void) addGameInfoPropertiesToGameInfoNode:(SGFCNode*)gameInfoNode
+                        withValuesFromGoGame:(GoGame*)goGame
+{
+  GoGameInfo* gameInfo = goGame.gameInfo;
+
+  GoGameResult* gameResult = gameInfo.gameResult;
+  if (gameResult.dataType != GoGameResultDataTypeNoResult)
   {
-    SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:goGame.reasonForGameHasEnded];
-
-    // Some GoGameHasEndedReason values actually cannot be mapped to
-    // SGFCGameResult
-    if (gameResult.IsValid)
-    {
-      NSString* gameResultAsString = SGFCGameResultToPropertyValue(gameResult);
-
-      SGFCSimpleTextPropertyValue* rePropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:gameResultAsString];
-      SGFCProperty* reProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeRE value:rePropertyValue];
-      [gameInfoNode setProperty:reProperty];
-    }
+    NSString* rePropertyValueAsString = [SgfUtilities sgfStringFromGameResult:gameResult];
+    SGFCSimpleTextPropertyValue* rePropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:rePropertyValueAsString];
+    SGFCProperty* reProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeRE value:rePropertyValue];
+    [gameInfoNode setProperty:reProperty];
   }
 }
 

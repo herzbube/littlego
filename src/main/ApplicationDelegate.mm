@@ -49,6 +49,7 @@
 #import "../play/model/BoardViewModel.h"
 #import "../play/model/GameVariationModel.h"
 #import "../play/model/MarkupModel.h"
+#import "../play/model/MiscellaneousModel.h"
 #import "../play/model/NodeTreeViewModel.h"
 #import "../play/model/ScoringModel.h"
 #import "../play/model/TimedPlayModel.h"
@@ -111,6 +112,7 @@
 @synthesize nodeTreeViewModel = _nodeTreeViewModel;
 @synthesize gameVariationModel = _gameVariationModel;
 @synthesize timedPlayModel = _timedPlayModel;
+@synthesize miscellaneousModel = _miscellaneousModel;
 
 #pragma mark - Initialization and deallocation
 
@@ -188,6 +190,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.nodeTreeViewModel = nil;
   self.gameVariationModel = nil;
   self.timedPlayModel = nil;
+  self.miscellaneousModel = nil;
 
   self.fileLogger = nil;
   self.timedPlayController = nil;
@@ -512,6 +515,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   self.nodeTreeViewModel = [[[NodeTreeViewModel alloc] init] autorelease];
   self.gameVariationModel = [[[GameVariationModel alloc] init] autorelease];
   self.timedPlayModel = [[[TimedPlayModel alloc] init] autorelease];
+  self.miscellaneousModel = [[[MiscellaneousModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -531,6 +535,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   [self.nodeTreeViewModel readUserDefaults];
   [self.gameVariationModel readUserDefaults];
   [self.timedPlayModel readUserDefaults];
+  [self.miscellaneousModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
@@ -570,6 +575,7 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
   [self.nodeTreeViewModel writeUserDefaults];
   [self.gameVariationModel writeUserDefaults];
   [self.timedPlayModel writeUserDefaults];
+  [self.miscellaneousModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

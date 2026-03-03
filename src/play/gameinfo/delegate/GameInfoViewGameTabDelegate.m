@@ -20,6 +20,7 @@
 #import "../../model/TimeSettingsModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
+#import "../../../go/GoGameResult.h"
 #import "../../../go/GoGameRules.h"
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoScore.h"
@@ -397,10 +398,10 @@ enum MoveStatisticsSectionItem
               }
               default:
               {
-                SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:game.reasonForGameHasEnded];
-                if (gameResult.IsValid)
+                GoGameResult* gameResult = [GoUtilities gameResultForGoGameHasEndedReason:game.reasonForGameHasEnded];
+                if (gameResult.dataType == GoGameResultDataTypeStructuredData)
                 {
-                  cell.detailTextLabel.text = [SgfUtilities stringForSgfGameResult:gameResult];;
+                  cell.detailTextLabel.text = [GoUtilities stringWithDescriptionOfGameResult:gameResult];
                 }
                 else
                 {

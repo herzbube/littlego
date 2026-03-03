@@ -19,6 +19,7 @@
 @class GoBoard;
 @class GoBoardPosition;
 @class GoGameDocument;
+@class GoGameInfo;
 @class GoGameRules;
 @class GoMove;
 @class GoMoveNodeCreationOptions;
@@ -80,9 +81,10 @@
 - (bool) isLegalPassMoveIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalPassMoveByColor:(enum GoColor)color illegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalPassMoveByColor:(enum GoColor)color afterNode:(GoNode*)node illegalReason:(enum GoMoveIsIllegalReason*)reason;
-- (void) endGameDueToPassMovesIfGameRulesRequireIt;
-- (void) endGameWithReason:(enum GoGameHasEndedReason)reason;
-- (void) revertStateFromEndedToInProgress;
+- (void) endGameIfNecessary;
+- (void) endGameDueToPassMovesIfGameRulesRequireIt:(bool)updateGameResultIfNecessary;
+- (void) endGameWithReason:(enum GoGameHasEndedReason)reason updateGameResultIfNecessary:(bool)updateGameResultIfNecessary;
+- (void) revertStateFromEndedToInProgress:(bool)updateGameResultIfNecessary;
 - (void) switchNextMoveColor;
 - (void) toggleHandicapPoint:(GoPoint*)point;
 - (void) addEmptyNodeToCurrentGameVariation;
@@ -206,6 +208,9 @@
 /// @brief Represents this GoGame as a document that can be saved to / loaded
 /// from disk.
 @property(nonatomic, retain) GoGameDocument* document;
+/// @brief Stroes game info properties that do not have an effect on the actual
+/// game play.
+@property(nonatomic, retain) GoGameInfo* gameInfo;
 /// @brief The GoScore object that provides scoring information about this
 /// GoGame.
 @property(nonatomic, retain) GoScore* score;

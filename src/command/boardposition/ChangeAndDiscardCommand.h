@@ -24,8 +24,7 @@
 /// current node, possibly the parent node, and all child nodes. As a side
 /// effect, the current board position changes to the node that is the @b parent
 /// node of the earliest node that was just discarded. The second responsibility
-/// of ChangeAndDiscardCommand is to revert the game state to "in progress" if
-/// the game is currently ended.
+/// of ChangeAndDiscardCommand is to manage the game state and the game result.
 ///
 /// If the user preference DiscardMyLastMove is turned on (the default) and the
 /// current node was created by a computer player's move, then all parent nodes
@@ -36,20 +35,33 @@
 ///
 /// If the first node that is discarded (first node = the node closest to the
 /// root node) has a next or previous sibling, then the current game variation
-/// will be updated to include new nodes, starting with the next sibling (if one
-/// exists) or the previous sibling (if no next sibling exists), plus all the
+/// will change to the variation that contains the next sibling (if one exists)
+/// or the previous sibling (if no next sibling exists), plus all the
 /// first-child descendants of the next/previous sibling. As a consequence, the
 /// number of board positions in the current game variation may @b not change.
 ///
-/// If the current node is the root node and no other nodes have been created
-/// yet, ChangeAndDiscardCommand reverts the game state to "in progress" if the
-/// game is currently ended (e.g. if a player resigned immediately without
-/// playing a move). If the game is not currently ended, ChangeAndDiscardCommand
-/// does nothing.
+/// ChangeAndDiscardCommand performs game state and game result handling as
+/// follows:
+/// - Revert the game state to "in progress" if the game is currently ended.
+///   This can occur even if the current node is the root node and no other
+///   nodes have been created yet, e.g. because a player resigned immediately
+///   without playing a move.
+/// - As part of the revert, if the current game variation is the main
+///   variation, also updates the game result to match the new game state.
+///   Rationale: The current game variation's data is about to change due to
+///   the discard.
+/// - After discarding nodes, update the game state to match the data in the
+///   current game variation. As outlined above, the current game variation
+///   may change due to the discard, therefore the game state must be updated.
+///   If the new game variation is the main variation, the game result will
+///   be considered when determining the game state (may cause the game to
+///   become e.g. resigned). Otherwise only the most recent pass moves (if any)
+///   are considered.
+/// - Rationale why the game result is @b not updated after discarding: The
+///   main game variation content is not changed anymore at this point.
 ///
-/// After it has made the discard and/or reverted the game state to
-/// "in progress", ChangeAndDiscardCommand performs a backup of the current
-/// game.
+/// After it has made the discard and/or managed the game state and game result,
+/// ChangeAndDiscardCommand performs a backup of the current game.
 ///
 /// ChangeAndDiscardCommand posts a number of notifications to the default
 /// notification center. This is the sequence

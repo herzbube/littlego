@@ -23,6 +23,7 @@
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
+#import "../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -212,16 +213,13 @@
   NSString* title = nil;
   NSString* message = nil;
 
-  NSNumber* number = [self numberFromText:text];
-  bool isValidNumber = false;
-  if (number)
+  int messageId;
+  bool isValidNumber = [text tryConvertToIntValue:&messageId];
+  if (isValidNumber)
   {
-    if ([number integerValue] > 0)
+    if (messageId <= 0)
     {
-      isValidNumber = true;
-    }
-    else
-    {
+      isValidNumber = false;
       title = @"Not a positive number";
       message = [NSString stringWithFormat:@"The number \"%@\" is zero or negative. Please enter a number greater than zero.", text];
     }
@@ -245,15 +243,18 @@
 {
   if (! didCancel)
   {
-    // The SgfcKit enumeration SGFCMessageID has the underlying type NSInteger,
-    // so we can use the NSNumber object as-is
-    NSNumber* number = [self numberFromText:editTextController.text];
+    // No need to check whether conversion is successful => if it were not the
+    // user could not have ended editing with didCancel = false
+    int messageId;
+    [editTextController.text tryConvertToIntValue:&messageId];
+    NSNumber* messageIdAsNumber = [NSNumber numberWithInt:messageId];
+
     NSMutableArray* mutableDisabledMessages = [self.sgfSettingsModel.disabledMessages.mutableCopy autorelease];
 
     NSInteger context = [editTextController.context integerValue];
     if (-1 == context)
     {
-      [mutableDisabledMessages addObject:number];
+      [mutableDisabledMessages addObject:messageIdAsNumber];
       self.sgfSettingsModel.disabledMessages = mutableDisabledMessages;
 
       [self.delegate didChangeDisabledMessages:self];
@@ -262,7 +263,7 @@
     }
     else
     {
-      [mutableDisabledMessages replaceObjectAtIndex:context withObject:number];
+      [mutableDisabledMessages replaceObjectAtIndex:context withObject:messageIdAsNumber];
       self.sgfSettingsModel.disabledMessages = mutableDisabledMessages;
 
       [self.delegate didChangeDisabledMessages:self];
@@ -275,24 +276,6 @@
     }
   }
   [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - Private helpers
-
-- (NSNumber*) numberFromText:(NSString*)text
-{
-  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
-
-  // Parses the text as an integer. 1234.5678 is parsed as 1234.
-  numberFormatter.numberStyle = NSNumberFormatterNoStyle;
-
-  // If the string contains any characters other than numerical digits or
-  // locale-appropriate group or decimal separators, parsing will fail.
-  // Leading/trailing space is ignored.
-  // Returns nil if parsing fails.
-  NSNumber* number = [numberFormatter numberFromString:text];
-
-  return number;
 }
 
 @end

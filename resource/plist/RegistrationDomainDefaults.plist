@@ -595,5 +595,10 @@
 		<key>ShowTrueRemainingTimeAfterLastMoveWhenLostOnTime</key>
 		<false/>
 	</dict>
+	<key>Miscellaneous</key>
+	<dict>
+		<key>GameResultUpdatePolicy</key>
+		<integer>0</integer>
+	</dict>
 </dict>
 </plist>
