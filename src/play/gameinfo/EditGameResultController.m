@@ -17,8 +17,11 @@
 
 // Project includes
 #import "EditGameResultController.h"
+#import "../model/MiscellaneousModel.h"
 #import "../../go/GoGameResult.h"
 #import "../../go/GoUtilities.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewVariableHeightCell.h"
 #import "../../ui/UIViewControllerAdditions.h"
@@ -32,7 +35,8 @@
 enum GameResultTableViewSection
 {
   DataSection,
-  UpdatePolicySection,
+  GameUpdatePolicySection,
+  GlobalUpdatePolicySection,
   MaxSection,
 };
 
@@ -66,12 +70,21 @@ enum DataSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the UpdatePolicySection.
+/// @brief Enumerates items in the GameUpdatePolicySection.
 // -----------------------------------------------------------------------------
-enum UpdatePolicySectionItem
+enum GameUpdatePolicySectionItem
 {
-  UpdatePolicyItem,
-  MaxUpdatePolicySectionItem,
+  GameUpdatePolicyItem,
+  MaxGameUpdatePolicySectionItem,
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the GlobalUpdatePolicySection.
+// -----------------------------------------------------------------------------
+enum GlobalUpdatePolicySectionItem
+{
+  GlobalUpdatePolicyItem,
+  MaxGlobalUpdatePolicySectionItem,
 };
 
 // -----------------------------------------------------------------------------
@@ -92,7 +105,8 @@ enum CellId
   CellIdScore,
   CellIdSetResult,
   CellIdDiscardResult,
-  CellIdUpdatePolicy,
+  CellIdGameUpdatePolicy,
+  CellIdGlobalUpdatePolicy,
 };
 
 // -----------------------------------------------------------------------------
@@ -100,6 +114,7 @@ enum CellId
 // -----------------------------------------------------------------------------
 @interface EditGameResultController()
 @property(nonatomic, retain) GoGameResult* gameResult;
+@property(nonatomic, assign) MiscellaneousModel* miscellaneousModel;
 @end
 
 
@@ -133,6 +148,7 @@ enum CellId
 
   self.gameResult = gameResult;
   self.delegate = delegate;
+  self.miscellaneousModel = [Registry sharedRegistry].modelProvider.miscellaneousModel;
 
   return self;
 }
@@ -148,6 +164,7 @@ enum CellId
 
   self.gameResult = nil;
   self.delegate = nil;
+  self.miscellaneousModel = nil;
 
   [super dealloc];
 }
@@ -181,8 +198,10 @@ enum CellId
 {
   if (section == DataSection)
     return [self numberOfRowsInDataSection];
+  else if (section == GameUpdatePolicySection)
+    return MaxGameUpdatePolicySectionItem;
   else
-    return MaxUpdatePolicySectionItem;
+    return MaxGlobalUpdatePolicySectionItem;
 }
 
 // -----------------------------------------------------------------------------
@@ -197,9 +216,13 @@ enum CellId
     else
       return nil;
   }
-  else
+  else if (section == GameUpdatePolicySection)
   {
     return @"When this setting is enabled, the app is allowed to change the game result when the game ends during normal game play (e.g. a player resigns). When this setting is disabled, only the user is allowed to change the game result.";
+  }
+  else
+  {
+    return @"This setting controls whether automatic game result updates are allowed by default when new games are started or loaded from the archive.";
   }
 }
 
@@ -328,7 +351,8 @@ enum CellId
       cell = [TableViewCellFactory cellWithType:DeleteTextCellType tableView:tableView];
       break;
     }
-    case CellIdUpdatePolicy:
+    case CellIdGameUpdatePolicy:
+    case CellIdGlobalUpdatePolicy:
     {
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       break;
@@ -387,14 +411,26 @@ enum CellId
       cell.textLabel.text = @"Discard current result";
       break;
     }
-    case CellIdUpdatePolicy:
+    case CellIdGameUpdatePolicy:
     {
-      cell.textLabel.text = @"Allow automatic updates";
+      cell.textLabel.text = @"Allow automatic updates for this game";
+      cell.textLabel.numberOfLines = 0;
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.on = (self.gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic);
       [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
-      [accessoryView addTarget:self action:@selector(toggleUpdatePolicy:) forControlEvents:UIControlEventValueChanged];
+      [accessoryView addTarget:self action:@selector(toggleGameUpdatePolicy:) forControlEvents:UIControlEventValueChanged];
       break;
+    }
+    case CellIdGlobalUpdatePolicy:
+    {
+      cell.textLabel.text = @"Enable \"Allow automatic updates\" for new games";
+      cell.textLabel.numberOfLines = 0;
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      accessoryView.on = (self.miscellaneousModel.gameResultUpdatePolicy == GoGameResultUpdatePolicyAutomatic);
+      [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
+      [accessoryView addTarget:self action:@selector(toggleGlobalUpdatePolicy:) forControlEvents:UIControlEventValueChanged];
+      break;
+
     }
   }
 }
@@ -612,9 +648,9 @@ enum CellId
 #pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Allow automatic updates" switch.
+/// @brief Reacts to a tap gesture on the "Update policy for this game" switch.
 // -----------------------------------------------------------------------------
-- (void) toggleUpdatePolicy:(id)sender
+- (void) toggleGameUpdatePolicy:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   if (accessoryView.on)
@@ -626,6 +662,18 @@ enum CellId
     [self.delegate editGameResultController:self gameResultDidChange:self.gameResult];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Update policy for new games" switch.
+// -----------------------------------------------------------------------------
+- (void) toggleGlobalUpdatePolicy:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  if (accessoryView.on)
+    self.miscellaneousModel.gameResultUpdatePolicy = GoGameResultUpdatePolicyAutomatic;
+  else
+    self.miscellaneousModel.gameResultUpdatePolicy = GoGameResultUpdatePolicyManual;
+}
+
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
@@ -633,8 +681,10 @@ enum CellId
 // -----------------------------------------------------------------------------
 - (enum CellId) cellIdForIndexPath:(NSIndexPath*)indexPath
 {
-  if (indexPath.section == UpdatePolicySection)
-    return CellIdUpdatePolicy;
+  if (indexPath.section == GameUpdatePolicySection)
+    return CellIdGameUpdatePolicy;
+  else if (indexPath.section == GlobalUpdatePolicySection)
+    return CellIdGlobalUpdatePolicy;
 
   switch (self.gameResult.dataType)
   {

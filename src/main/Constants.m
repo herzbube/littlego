@@ -523,6 +523,9 @@ NSString* canUserSuspendPlayerClocksKey = @"CanUserSuspendPlayerClocks";
 NSString* timeDataValidationModeKey = @"TimeDataValidationMode";
 NSString* hidePlayerClockViewForInvalidTimeSystemsKey = @"HidePlayerClockViewForInvalidTimeSystems";
 NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey = @"ShowTrueRemainingTimeAfterLastMoveWhenLostOnTime";
+// Miscellaneous settings
+NSString* miscellaneousKey = @"Miscellaneous";
+NSString* gameResultUpdatePolicyKey = @"GameResultUpdatePolicy";
 
 // Constants for NSCoding
 // General constants

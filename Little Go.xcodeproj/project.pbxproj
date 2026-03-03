@@ -941,6 +941,8 @@
 		D76B0D0C2F1A636300032D62 /* TimeSettingsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D092F1A636300032D62 /* TimeSettingsCommand.m */; };
 		D76B0D0F2F1A63B500032D62 /* TimeLeftCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */; };
 		D76B0D102F1A63B500032D62 /* TimeLeftCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */; };
+		D76D39572F57930B00B2140F /* MiscellaneousModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D76D39562F57930B00B2140F /* MiscellaneousModel.m */; };
+		D76D39582F57930B00B2140F /* MiscellaneousModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D76D39562F57930B00B2140F /* MiscellaneousModel.m */; };
 		D773347C2F40FAC3005FE3D5 /* TimedPlaySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = D773347B2F40FAC3005FE3D5 /* TimedPlaySettingsController.m */; };
 		D773347D2F40FAC3005FE3D5 /* TimedPlaySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = D773347B2F40FAC3005FE3D5 /* TimedPlaySettingsController.m */; };
 		D79B28082ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
@@ -2032,6 +2034,8 @@
 		D76B0D092F1A636300032D62 /* TimeSettingsCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeSettingsCommand.m; sourceTree = "<group>"; };
 		D76B0D0D2F1A63B500032D62 /* TimeLeftCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeLeftCommand.h; sourceTree = "<group>"; };
 		D76B0D0E2F1A63B500032D62 /* TimeLeftCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeLeftCommand.m; sourceTree = "<group>"; };
+		D76D39552F57930B00B2140F /* MiscellaneousModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MiscellaneousModel.h; sourceTree = "<group>"; };
+		D76D39562F57930B00B2140F /* MiscellaneousModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MiscellaneousModel.m; sourceTree = "<group>"; };
 		D773347A2F40FAC3005FE3D5 /* TimedPlaySettingsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimedPlaySettingsController.h; sourceTree = "<group>"; };
 		D773347B2F40FAC3005FE3D5 /* TimedPlaySettingsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlaySettingsController.m; sourceTree = "<group>"; };
 		D79B28062ED3CC0700AA71A6 /* FilesystemMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemMonitor.h; sourceTree = "<group>"; };
@@ -2486,6 +2490,8 @@
 				CDE0FC652985994E008E55A8 /* GameVariationModel.m */,
 				CDB3ED3C284E0019007512F6 /* MarkupModel.h */,
 				CDB3ED3D284E001A007512F6 /* MarkupModel.m */,
+				D76D39552F57930B00B2140F /* MiscellaneousModel.h */,
+				D76D39562F57930B00B2140F /* MiscellaneousModel.m */,
 				CD7C6A071AB462CB009EC5AD /* NavigationBarButtonModel.h */,
 				CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */,
 				CDDB08B8291EB44500B38F91 /* NodeTreeViewModel.h */,
@@ -4642,6 +4648,7 @@
 				D74980BB2EBF87BD00BD595D /* Registry.m in Sources */,
 				D70D7A112EEF003200648CBB /* TimeViewController.m in Sources */,
 				CDBDD0992997F38700641E3B /* NodeNumbersViewCell.m in Sources */,
+				D76D39582F57930B00B2140F /* MiscellaneousModel.m in Sources */,
 				CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
 				CD8178FF25D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
 				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
@@ -5188,6 +5195,7 @@
 				CDB49E3D2220AFE5006DC1A4 /* AccessibilityUtility.m in Sources */,
 				D71F0E102F0D8AB000823888 /* TimeSettingsController.m in Sources */,
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
+				D76D39572F57930B00B2140F /* MiscellaneousModel.m in Sources */,
 				CD7C69F61AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */,
 				CDFD9F8118F1D5ED0031CBCF /* GtpLogItemViewController.m in Sources */,
 				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,

@@ -2864,6 +2864,9 @@ extern NSString* canUserSuspendPlayerClocksKey;
 extern NSString* timeDataValidationModeKey;
 extern NSString* hidePlayerClockViewForInvalidTimeSystemsKey;
 extern NSString* showTrueRemainingTimeAfterLastMoveWhenLostOnTimeKey;
+// Miscellaneous settings
+extern NSString* miscellaneousKey;
+extern NSString* gameResultUpdatePolicyKey;
 //@}
 
 // -----------------------------------------------------------------------------

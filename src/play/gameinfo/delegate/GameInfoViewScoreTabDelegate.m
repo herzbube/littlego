@@ -583,12 +583,12 @@ enum ScoreSectionColumn
 // -----------------------------------------------------------------------------
 - (void) editGameResultController:(EditGameResultController*)controller gameResultEditingDidFinish:(GoGameResult*)gameResult
 {
+  self.editGameResultController = nil;
+
   if (! self.gameResultDataDidChange)
     return;
   self.gameResultDataDidChange = false;
 
-  self.editGameResultController = nil;
-  
   NSUInteger sectionIndex = GameResultSection;
   NSIndexPath* indexPath = [NSIndexPath indexPathForRow:GameResultSummaryItem inSection:sectionIndex];
   NSArray* indexPaths = [NSArray arrayWithObject:indexPath];

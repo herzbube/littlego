@@ -1779,9 +1779,12 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 - (bool) setupGameResult:(NSString**)errorMessage
 {
   GoGame* game = [GoGame sharedGame];
-  game.gameInfo.gameResult = [SgfUtilities gameResultFromFromSgfString:self.sgfGoGameInfo.rawGameResult];
 
-  enum GoGameHasEndedReason reasonForGameHasEnded = [GoUtilities goGameHasEndedReasonForGameResult:game.gameInfo.gameResult];
+  GoGameResult* newGameResult = [SgfUtilities gameResultFromFromSgfString:self.sgfGoGameInfo.rawGameResult];
+  newGameResult.updatePolicy = game.gameInfo.gameResult.updatePolicy;
+  game.gameInfo.gameResult = newGameResult;
+
+  enum GoGameHasEndedReason reasonForGameHasEnded = [GoUtilities goGameHasEndedReasonForGameResult:newGameResult];
 
   // Some GoGameResult values actually cannot be mapped to a corresponding
   // GoGameHasEndedReason value

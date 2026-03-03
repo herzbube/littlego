@@ -1922,7 +1922,11 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   {
     GoGameResult* gameResult = self.gameInfo.gameResult;
     if (gameResult.updatePolicy == GoGameResultUpdatePolicyAutomatic && self.nodeModel.isMainVariation)
-      self.gameInfo.gameResult = [GoUtilities gameResultForGoGameHasEndedReason:reason];
+    {
+      GoGameResult* newGameResult = [GoUtilities gameResultForGoGameHasEndedReason:reason];
+      newGameResult.updatePolicy = self.gameInfo.gameResult.updatePolicy;
+      self.gameInfo.gameResult = newGameResult;
+    }
   }
 
   self.reasonForGameHasEnded = reason;
