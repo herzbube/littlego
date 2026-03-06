@@ -623,7 +623,7 @@ NSString* goNodeMarkupConnectionsKey = @"Connections";
 NSString* goNodeMarkupLabelsKey = @"Labels";
 NSString* goNodeMarkupDimmingsKey = @"Dimmings";
 // GoNodeTimeData keys
-NSString* goNodeTimeDataIsTimeDataForBlackPlayerKey = @"IsTimeDataForBlackPlayerKey";
+NSString* goNodeTimeDataIsTimeDataForBlackPlayerKey = @"IsTimeDataForBlackPlayer";
 NSString* goNodeTimeDataIsRemainingTimeAbsoluteTimeKey = @"IsRemainingTimeAbsoluteTime";
 NSString* goNodeTimeDataRemainingTimeInSecondsKey = @"RemainingTimeInSeconds";
 NSString* goNodeTimeDataRemainingNumberOfMovesKey = @"RemainingNumberOfMoves";
@@ -699,7 +699,25 @@ NSString* goTimeSystemExtraTimeDurationInSecondsKey = @"ExtraTimeDurationInSecon
 NSString* goTimeSettingsAbsoluteTimeSystemKey = @"AbsoluteTimeSystem";
 NSString* goTimeSettingsPeriodBasedTimeSystemKey = @"PeriodBasedTimeSystem";
 // GoGameInfo keys
+NSString* goGameInfoRecorderNameKey = @"RecorderName";
+NSString* goGameInfoSourceNameKey = @"SourceName";
+NSString* goGameInfoAnnotationAuthorKey = @"AnnotationAuthor";
+NSString* goGameInfoCopyrightInformationKey = @"CopyrightInformation";
+NSString* goGameInfoGameNameKey = @"GameName";
+NSString* goGameInfoGameInformationKey = @"GameInformation";
+NSString* goGameInfoGameDatesKey = @"GameDates";
+NSString* goGameInfoRulesNameKey = @"RulesName";
 NSString* goGameInfoGameResultKey = @"GameResult";
+NSString* goGameInfoOpeningInformationKey = @"OpeningInformation";
+NSString* goGameInfoBlackPlayerNameKey = @"BlackPlayerName";
+NSString* goGameInfoBlackPlayerRankKey = @"BlackPlayerRank";
+NSString* goGameInfoBlackPlayerTeamNameKey = @"BlackPlayerTeamName";
+NSString* goGameInfoWhitePlayerNameKey = @"WhitePlayerName";
+NSString* goGameInfoWhitePlayerRankKey = @"WhitePlayerRank";
+NSString* goGameInfoWhitePlayerTeamNameKey = @"WhitePlayerTeamName";
+NSString* goGameInfoGameLocationKey = @"GameLocation";
+NSString* goGameInfoEventNameKey = @"EventName";
+NSString* goGameInfoRoundInformationKey = @"RoundInformation";
 // GoGameResult keys
 NSString* goGameResultDataTypeKey = @"DataType";
 NSString* goGameResultSgfStringKey = @"SgfString";
