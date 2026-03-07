@@ -19,6 +19,7 @@
 #import "GameInfoViewController.h"
 #import "delegate/GameInfoViewBoardTabDelegate.h"
 #import "delegate/GameInfoViewGameTabDelegate.h"
+#import "delegate/GameInfoViewInfoTabDelegate.h"
 #import "delegate/GameInfoViewScoreTabDelegate.h"
 #import "../model/BoardViewModel.h"
 #import "../../main/ModelProvider.h"
@@ -102,7 +103,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationBar
 {
-  UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
+  UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board", @"Info"]] autorelease];
   segmentedControl.selectedSegmentIndex = self.boardViewModel.gameInfoTypeLastSelected;
   [segmentedControl addTarget:self action:@selector(gameInfoTypeChanged:) forControlEvents:UIControlEventValueChanged];
   self.navigationItem.titleView = segmentedControl;
@@ -202,6 +203,15 @@
     case GameInfoTypeBoard:
     {
       GameInfoViewBoardTabDelegate* delegate = [[[GameInfoViewBoardTabDelegate alloc] init] autorelease];
+      self.tableView.delegate = delegate;
+      self.tableView.dataSource = delegate;
+      self.gameInfoViewTableViewDelegate = delegate;
+      break;
+    }
+    case GameInfoTypeInfo:
+    {
+      GameInfoViewInfoTabDelegate* delegate = [[[GameInfoViewInfoTabDelegate alloc] initWithPresentingViewController:self
+                                                                                                           tableView:self.tableView] autorelease];
       self.tableView.delegate = delegate;
       self.tableView.dataSource = delegate;
       self.gameInfoViewTableViewDelegate = delegate;

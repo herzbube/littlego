@@ -219,6 +219,7 @@ enum GameInfoType
   GameInfoTypeScore,
   GameInfoTypeGame,
   GameInfoTypeBoard,
+  GameInfoTypeInfo,
 };
 
 /// @brief Enumerates the pages that the Annotation view can display.

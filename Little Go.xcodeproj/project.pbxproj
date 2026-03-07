@@ -907,6 +907,8 @@
 		D71961802F489CAB0067A6CC /* GoGameResult.m in Sources */ = {isa = PBXBuildFile; fileRef = D719617E2F489CAB0067A6CC /* GoGameResult.m */; };
 		D71961832F5342CC0067A6CC /* EditGameResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = D71961822F5342CC0067A6CC /* EditGameResultController.m */; };
 		D71961842F5342CC0067A6CC /* EditGameResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = D71961822F5342CC0067A6CC /* EditGameResultController.m */; };
+		D719E50D2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E50C2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m */; };
+		D719E50E2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E50C2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m */; };
 		D71F0E0B2F0C647300823888 /* TimeSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D71F0E0A2F0C647300823888 /* TimeSettingsModel.m */; };
 		D71F0E0C2F0C647300823888 /* TimeSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D71F0E0A2F0C647300823888 /* TimeSettingsModel.m */; };
 		D71F0E0F2F0D8AB000823888 /* TimeSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = D71F0E0E2F0D8AB000823888 /* TimeSettingsController.m */; };
@@ -1990,6 +1992,8 @@
 		D719617E2F489CAB0067A6CC /* GoGameResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoGameResult.m; sourceTree = "<group>"; };
 		D71961812F5342CC0067A6CC /* EditGameResultController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditGameResultController.h; sourceTree = "<group>"; };
 		D71961822F5342CC0067A6CC /* EditGameResultController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditGameResultController.m; sourceTree = "<group>"; };
+		D719E50B2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameInfoViewInfoTabDelegate.h; sourceTree = "<group>"; };
+		D719E50C2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewInfoTabDelegate.m; sourceTree = "<group>"; };
 		D71F0E092F0C647300823888 /* TimeSettingsModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeSettingsModel.h; sourceTree = "<group>"; };
 		D71F0E0A2F0C647300823888 /* TimeSettingsModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeSettingsModel.m; sourceTree = "<group>"; };
 		D71F0E0D2F0D8AB000823888 /* TimeSettingsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeSettingsController.h; sourceTree = "<group>"; };
@@ -4058,6 +4062,8 @@
 				D71961722F4776710067A6CC /* GameInfoViewBoardTabDelegate.m */,
 				D71961752F477D4A0067A6CC /* GameInfoViewGameTabDelegate.h */,
 				D71961762F477D4A0067A6CC /* GameInfoViewGameTabDelegate.m */,
+				D719E50B2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.h */,
+				D719E50C2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m */,
 				D719616D2F476D110067A6CC /* GameInfoViewScoreTabDelegate.h */,
 				D719616E2F476D110067A6CC /* GameInfoViewScoreTabDelegate.m */,
 			);
@@ -4801,6 +4807,7 @@
 				CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
+				D719E50E2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m in Sources */,
 				CDE0FC63298598C1008E55A8 /* GameVariationSettingsController.m in Sources */,
 				CD1E6EAA2860F0BC00785E23 /* MarkupUtilities.mm in Sources */,
 				CD607BCB28109A7E000C111E /* EditEstimatedScoreController.m in Sources */,
@@ -5005,6 +5012,7 @@
 				CD85B5BC1401C2AD001715B8 /* GtpResponse.m in Sources */,
 				CDB3ED3F284E001A007512F6 /* MarkupModel.m in Sources */,
 				CD7C69C01A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
+				D719E50D2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m in Sources */,
 				CD85B5C41401C338001715B8 /* Player.m in Sources */,
 				D7F593DF2EF891EF0031317A /* TimedPlayController.m in Sources */,
 				CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */,
