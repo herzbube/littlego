@@ -212,12 +212,13 @@ enum UIAreaPlayMode
   UIAreaPlayModeDefault = UIAreaPlayModePlay,
 };
 
-/// @brief Enumerates the types of information that the Info view can display.
-enum InfoType
+/// @brief Enumerates the types of information that the Game Info view can
+/// display.
+enum GameInfoType
 {
-  ScoreInfoType,
-  GameInfoType,
-  BoardInfoType
+  GameInfoTypeScore,
+  GameInfoTypeGame,
+  GameInfoTypeBoard,
 };
 
 /// @brief Enumerates the pages that the Annotation view can display.
@@ -2706,7 +2707,7 @@ extern NSString* displayPlayerInfluenceKey;
 extern NSString* moveNumbersPercentageKey;
 extern NSString* playSoundKey;
 extern NSString* vibrateKey;
-extern NSString* infoTypeLastSelectedKey;
+extern NSString* gameInfoTypeLastSelectedKey;
 extern NSString* computerAssistanceTypeKey;
 // New game settings
 extern NSString* newGameKey;

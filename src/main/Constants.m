@@ -365,7 +365,7 @@ NSString* displayPlayerInfluenceKey = @"DisplayPlayerInfluence";
 NSString* moveNumbersPercentageKey = @"MoveNumbersPercentage";
 NSString* playSoundKey = @"PlaySound";
 NSString* vibrateKey = @"Vibrate";
-NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
+NSString* gameInfoTypeLastSelectedKey = @"GameInfoTypeLastSelected";
 NSString* computerAssistanceTypeKey = @"ComputerAssistanceType";
 // New game settings
 NSString* newGameKey = @"NewGame";

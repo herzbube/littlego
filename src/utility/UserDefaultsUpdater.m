@@ -71,6 +71,7 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
 NSString* crashDataContactAllowKey = @"CrashDataContactAllowKey";
 NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
+NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
 //@}
 
 
@@ -389,7 +390,7 @@ NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
   {
     NSMutableDictionary* playViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:playViewDictionary];
     // This key is new
-    [playViewDictionaryUpgrade setValue:[NSNumber numberWithInt:ScoreInfoType] forKey:infoTypeLastSelectedKey];
+    [playViewDictionaryUpgrade setValue:[NSNumber numberWithInt:  GameInfoTypeScore] forKey:infoTypeLastSelectedKey];
     // This key now has device-specific values
     [UserDefaultsUpdater upgradeDictionary:playViewDictionaryUpgrade
                                     forKey:boardOuterMarginPercentageKey
@@ -1018,6 +1019,17 @@ NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
     [timeSettingsModel writeToDictionary:newGameDictionaryUpgrade];
 
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];
+  }
+
+  // Rename key in "BoardView" dictionary
+  id boardViewDictionary = [userDefaults objectForKey:boardViewKey];
+  if (boardViewDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* boardViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:boardViewDictionary];
+    enum GameInfoType infoTypeLastSelected = [[boardViewDictionaryUpgrade valueForKey:infoTypeLastSelectedKey] intValue];
+    [boardViewDictionaryUpgrade removeObjectForKey:infoTypeLastSelectedKey];
+    [boardViewDictionaryUpgrade setValue:[NSNumber numberWithInt:infoTypeLastSelected] forKey:gameInfoTypeLastSelectedKey];
+    [userDefaults setObject:boardViewDictionaryUpgrade forKey:boardViewKey];
   }
 }
 
