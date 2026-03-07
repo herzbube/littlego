@@ -42,6 +42,32 @@
 @property(nonatomic, assign, readonly) long numberOfHours;
 @property(nonatomic, assign, readonly) short numberOfMinutes;
 @property(nonatomic, assign, readonly) short numberOfSeconds;
+
+/// @brief A human-readable string representation of the duration value stored
+/// by this CompositeDuration.
+///
+/// The resolution that the string representation uses depends on the duration
+/// value:
+/// - The resolution is "seconds" if the duration is less than 60 seconds
+///   (1 minute). The string representation in this case always reads as
+///   "<s> seconds".
+/// - The resolution is "minutes" if the duration is 60 seconds or more but
+///   less than 3600 seconds (1 hour). The string representation in this case
+///   reads either as "<m>:<ss> minutes", or as "<m> minutes" if the duration
+///   is a whole number of minutes.
+/// - The resolution is "hours" if the duration is 3600 seconds (1 hour) or
+///   more. The string representation in this case reads either as
+///   "<h>:<mm> minutes", or as "<h> hours" if the duration is a whole number
+///   of hours. Any surplus number of seconds are truncated, assuming that the
+///   number is irrelevant.
+///
+/// Additional notes:
+/// - For whole-minute and whole-hour durations, the string representation
+///   uses singular/plural, e.g. "1 minute" or "2 minutes".
+/// - If the exact number of seconds is relevant, the class method
+///   humanReadableStringWithDurationInSeconds:withSecondsResolution:() can be
+///   used to obtain a human-readable string where the exact number of seconds
+///   is appended to the usual human-readable string.
 @property(nonatomic, retain, readonly) NSString* humanReadableString;
 
 @end

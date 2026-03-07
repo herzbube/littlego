@@ -232,14 +232,14 @@
     NSString* scoreValueAsText;
     if (self.currentScoreValue > 0.0)
     {
-      scoreValueAsText = [NSString stringWithScore:self.currentScoreValue];
+      scoreValueAsText = [NSString stringWithDouble:self.currentScoreValue];
     }
     else
     {
       // Use a non-zero value to avoid an ugly initial validation error in
       // EditTextController. The user didn't do anything wrong, so don't
       // confront her.
-      scoreValueAsText = [NSString stringWithScore:1.0];
+      scoreValueAsText = [NSString stringWithDouble:1.0];
     }
 
     EditTextController* editTextController = [[EditTextController controllerWithText:scoreValueAsText

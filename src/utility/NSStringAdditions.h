@@ -54,7 +54,7 @@
 + (NSString*) shortStringWithPeriodBasedTimeSystemType:(enum GoTimeSystemType)periodBasedTimeSystemType;
 + (NSString*) stringWithGameResultType:(enum GoGameResultType)gameResultType;
 + (NSString*) stringWithWinType:(enum GoGameResultWinType)winType;
-+ (NSString*) stringWithScore:(double)score;
++ (NSString*) stringWithDouble:(double)doubleValue;
 - (bool) tryConvertToIntValue:(int*)intValue;
 - (bool) tryConvertToDoubleValue:(double*)doubleValue;
 
