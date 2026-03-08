@@ -1806,7 +1806,8 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   gameInfo.whitePlayerTeamName = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerTeamName);
   gameInfo.gameLocation = goGameInfoPropertyValue(self.sgfGoGameInfo.gameLocation);
   gameInfo.eventName = goGameInfoPropertyValue(self.sgfGoGameInfo.eventName);
-  gameInfo.roundInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.rawRoundInformation);
+
+  gameInfo.gameInfoRound = [SgfUtilities gameInfoRoundFromFromSgfGameInfo:self.sgfGoGameInfo];
 
   return [self setupGameResult:errorMessage];
 }

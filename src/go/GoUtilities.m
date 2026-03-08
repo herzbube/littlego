@@ -21,6 +21,7 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameInfoRound.h"
 #import "GoGameInfoRules.h"
 #import "GoGameResult.h"
 #import "GoGameRules.h"
@@ -1394,6 +1395,26 @@
       return gameInfoRules.sgfString;
     default:
       return [NSString stringWithGameInfoRule:gameInfoRules.gameInfoRule];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameInfoRound. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameInfoRound:(GoGameInfoRound*)gameInfoRound
+{
+  switch (gameInfoRound.dataType)
+  {
+    case GoGameInfoRoundDataTypeNone:
+      return @"<Not set>";
+      break;
+    case GoGameInfoRoundDataTypeSgfString:
+      return gameInfoRound.sgfString;
+      break;
+    case GoGameInfoRoundDataTypeStructuredData:
+      return [NSString stringWithFormat:@"Round type: %@\nRound number: %@", gameInfoRound.roundType, gameInfoRound.roundNumber];
+      break;
   }
 }
 

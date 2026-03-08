@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoGameInfoRound;
 @class GoGameInfoRules;
 @class GoGameResult;
 
@@ -246,11 +247,13 @@
 /// @brief The information that describes the round in which the
 /// game was played.
 ///
-/// Is @e nil to indicate that this property has no value. The default value is
-/// @e nil.
+/// This property must never be @e nil. The GoGameInfoRound object's
+/// @e dataType property has the value #GoGameInfoRoundDataTypeNone to indicate
+/// that there is no round information. The default value is such a
+/// GoGameInfoRound object.
 ///
-/// The value of this property corresponds to the value of the SGF property RO.
-@property(nonatomic, retain) NSString* roundInformation;
+/// @see GoGameInfoRound
+@property(nonatomic, retain) GoGameInfoRound* gameInfoRound;
 //@}
 
 @end

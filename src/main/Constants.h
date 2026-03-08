@@ -1325,6 +1325,19 @@ enum GoGameInfoRule
   GoGameInfoRuleLast = GoGameInfoRuleNewZealand,
 };
 
+/// @brief Enumerates the kinds of data that a GoGameInfoRound object can hold.
+///
+/// @ingroup go
+enum GoGameInfoRoundDataType
+{
+  /// @brief Indicates that no round information is stored in the game infos.
+  GoGameInfoRoundDataTypeNone,
+  /// @brief The round information is a custom string.
+  GoGameInfoRoundDataTypeSgfString,
+  /// @brief The round information consists of a round type and a round number.
+  GoGameInfoRoundDataTypeStructuredData,
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -3096,7 +3109,7 @@ extern NSString* goGameInfoWhitePlayerRankKey;
 extern NSString* goGameInfoWhitePlayerTeamNameKey;
 extern NSString* goGameInfoGameLocationKey;
 extern NSString* goGameInfoEventNameKey;
-extern NSString* goGameInfoRoundInformationKey;
+extern NSString* goGameInfoGameInfoRoundKey;
 // GoGameResult keys
 extern NSString* goGameResultDataTypeKey;
 extern NSString* goGameResultSgfStringKey;
@@ -3107,6 +3120,11 @@ extern NSString* goGameResultUpdatePolicyKey;
 // GoGameInfoRules keys
 extern NSString* goGameInfoRulesGameInfoRuleKey;
 extern NSString* goGameInfoRulesSgfStringKey;
+// GoGameInfoRound keys
+extern NSString* goGameInfoRoundDataTypeKey;
+extern NSString* goGameInfoRoundSgfStringKey;
+extern NSString* goGameInfoRoundRoundTypeKey;
+extern NSString* goGameInfoRoundRoundNumberKey;
 //@}
 
 // -----------------------------------------------------------------------------

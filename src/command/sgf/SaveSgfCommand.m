@@ -20,6 +20,7 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameInfo.h"
+#import "../../go/GoGameInfoRound.h"
 #import "../../go/GoGameInfoRules.h"
 #import "../../go/GoGameResult.h"
 #import "../../go/GoMove.h"
@@ -240,13 +241,24 @@
   setSgfGameInfoPropertyIfNecessary(gameInfo.whitePlayerTeamName, SGFCPropertyTypeWT, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameLocation, SGFCPropertyTypePC, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.eventName, SGFCPropertyTypeEV, true);
-  setSgfGameInfoPropertyIfNecessary(gameInfo.roundInformation, SGFCPropertyTypeRO, true);
 
   GoGameResult* gameResult = gameInfo.gameResult;
   if (gameResult.dataType != GoGameResultDataTypeNoResult)
   {
     NSString* rePropertyValueAsString = [SgfUtilities sgfStringFromGameResult:gameResult];
     setSgfGameInfoPropertyIfNecessary(rePropertyValueAsString, SGFCPropertyTypeRE, true);
+  }
+
+  GoGameInfoRound* gameInfoRound = gameInfo.gameInfoRound;
+  if (gameInfoRound.dataType == GoGameInfoRoundDataTypeSgfString)
+  {
+    setSgfGameInfoPropertyIfNecessary(gameInfoRound.sgfString, SGFCPropertyTypeRO, true);
+  }
+  else if (gameInfoRound.dataType == GoGameInfoRoundDataTypeStructuredData)
+  {
+    SGFCRoundInformation sgfcRoundInformation = SGFCRoundInformationMake(gameInfoRound.roundNumber, gameInfoRound.roundType, YES);
+    NSString* roPropertyValueAsString = SGFCRoundInformationToPropertyValue(sgfcRoundInformation);
+    setSgfGameInfoPropertyIfNecessary(roPropertyValueAsString, SGFCPropertyTypeRO, true);
   }
 }
 

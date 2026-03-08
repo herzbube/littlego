@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GameInfoItem.h"
+#import "../go/GoGameInfoRound.h"
 #import "../go/GoGameInfoRules.h"
 #import "../go/GoGameResult.h"
 #import "../go/GoUtilities.h"
@@ -903,7 +904,12 @@ enum DataSourceInfoSectionItem
 
     self.gameLocation = [self stringValue:goGameInfo.gameLocation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_gameLocationHasData];
     self.eventName = [self stringValue:goGameInfo.eventName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_eventNameHasData];
-    self.roundInformationAsString = [self stringValue:goGameInfo.rawRoundInformation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_roundInformationHasData];
+
+    GoGameInfoRound* gameInfoRound = [SgfUtilities gameInfoRoundFromFromSgfGameInfo:goGameInfo];
+    NSString* descriptionOfGameInfoRound = (gameInfoRound.dataType == GoGameInfoRoundDataTypeNone
+                                         ? nil // use our own placeholder string, not the one from GoUtilities
+                                         : [GoUtilities stringWithDescriptionOfGameInfoRound:gameInfoRound]);
+    self.roundInformationAsString = [self stringValue:descriptionOfGameInfoRound forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_roundInformationHasData];
     self.roundInformation = goGameInfo.roundInformation;
   }
 }

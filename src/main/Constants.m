@@ -717,7 +717,7 @@ NSString* goGameInfoWhitePlayerRankKey = @"WhitePlayerRank";
 NSString* goGameInfoWhitePlayerTeamNameKey = @"WhitePlayerTeamName";
 NSString* goGameInfoGameLocationKey = @"GameLocation";
 NSString* goGameInfoEventNameKey = @"EventName";
-NSString* goGameInfoRoundInformationKey = @"RoundInformation";
+NSString* goGameInfoGameInfoRoundKey = @"GameInfoRound";
 // GoGameResult keys
 NSString* goGameResultDataTypeKey = @"DataType";
 NSString* goGameResultSgfStringKey = @"SgfString";
@@ -728,6 +728,11 @@ NSString* goGameResultUpdatePolicyKey = @"UpdatePolicy";
 // GoGameInfoRules keys
 NSString* goGameInfoRulesGameInfoRuleKey = @"GameInfoRule";
 NSString* goGameInfoRulesSgfStringKey = @"SgfString";
+// GoGameInfoRound keys
+NSString* goGameInfoRoundDataTypeKey = @"DataType";
+NSString* goGameInfoRoundSgfStringKey = @"SgfString";
+NSString* goGameInfoRoundRoundTypeKey = @"RoundType";
+NSString* goGameInfoRoundRoundNumberKey = @"RoundNumber";
 
 // Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";

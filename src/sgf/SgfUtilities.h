@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class SGFCDocumentReadResult;
+@class GoGameInfoRound;
 @class GoGameResult;
 @class GoTimeSystem;
 @class TimeSettingsModel;
@@ -59,5 +60,6 @@
 + (TimeSettingsModel*) timeSettingsFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
 + (GoGameResult*) gameResultFromFromSgfString:(NSString*)rePropertyValue;
 + (NSString*) sgfStringFromGameResult:(GoGameResult*)gameResult;
++ (GoGameInfoRound*) gameInfoRoundFromFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
 
 @end

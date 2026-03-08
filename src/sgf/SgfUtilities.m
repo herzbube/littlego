@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SgfUtilities.h"
+#import "../go/GoGameInfoRound.h"
 #import "../go/GoGameResult.h"
 #import "../go/GoTimeSettings.h"
 #import "../go/GoTimeSystem.h"
@@ -1026,6 +1027,27 @@
       SGFCGameResult sgfcGameResult = SGFCGameResultMake(sgfcGameResultType, sgfcWinType, gameResult.score, true);
       return SGFCGameResultToPropertyValue(sgfcGameResult);
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoGameInfoRound object that is populated with the round
+/// information (if any) stored in @a sgfGameInfo.
+// -----------------------------------------------------------------------------
++ (GoGameInfoRound*) gameInfoRoundFromFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo
+{
+  if (sgfGameInfo.roundInformation.IsValid)
+  {
+    return [[[GoGameInfoRound alloc] initWithRoundType:sgfGameInfo.roundInformation.RoundType
+                                           roundNumber:sgfGameInfo.roundInformation.RoundNumber] autorelease];
+  }
+  else if (sgfGameInfo.rawRoundInformation && sgfGameInfo.rawRoundInformation.length > 0)
+  {
+    return [[[GoGameInfoRound alloc] initWithSgfString:sgfGameInfo.rawRoundInformation] autorelease];
+  }
+  else
+  {
+    return [[[GoGameInfoRound alloc] init] autorelease];
   }
 }
 

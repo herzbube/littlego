@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoGameInfo.h"
+#import "GoGameInfoRound.h"
 #import "GoGameInfoRules.h"
 #import "GoGameResult.h"
 
@@ -55,7 +56,7 @@
   self.whitePlayerTeamName = nil;
   self.gameLocation = nil;
   self.eventName = nil;
-  self.roundInformation = nil;
+  self.gameInfoRound = [[[GoGameInfoRound alloc] init] autorelease];;
 
   return self;
 }
@@ -90,7 +91,7 @@
   self.whitePlayerTeamName = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoWhitePlayerTeamNameKey];
   self.gameLocation = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoGameLocationKey];
   self.eventName = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoEventNameKey];
-  self.roundInformation = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundInformationKey];
+  self.gameInfoRound = [decoder decodeObjectOfClass:[GoGameInfoRound class] forKey:goGameInfoGameInfoRoundKey];
 
   return self;
 }
@@ -128,7 +129,7 @@
   [encoder encodeObject:self.whitePlayerTeamName forKey:goGameInfoWhitePlayerTeamNameKey];
   [encoder encodeObject:self.gameLocation forKey:goGameInfoGameLocationKey];
   [encoder encodeObject:self.eventName forKey:goGameInfoEventNameKey];
-  [encoder encodeObject:self.roundInformation forKey:goGameInfoRoundInformationKey];
+  [encoder encodeObject:self.gameInfoRound forKey:goGameInfoGameInfoRoundKey];
 }
 
 @end

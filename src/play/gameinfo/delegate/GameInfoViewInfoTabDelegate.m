@@ -262,10 +262,18 @@ enum CellId
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
   enum CellId cellId = [self cellIdForIndexPath:indexPath];
-  if (cellId == CellIdRulesName)
-    [self showEditGameInfoRulesController];
-  else
-    [self showEditTextControllerForCellId:cellId indexPath:indexPath];
+  switch (cellId)
+  {
+    case CellIdRulesName:
+      [self showEditGameInfoRulesController];
+      break;
+    case CellIdRoundInformation:
+      [self showEditGameInfoRoundController];
+      break;
+    default:
+      [self showEditTextControllerForCellId:cellId indexPath:indexPath];
+      break;
+  }
 }
 
 #pragma mark - Private helpers for tableView:cellForRowAtIndexPath:()
@@ -314,6 +322,16 @@ enum CellId
 // -----------------------------------------------------------------------------
 /// @brief Private helper for tableView:didSelectRowAtIndexPath:().
 // -----------------------------------------------------------------------------
+- (void) showEditGameInfoRoundController
+{
+  EditGameInfoRoundController* controller = [EditGameInfoRoundController controllerWithGameInfoRound:self.gameInfo.gameInfoRound
+                                                                                            delegate:self];
+  [self.presentingViewController presentNavigationControllerWithRootViewController:controller];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:didSelectRowAtIndexPath:().
+// -----------------------------------------------------------------------------
 - (void) showEditTextControllerForCellId:(enum CellId)cellId indexPath:(NSIndexPath*)indexPath
 {
   NSString* textToEdit = [self gameInfoPropertyValueForCellId:cellId];
@@ -346,14 +364,29 @@ enum CellId
 {
   if (didChangeGameInfoRules)
   {
-    if (controller.gameInfoRules.gameInfoRule == GoGameInfoRuleSgfString)
-      self.gameInfo.gameInfoRules.sgfString = controller.gameInfoRules.sgfString;
-    else
-      self.gameInfo.gameInfoRules.gameInfoRule = controller.gameInfoRules.gameInfoRule;
-
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
 
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:RulesNameItem inSection:BasicGameInfoSection];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+
+  [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - EditGameInfoRoundControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief EditGameInfoRoundControllerDelegate protocol method
+// -----------------------------------------------------------------------------
+- (void) editGameInfoRoundControllerDidEndEditing:(EditGameInfoRoundController*)controller
+                        didChangeRoundInformation:(bool)didChangeRoundInformation
+{
+  if (didChangeRoundInformation)
+  {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
+
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:RoundInformationItem inSection:ContextSection];
     [self.tableView reloadRowsAtIndexPaths:@[indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
   }
@@ -508,6 +541,9 @@ enum CellId
     case CellIdRulesName:
       gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRules:self.gameInfo.gameInfoRules];
       break;
+    case CellIdRoundInformation:
+      gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRound:self.gameInfo.gameInfoRound];
+      break;
     default:
       gameInfoPropertyValue = [self gameInfoPropertyValueForCellId:cellId];
       break;
@@ -555,8 +591,6 @@ enum CellId
       return self.gameInfo.gameLocation;
     case CellIdEventName:
       return self.gameInfo.eventName;
-    case CellIdRoundInformation:
-      return self.gameInfo.roundInformation;
     default:
       assert(0);
       break;
@@ -620,9 +654,6 @@ enum CellId
       break;
     case CellIdEventName:
       self.gameInfo.eventName = propertyValue;
-      break;
-    case CellIdRoundInformation:
-      self.gameInfo.roundInformation = propertyValue;
       break;
     default:
       assert(0);
