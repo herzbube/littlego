@@ -436,4 +436,22 @@
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Configures @a textField with a preferred set of property values for
+/// text input.
+// -----------------------------------------------------------------------------
++ (void) configureTextFieldForTextInput:(UITextField*)textField
+{
+  // Appearance
+  textField.borderStyle = UITextBorderStyleRoundedRect;
+  textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+
+  // Behaviour
+  textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+  textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+  textField.autocorrectionType = UITextAutocorrectionTypeNo;
+  textField.enablesReturnKeyAutomatically = YES;
+  textField.spellCheckingType = UITextSpellCheckingTypeNo;
+}
+
 @end

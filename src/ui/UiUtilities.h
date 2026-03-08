@@ -47,5 +47,6 @@
 + (CGRect) rectWithSize:(CGSize)size centeredInRect:(CGRect)rect;
 + (UIInterfaceOrientationMask) interfaceOrientationMaskForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 + (void) applyTableViewHeaderFooterLabelStyle:(UILabel*)label;
++ (void) configureTextFieldForTextInput:(UITextField*)textField;
 
 @end

@@ -24,6 +24,7 @@
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -119,15 +120,11 @@
 // -----------------------------------------------------------------------------
 - (void) configureTextField
 {
+  [UiUtilities configureTextFieldForTextInput:self.textField];
   self.textField.placeholder = @"Enter new command, or select from the list";
-  self.textField.borderStyle = UITextBorderStyleRoundedRect;
-  self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-  self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-  self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+
   self.textField.adjustsFontSizeToFitWidth = YES;
   self.textField.minimumFontSize = 12;
-  self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-  self.textField.spellCheckingType = UITextSpellCheckingTypeNo;
 
   self.textField.delegate = self;
 }

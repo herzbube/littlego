@@ -236,13 +236,7 @@
 // -----------------------------------------------------------------------------
 - (void) configureTextField
 {
-  self.textField.borderStyle = UITextBorderStyleRoundedRect;
-  self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-  self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-  self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-  self.textField.enablesReturnKeyAutomatically = YES;
-  self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-  self.textField.spellCheckingType = UITextSpellCheckingTypeNo;
+  [UiUtilities configureTextFieldForTextInput:self.textField];
 
   self.textField.delegate = self;
   self.textField.text = self.text;
