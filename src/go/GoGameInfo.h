@@ -74,7 +74,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property US.
-@property(nonatomic, strong) NSString* recorderName;
+@property(nonatomic, retain) NSString* recorderName;
 
 /// @brief The name of the source of the game data (e.g. book, journal, etc.).
 ///
@@ -82,7 +82,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property SO.
-@property(nonatomic, strong) NSString* sourceName;
+@property(nonatomic, retain) NSString* sourceName;
 
 /// @brief The name of the person who made the annotations to the game.
 ///
@@ -90,7 +90,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property AN.
-@property(nonatomic, strong) NSString* annotationAuthor;
+@property(nonatomic, retain) NSString* annotationAuthor;
 
 /// @brief The copyright information for the game data (including the
 /// annotations).
@@ -99,7 +99,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property CP.
-@property(nonatomic, strong) NSString* copyrightInformation;
+@property(nonatomic, retain) NSString* copyrightInformation;
 //@}
 
 /// @name Basic game information
@@ -111,7 +111,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property GN.
-@property(nonatomic, strong) NSString* gameName;
+@property(nonatomic, retain) NSString* gameName;
 
 /// @brief Information about the game (e.g. background information, a game
 /// summary, etc.).
@@ -120,7 +120,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property GC.
-@property(nonatomic, strong) NSString* gameInformation;
+@property(nonatomic, retain) NSString* gameInformation;
 
 /// @brief The dates when the game was played.
 ///
@@ -128,7 +128,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property DT.
-@property(nonatomic, strong) NSString* gameDates;
+@property(nonatomic, retain) NSString* gameDates;
 
 /// @brief The rules used for the game.
 ///
@@ -157,7 +157,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property ON.
-@property(nonatomic, strong) NSString* openingInformation;
+@property(nonatomic, retain) NSString* openingInformation;
 //@}
 
 /// @name Player information
@@ -174,7 +174,7 @@
 /// overwrites the @e name property value.
 ///
 /// The value of this property corresponds to the value of the SGF property PB.
-@property(nonatomic, strong) NSString* blackPlayerName;
+@property(nonatomic, retain) NSString* blackPlayerName;
 
 /// @brief The rank of the black player.
 ///
@@ -182,7 +182,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property BR.
-@property(nonatomic, strong) NSString* blackPlayerRank;
+@property(nonatomic, retain) NSString* blackPlayerRank;
 
 /// @brief The name of the black player's team.
 ///
@@ -190,7 +190,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property BT.
-@property(nonatomic, strong) NSString* blackPlayerTeamName;
+@property(nonatomic, retain) NSString* blackPlayerTeamName;
 
 /// @brief The name of the white player.
 ///
@@ -204,7 +204,7 @@
 /// overwrites the @e name property value.
 ///
 /// The value of this property corresponds to the value of the SGF property PW.
-@property(nonatomic, strong) NSString* whitePlayerName;
+@property(nonatomic, retain) NSString* whitePlayerName;
 
 /// @brief The rank of the white player.
 ///
@@ -212,7 +212,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property WR.
-@property(nonatomic, strong) NSString* whitePlayerRank;
+@property(nonatomic, retain) NSString* whitePlayerRank;
 
 /// @brief The name of the white player's team.
 ///
@@ -220,7 +220,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property WT.
-@property(nonatomic, strong) NSString* whitePlayerTeamName;
+@property(nonatomic, retain) NSString* whitePlayerTeamName;
 //@}
 
 /// @name Context in which the game was played
@@ -232,7 +232,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property PC.
-@property(nonatomic, strong) NSString* gameLocation;
+@property(nonatomic, retain) NSString* gameLocation;
 
 /// @brief The name of the event (e.g. tournament) where the game
 /// was played.
@@ -241,7 +241,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property EV.
-@property(nonatomic, strong) NSString* eventName;
+@property(nonatomic, retain) NSString* eventName;
 
 /// @brief The information that describes the round in which the
 /// game was played.
@@ -250,7 +250,7 @@
 /// @e nil.
 ///
 /// The value of this property corresponds to the value of the SGF property RO.
-@property(nonatomic, strong) NSString* roundInformation;
+@property(nonatomic, retain) NSString* roundInformation;
 //@}
 
 @end
