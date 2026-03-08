@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoGameInfoRules;
 @class GoGameResult;
 
 
@@ -129,13 +130,14 @@
 /// The value of this property corresponds to the value of the SGF property DT.
 @property(nonatomic, strong) NSString* gameDates;
 
-/// @brief The name of the rules used for the game.
+/// @brief The rules used for the game.
 ///
-/// Is @e nil to indicate that this property has no value. The default value is
-/// @e nil.
+/// This property must never be @e nil. The GoGameInfoRules object's
+/// @e gameInfoRule property has the value #GoGameInfoRuleNone to indicate that
+/// there is no game rule. The default value is such a GoGameInfoRules object.
 ///
-/// The value of this property corresponds to the value of the SGF property RU.
-@property(nonatomic, strong) NSString* rulesName;
+/// @see GoGameInfoRules
+@property(nonatomic, retain) GoGameInfoRules* gameInfoRules;
 
 /// @brief The result of the game.
 ///

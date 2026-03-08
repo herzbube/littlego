@@ -20,6 +20,7 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameInfo.h"
+#import "../../go/GoGameInfoRules.h"
 #import "../../go/GoGameResult.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
@@ -229,7 +230,7 @@
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameName, SGFCPropertyTypeGN, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameInformation, SGFCPropertyTypeGC, false);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameDates, SGFCPropertyTypeDT, true);
-  setSgfGameInfoPropertyIfNecessary(gameInfo.rulesName, SGFCPropertyTypeRU, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.gameInfoRules.sgfString, SGFCPropertyTypeRU, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.openingInformation, SGFCPropertyTypeON, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerName, SGFCPropertyTypePB, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerRank, SGFCPropertyTypeBR, true);

@@ -21,6 +21,7 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameInfoRules.h"
 #import "GoGameResult.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
@@ -1376,6 +1377,23 @@
       return [[[GoGameResult alloc] initWithNoPlayerWin:GoGameResultTypeUnknownResult] autorelease];
     default:
       return [[[GoGameResult alloc] init] autorelease];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameInfoRules. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameInfoRules:(GoGameInfoRules*)gameInfoRules
+{
+  switch (gameInfoRules.gameInfoRule)
+  {
+    case GoGameInfoRuleNone:
+      return @"<Not set>";
+    case GoGameInfoRuleSgfString:
+      return gameInfoRules.sgfString;
+    default:
+      return [NSString stringWithGameInfoRule:gameInfoRules.gameInfoRule];
   }
 }
 

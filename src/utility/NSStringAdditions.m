@@ -750,4 +750,26 @@
   return true;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a gameInfoRule.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithGameInfoRule:(enum GoGameInfoRule)gameInfoRule
+{
+  switch (gameInfoRule)
+  {
+    case GoGameInfoRuleNone:
+      return @"No game rules";
+    case GoGameInfoRuleSgfString:
+      return @"Custom rule set name";
+    case GoGameInfoRuleAGA:
+      return @"AGA (American Go Association) rules";
+    case GoGameInfoRuleIng:
+      return @"Ing rules";
+    case GoGameInfoRuleJapanese:
+      return @"Nihon-Kiin rule set";
+    case GoGameInfoRuleNewZealand:
+      return @"New Zealand rules";
+  }
+}
+
 @end

@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GameInfoItem.h"
+#import "../go/GoGameInfoRules.h"
 #import "../go/GoGameResult.h"
 #import "../go/GoUtilities.h"
 #import "../play/model/TimeSettingsModel.h"
@@ -606,7 +607,7 @@ enum DataSourceInfoSectionItem
             case GameDatesItem:
               return [self gameDatesCellWithTableView:tableView];
             case RulesNameItem:
-              return [self value1CellWithTableView:tableView itemName:@"Rules name" itemValue:self.rulesName];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Rules name" itemValue:self.rulesName];
             case BoardSizeItem:
               return [self boardSizeCellWithTableView:tableView];
             case NumberOfHandicapStonesItem:
@@ -829,8 +830,14 @@ enum DataSourceInfoSectionItem
                     forMissingDataDisplayStyle:missingDataDisplayStyle
                                        hasData:&_gameDatesHasData];
     self.gameDates = dateArray;
-    self.rulesName = [self stringValue:goGameInfo.rulesName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_goRulesetHasData];
+
+    GoGameInfoRules* gameInfoRules = [[[GoGameInfoRules alloc] initWithSgfString:goGameInfo.rulesName] autorelease];
+    NSString* descriptionOfGameInfoRules = (gameInfoRules.gameInfoRule == GoGameInfoRuleNone
+                                         ? nil // use our own placeholder string, not the one from GoUtilities
+                                         : [GoUtilities stringWithDescriptionOfGameInfoRules:gameInfoRules]);
+    self.rulesName = [self stringValue:descriptionOfGameInfoRules forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_goRulesetHasData];
     self.goRuleset = goGameInfo.goRuleset;
+
     NSString* formattedNumberOfHandicapStones;
     if (goGameInfo.numberOfHandicapStones != 0)
       formattedNumberOfHandicapStones = [NSString stringWithFormat:@"%ld", (long)goGameInfo.numberOfHandicapStones];

@@ -1294,6 +1294,37 @@ enum GoGameResultUpdatePolicy
   GoGameResultUpdatePolicyManual
 };
 
+/// @brief Enumerates the possible game rules that can be stored in the game
+/// infos. Most of the enumeration values represent rules listed in the SGF
+/// specification for the "RU" property.
+///
+/// @ingroup go
+enum GoGameInfoRule
+{
+  /// @brief Indicates that no game rules are stored in the game infos.
+  GoGameInfoRuleNone,
+  /// @brief A custom string describing rules that are not listed in the
+  /// SGF specification.
+  GoGameInfoRuleSgfString,
+  /// @brief The rules of the American Go Association (AGA).
+  GoGameInfoRuleAGA,
+  /// @brief The Ing rules.
+  ///
+  /// The SGF standard uses the description "The Ing rules of Goe". The word
+  /// "Goe" is an alternative spelling of Go proposed by Ing Chang-Ki, the
+  /// author of the ruleset, to differentiate it from the English verb
+  /// "to go".
+  GoGameInfoRuleIng,
+  /// @brief The Nihon-Kiin rule set.
+  GoGameInfoRuleJapanese,
+  /// @brief The New Zealand rules.
+  GoGameInfoRuleNewZealand,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRuleFirst = GoGameInfoRuleNone,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRuleLast = GoGameInfoRuleNewZealand,
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -3054,7 +3085,7 @@ extern NSString* goGameInfoCopyrightInformationKey;
 extern NSString* goGameInfoGameNameKey;
 extern NSString* goGameInfoGameInformationKey;
 extern NSString* goGameInfoGameDatesKey;
-extern NSString* goGameInfoRulesNameKey;
+extern NSString* goGameInfoGameInfoRulesKey;
 extern NSString* goGameInfoGameResultKey;
 extern NSString* goGameInfoOpeningInformationKey;
 extern NSString* goGameInfoBlackPlayerNameKey;
@@ -3073,6 +3104,9 @@ extern NSString* goGameResultGameResultTypeKey;
 extern NSString* goGameResultWinTypeKey;
 extern NSString* goGameResultScoreKey;
 extern NSString* goGameResultUpdatePolicyKey;
+// GoGameInfoRules keys
+extern NSString* goGameInfoRulesGameInfoRuleKey;
+extern NSString* goGameInfoRulesSgfStringKey;
 //@}
 
 // -----------------------------------------------------------------------------

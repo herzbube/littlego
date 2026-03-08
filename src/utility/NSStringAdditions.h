@@ -57,5 +57,6 @@
 + (NSString*) stringWithDouble:(double)doubleValue;
 - (bool) tryConvertToIntValue:(int*)intValue;
 - (bool) tryConvertToDoubleValue:(double*)doubleValue;
++ (NSString*) stringWithGameInfoRule:(enum GoGameInfoRule)gameInfoRule;
 
 @end

@@ -19,6 +19,9 @@
 #import "GameInfoViewInfoTabDelegate.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoGameInfo.h"
+#import "../../../go/GoGameInfoRules.h"
+#import "../../../go/GoUtilities.h"
+#import "../../../shared/ApplicationStateManager.h"
 #import "../../../ui/TableViewCellFactory.h"
 #import "../../../ui/TableViewVariableHeightCell.h"
 #import "../../../ui/UIViewControllerAdditions.h"
@@ -259,7 +262,10 @@ enum CellId
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
   enum CellId cellId = [self cellIdForIndexPath:indexPath];
-  [self showEditTextControllerForCellId:cellId indexPath:indexPath];
+  if (cellId == CellIdRulesName)
+    [self showEditGameInfoRulesController];
+  else
+    [self showEditTextControllerForCellId:cellId indexPath:indexPath];
 }
 
 #pragma mark - Private helpers for tableView:cellForRowAtIndexPath:()
@@ -298,6 +304,16 @@ enum CellId
 // -----------------------------------------------------------------------------
 /// @brief Private helper for tableView:didSelectRowAtIndexPath:().
 // -----------------------------------------------------------------------------
+- (void) showEditGameInfoRulesController
+{
+  EditGameInfoRulesController* controller = [EditGameInfoRulesController controllerWithGameInfoRules:self.gameInfo.gameInfoRules
+                                                                                            delegate:self];
+  [self.presentingViewController presentNavigationControllerWithRootViewController:controller];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:didSelectRowAtIndexPath:().
+// -----------------------------------------------------------------------------
 - (void) showEditTextControllerForCellId:(enum CellId)cellId indexPath:(NSIndexPath*)indexPath
 {
   NSString* textToEdit = [self gameInfoPropertyValueForCellId:cellId];
@@ -318,6 +334,31 @@ enum CellId
   editTextController.footerText = [self footerTextForCellId:cellId];
 
   [self.presentingViewController presentNavigationControllerWithRootViewController:editTextController];
+}
+
+#pragma mark - EditGameInfoRulesControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief EditGameInfoRulesControllerDelegate protocol method
+// -----------------------------------------------------------------------------
+- (void) editGameInfoRulesControllerDidEndEditing:(EditGameInfoRulesController*)controller
+                           didChangeGameInfoRules:(bool)didChangeGameInfoRules
+{
+  if (didChangeGameInfoRules)
+  {
+    if (controller.gameInfoRules.gameInfoRule == GoGameInfoRuleSgfString)
+      self.gameInfo.gameInfoRules.sgfString = controller.gameInfoRules.sgfString;
+    else
+      self.gameInfo.gameInfoRules.gameInfoRule = controller.gameInfoRules.gameInfoRule;
+
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
+
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:RulesNameItem inSection:BasicGameInfoSection];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+
+  [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - EditTextDelegate overrides
@@ -362,6 +403,8 @@ enum CellId
     NSIndexPath* indexPath = editTextController.context;
     enum CellId cellId = [self cellIdForIndexPath:indexPath];
     [self setGameInfoPropertyForCellId:cellId withPropertyValue:newPropertyValue];
+
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
 
     [self.tableView reloadRowsAtIndexPaths:@[indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
@@ -458,7 +501,18 @@ enum CellId
 // -----------------------------------------------------------------------------
 - (NSString*) cellValueForCellId:(enum CellId)cellId
 {
-  NSString* gameInfoPropertyValue = [self gameInfoPropertyValueForCellId:cellId];
+  NSString* gameInfoPropertyValue;
+
+  switch (cellId)
+  {
+    case CellIdRulesName:
+      gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRules:self.gameInfo.gameInfoRules];
+      break;
+    default:
+      gameInfoPropertyValue = [self gameInfoPropertyValueForCellId:cellId];
+      break;
+  }
+
   return [self cellValueForGameInfoPropertyValue:gameInfoPropertyValue];
 }
 
@@ -483,8 +537,6 @@ enum CellId
       return self.gameInfo.gameInformation;
     case CellIdGameDates:
       return self.gameInfo.gameDates;
-    case CellIdRulesName:
-      return self.gameInfo.rulesName;
     case CellIdOpeningInformation:
       return self.gameInfo.openingInformation;
     case CellIdBlackPlayerName:
@@ -541,9 +593,6 @@ enum CellId
       break;
     case CellIdGameDates:
       self.gameInfo.gameDates = propertyValue;
-      break;
-    case CellIdRulesName:
-      self.gameInfo.rulesName = propertyValue;
       break;
     case CellIdOpeningInformation:
       self.gameInfo.openingInformation = propertyValue;

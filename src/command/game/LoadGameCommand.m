@@ -27,6 +27,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
 #import "../../go/GoGameInfo.h"
+#import "../../go/GoGameInfoRules.h"
 #import "../../go/GoGameResult.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
@@ -1795,7 +1796,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   gameInfo.gameName = goGameInfoPropertyValue(self.sgfGoGameInfo.gameName);
   gameInfo.gameInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.gameInformation);
   gameInfo.gameDates = goGameInfoPropertyValue(self.sgfGoGameInfo.rawGameDates);
-  gameInfo.rulesName = goGameInfoPropertyValue(self.sgfGoGameInfo.rulesName);
+  gameInfo.gameInfoRules = [[[GoGameInfoRules alloc] initWithSgfString:goGameInfoPropertyValue(self.sgfGoGameInfo.rulesName)] autorelease];
   gameInfo.openingInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.openingInformation);
   gameInfo.blackPlayerName = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerName);
   gameInfo.blackPlayerRank = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerRank);
