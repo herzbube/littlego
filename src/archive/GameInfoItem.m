@@ -858,7 +858,7 @@ enum DataSourceInfoSectionItem
                                   hasData:&_komiHasData];
     self.komi = goGameInfo.komi;
 
-    GoGameResult* goGameResult = [SgfUtilities gameResultFromFromSgfString:goGameInfo.rawGameResult];
+    GoGameResult* goGameResult = [SgfUtilities gameResultFromSgfString:goGameInfo.rawGameResult];
     NSString* descriptionOfGameResult = (goGameResult.dataType == GoGameResultDataTypeNoResult
                                          ? nil // use our own placeholder string, not the one from GoUtilities
                                          : [GoUtilities stringWithDescriptionOfGameResult:goGameResult]);
@@ -905,7 +905,7 @@ enum DataSourceInfoSectionItem
     self.gameLocation = [self stringValue:goGameInfo.gameLocation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_gameLocationHasData];
     self.eventName = [self stringValue:goGameInfo.eventName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_eventNameHasData];
 
-    GoGameInfoRound* gameInfoRound = [SgfUtilities gameInfoRoundFromFromSgfGameInfo:goGameInfo];
+    GoGameInfoRound* gameInfoRound = [SgfUtilities gameInfoRoundFromSgfGameInfo:goGameInfo];
     NSString* descriptionOfGameInfoRound = (gameInfoRound.dataType == GoGameInfoRoundDataTypeNone
                                          ? nil // use our own placeholder string, not the one from GoUtilities
                                          : [GoUtilities stringWithDescriptionOfGameInfoRound:gameInfoRound]);

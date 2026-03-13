@@ -586,7 +586,8 @@ enum CellId
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the #CellId value that corresponds to @a indexPath.
+/// @brief Updates @a gameInfoRound with data that is currently stored in
+/// @a gameInfoRoundSource.
 // -----------------------------------------------------------------------------
 - (void) updateGameInfoRound:(GoGameInfoRound*)gameInfoRound
                 withDataFrom:(GoGameInfoRound*)gameInfoRoundSource

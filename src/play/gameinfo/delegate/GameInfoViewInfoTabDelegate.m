@@ -364,6 +364,10 @@ enum CellId
 {
   if (didChangeGameInfoRules)
   {
+    // Unlike with EditTextController, there is no need to update self.gameInfo
+    // here because the controller already updated the GoGameInfoRules
+    // sub-object of self.gameInfo.
+
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
 
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:RulesNameItem inSection:BasicGameInfoSection];
@@ -384,6 +388,10 @@ enum CellId
 {
   if (didChangeRoundInformation)
   {
+    // Unlike with EditTextController, there is no need to update self.gameInfo
+    // here because the controller already updated the GoGameInfoRound
+    // sub-object of self.gameInfo.
+
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
 
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:RoundInformationItem inSection:ContextSection];

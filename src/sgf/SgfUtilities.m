@@ -913,7 +913,7 @@
 /// @brief Returns a GoGameResult object that is populated with the game result
 /// taken from the value of @a rePropertyValue.
 ///
-/// @a rePropertyValue refers to the value of the SGF game info properties RE.
+/// @a rePropertyValue refers to the value of the SGF game info property RE.
 /// The value @e nil indicates that the property is not present.
 ///
 /// If @a rePropertyValue is an empty string, this is also treated as the
@@ -921,7 +921,7 @@
 /// directly from the SGF data but has passed through some intermediate
 /// processing (e.g. SGFCGameInfo).
 // -----------------------------------------------------------------------------
-+ (GoGameResult*) gameResultFromFromSgfString:(NSString*)rePropertyValue
++ (GoGameResult*) gameResultFromSgfString:(NSString*)rePropertyValue
 {
   if (! rePropertyValue || rePropertyValue.length == 0)
     return [[[GoGameResult alloc] init] autorelease];
@@ -1034,7 +1034,7 @@
 /// @brief Returns a GoGameInfoRound object that is populated with the round
 /// information (if any) stored in @a sgfGameInfo.
 // -----------------------------------------------------------------------------
-+ (GoGameInfoRound*) gameInfoRoundFromFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo
++ (GoGameInfoRound*) gameInfoRoundFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo
 {
   if (sgfGameInfo.roundInformation.IsValid)
   {

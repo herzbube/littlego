@@ -1806,8 +1806,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   gameInfo.whitePlayerTeamName = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerTeamName);
   gameInfo.gameLocation = goGameInfoPropertyValue(self.sgfGoGameInfo.gameLocation);
   gameInfo.eventName = goGameInfoPropertyValue(self.sgfGoGameInfo.eventName);
-
-  gameInfo.gameInfoRound = [SgfUtilities gameInfoRoundFromFromSgfGameInfo:self.sgfGoGameInfo];
+  gameInfo.gameInfoRound = [SgfUtilities gameInfoRoundFromSgfGameInfo:self.sgfGoGameInfo];
 
   return [self setupGameResult:errorMessage];
 }
@@ -1830,7 +1829,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 {
   GoGame* game = [GoGame sharedGame];
 
-  GoGameResult* newGameResult = [SgfUtilities gameResultFromFromSgfString:self.sgfGoGameInfo.rawGameResult];
+  GoGameResult* newGameResult = [SgfUtilities gameResultFromSgfString:self.sgfGoGameInfo.rawGameResult];
   newGameResult.updatePolicy = game.gameInfo.gameResult.updatePolicy;
   game.gameInfo.gameResult = newGameResult;
 

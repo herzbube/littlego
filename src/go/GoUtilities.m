@@ -1408,13 +1408,10 @@
   {
     case GoGameInfoRoundDataTypeNone:
       return @"<Not set>";
-      break;
     case GoGameInfoRoundDataTypeSgfString:
       return gameInfoRound.sgfString;
-      break;
     case GoGameInfoRoundDataTypeStructuredData:
       return [NSString stringWithFormat:@"Round type: %@\nRound number: %@", gameInfoRound.roundType, gameInfoRound.roundNumber];
-      break;
   }
 }
 

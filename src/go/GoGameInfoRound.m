@@ -17,7 +17,6 @@
 
 // Project includes
 #import "GoGameInfoRound.h"
-#import "../utility/ExceptionUtility.h"
 
 
 @implementation GoGameInfoRound
@@ -98,11 +97,20 @@
   if (self.dataType == GoGameInfoRoundDataTypeSgfString)
   {
     self.sgfString = [[decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundSgfStringKey] retain];
+    self.roundType = nil;
+    self.roundNumber = nil;
   }
   else if (self.dataType == GoGameInfoRoundDataTypeStructuredData)
   {
+    self.sgfString = nil;
     self.roundType = [[decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundRoundTypeKey] retain];
     self.roundNumber = [[decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundRoundNumberKey] retain];
+  }
+  else
+  {
+    self.sgfString = nil;
+    self.roundType = nil;
+    self.roundNumber = nil;
   }
 
   return self;
@@ -114,6 +122,18 @@
 + (BOOL) supportsSecureCoding
 {
   return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoGameInfoRound object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.sgfString = nil;
+  self.roundType = nil;
+  self.roundNumber = nil;
+
+  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------

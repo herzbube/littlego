@@ -253,7 +253,7 @@ enum CellId
   {
     case CellIdResultTye:
     case CellIdWinType:
-      [self showItemPickerForCellId:cellId];
+      [self showItemPickerControllerForCellId:cellId];
       break;
     case CellIdScore:
       [self showEditTextControllerForCellIdScore];
@@ -442,7 +442,7 @@ enum CellId
 // -----------------------------------------------------------------------------
 /// @brief Private helper for tableView:didSelectRowAtIndexPath:().
 // -----------------------------------------------------------------------------
-- (void) showItemPickerForCellId:(enum CellId)cellId
+- (void) showItemPickerControllerForCellId:(enum CellId)cellId
 {
   NSString* screenTitle;
   NSString* footerTitle = nil;
@@ -634,8 +634,7 @@ enum CellId
 
     self.gameResult.score = score;
 
-    NSUInteger sectionIndex = DataSection;
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ScoreItem_Score inSection:sectionIndex];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ScoreItem_Score inSection:DataSection];
     NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
     [self.tableView reloadRowsAtIndexPaths:indexPaths
                           withRowAnimation:UITableViewRowAnimationNone];

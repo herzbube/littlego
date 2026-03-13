@@ -58,8 +58,8 @@
 + (double) durationValueFromSgfDurationString:(NSString*)sgfDurationString;
 + (TimeSettingsModel*) timeSettingsFromSgfGameInfoNode:(SGFCNode*)sgfGameInfoNode;
 + (TimeSettingsModel*) timeSettingsFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
-+ (GoGameResult*) gameResultFromFromSgfString:(NSString*)rePropertyValue;
++ (GoGameResult*) gameResultFromSgfString:(NSString*)rePropertyValue;
 + (NSString*) sgfStringFromGameResult:(GoGameResult*)gameResult;
-+ (GoGameInfoRound*) gameInfoRoundFromFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
++ (GoGameInfoRound*) gameInfoRoundFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
 
 @end

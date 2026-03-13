@@ -56,7 +56,7 @@
   self.whitePlayerTeamName = nil;
   self.gameLocation = nil;
   self.eventName = nil;
-  self.gameInfoRound = [[[GoGameInfoRound alloc] init] autorelease];;
+  self.gameInfoRound = [[[GoGameInfoRound alloc] init] autorelease];
 
   return self;
 }
@@ -102,6 +102,34 @@
 + (BOOL) supportsSecureCoding
 {
   return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this GoGameInfo object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.recorderName = nil;
+  self.sourceName = nil;
+  self.annotationAuthor = nil;
+  self.copyrightInformation = nil;
+  self.gameName = nil;
+  self.gameInformation = nil;
+  self.gameDates = nil;
+  self.gameInfoRules = nil;
+  self.gameResult = nil;
+  self.openingInformation = nil;
+  self.blackPlayerName = nil;
+  self.blackPlayerRank = nil;
+  self.blackPlayerTeamName = nil;
+  self.whitePlayerName = nil;
+  self.whitePlayerRank = nil;
+  self.whitePlayerTeamName = nil;
+  self.gameLocation = nil;
+  self.eventName = nil;
+  self.gameInfoRound = nil;
+
+  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
