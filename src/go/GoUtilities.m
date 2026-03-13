@@ -21,6 +21,7 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameInfoRank.h"
 #import "GoGameInfoRound.h"
 #import "GoGameInfoRules.h"
 #import "GoGameResult.h"
@@ -1412,6 +1413,29 @@
       return gameInfoRound.sgfString;
     case GoGameInfoRoundDataTypeStructuredData:
       return [NSString stringWithFormat:@"Round type: %@\nRound number: %@", gameInfoRound.roundType, gameInfoRound.roundNumber];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameInfoRank. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameInfoRank:(GoGameInfoRank*)gameInfoRank
+{
+  switch (gameInfoRank.dataType)
+  {
+    case GoGameInfoRankDataTypeNone:
+      return @"<Not set>";
+    case GoGameInfoRankDataTypeSgfString:
+      return gameInfoRank.sgfString;
+    case GoGameInfoRankDataTypeStructuredData:
+    {
+      NSString* description = [NSString stringWithFormat:@"%ld%@", gameInfoRank.rank, [NSString abbreviationStringWithRankType:gameInfoRank.rankType]];
+      if (gameInfoRank.ratingType == GoGameInfoRatingTypeUnspecified)
+        return description;
+      NSString* ratingTypeString = [NSString stringWithRatingType:gameInfoRank.ratingType];
+      return [description stringByAppendingFormat:@" (%@)", [ratingTypeString lowercaseString]];
+    }
   }
 }
 

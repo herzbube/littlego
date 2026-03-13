@@ -733,6 +733,12 @@ NSString* goGameInfoRoundDataTypeKey = @"DataType";
 NSString* goGameInfoRoundSgfStringKey = @"SgfString";
 NSString* goGameInfoRoundRoundTypeKey = @"RoundType";
 NSString* goGameInfoRoundRoundNumberKey = @"RoundNumber";
+// GoGameInfoRank keys
+NSString* goGameInfoRankDataTypeKey = @"DataType";
+NSString* goGameInfoRankSgfStringKey = @"SgfString";
+NSString* goGameInfoRankRankTypeKey = @"RankType";
+NSString* goGameInfoRankRankKey = @"Rank";
+NSString* goGameInfoRankRatingTypeKey = @"RatingType";
 
 // Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";

@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoGameInfoRank;
 @class GoGameInfoRound;
 @class GoGameInfoRules;
 @class GoGameResult;
@@ -179,11 +180,13 @@
 
 /// @brief The rank of the black player.
 ///
-/// Is @e nil to indicate that this property has no value. The default value is
-/// @e nil.
+/// This property must never be @e nil. The GoGameInfoRank object's
+/// @e dataType property has the value #GoGameInfoRankDataTypeNone to indicate
+/// that there is no rank information. The default value is such a
+/// GoGameInfoRank object.
 ///
 /// The value of this property corresponds to the value of the SGF property BR.
-@property(nonatomic, retain) NSString* blackPlayerRank;
+@property(nonatomic, retain) GoGameInfoRank* blackPlayerRank;
 
 /// @brief The name of the black player's team.
 ///
@@ -209,11 +212,13 @@
 
 /// @brief The rank of the white player.
 ///
-/// Is @e nil to indicate that this property has no value. The default value is
-/// @e nil.
+/// This property must never be @e nil. The GoGameInfoRank object's
+/// @e dataType property has the value #GoGameInfoRankDataTypeNone to indicate
+/// that there is no rank information. The default value is such a
+/// GoGameInfoRank object.
 ///
 /// The value of this property corresponds to the value of the SGF property WR.
-@property(nonatomic, retain) NSString* whitePlayerRank;
+@property(nonatomic, retain) GoGameInfoRank* whitePlayerRank;
 
 /// @brief The name of the white player's team.
 ///

@@ -1799,10 +1799,10 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   gameInfo.gameInfoRules = [[[GoGameInfoRules alloc] initWithSgfString:goGameInfoPropertyValue(self.sgfGoGameInfo.rulesName)] autorelease];
   gameInfo.openingInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.openingInformation);
   gameInfo.blackPlayerName = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerName);
-  gameInfo.blackPlayerRank = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerRank);
+  gameInfo.blackPlayerRank = [SgfUtilities gameInfoRankFromSgfString:self.sgfGoGameInfo.blackPlayerRank];
   gameInfo.blackPlayerTeamName = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerTeamName);
   gameInfo.whitePlayerName = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerName);
-  gameInfo.whitePlayerRank = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerRank);
+  gameInfo.whitePlayerRank = [SgfUtilities gameInfoRankFromSgfString:self.sgfGoGameInfo.whitePlayerRank];
   gameInfo.whitePlayerTeamName = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerTeamName);
   gameInfo.gameLocation = goGameInfoPropertyValue(self.sgfGoGameInfo.gameLocation);
   gameInfo.eventName = goGameInfoPropertyValue(self.sgfGoGameInfo.eventName);

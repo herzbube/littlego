@@ -58,5 +58,8 @@
 - (bool) tryConvertToIntValue:(int*)intValue;
 - (bool) tryConvertToDoubleValue:(double*)doubleValue;
 + (NSString*) stringWithGameInfoRule:(enum GoGameInfoRule)gameInfoRule;
++ (NSString*) abbreviationStringWithRankType:(enum GoGameInfoRankType)rankType;
++ (NSString*) stringWithRankType:(enum GoGameInfoRankType)rankType;
++ (NSString*) stringWithRatingType:(enum GoGameInfoRatingType)ratingType;
 
 @end

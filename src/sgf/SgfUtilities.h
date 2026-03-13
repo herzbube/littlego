@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class SGFCDocumentReadResult;
+@class GoGameInfoRank;
 @class GoGameInfoRound;
 @class GoGameResult;
 @class GoTimeSystem;
@@ -61,5 +62,10 @@
 + (GoGameResult*) gameResultFromSgfString:(NSString*)rePropertyValue;
 + (NSString*) sgfStringFromGameResult:(GoGameResult*)gameResult;
 + (GoGameInfoRound*) gameInfoRoundFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
++ (GoGameInfoRank*) gameInfoRankFromSgfString:(NSString*)propertyValue;
++ (enum GoGameInfoRankType) gameInfoRankTypeForSgfRankType:(SGFCGoPlayerRankType)sgfRankType;
++ (SGFCGoPlayerRankType) sgfRankTypeForGameInfoRankType:(enum GoGameInfoRankType)gameInfoRankType;
++ (enum GoGameInfoRatingType) gameInfoRatingTypeForSgfRatingType:(SGFCGoPlayerRatingType)sgfRatingType;
++ (SGFCGoPlayerRatingType) sgfRatingTypeForGameInfoRatingType:(enum GoGameInfoRatingType)gameInfoRatingType;
 
 @end

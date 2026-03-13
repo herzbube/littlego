@@ -772,4 +772,52 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns an abbreviation string that describes @a rankType.
+// -----------------------------------------------------------------------------
++ (NSString*) abbreviationStringWithRankType:(enum GoGameInfoRankType)rankType
+{
+  switch (rankType)
+  {
+    case GoGameInfoRankTypeKyu:
+      return @"k";
+    case GoGameInfoRankTypeAmateurDan:
+      return @"d";
+    case GoGameInfoRankTypeProfessionalDan:
+      return @"p";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a rankType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithRankType:(enum GoGameInfoRankType)rankType
+{
+  switch (rankType)
+  {
+    case GoGameInfoRankTypeKyu:
+      return @"Kyu";
+    case GoGameInfoRankTypeAmateurDan:
+      return @"Amateur Dan";
+    case GoGameInfoRankTypeProfessionalDan:
+      return @"Professional Dan";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a ratingType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithRatingType:(enum GoGameInfoRatingType)ratingType
+{
+  switch (ratingType)
+  {
+    case GoGameInfoRatingTypeUncertain:
+      return @"Uncertain";
+    case GoGameInfoRatingTypeEstablished:
+      return @"Established";
+    case GoGameInfoRatingTypeUnspecified:
+      return @"Unspecified";
+  }
+}
+
 @end

@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoGame;
+@class GoGameInfoRank;
 @class GoGameInfoRound;
 @class GoGameInfoRules;
 @class GoGameResult;
@@ -81,5 +82,6 @@
 + (GoGameResult*) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason;
 + (NSString*) stringWithDescriptionOfGameInfoRules:(GoGameInfoRules*)gameInfoRules;
 + (NSString*) stringWithDescriptionOfGameInfoRound:(GoGameInfoRound*)gameInfoRound;
++ (NSString*) stringWithDescriptionOfGameInfoRank:(GoGameInfoRank*)gameInfoRank;
 
 @end

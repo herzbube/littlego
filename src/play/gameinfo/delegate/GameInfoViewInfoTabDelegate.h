@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "../EditGameInfoRankController.h"
 #import "../EditGameInfoRoundController.h"
 #import "../EditGameInfoRulesController.h"
 #import "../../../ui/EditTextController.h"
@@ -27,6 +28,7 @@
 // -----------------------------------------------------------------------------
 @interface GameInfoViewInfoTabDelegate : NSObject <UITableViewDelegate,
                                                    UITableViewDataSource,
+                                                   EditGameInfoRankControllerDelegate,
                                                    EditGameInfoRoundControllerDelegate,
                                                    EditGameInfoRulesControllerDelegate,
                                                    EditTextDelegate>

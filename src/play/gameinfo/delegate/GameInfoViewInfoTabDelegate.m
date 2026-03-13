@@ -267,6 +267,10 @@ enum CellId
     case CellIdRulesName:
       [self showEditGameInfoRulesController];
       break;
+    case CellIdBlackPlayerRank:
+    case CellIdWhitePlayerRank:
+      [self showEditGameInfoRankControllerForCellId:cellId indexPath:indexPath];
+      break;
     case CellIdRoundInformation:
       [self showEditGameInfoRoundController];
       break;
@@ -326,6 +330,31 @@ enum CellId
 {
   EditGameInfoRoundController* controller = [EditGameInfoRoundController controllerWithGameInfoRound:self.gameInfo.gameInfoRound
                                                                                             delegate:self];
+  [self.presentingViewController presentNavigationControllerWithRootViewController:controller];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:didSelectRowAtIndexPath:().
+// -----------------------------------------------------------------------------
+- (void) showEditGameInfoRankControllerForCellId:(enum CellId)cellId indexPath:(NSIndexPath*)indexPath
+{
+  GoGameInfoRank* gameInfoRank;
+  NSString* screenTitle;
+  if (cellId == CellIdBlackPlayerRank)
+  {
+    gameInfoRank = self.gameInfo.blackPlayerRank;
+    screenTitle = @"Edit black player rank";
+  }
+  else
+  {
+    gameInfoRank = self.gameInfo.whitePlayerRank;
+    screenTitle = @"Edit white player rank";
+  }
+
+  EditGameInfoRankController* controller = [EditGameInfoRankController controllerWithGameInfoRank:gameInfoRank                                                                                            delegate:self];
+  controller.context = indexPath;
+  controller.screenTitle = screenTitle;
+
   [self.presentingViewController presentNavigationControllerWithRootViewController:controller];
 }
 
@@ -395,6 +424,30 @@ enum CellId
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
 
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:RoundInformationItem inSection:ContextSection];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+
+  [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - EditGameInfoRankControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief EditGameInfoRankControllerDelegate protocol method
+// -----------------------------------------------------------------------------
+- (void) editGameInfoRankControllerDidEndEditing:(EditGameInfoRankController*)controller
+                        didChangeRankInformation:(bool)didChangeRankInformation
+{
+  if (didChangeRankInformation)
+  {
+    // Unlike with EditTextController, there is no need to update self.gameInfo
+    // here because the controller already updated the GoGameInfoRank
+    // sub-object of self.gameInfo.
+
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
+
+    NSIndexPath* indexPath = controller.context;
     [self.tableView reloadRowsAtIndexPaths:@[indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
   }
@@ -549,6 +602,12 @@ enum CellId
     case CellIdRulesName:
       gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRules:self.gameInfo.gameInfoRules];
       break;
+    case CellIdBlackPlayerRank:
+      gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRank:self.gameInfo.blackPlayerRank];
+      break;
+    case CellIdWhitePlayerRank:
+      gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRank:self.gameInfo.whitePlayerRank];
+      break;
     case CellIdRoundInformation:
       gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRound:self.gameInfo.gameInfoRound];
       break;
@@ -585,14 +644,10 @@ enum CellId
       return self.gameInfo.openingInformation;
     case CellIdBlackPlayerName:
       return self.gameInfo.blackPlayerName;
-    case CellIdBlackPlayerRank:
-      return self.gameInfo.blackPlayerRank;
     case CellIdBlackPlayerTeamName:
       return self.gameInfo.blackPlayerTeamName;
     case CellIdWhitePlayerName:
       return self.gameInfo.whitePlayerName;
-    case CellIdWhitePlayerRank:
-      return self.gameInfo.whitePlayerRank;
     case CellIdWhitePlayerTeamName:
       return self.gameInfo.whitePlayerTeamName;
     case CellIdGameLocation:
@@ -642,17 +697,11 @@ enum CellId
     case CellIdBlackPlayerName:
       self.gameInfo.blackPlayerName = propertyValue;
       break;
-    case CellIdBlackPlayerRank:
-      self.gameInfo.blackPlayerRank = propertyValue;
-      break;
     case CellIdBlackPlayerTeamName:
       self.gameInfo.blackPlayerTeamName = propertyValue;
       break;
     case CellIdWhitePlayerName:
       self.gameInfo.whitePlayerName = propertyValue;
-      break;
-    case CellIdWhitePlayerRank:
-      self.gameInfo.whitePlayerRank = propertyValue;
       break;
     case CellIdWhitePlayerTeamName:
       self.gameInfo.whitePlayerTeamName = propertyValue;

@@ -20,6 +20,7 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameInfo.h"
+#import "../../go/GoGameInfoRank.h"
 #import "../../go/GoGameInfoRound.h"
 #import "../../go/GoGameInfoRules.h"
 #import "../../go/GoGameResult.h"
@@ -224,6 +225,23 @@
     [gameInfoNode setProperty:property];
   };
 
+  void (^setSgfGameInfoRankPropertyIfNecessary)(GoGameInfoRank*, SGFCPropertyType) = ^ void (GoGameInfoRank* gameInfoRank, SGFCPropertyType propertyType)
+  {
+    if (gameInfoRank.dataType == GoGameInfoRankDataTypeSgfString)
+    {
+      setSgfGameInfoPropertyIfNecessary(gameInfoRank.sgfString, propertyType, true);
+    }
+    else if (gameInfoRank.dataType == GoGameInfoRankDataTypeStructuredData)
+    {
+      SGFCGoPlayerRank sgfcGoPlayerRank = SGFCGoPlayerRankMake(gameInfoRank.rank,
+                                                               [SgfUtilities sgfRankTypeForGameInfoRankType:gameInfoRank.rankType],
+                                                               [SgfUtilities sgfRatingTypeForGameInfoRatingType:gameInfoRank.ratingType],
+                                                               YES);
+      NSString* propertyValueAsString = SGFCGoPlayerRankToPropertyValue(sgfcGoPlayerRank);
+      setSgfGameInfoPropertyIfNecessary(propertyValueAsString, propertyType, true);
+    }
+  };
+
   setSgfGameInfoPropertyIfNecessary(gameInfo.recorderName, SGFCPropertyTypeUS, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.sourceName, SGFCPropertyTypeSO, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.annotationAuthor, SGFCPropertyTypeAN, true);
@@ -234,10 +252,10 @@
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameInfoRules.sgfString, SGFCPropertyTypeRU, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.openingInformation, SGFCPropertyTypeON, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerName, SGFCPropertyTypePB, true);
-  setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerRank, SGFCPropertyTypeBR, true);
+  setSgfGameInfoRankPropertyIfNecessary(gameInfo.blackPlayerRank, SGFCPropertyTypeBR);
   setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerTeamName, SGFCPropertyTypeBT, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.whitePlayerName, SGFCPropertyTypePW, true);
-  setSgfGameInfoPropertyIfNecessary(gameInfo.whitePlayerRank, SGFCPropertyTypeWR, true);
+  setSgfGameInfoRankPropertyIfNecessary(gameInfo.whitePlayerRank, SGFCPropertyTypeWR);
   setSgfGameInfoPropertyIfNecessary(gameInfo.whitePlayerTeamName, SGFCPropertyTypeWT, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameLocation, SGFCPropertyTypePC, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.eventName, SGFCPropertyTypeEV, true);

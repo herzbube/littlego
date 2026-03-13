@@ -17,12 +17,14 @@
 
 // Project includes
 #import "SgfUtilities.h"
+#import "../go/GoGameInfoRank.h"
 #import "../go/GoGameInfoRound.h"
 #import "../go/GoGameResult.h"
 #import "../go/GoTimeSettings.h"
 #import "../go/GoTimeSystem.h"
 #import "../play/model/TimeSettingsModel.h"
 #import "../ui/UiUtilities.h"
+#import "../utility/ExceptionUtility.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -1048,6 +1050,132 @@
   else
   {
     return [[[GoGameInfoRound alloc] init] autorelease];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoGameInfoRank object that is populated with the rank
+/// information taken from the value of @a propertyValue.
+///
+/// @a propertyValue refers to the value of either the SGF game info property
+/// BR or WR. The value @e nil indicates that the property is not present.
+///
+/// If @a propertyValue is an empty string, this is also treated as the
+/// absence of the property, assuming that the value in this case is not coming
+/// directly from the SGF data but has passed through some intermediate
+/// processing (e.g. SGFCGameInfo).
+// -----------------------------------------------------------------------------
++ (GoGameInfoRank*) gameInfoRankFromSgfString:(NSString*)propertyValue
+{
+  if (! propertyValue || propertyValue.length == 0)
+    return [[[GoGameInfoRank alloc] init] autorelease];
+
+  SGFCGoPlayerRank sgfcGoPlayerRank = SGFCGoPlayerRankFromPropertyValue(propertyValue);
+  if (! sgfcGoPlayerRank.IsValid)
+    return [[[GoGameInfoRank alloc] initWithSgfString:propertyValue] autorelease];
+
+  return [[[GoGameInfoRank alloc] initWithRankType:[SgfUtilities gameInfoRankTypeForSgfRankType:sgfcGoPlayerRank.RankType]
+                                              rank:sgfcGoPlayerRank.Rank
+                                        ratingType:[SgfUtilities gameInfoRatingTypeForSgfRatingType:sgfcGoPlayerRank.RatingType]] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a sgfRankType to a corresponding value from the enumeration
+/// #GoGameInfoRankType.
+///
+/// @exception NSInvalidArgumentException Is thrown if @a sgfRankType
+/// cannot be mapped. This should never happen because the values of
+/// enumeration #GoGameInfoRankType should be kept in sync with the values of
+/// enumeration #SGFCGoPlayerRankType.
+// -----------------------------------------------------------------------------
++ (enum GoGameInfoRankType) gameInfoRankTypeForSgfRankType:(SGFCGoPlayerRankType)sgfRankType
+{
+  switch (sgfRankType)
+  {
+    case SGFCGoPlayerRankTypeKyu:
+      return GoGameInfoRankTypeKyu;
+    case SGFCGoPlayerRankTypeAmateurDan:
+      return GoGameInfoRankTypeAmateurDan;
+    case SGFCGoPlayerRankTypeProfessionalDan:
+      return GoGameInfoRankTypeProfessionalDan;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"goGameInfoRankTypeForSgfRankType failed: invalid sgfRankType %ld" argumentValue:sgfRankType];
+      return GoGameInfoRankTypeKyu;  // dummy return to make compiler happy
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a gameInfoRankType to a corresponding value from the
+/// enumeration #SGFCGoPlayerRankType.
+///
+/// @exception NSInvalidArgumentException Is thrown if @a gameInfoRankType
+/// cannot be mapped. This should never happen because the values of
+/// enumeration #GoGameInfoRankType should be kept in sync with the values of
+/// enumeration #SGFCGoPlayerRankType.
+// -----------------------------------------------------------------------------
++ (SGFCGoPlayerRankType) sgfRankTypeForGameInfoRankType:(enum GoGameInfoRankType)gameInfoRankType
+{
+  switch (gameInfoRankType)
+  {
+    case GoGameInfoRankTypeKyu:
+      return SGFCGoPlayerRankTypeKyu;
+    case GoGameInfoRankTypeAmateurDan:
+      return SGFCGoPlayerRankTypeAmateurDan;
+    case GoGameInfoRankTypeProfessionalDan:
+      return SGFCGoPlayerRankTypeProfessionalDan;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"sgfRankTypeForGameInfoRankType failed: invalid gameInfoRankType %ld" argumentValue:gameInfoRankType];
+      return SGFCGoPlayerRankTypeKyu;  // dummy return to make compiler happy
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a sgfRatingType to a corresponding value from the enumeration
+/// #GoGameInfoRatingType.
+///
+/// @exception NSInvalidArgumentException Is thrown if @a sgfRatingType
+/// cannot be mapped. This should never happen because the values of
+/// enumeration #GoGameInfoRatingType should be kept in sync with the values of
+/// enumeration #SGFCGoPlayerRatingType.
+// -----------------------------------------------------------------------------
++ (enum GoGameInfoRatingType) gameInfoRatingTypeForSgfRatingType:(SGFCGoPlayerRatingType)sgfRatingType
+{
+  switch (sgfRatingType)
+  {
+    case SGFCGoPlayerRatingTypeUncertain:
+      return GoGameInfoRatingTypeUncertain;
+    case SGFCGoPlayerRatingTypeEstablished:
+      return GoGameInfoRatingTypeEstablished;
+    case SGFCGoPlayerRatingTypeUnspecified:
+      return GoGameInfoRatingTypeUnspecified;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"goGameInfoRatingTypeForSgfRatingType failed: invalid sgfRatingType %ld" argumentValue:sgfRatingType];
+      return GoGameInfoRatingTypeUncertain;  // dummy return to make compiler happy
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a gameInfoRatingType to a corresponding value from the
+/// enumeration #SGFCGoPlayerRatingType.
+///
+/// @exception NSInvalidArgumentException Is thrown if @a gameInfoRatingType
+/// cannot be mapped. This should never happen because the values of
+/// enumeration #GoGameInfoRatingType should be kept in sync with the values of
+/// enumeration #SGFCGoPlayerRatingType.
+// -----------------------------------------------------------------------------
++ (SGFCGoPlayerRatingType) sgfRatingTypeForGameInfoRatingType:(enum GoGameInfoRatingType)gameInfoRatingType
+{
+  switch (gameInfoRatingType)
+  {
+    case GoGameInfoRatingTypeUncertain:
+      return SGFCGoPlayerRatingTypeUncertain;
+    case GoGameInfoRatingTypeEstablished:
+      return SGFCGoPlayerRatingTypeEstablished;
+    case GoGameInfoRatingTypeUnspecified:
+      return SGFCGoPlayerRatingTypeUnspecified;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"sgfRatingTypeForGameInfoRatingType failed: invalid gameInfoRatingType %ld" argumentValue:gameInfoRatingType];
+      return SGFCGoPlayerRatingTypeUncertain;  // dummy return to make compiler happy
   }
 }
 

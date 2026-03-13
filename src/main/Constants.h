@@ -1338,6 +1338,73 @@ enum GoGameInfoRoundDataType
   GoGameInfoRoundDataTypeStructuredData,
 };
 
+/// @brief Enumerates the kinds of data that a GoGameInfoRank object can hold.
+///
+/// @ingroup go
+enum GoGameInfoRankDataType
+{
+  /// @brief Indicates that no rank information is stored in the GoGameInfoRank
+  /// object.
+  GoGameInfoRankDataTypeNone,
+  /// @brief The rank information is a custom string.
+  GoGameInfoRankDataTypeSgfString,
+  /// @brief The rank information consists of structured data (e.g. rank type,
+  /// rank number, etc.).
+  GoGameInfoRankDataTypeStructuredData,
+};
+
+/// @brief Enumerates the rank types in the traditional Go ranking system.
+///
+/// @ingroup go
+///
+/// The values of this enumeration must be kept in sync with the values of the
+/// enumeration SGFCGoPlayerRankType (order is not relevant) because
+/// SgfUtilities must be able to convert between the two enumerations.
+enum GoGameInfoRankType
+{
+  /// @brief The rank type is Kyu. A Kyu rank is a student rank. The generally
+  /// accepted Kyu ranks range from 30 (lowest) to 1 (highest). The notation
+  /// is "30k", "29k", etc..
+  GoGameInfoRankTypeKyu,
+
+  /// @brief The rank type is amateur Dan. An amateur Dan rank is a master
+  /// rank. The generally accepted amateur Dan ranks range from 1 (lowest) to
+  /// 7 (highest). The notation is "1d", "2d", etc..
+  GoGameInfoRankTypeAmateurDan,
+
+  /// @brief The rank type is professional Dan. A professional Dan rank is a
+  /// master rank. The generally accepted professional Dan ranks range from
+  /// 1 (lowest) to 9 (highest). The notation is "1p", "2p", etc..
+  GoGameInfoRankTypeProfessionalDan,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRankTypeFirst = GoGameInfoRankTypeKyu,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRankTypeLast = GoGameInfoRankTypeProfessionalDan,
+};
+
+/// @brief Enumerates the rating types that can apply to a Go player's rank.
+///
+/// @ingroup go
+///
+/// The values of this enumeration must be kept in sync with the values of the
+/// enumeration SGFCGoPlayerRatingType (order is not relevant) because
+/// SgfUtilities must be able to convert between the two enumerations.
+enum GoGameInfoRatingType
+{
+  /// @brief The rank of the Go player is uncertain.
+  GoGameInfoRatingTypeUncertain,
+  /// @brief The rank of the Go player is established.
+  GoGameInfoRatingTypeEstablished,
+  /// @brief The rating type that applies to the Go player's rank is
+  /// not specified, i.e. it is not known whether the rank is uncertain
+  /// or established.
+  GoGameInfoRatingTypeUnspecified,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRatingTypeFirst = GoGameInfoRatingTypeUncertain,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRatingTypeLast = GoGameInfoRatingTypeUnspecified,
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -3125,6 +3192,12 @@ extern NSString* goGameInfoRoundDataTypeKey;
 extern NSString* goGameInfoRoundSgfStringKey;
 extern NSString* goGameInfoRoundRoundTypeKey;
 extern NSString* goGameInfoRoundRoundNumberKey;
+// GoGameInfoRank keys
+extern NSString* goGameInfoRankDataTypeKey;
+extern NSString* goGameInfoRankSgfStringKey;
+extern NSString* goGameInfoRankRankTypeKey;
+extern NSString* goGameInfoRankRankKey;
+extern NSString* goGameInfoRankRatingTypeKey;
 //@}
 
 // -----------------------------------------------------------------------------

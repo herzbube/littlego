@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoGameInfo.h"
+#import "GoGameInfoRank.h"
 #import "GoGameInfoRound.h"
 #import "GoGameInfoRules.h"
 #import "GoGameResult.h"
@@ -49,10 +50,10 @@
   self.gameResult = [[[GoGameResult alloc] init] autorelease];
   self.openingInformation = nil;
   self.blackPlayerName = nil;
-  self.blackPlayerRank = nil;
+  self.blackPlayerRank = [[[GoGameInfoRank alloc] init] autorelease];
   self.blackPlayerTeamName = nil;
   self.whitePlayerName = nil;
-  self.whitePlayerRank = nil;
+  self.whitePlayerRank = [[[GoGameInfoRank alloc] init] autorelease];
   self.whitePlayerTeamName = nil;
   self.gameLocation = nil;
   self.eventName = nil;
@@ -84,10 +85,10 @@
   self.gameResult = [decoder decodeObjectOfClass:[GoGameResult class] forKey:goGameInfoGameResultKey];
   self.openingInformation = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoOpeningInformationKey];
   self.blackPlayerName = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoBlackPlayerNameKey];
-  self.blackPlayerRank = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoBlackPlayerRankKey];
+  self.blackPlayerRank = [decoder decodeObjectOfClass:[GoGameInfoRank class] forKey:goGameInfoBlackPlayerRankKey];
   self.blackPlayerTeamName = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoBlackPlayerTeamNameKey];
   self.whitePlayerName = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoWhitePlayerNameKey];
-  self.whitePlayerRank = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoWhitePlayerRankKey];
+  self.whitePlayerRank = [decoder decodeObjectOfClass:[GoGameInfoRank class] forKey:goGameInfoWhitePlayerRankKey];
   self.whitePlayerTeamName = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoWhitePlayerTeamNameKey];
   self.gameLocation = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoGameLocationKey];
   self.eventName = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoEventNameKey];
