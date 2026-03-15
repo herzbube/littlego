@@ -754,9 +754,17 @@ enum CellID
       else if (RulesetCellID == cellID)
       {
         screenTitle = @"Select ruleset";
-        footerTitle = @"IMPORTANT: It is strongly recommended that you play with a ruleset that uses area scoring, because the computer player (Fuego) does not properly support territory scoring. For more information, see \"Why area scoring is the default\" in the \"Scoring\" section of the in-game manual.";
+        NSMutableArray* rulesetNamesWithAreaScoring = [NSMutableArray array];
         for (enum GoRuleset ruleset = GoRulesetMin; ruleset <= GoRulesetMax; ++ruleset)
-          [itemList addObject:[NewGameController rulesetName:ruleset]];
+        {
+          NSString* rulesetName = [NewGameController rulesetName:ruleset];
+          [itemList addObject:rulesetName];
+
+          if ([GoUtilities scoringSystemForRuleset:ruleset] == GoScoringSystemAreaScoring)
+            [rulesetNamesWithAreaScoring addObject:rulesetName];
+        }
+        footerTitle = [NSString stringWithFormat:@"IMPORTANT: It is strongly recommended that you play with a ruleset that uses area scoring (%@), because the computer player (Fuego) does not properly support territory scoring. For more information, see \"Why area scoring is the default\" in the \"Scoring\" section of the in-game manual.",
+                       [rulesetNamesWithAreaScoring componentsJoinedByString:@", "]];
         // No default selection if the current ruleset is a custom ruleset
         enum GoRuleset currentRuleset = [self currentRuleset];
         if (currentRuleset < itemList.count)

@@ -507,6 +507,38 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the scoring system used by @a ruleset.
+///
+/// Raises an @e NSInvalidArgumentException if @a ruleset is not recognized.
+// -----------------------------------------------------------------------------
++ (enum GoScoringSystem) scoringSystemForRuleset:(enum GoRuleset)ruleset
+{
+  switch (ruleset)
+  {
+    case GoRulesetAGA:
+      return GoScoringSystemAreaScoring;
+    case GoRulesetIGS:
+      return GoScoringSystemTerritoryScoring;
+    case GoRulesetChinese:
+      return GoScoringSystemAreaScoring;
+    case GoRulesetJapanese:
+      return GoScoringSystemTerritoryScoring;
+    case GoRulesetLittleGo:
+      return gDefaultScoringSystem;
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Unable to determine GoScoringSystem, unknown ruleset %d", ruleset];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a newly allocated GoGameRules object that contains rules for
 /// which @a ruleset is a shorthand.
 ///
@@ -515,12 +547,14 @@
 + (GoGameRules*) rulesForRuleset:(enum GoRuleset)ruleset
 {
   GoGameRules* rules = [[[GoGameRules alloc] init] autorelease];
+
+  rules.scoringSystem = [GoUtilities scoringSystemForRuleset:ruleset];
+
   switch (ruleset)
   {
     case GoRulesetAGA:
     {
       rules.koRule = GoKoRuleSuperkoSituational;
-      rules.scoringSystem = GoScoringSystemAreaScoring;
       rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleTwoPasses;
       rules.disputeResolutionRule = GoDisputeResolutionRuleAlternatingPlay;
       rules.fourPassesRule = GoFourPassesRuleFourPassesEndTheGame;
@@ -529,7 +563,6 @@
     case GoRulesetIGS:
     {
       rules.koRule = GoKoRuleSimple;
-      rules.scoringSystem = GoScoringSystemTerritoryScoring;
       rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleThreePasses;
       rules.disputeResolutionRule = GoDisputeResolutionRuleAlternatingPlay;
       rules.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
@@ -538,7 +571,6 @@
     case GoRulesetChinese:
     {
       rules.koRule = GoKoRuleSuperkoPositional;
-      rules.scoringSystem = GoScoringSystemAreaScoring;
       rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleTwoPasses;
       rules.disputeResolutionRule = GoDisputeResolutionRuleNonAlternatingPlay;
       rules.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
@@ -547,7 +579,6 @@
     case GoRulesetJapanese:
     {
       rules.koRule = GoKoRuleSimple;
-      rules.scoringSystem = GoScoringSystemTerritoryScoring;
       rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleTwoPasses;
       rules.disputeResolutionRule = GoDisputeResolutionRuleNonAlternatingPlay;
       rules.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
@@ -556,7 +587,6 @@
     case GoRulesetLittleGo:
     {
       rules.koRule = GoKoRuleDefault;
-      rules.scoringSystem = gDefaultScoringSystem;
       rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleDefault;
       rules.disputeResolutionRule = GoDisputeResolutionRuleDefault;
       rules.fourPassesRule = GoFourPassesRuleDefault;
@@ -572,6 +602,7 @@
       @throw exception;
     }
   }
+  
   return rules;
 }
 

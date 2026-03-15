@@ -55,6 +55,7 @@
 + (NSArray*) pointsInBothFirstArray:(NSArray*)firstArray
                      andSecondArray:(NSArray*)secondArray;
 + (double) defaultKomiForHandicap:(int)handicap scoringSystem:(enum GoScoringSystem)scoringSystem;
++ (enum GoScoringSystem) scoringSystemForRuleset:(enum GoRuleset)ruleset;
 + (GoGameRules*) rulesForRuleset:(enum GoRuleset)ruleset;
 + (enum GoRuleset) rulesetForRules:(GoGameRules*)rules;
 + (enum GoColor) alternatingColorForColor:(enum GoColor)color;
