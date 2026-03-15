@@ -120,52 +120,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a string representation of the content of @a sgfGoPlayerRank.
-/// Returns an empty string if the SGFCGoPlayerRank is not valid.
-// -----------------------------------------------------------------------------
-+ (NSString*) stringForSgfGoPlayerRank:(SGFCGoPlayerRank)sgfGoPlayerRank
-{
-  if (! sgfGoPlayerRank.IsValid)
-    return @"";
-
-  NSString* rankTypeAsString;
-  switch (sgfGoPlayerRank.RankType)
-  {
-    case SGFCGoPlayerRankTypeKyu:
-      rankTypeAsString = @"kyu";
-      break;
-    case SGFCGoPlayerRankTypeAmateurDan:
-      rankTypeAsString = @"dan";
-      break;
-    case SGFCGoPlayerRankTypeProfessionalDan:
-      rankTypeAsString = @"p";
-      break;
-    default:
-      assert(0);
-      return @"";
-  }
-
-  NSString* ratingTypeAsString;
-  switch (sgfGoPlayerRank.RatingType)
-  {
-    case SGFCGoPlayerRatingTypeUncertain:
-      ratingTypeAsString = @" (uncertain)";
-      break;
-    case SGFCGoPlayerRatingTypeEstablished:
-      ratingTypeAsString = @" (established)";
-      break;
-    case SGFCGoPlayerRatingTypeUnspecified:
-      ratingTypeAsString = @"";
-      break;
-    default:
-      assert(0);
-      return @"";
-  }
-
-  return [NSString stringWithFormat:@"%ld %@%@", (long)sgfGoPlayerRank.Rank, rankTypeAsString, ratingTypeAsString];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Returns a color that represents a load result with no messages.
 // -----------------------------------------------------------------------------
 + (UIColor*) colorForLoadResultWithNoMessages

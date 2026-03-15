@@ -335,7 +335,7 @@ enum ResetToDefaultsSectionItem
       if (self.editing)
         cell.textLabel.textColor = [UIColor lightGrayColor];
       else
-        cell.textLabel.textColor = [UIColor redColor];
+        cell.textLabel.textColor = [UIColor systemRedColor];
       break;
     }
     default:

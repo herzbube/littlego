@@ -67,7 +67,7 @@
 /// context or purpose that an instance of EditGameInfoRankController was
 /// created for.
 ///
-/// If a delegate handles more than one type of ItemPickerController, the
+/// If a delegate handles more than one type of EditGameInfoRankController, the
 /// context object is a convenient method how the delegate can distinguish
 /// between them.
 @property(nonatomic, retain) id context;

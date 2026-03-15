@@ -250,6 +250,7 @@
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameInformation, SGFCPropertyTypeGC, false);
   setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameInfoDates:gameInfo.gameInfoDates], SGFCPropertyTypeDT, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameInfoRules.sgfString, SGFCPropertyTypeRU, true);
+  setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameResult:gameInfo.gameResult], SGFCPropertyTypeRE, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.openingInformation, SGFCPropertyTypeON, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerName, SGFCPropertyTypePB, true);
   setSgfGameInfoRankPropertyIfNecessary(gameInfo.blackPlayerRank, SGFCPropertyTypeBR);
@@ -259,13 +260,6 @@
   setSgfGameInfoPropertyIfNecessary(gameInfo.whitePlayerTeamName, SGFCPropertyTypeWT, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameLocation, SGFCPropertyTypePC, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.eventName, SGFCPropertyTypeEV, true);
-
-  GoGameResult* gameResult = gameInfo.gameResult;
-  if (gameResult.dataType != GoGameResultDataTypeNoResult)
-  {
-    NSString* rePropertyValueAsString = [SgfUtilities sgfStringFromGameResult:gameResult];
-    setSgfGameInfoPropertyIfNecessary(rePropertyValueAsString, SGFCPropertyTypeRE, true);
-  }
 
   GoGameInfoRound* gameInfoRound = gameInfo.gameInfoRound;
   if (gameInfoRound.dataType == GoGameInfoRoundDataTypeSgfString)

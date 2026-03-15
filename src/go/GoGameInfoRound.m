@@ -96,15 +96,15 @@
   self.dataType = [decoder decodeIntForKey:goGameInfoRoundDataTypeKey];
   if (self.dataType == GoGameInfoRoundDataTypeSgfString)
   {
-    self.sgfString = [[decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundSgfStringKey] retain];
+    self.sgfString = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundSgfStringKey];
     self.roundType = nil;
     self.roundNumber = nil;
   }
   else if (self.dataType == GoGameInfoRoundDataTypeStructuredData)
   {
     self.sgfString = nil;
-    self.roundType = [[decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundRoundTypeKey] retain];
-    self.roundNumber = [[decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundRoundNumberKey] retain];
+    self.roundType = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundRoundTypeKey];
+    self.roundNumber = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRoundRoundNumberKey];
   }
   else
   {

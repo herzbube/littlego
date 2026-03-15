@@ -18,6 +18,7 @@
 // Project includes
 #import "GameInfoItem.h"
 #import "../go/GoGameInfoDates.h"
+#import "../go/GoGameInfoRank.h"
 #import "../go/GoGameInfoRound.h"
 #import "../go/GoGameInfoRules.h"
 #import "../go/GoGameResult.h"
@@ -834,8 +835,8 @@ enum DataSourceInfoSectionItem
 
     GoGameInfoRules* gameInfoRules = [[[GoGameInfoRules alloc] initWithSgfString:goGameInfo.rulesName] autorelease];
     NSString* descriptionOfGameInfoRules = (gameInfoRules.gameInfoRule == GoGameInfoRuleNone
-                                         ? nil // use our own placeholder string, not the one from GoUtilities
-                                         : [GoUtilities stringWithDescriptionOfGameInfoRules:gameInfoRules]);
+                                            ? nil // use our own placeholder string, not the one from GoUtilities
+                                            : [GoUtilities stringWithDescriptionOfGameInfoRules:gameInfoRules]);
     self.rulesName = [self stringValue:descriptionOfGameInfoRules forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_goRulesetHasData];
     self.goRuleset = goGameInfo.goRuleset;
 
@@ -888,18 +889,24 @@ enum DataSourceInfoSectionItem
     self.openingInformation = [self stringValue:goGameInfo.openingInformation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_openingInformationHasData];
 
     self.blackPlayerName = [self stringValue:goGameInfo.blackPlayerName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerNameHasData];
-    self.blackPlayerRankAsString = [self stringValue:[SgfUtilities stringForSgfGoPlayerRank:goGameInfo.goBlackPlayerRank]
-                                   withFallbackValue:goGameInfo.blackPlayerRank
-                          forMissingDataDisplayStyle:missingDataDisplayStyle
-                                             hasData:&_blackPlayerRankHasData];
+
+    GoGameInfoRank* blackPlayerRank = [SgfUtilities gameInfoRankFromSgfString:goGameInfo.blackPlayerRank];
+    NSString* descriptionOfBlackPlayerRank = (blackPlayerRank.dataType == GoGameInfoRankDataTypeNone
+                                            ? nil // use our own placeholder string, not the one from GoUtilities
+                                            : [GoUtilities stringWithDescriptionOfGameInfoRank:blackPlayerRank]);
+    self.blackPlayerRankAsString = [self stringValue:descriptionOfBlackPlayerRank forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerRankHasData];
     self.blackPlayerRank = goGameInfo.goBlackPlayerRank;
+
     self.blackPlayerTeamName = [self stringValue:goGameInfo.blackPlayerTeamName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerTeamNameHasData];
     self.whitePlayerName = [self stringValue:goGameInfo.whitePlayerName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_whitePlayerNameHasData];
-    self.whitePlayerRankAsString = [self stringValue:[SgfUtilities stringForSgfGoPlayerRank:goGameInfo.goWhitePlayerRank]
-                                   withFallbackValue:goGameInfo.whitePlayerRank
-                          forMissingDataDisplayStyle:missingDataDisplayStyle
-                                             hasData:&_whitePlayerRankHasData];
+
+    GoGameInfoRank* whitePlayerRank = [SgfUtilities gameInfoRankFromSgfString:goGameInfo.whitePlayerRank];
+    NSString* descriptionOfWhitePlayerRank = (whitePlayerRank.dataType == GoGameInfoRankDataTypeNone
+                                            ? nil // use our own placeholder string, not the one from GoUtilities
+                                            : [GoUtilities stringWithDescriptionOfGameInfoRank:whitePlayerRank]);
+    self.whitePlayerRankAsString = [self stringValue:descriptionOfWhitePlayerRank forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_whitePlayerRankHasData];
     self.whitePlayerRank = goGameInfo.goWhitePlayerRank;
+
     self.whitePlayerTeamName = [self stringValue:goGameInfo.whitePlayerTeamName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_whitePlayerTeamNameHasData];
 
     self.gameLocation = [self stringValue:goGameInfo.gameLocation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_gameLocationHasData];

@@ -43,7 +43,6 @@
 
 + (NSString*) stringForSgfBoardSize:(SGFCBoardSize)sgfBoardSize;
 + (enum GoBoardSize) goBoardSizeForSgfBoardSize:(SGFCBoardSize)sgfBoardSize errorMessage:(NSString**)errorMessage;
-+ (NSString*) stringForSgfGoPlayerRank:(SGFCGoPlayerRank)sgfGoPlayerRank;
 + (UIColor*) colorForLoadResultWithNoMessages;
 + (UIColor*) colorForLoadResultWithMessagesOfType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage;
 + (UIImage*) coloredIndicatorForLoadResult:(SGFCDocumentReadResult*)loadResult;

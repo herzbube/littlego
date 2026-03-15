@@ -103,7 +103,7 @@
   self.dataType = [decoder decodeIntForKey:goGameInfoRankDataTypeKey];
   if (self.dataType == GoGameInfoRankDataTypeSgfString)
   {
-    self.sgfString = [[decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRankSgfStringKey] retain];
+    self.sgfString = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoRankSgfStringKey];
     self.rankType = GoGameInfoRankTypeKyu;
     self.rank = 30;
     self.ratingType = GoGameInfoRatingTypeUnspecified;

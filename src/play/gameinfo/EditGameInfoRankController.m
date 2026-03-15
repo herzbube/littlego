@@ -369,10 +369,10 @@ enum CellId
     {
       TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
       sliderCell.descriptionLabel.text = @"Rank";
-      [sliderCell setValue:(int)self.gameInfoRankToEdit.rank minimumValue:1 maximumValue:100];
       [sliderCell setDelegate:self
          actionValueDidChange:@selector(rankDidChange:)
                valueFormatter:nil];
+      [sliderCell setValue:(int)self.gameInfoRankToEdit.rank minimumValue:1 maximumValue:100];
       break;
     }
     case CellIdRatingType:
