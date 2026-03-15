@@ -935,6 +935,8 @@
 		D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
 		D73B0D392F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
 		D73B0D3A2F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
+		D74958302F65941000D8DC11 /* TableViewDatePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D749582F2F65941000D8DC11 /* TableViewDatePickerCell.m */; };
+		D74958312F65941000D8DC11 /* TableViewDatePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D749582F2F65941000D8DC11 /* TableViewDatePickerCell.m */; };
 		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74980BB2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74B1B8F2F2D195500E08D1D /* InvalidTimeDataView.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B8E2F2D195500E08D1D /* InvalidTimeDataView.m */; };
@@ -2040,6 +2042,8 @@
 		D72FC0442EB66E0C00092C0F /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		D73B0D372F000D57000C4A8F /* GoTimeDataValidator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoTimeDataValidator.h; sourceTree = "<group>"; };
 		D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoTimeDataValidator.m; sourceTree = "<group>"; };
+		D749582E2F65941000D8DC11 /* TableViewDatePickerCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableViewDatePickerCell.h; sourceTree = "<group>"; };
+		D749582F2F65941000D8DC11 /* TableViewDatePickerCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewDatePickerCell.m; sourceTree = "<group>"; };
 		D74980B82EBF87BD00BD595D /* Registry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Registry.h; sourceTree = "<group>"; };
 		D74980B92EBF87BD00BD595D /* Registry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Registry.m; sourceTree = "<group>"; };
 		D74980BC2EBF902500BD595D /* ModelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelProvider.h; sourceTree = "<group>"; };
@@ -3970,6 +3974,8 @@
 				CDD86B482827E91400AA0A6B /* StaticTableView.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
 				CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */,
+				D749582E2F65941000D8DC11 /* TableViewDatePickerCell.h */,
+				D749582F2F65941000D8DC11 /* TableViewDatePickerCell.m */,
 				CD72216714633F1D005EAC65 /* TableViewGridCell.h */,
 				CD72216814633F1D005EAC65 /* TableViewGridCell.m */,
 				CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */,
@@ -4968,6 +4974,7 @@
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				D71F0E0C2F0C647300823888 /* TimeSettingsModel.m in Sources */,
 				CDDB08C22927F15D00B38F91 /* NodeTreeViewCell.m in Sources */,
+				D74958302F65941000D8DC11 /* TableViewDatePickerCell.m in Sources */,
 				CDC8DEF128EDECCA00619305 /* NodeNumbersTileView.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
 				D7F593E22EF951180031317A /* PlayerClockTimer.m in Sources */,
@@ -5099,6 +5106,7 @@
 				D71961782F477D4A0067A6CC /* GameInfoViewGameTabDelegate.m in Sources */,
 				D7F593E32EF951180031317A /* PlayerClockTimer.m in Sources */,
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
+				D74958312F65941000D8DC11 /* TableViewDatePickerCell.m in Sources */,
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,

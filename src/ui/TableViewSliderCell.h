@@ -90,6 +90,5 @@ enum SliderCellSubViewTag
 ///
 /// The selector is never invoked if the value label is hidden.
 @property(nonatomic, assign, readonly) SEL delegateValueFormatter;
-//@}
 
 @end
