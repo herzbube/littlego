@@ -20,6 +20,9 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameInfo.h"
+#import "../../go/GoGameInfoRank.h"
+#import "../../go/GoGameInfoRound.h"
+#import "../../go/GoGameInfoRules.h"
 #import "../../go/GoGameResult.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
@@ -208,14 +211,39 @@
 {
   GoGameInfo* gameInfo = goGame.gameInfo;
 
-  GoGameResult* gameResult = gameInfo.gameResult;
-  if (gameResult.dataType != GoGameResultDataTypeNoResult)
+  void (^setSgfGameInfoPropertyIfNecessary)(NSString*, SGFCPropertyType, bool) = ^ void (NSString* goGameInfoPropertyValue, SGFCPropertyType propertyType, bool isSimpleTextValue)
   {
-    NSString* rePropertyValueAsString = [SgfUtilities sgfStringFromGameResult:gameResult];
-    SGFCSimpleTextPropertyValue* rePropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:rePropertyValueAsString];
-    SGFCProperty* reProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeRE value:rePropertyValue];
-    [gameInfoNode setProperty:reProperty];
-  }
+    if (! goGameInfoPropertyValue || goGameInfoPropertyValue.length == 0)
+      return;
+
+    SGFCSinglePropertyValue* propertyValue;
+    if (isSimpleTextValue)
+      propertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:goGameInfoPropertyValue];
+    else
+      propertyValue = [SGFCPropertyValueFactory propertyValueWithText:goGameInfoPropertyValue];
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType value:propertyValue];
+    [gameInfoNode setProperty:property];
+  };
+
+  setSgfGameInfoPropertyIfNecessary(gameInfo.recorderName, SGFCPropertyTypeUS, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.sourceName, SGFCPropertyTypeSO, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.annotationAuthor, SGFCPropertyTypeAN, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.copyrightInformation, SGFCPropertyTypeCP, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.gameName, SGFCPropertyTypeGN, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.gameInformation, SGFCPropertyTypeGC, false);
+  setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameInfoDates:gameInfo.gameInfoDates], SGFCPropertyTypeDT, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.gameInfoRules.sgfString, SGFCPropertyTypeRU, true);
+  setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameResult:gameInfo.gameResult], SGFCPropertyTypeRE, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.openingInformation, SGFCPropertyTypeON, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerName, SGFCPropertyTypePB, true);
+  setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameInfoRank:gameInfo.blackPlayerRank], SGFCPropertyTypeBR, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerTeamName, SGFCPropertyTypeBT, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.whitePlayerName, SGFCPropertyTypePW, true);
+  setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameInfoRank:gameInfo.whitePlayerRank], SGFCPropertyTypeWR, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.whitePlayerTeamName, SGFCPropertyTypeWT, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.gameLocation, SGFCPropertyTypePC, true);
+  setSgfGameInfoPropertyIfNecessary(gameInfo.eventName, SGFCPropertyTypeEV, true);
+  setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameInfoRound:gameInfo.gameInfoRound], SGFCPropertyTypeRO, true);
 }
 
 // -----------------------------------------------------------------------------

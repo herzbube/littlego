@@ -907,6 +907,20 @@
 		D71961802F489CAB0067A6CC /* GoGameResult.m in Sources */ = {isa = PBXBuildFile; fileRef = D719617E2F489CAB0067A6CC /* GoGameResult.m */; };
 		D71961832F5342CC0067A6CC /* EditGameResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = D71961822F5342CC0067A6CC /* EditGameResultController.m */; };
 		D71961842F5342CC0067A6CC /* EditGameResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = D71961822F5342CC0067A6CC /* EditGameResultController.m */; };
+		D719E50D2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E50C2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m */; };
+		D719E50E2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E50C2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m */; };
+		D719E5112F5C7B7400D3200A /* GoGameInfoRules.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5102F5C7B7400D3200A /* GoGameInfoRules.m */; };
+		D719E5122F5C7B7400D3200A /* GoGameInfoRules.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5102F5C7B7400D3200A /* GoGameInfoRules.m */; };
+		D719E5152F5C946B00D3200A /* EditGameInfoRulesController.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5142F5C946B00D3200A /* EditGameInfoRulesController.m */; };
+		D719E5162F5C946B00D3200A /* EditGameInfoRulesController.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5142F5C946B00D3200A /* EditGameInfoRulesController.m */; };
+		D719E5192F5DE4D600D3200A /* GoGameInfoRound.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5182F5DE4D600D3200A /* GoGameInfoRound.m */; };
+		D719E51A2F5DE4D600D3200A /* GoGameInfoRound.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5182F5DE4D600D3200A /* GoGameInfoRound.m */; };
+		D719E51D2F5DF11F00D3200A /* EditGameInfoRoundController.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E51C2F5DF11F00D3200A /* EditGameInfoRoundController.m */; };
+		D719E51E2F5DF11F00D3200A /* EditGameInfoRoundController.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E51C2F5DF11F00D3200A /* EditGameInfoRoundController.m */; };
+		D719E5212F5F516400D3200A /* GoGameInfoRank.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5202F5F516400D3200A /* GoGameInfoRank.m */; };
+		D719E5222F5F516400D3200A /* GoGameInfoRank.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5202F5F516400D3200A /* GoGameInfoRank.m */; };
+		D719E5252F5F5AAE00D3200A /* EditGameInfoRankController.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5242F5F5AAE00D3200A /* EditGameInfoRankController.m */; };
+		D719E5262F5F5AAE00D3200A /* EditGameInfoRankController.m in Sources */ = {isa = PBXBuildFile; fileRef = D719E5242F5F5AAE00D3200A /* EditGameInfoRankController.m */; };
 		D71F0E0B2F0C647300823888 /* TimeSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D71F0E0A2F0C647300823888 /* TimeSettingsModel.m */; };
 		D71F0E0C2F0C647300823888 /* TimeSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D71F0E0A2F0C647300823888 /* TimeSettingsModel.m */; };
 		D71F0E0F2F0D8AB000823888 /* TimeSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = D71F0E0E2F0D8AB000823888 /* TimeSettingsController.m */; };
@@ -921,6 +935,14 @@
 		D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
 		D73B0D392F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
 		D73B0D3A2F000D57000C4A8F /* GoTimeDataValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */; };
+		D74958242F64539800D8DC11 /* GoGameInfoDates.m in Sources */ = {isa = PBXBuildFile; fileRef = D74958232F64539800D8DC11 /* GoGameInfoDates.m */; };
+		D74958252F64539800D8DC11 /* GoGameInfoDates.m in Sources */ = {isa = PBXBuildFile; fileRef = D74958232F64539800D8DC11 /* GoGameInfoDates.m */; };
+		D74958282F6470BC00D8DC11 /* EditGameInfoDatesController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74958272F6470BC00D8DC11 /* EditGameInfoDatesController.m */; };
+		D74958292F6470BC00D8DC11 /* EditGameInfoDatesController.m in Sources */ = {isa = PBXBuildFile; fileRef = D74958272F6470BC00D8DC11 /* EditGameInfoDatesController.m */; };
+		D749582C2F6573BA00D8DC11 /* EditGameInfoDateController.m in Sources */ = {isa = PBXBuildFile; fileRef = D749582B2F6573BA00D8DC11 /* EditGameInfoDateController.m */; };
+		D749582D2F6573BA00D8DC11 /* EditGameInfoDateController.m in Sources */ = {isa = PBXBuildFile; fileRef = D749582B2F6573BA00D8DC11 /* EditGameInfoDateController.m */; };
+		D74958302F65941000D8DC11 /* TableViewDatePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D749582F2F65941000D8DC11 /* TableViewDatePickerCell.m */; };
+		D74958312F65941000D8DC11 /* TableViewDatePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D749582F2F65941000D8DC11 /* TableViewDatePickerCell.m */; };
 		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74980BB2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74B1B8F2F2D195500E08D1D /* InvalidTimeDataView.m in Sources */ = {isa = PBXBuildFile; fileRef = D74B1B8E2F2D195500E08D1D /* InvalidTimeDataView.m */; };
@@ -1990,6 +2012,20 @@
 		D719617E2F489CAB0067A6CC /* GoGameResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoGameResult.m; sourceTree = "<group>"; };
 		D71961812F5342CC0067A6CC /* EditGameResultController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditGameResultController.h; sourceTree = "<group>"; };
 		D71961822F5342CC0067A6CC /* EditGameResultController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditGameResultController.m; sourceTree = "<group>"; };
+		D719E50B2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameInfoViewInfoTabDelegate.h; sourceTree = "<group>"; };
+		D719E50C2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewInfoTabDelegate.m; sourceTree = "<group>"; };
+		D719E50F2F5C7B7400D3200A /* GoGameInfoRules.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoGameInfoRules.h; sourceTree = "<group>"; };
+		D719E5102F5C7B7400D3200A /* GoGameInfoRules.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoGameInfoRules.m; sourceTree = "<group>"; };
+		D719E5132F5C946B00D3200A /* EditGameInfoRulesController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditGameInfoRulesController.h; sourceTree = "<group>"; };
+		D719E5142F5C946B00D3200A /* EditGameInfoRulesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditGameInfoRulesController.m; sourceTree = "<group>"; };
+		D719E5172F5DE4D600D3200A /* GoGameInfoRound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoGameInfoRound.h; sourceTree = "<group>"; };
+		D719E5182F5DE4D600D3200A /* GoGameInfoRound.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoGameInfoRound.m; sourceTree = "<group>"; };
+		D719E51B2F5DF11F00D3200A /* EditGameInfoRoundController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditGameInfoRoundController.h; sourceTree = "<group>"; };
+		D719E51C2F5DF11F00D3200A /* EditGameInfoRoundController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditGameInfoRoundController.m; sourceTree = "<group>"; };
+		D719E51F2F5F516400D3200A /* GoGameInfoRank.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoGameInfoRank.h; sourceTree = "<group>"; };
+		D719E5202F5F516400D3200A /* GoGameInfoRank.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoGameInfoRank.m; sourceTree = "<group>"; };
+		D719E5232F5F5AAE00D3200A /* EditGameInfoRankController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditGameInfoRankController.h; sourceTree = "<group>"; };
+		D719E5242F5F5AAE00D3200A /* EditGameInfoRankController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditGameInfoRankController.m; sourceTree = "<group>"; };
 		D71F0E092F0C647300823888 /* TimeSettingsModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeSettingsModel.h; sourceTree = "<group>"; };
 		D71F0E0A2F0C647300823888 /* TimeSettingsModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeSettingsModel.m; sourceTree = "<group>"; };
 		D71F0E0D2F0D8AB000823888 /* TimeSettingsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeSettingsController.h; sourceTree = "<group>"; };
@@ -2012,6 +2048,14 @@
 		D72FC0442EB66E0C00092C0F /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		D73B0D372F000D57000C4A8F /* GoTimeDataValidator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoTimeDataValidator.h; sourceTree = "<group>"; };
 		D73B0D382F000D57000C4A8F /* GoTimeDataValidator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoTimeDataValidator.m; sourceTree = "<group>"; };
+		D74958222F64539800D8DC11 /* GoGameInfoDates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoGameInfoDates.h; sourceTree = "<group>"; };
+		D74958232F64539800D8DC11 /* GoGameInfoDates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoGameInfoDates.m; sourceTree = "<group>"; };
+		D74958262F6470BC00D8DC11 /* EditGameInfoDatesController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditGameInfoDatesController.h; sourceTree = "<group>"; };
+		D74958272F6470BC00D8DC11 /* EditGameInfoDatesController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditGameInfoDatesController.m; sourceTree = "<group>"; };
+		D749582A2F6573BA00D8DC11 /* EditGameInfoDateController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditGameInfoDateController.h; sourceTree = "<group>"; };
+		D749582B2F6573BA00D8DC11 /* EditGameInfoDateController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditGameInfoDateController.m; sourceTree = "<group>"; };
+		D749582E2F65941000D8DC11 /* TableViewDatePickerCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableViewDatePickerCell.h; sourceTree = "<group>"; };
+		D749582F2F65941000D8DC11 /* TableViewDatePickerCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewDatePickerCell.m; sourceTree = "<group>"; };
 		D74980B82EBF87BD00BD595D /* Registry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Registry.h; sourceTree = "<group>"; };
 		D74980B92EBF87BD00BD595D /* Registry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Registry.m; sourceTree = "<group>"; };
 		D74980BC2EBF902500BD595D /* ModelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelProvider.h; sourceTree = "<group>"; };
@@ -2318,6 +2362,14 @@
 				CD1DB60916FE181400C2E648 /* GoGameDocument.m */,
 				D71961792F485DA60067A6CC /* GoGameInfo.h */,
 				D719617A2F485DA60067A6CC /* GoGameInfo.m */,
+				D74958222F64539800D8DC11 /* GoGameInfoDates.h */,
+				D74958232F64539800D8DC11 /* GoGameInfoDates.m */,
+				D719E51F2F5F516400D3200A /* GoGameInfoRank.h */,
+				D719E5202F5F516400D3200A /* GoGameInfoRank.m */,
+				D719E5172F5DE4D600D3200A /* GoGameInfoRound.h */,
+				D719E5182F5DE4D600D3200A /* GoGameInfoRound.m */,
+				D719E50F2F5C7B7400D3200A /* GoGameInfoRules.h */,
+				D719E5102F5C7B7400D3200A /* GoGameInfoRules.m */,
 				D719617D2F489CAB0067A6CC /* GoGameResult.h */,
 				D719617E2F489CAB0067A6CC /* GoGameResult.m */,
 				CDC97A8C18301CC000755EB2 /* GoGameRules.h */,
@@ -3936,6 +3988,8 @@
 				CDD86B482827E91400AA0A6B /* StaticTableView.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
 				CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */,
+				D749582E2F65941000D8DC11 /* TableViewDatePickerCell.h */,
+				D749582F2F65941000D8DC11 /* TableViewDatePickerCell.m */,
 				CD72216714633F1D005EAC65 /* TableViewGridCell.h */,
 				CD72216814633F1D005EAC65 /* TableViewGridCell.m */,
 				CDEF3D88140C2F39002D9C1C /* TableViewSliderCell.h */,
@@ -4058,6 +4112,8 @@
 				D71961722F4776710067A6CC /* GameInfoViewBoardTabDelegate.m */,
 				D71961752F477D4A0067A6CC /* GameInfoViewGameTabDelegate.h */,
 				D71961762F477D4A0067A6CC /* GameInfoViewGameTabDelegate.m */,
+				D719E50B2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.h */,
+				D719E50C2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m */,
 				D719616D2F476D110067A6CC /* GameInfoViewScoreTabDelegate.h */,
 				D719616E2F476D110067A6CC /* GameInfoViewScoreTabDelegate.m */,
 			);
@@ -4068,6 +4124,16 @@
 			isa = PBXGroup;
 			children = (
 				D71961672F476C790067A6CC /* delegate */,
+				D749582A2F6573BA00D8DC11 /* EditGameInfoDateController.h */,
+				D749582B2F6573BA00D8DC11 /* EditGameInfoDateController.m */,
+				D74958262F6470BC00D8DC11 /* EditGameInfoDatesController.h */,
+				D74958272F6470BC00D8DC11 /* EditGameInfoDatesController.m */,
+				D719E5232F5F5AAE00D3200A /* EditGameInfoRankController.h */,
+				D719E5242F5F5AAE00D3200A /* EditGameInfoRankController.m */,
+				D719E51B2F5DF11F00D3200A /* EditGameInfoRoundController.h */,
+				D719E51C2F5DF11F00D3200A /* EditGameInfoRoundController.m */,
+				D719E5132F5C946B00D3200A /* EditGameInfoRulesController.h */,
+				D719E5142F5C946B00D3200A /* EditGameInfoRulesController.m */,
 				D71961812F5342CC0067A6CC /* EditGameResultController.h */,
 				D71961822F5342CC0067A6CC /* EditGameResultController.m */,
 				D71961682F476C790067A6CC /* GameInfoViewController.h */,
@@ -4650,21 +4716,25 @@
 				CDBDD0992997F38700641E3B /* NodeNumbersViewCell.m in Sources */,
 				D76D39582F57930B00B2140F /* MiscellaneousModel.m in Sources */,
 				CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
+				D749582C2F6573BA00D8DC11 /* EditGameInfoDateController.m in Sources */,
 				CD8178FF25D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
 				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
 				CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */,
 				CD108812132559DE00E83543 /* GtpCommand.m in Sources */,
 				CD108815132559EA00E83543 /* GtpResponse.m in Sources */,
 				CD10881913255A4000E83543 /* GoBoard.m in Sources */,
+				D74958242F64539800D8DC11 /* GoGameInfoDates.m in Sources */,
 				CD10881C13255A4700E83543 /* GoGame.m in Sources */,
 				CD10881F13255A6100E83543 /* GoMove.m in Sources */,
 				CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD7C6A191AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */,
 				CD7C69F11AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
 				CDA1297E297DA3F2004007B6 /* GoNodeCreationOptions.m in Sources */,
+				D719E5212F5F516400D3200A /* GoGameInfoRank.m in Sources */,
 				CD1E6EB72867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m in Sources */,
 				CD7C6A151AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
+				D719E5192F5DE4D600D3200A /* GoGameInfoRound.m in Sources */,
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
@@ -4801,6 +4871,7 @@
 				CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
+				D719E50E2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m in Sources */,
 				CDE0FC63298598C1008E55A8 /* GameVariationSettingsController.m in Sources */,
 				CD1E6EAA2860F0BC00785E23 /* MarkupUtilities.mm in Sources */,
 				CD607BCB28109A7E000C111E /* EditEstimatedScoreController.m in Sources */,
@@ -4839,7 +4910,9 @@
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
 				CDEE19F519433EAC00DF2389 /* BoardViewController.m in Sources */,
 				D76B0D0C2F1A636300032D62 /* TimeSettingsCommand.m in Sources */,
+				D74958282F6470BC00D8DC11 /* EditGameInfoDatesController.m in Sources */,
 				CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */,
+				D719E5152F5C946B00D3200A /* EditGameInfoRulesController.m in Sources */,
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
 				CDB198C22B78D5B400E8512F /* WebBrowserViewController.m in Sources */,
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
@@ -4848,6 +4921,7 @@
 				CDF630AA168F50BA003C8BEF /* PlayCommand.m in Sources */,
 				CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */,
 				CD9B63EF25AB7804003E032B /* SaveSgfCommand.m in Sources */,
+				D719E5122F5C7B7400D3200A /* GoGameInfoRules.m in Sources */,
 				CDEE1A0F1946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD1F4FB825B0C1120098037A /* SgfUtilities.m in Sources */,
@@ -4856,6 +4930,7 @@
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
 				CD81794D25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */,
 				CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
+				D719E5252F5F5AAE00D3200A /* EditGameInfoRankController.m in Sources */,
 				CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */,
 				D7F593DE2EF891EF0031317A /* TimedPlayController.m in Sources */,
 				CDB49E3C2220AFE5006DC1A4 /* AccessibilityUtility.m in Sources */,
@@ -4882,6 +4957,7 @@
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
 				CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
 				CD85068627B95046000D2CCD /* GoNode.m in Sources */,
+				D719E51E2F5DF11F00D3200A /* EditGameInfoRoundController.m in Sources */,
 				CD7C57D7220257B800694520 /* BoardSetupModel.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
 				CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
@@ -4919,6 +4995,7 @@
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				D71F0E0C2F0C647300823888 /* TimeSettingsModel.m in Sources */,
 				CDDB08C22927F15D00B38F91 /* NodeTreeViewCell.m in Sources */,
+				D74958302F65941000D8DC11 /* TableViewDatePickerCell.m in Sources */,
 				CDC8DEF128EDECCA00619305 /* NodeNumbersTileView.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
 				D7F593E22EF951180031317A /* PlayerClockTimer.m in Sources */,
@@ -4968,9 +5045,13 @@
 				CD7C57CD21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */,
 				CDFD9F7518F1D37E0031CBCF /* MagnifyingGlassSettingsController.m in Sources */,
 				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
+				D719E51D2F5DF11F00D3200A /* EditGameInfoRoundController.m in Sources */,
 				CD7C6A0A1AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */,
 				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,
+				D74958292F6470BC00D8DC11 /* EditGameInfoDatesController.m in Sources */,
+				D749582D2F6573BA00D8DC11 /* EditGameInfoDateController.m in Sources */,
 				CDF2462229679D2300350B42 /* NodeTreeViewTapGestureController.m in Sources */,
+				D719E5112F5C7B7400D3200A /* GoGameInfoRules.m in Sources */,
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CD44E43629158C8800C1DB6B /* GoNodeTest.m in Sources */,
@@ -4985,6 +5066,7 @@
 				CD1A7EE1293A5E8100013D80 /* NodeTreeViewDrawingHelper.m in Sources */,
 				D79B28082ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */,
 				CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
+				D719E51A2F5DE4D600D3200A /* GoGameInfoRound.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
 				CDEE1A0C1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
@@ -5005,11 +5087,13 @@
 				CD85B5BC1401C2AD001715B8 /* GtpResponse.m in Sources */,
 				CDB3ED3F284E001A007512F6 /* MarkupModel.m in Sources */,
 				CD7C69C01A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
+				D719E50D2F5AEA3800D3200A /* GameInfoViewInfoTabDelegate.m in Sources */,
 				CD85B5C41401C338001715B8 /* Player.m in Sources */,
 				D7F593DF2EF891EF0031317A /* TimedPlayController.m in Sources */,
 				CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */,
 				CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */,
 				CD1F4FB925B0C1120098037A /* SgfUtilities.m in Sources */,
+				D74958252F64539800D8DC11 /* GoGameInfoDates.m in Sources */,
 				CD7C57D12201E89500694520 /* SetupFirstMoveColorCommand.m in Sources */,
 				CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */,
 				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
@@ -5026,6 +5110,7 @@
 				CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
 				D701A8712EEC32B80006A962 /* GoTimeSettings.m in Sources */,
 				CD97FA111AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
+				D719E5222F5F516400D3200A /* GoGameInfoRank.m in Sources */,
 				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
 				CD1F502825B766680098037A /* ViewLoadResultController.m in Sources */,
 				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
@@ -5045,6 +5130,7 @@
 				D71961782F477D4A0067A6CC /* GameInfoViewGameTabDelegate.m in Sources */,
 				D7F593E32EF951180031317A /* PlayerClockTimer.m in Sources */,
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
+				D74958312F65941000D8DC11 /* TableViewDatePickerCell.m in Sources */,
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
@@ -5155,6 +5241,7 @@
 				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
 				CDFD9F7D18F1D5AB0031CBCF /* RenameGameCommand.m in Sources */,
 				CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */,
+				D719E5162F5C946B00D3200A /* EditGameInfoRulesController.m in Sources */,
 				CD1A7EEC29512E0B00013D80 /* LinesLayerDelegate.m in Sources */,
 				CDF2462E296AE2BF00350B42 /* NodeTreeViewCanvasData.m in Sources */,
 				D72CCCBD2F43689900DA10D3 /* GoPlayerTimeDataTest.m in Sources */,
@@ -5187,6 +5274,7 @@
 				CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */,
 				CDF0C24628E9DEE4003278B4 /* ResizableStackViewController.m in Sources */,
 				CD9A49E917125106009E7514 /* PlayCommand.m in Sources */,
+				D719E5262F5F5AAE00D3200A /* EditGameInfoRankController.m in Sources */,
 				CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */,
 				CDC8DEF428EDECCA00619305 /* NodeTreeView.m in Sources */,
 				CDEE19F819433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,

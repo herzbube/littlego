@@ -425,4 +425,33 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Applies a bit of styling to @a label with the intent to make it look
+/// like the header/footer labels in a system-provided UITableView.
+// -----------------------------------------------------------------------------
++ (void) applyTableViewHeaderFooterLabelStyle:(UILabel*)label
+{
+  // Properties experimentally determined in iOS 26.0
+  label.textColor = [UIColor secondaryLabelColor];
+  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures @a textField with a preferred set of property values for
+/// text input.
+// -----------------------------------------------------------------------------
++ (void) configureTextFieldForTextInput:(UITextField*)textField
+{
+  // Appearance
+  textField.borderStyle = UITextBorderStyleRoundedRect;
+  textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+
+  // Behaviour
+  textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+  textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+  textField.autocorrectionType = UITextAutocorrectionTypeNo;
+  textField.enablesReturnKeyAutomatically = YES;
+  textField.spellCheckingType = UITextSpellCheckingTypeNo;
+}
+
 @end

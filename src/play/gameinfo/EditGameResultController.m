@@ -253,7 +253,7 @@ enum CellId
   {
     case CellIdResultTye:
     case CellIdWinType:
-      [self showItemPickerForCellId:cellId];
+      [self showItemPickerControllerForCellId:cellId];
       break;
     case CellIdScore:
       [self showEditTextControllerForCellIdScore];
@@ -387,18 +387,21 @@ enum CellId
     {
       cell.textLabel.text = @"Result type";
       cell.detailTextLabel.text = [NSString stringWithGameResultType:self.gameResult.gameResultType];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     case CellIdWinType:
     {
       cell.textLabel.text = @"Win type";
       cell.detailTextLabel.text = [NSString stringWithWinType:self.gameResult.winType];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     case CellIdScore:
     {
       cell.textLabel.text = @"Score";
-      cell.detailTextLabel.text = [NSString stringWithFormat:@"%.1f", self.gameResult.score];
+      cell.detailTextLabel.text = [NSString stringWithFractionValue:self.gameResult.score];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     case CellIdSetResult:
@@ -430,7 +433,6 @@ enum CellId
       [accessoryView removeTarget:self action:nil forControlEvents:UIControlEventValueChanged];
       [accessoryView addTarget:self action:@selector(toggleGlobalUpdatePolicy:) forControlEvents:UIControlEventValueChanged];
       break;
-
     }
   }
 }
@@ -440,7 +442,7 @@ enum CellId
 // -----------------------------------------------------------------------------
 /// @brief Private helper for tableView:didSelectRowAtIndexPath:().
 // -----------------------------------------------------------------------------
-- (void) showItemPickerForCellId:(enum CellId)cellId
+- (void) showItemPickerControllerForCellId:(enum CellId)cellId
 {
   NSString* screenTitle;
   NSString* footerTitle = nil;
@@ -490,7 +492,7 @@ enum CellId
 // -----------------------------------------------------------------------------
 - (void) showEditTextControllerForCellIdScore
 {
-  NSString* scoreAsString = [NSString stringWithScore:self.gameResult.score];
+  NSString* scoreAsString = [NSString stringWithDouble:self.gameResult.score];
 
   EditTextController* editTextController = [EditTextController controllerWithText:scoreAsString
                                                                             style:EditTextControllerStyleTextField
@@ -632,8 +634,7 @@ enum CellId
 
     self.gameResult.score = score;
 
-    NSUInteger sectionIndex = DataSection;
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ScoreItem_Score inSection:sectionIndex];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ScoreItem_Score inSection:DataSection];
     NSArray* indexPaths = [NSArray arrayWithObject:indexPath];
     [self.tableView reloadRowsAtIndexPaths:indexPaths
                           withRowAnimation:UITableViewRowAnimationNone];

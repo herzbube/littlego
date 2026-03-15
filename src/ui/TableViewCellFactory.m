@@ -17,8 +17,9 @@
 
 // Project includes
 #import "TableViewCellFactory.h"
-#import "TableViewSliderCell.h"
+#import "TableViewDatePickerCell.h"
 #import "TableViewGridCell.h"
+#import "TableViewSliderCell.h"
 #import "TableViewVariableHeightCell.h"
 #import "UIColorAdditions.h"
 
@@ -80,6 +81,9 @@
     case ActionTextCellType:
       cellID = @"ActionTextCellType";
       break;
+    case DatePickerCellType:
+      cellID = @"DatePickerCellType";
+      break;
     default:
       DDLogError(@"%@: Unexpected cell type %d", self, type);
       assert(0);
@@ -134,6 +138,11 @@
     case VariableHeightCellType:
     {
       cell = [TableViewVariableHeightCell cellWithReuseIdentifier:identifier];
+      break;
+    }
+    case DatePickerCellType:
+    {
+      cell = [TableViewDatePickerCell cellWithReuseIdentifier:identifier];
       break;
     }
     default:

@@ -40,7 +40,10 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a human-readable string representation of
-/// @a durationInSeconds.
+/// @a durationInSeconds (rounded up to the nearest whole second).
+///
+/// See the documentation of property @e humanReadableString for details about
+/// how the human-readable string looks like.
 // -----------------------------------------------------------------------------
 + (NSString*) humanReadableStringWithDurationInSeconds:(double)durationInSeconds
 {
@@ -50,14 +53,27 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a human-readable string representation of
-/// @a durationInSeconds. If @a withSecondsResolution is @e true the exact
-/// number of seconds is appended to the human-readable string if the string's
-/// resolution is not seconds. If @a withSecondsResolution is @e false the
-/// exact number of seconds is never appended.
+/// @a durationInSeconds (rounded up to the nearest whole second). The value
+/// of @a withSecondsResolution depends whether or not the exact number of
+/// seconds is appended to the human-readable string.
 ///
-/// The human-readable string's resolution is seconds if @a durationInSeconds
-/// is less than 60 seconds. If @a durationInSeconds is 60 seconds or more,
-/// the human-readable string has a resolution of minutes or hours.
+/// If @a withSecondsResolution is @e true the exact number of seconds is
+/// appended to the human-readable string, but only if the string's resolution
+/// is @b not seconds. The appended string looks like this: " (<s> seconds)".
+/// Examples:
+/// - "2:34 minutes (154 seconds)"
+/// - "2:34 hours (9240 seconds)"
+/// - "2:34 hours (9290 seconds)" (because @a durationInSeconds is not a whole
+///    number of minutes, the 50 surplus seconds become visible in the appended
+///    string)
+/// - "23 seconds" (because @a durationInSeconds is less than 60 seconds the
+///   human-readable string's resolution is seconds and no string is appended)
+///
+/// If @a withSecondsResolution is @e false the exact number of seconds is
+/// never appended.
+///
+/// See the documentation of property @e humanReadableString for details about
+/// how the human-readable string looks like.
 // -----------------------------------------------------------------------------
 + (NSString*) humanReadableStringWithDurationInSeconds:(double)durationInSeconds
                                  withSecondsResolution:(bool)withSecondsResolution;
@@ -143,10 +159,7 @@
 {
   NSString* (^stringWithDuration) (long, NSString*, NSString*) = ^ NSString* (long duration, NSString* singularUnitName, NSString* pluralUnitName)
   {
-    if (duration == 0)
-      return nil;
-    else
-      return [NSString stringWithFormat:@"%ld %@", duration, (duration == 1 ? singularUnitName : pluralUnitName)];
+    return [NSString stringWithFormat:@"%ld %@", duration, (duration == 1 ? singularUnitName : pluralUnitName)];
   };
 
   if (numberOfHours == 0)
@@ -176,6 +189,9 @@
   // This implementation uses NSNumberFormatter because of its capability of
   // inserting thousands separators when we use NSNumberFormatterDecimalStyle.
   NSNumberFormatter* formatter = [[[NSNumberFormatter alloc] init] autorelease];
+  // Setting the decimal style also sets the formatter's maximumFractionDigits
+  // property to value 3, but we don't care because we always get a whole
+  // number of seconds.
   formatter.numberStyle = NSNumberFormatterDecimalStyle;
   return [formatter stringFromNumber:[NSNumber numberWithDouble:durationInSeconds]];
 }

@@ -19,6 +19,7 @@
 #import "EditNodeDescriptionController.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/KeyboardHeightAdjustment.h"
+#import "../../ui/UiUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -183,13 +184,7 @@
   if (self.shortDescription)
     self.shortDescriptionTextField.text = self.shortDescription;
 
-  self.shortDescriptionTextField.borderStyle = UITextBorderStyleRoundedRect;
-  self.shortDescriptionTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
-  self.shortDescriptionTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-  self.shortDescriptionTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-  self.shortDescriptionTextField.enablesReturnKeyAutomatically = YES;
-  self.shortDescriptionTextField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-  self.shortDescriptionTextField.spellCheckingType = UITextSpellCheckingTypeNo;
+  [UiUtilities configureTextFieldForTextInput:self.shortDescriptionTextField];
 }
 
 #pragma mark - Setup long description text view

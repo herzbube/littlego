@@ -21,6 +21,10 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameInfoDates.h"
+#import "GoGameInfoRank.h"
+#import "GoGameInfoRound.h"
+#import "GoGameInfoRules.h"
 #import "GoGameResult.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
@@ -1376,6 +1380,89 @@
       return [[[GoGameResult alloc] initWithNoPlayerWin:GoGameResultTypeUnknownResult] autorelease];
     default:
       return [[[GoGameResult alloc] init] autorelease];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameInfoRules. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameInfoRules:(GoGameInfoRules*)gameInfoRules
+{
+  switch (gameInfoRules.gameInfoRule)
+  {
+    case GoGameInfoRuleNone:
+      return @"<Not set>";
+    case GoGameInfoRuleSgfString:
+      return gameInfoRules.sgfString;
+    default:
+      return [NSString stringWithGameInfoRule:gameInfoRules.gameInfoRule];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameInfoRound. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameInfoRound:(GoGameInfoRound*)gameInfoRound
+{
+  switch (gameInfoRound.dataType)
+  {
+    case GoGameInfoRoundDataTypeNone:
+      return @"<Not set>";
+    case GoGameInfoRoundDataTypeSgfString:
+      return gameInfoRound.sgfString;
+    case GoGameInfoRoundDataTypeStructuredData:
+      return [NSString stringWithFormat:@"Round type: %@\nRound number: %@", gameInfoRound.roundType, gameInfoRound.roundNumber];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameInfoRank. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameInfoRank:(GoGameInfoRank*)gameInfoRank
+{
+  switch (gameInfoRank.dataType)
+  {
+    case GoGameInfoRankDataTypeNone:
+      return @"<Not set>";
+    case GoGameInfoRankDataTypeSgfString:
+      return gameInfoRank.sgfString;
+    case GoGameInfoRankDataTypeStructuredData:
+    {
+      NSString* description = [NSString stringWithFormat:@"%ld%@", gameInfoRank.rank, [NSString abbreviationStringWithRankType:gameInfoRank.rankType]];
+      if (gameInfoRank.ratingType == GoGameInfoRatingTypeUnspecified)
+        return description;
+      NSString* ratingTypeString = [NSString stringWithRatingType:gameInfoRank.ratingType];
+      return [description stringByAppendingFormat:@" (%@)", [ratingTypeString lowercaseString]];
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameInfoDates. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameInfoDates:(GoGameInfoDates*)gameInfoDates
+{
+  switch (gameInfoDates.dataType)
+  {
+    case GoGameInfoDatesDataTypeNone:
+      return @"<Not set>";
+    case GoGameInfoDatesDataTypeSgfString:
+      return gameInfoDates.sgfString;
+    case GoGameInfoDatesDataTypeStructuredData:
+    {
+      NSMutableArray* gameInfoDatesAsStrings = [NSMutableArray array];
+      for (NSDateComponents* gameInfoDateComponents in gameInfoDates.dateComponents)
+      {
+        NSString* gameInfoDateAsString = [NSString stringWithGameInfoDateComponents:gameInfoDateComponents
+                                                                              style:NSDateFormatterMediumStyle];
+        [gameInfoDatesAsStrings addObject:gameInfoDateAsString];
+      }
+      return [gameInfoDatesAsStrings componentsJoinedByString:@", "];
+    }
   }
 }
 

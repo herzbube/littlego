@@ -40,7 +40,7 @@
   self.moveNumbersPercentage = 0.0;
   self.playSound = false;
   self.vibrate = false;
-  self.infoTypeLastSelected = ScoreInfoType;
+  self.gameInfoTypeLastSelected =   GameInfoTypeScore;
   self.computerAssistanceType = ComputerAssistanceTypeNone;
   self.boardViewPanningGestureIsInProgress = false;
   self.boardViewDisplaysAnimation = false;
@@ -58,13 +58,14 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:boardViewKey];
+
   self.markLastMove = [[dictionary valueForKey:markLastMoveKey] boolValue];
   self.displayCoordinates = [[dictionary valueForKey:displayCoordinatesKey] boolValue];
   self.displayPlayerInfluence = [[dictionary valueForKey:displayPlayerInfluenceKey] boolValue];
   self.moveNumbersPercentage = [[dictionary valueForKey:moveNumbersPercentageKey] floatValue];
   self.playSound = [[dictionary valueForKey:playSoundKey] boolValue];
   self.vibrate = [[dictionary valueForKey:vibrateKey] boolValue];
-  self.infoTypeLastSelected = [[dictionary valueForKey:infoTypeLastSelectedKey] intValue];
+  self.gameInfoTypeLastSelected = [[dictionary valueForKey:gameInfoTypeLastSelectedKey] intValue];
   self.computerAssistanceType = [[dictionary valueForKey:computerAssistanceTypeKey] intValue];
 }
 
@@ -89,8 +90,9 @@
   [dictionary setValue:[NSNumber numberWithFloat:self.moveNumbersPercentage] forKey:moveNumbersPercentageKey];
   [dictionary setValue:[NSNumber numberWithBool:self.playSound] forKey:playSoundKey];
   [dictionary setValue:[NSNumber numberWithBool:self.vibrate] forKey:vibrateKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.infoTypeLastSelected] forKey:infoTypeLastSelectedKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.gameInfoTypeLastSelected] forKey:gameInfoTypeLastSelectedKey];
   [dictionary setValue:[NSNumber numberWithInt:self.computerAssistanceType] forKey:computerAssistanceTypeKey];
+
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
   [userDefaults setObject:dictionary forKey:boardViewKey];

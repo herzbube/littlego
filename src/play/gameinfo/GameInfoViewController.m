@@ -19,6 +19,7 @@
 #import "GameInfoViewController.h"
 #import "delegate/GameInfoViewBoardTabDelegate.h"
 #import "delegate/GameInfoViewGameTabDelegate.h"
+#import "delegate/GameInfoViewInfoTabDelegate.h"
 #import "delegate/GameInfoViewScoreTabDelegate.h"
 #import "../model/BoardViewModel.h"
 #import "../../main/ModelProvider.h"
@@ -102,9 +103,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationBar
 {
-  UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board"]] autorelease];
-  segmentedControl.selectedSegmentIndex = self.boardViewModel.infoTypeLastSelected;
-  [segmentedControl addTarget:self action:@selector(infoTypeChanged:) forControlEvents:UIControlEventValueChanged];
+  UISegmentedControl* segmentedControl = [[[UISegmentedControl alloc] initWithItems:@[@"Score", @"Game", @"Board", @"Info"]] autorelease];
+  segmentedControl.selectedSegmentIndex = self.boardViewModel.gameInfoTypeLastSelected;
+  [segmentedControl addTarget:self action:@selector(gameInfoTypeChanged:) forControlEvents:UIControlEventValueChanged];
   self.navigationItem.titleView = segmentedControl;
 }
 
@@ -140,16 +141,16 @@
 #pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Info Type" segmented control. Updates
-/// the main table view to display information for the selected type.
+/// @brief Reacts to a tap gesture on the "Game Info Type" segmented control.
+/// Updates the main table view to display information for the selected type.
 // -----------------------------------------------------------------------------
-- (void) infoTypeChanged:(id)sender
+- (void) gameInfoTypeChanged:(id)sender
 {
   UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
   // Cast is required because NSInteger and int (the type underlying enums)
   // differ in size in 64-bit. Cast is safe because the segments are designed
   // to match the enumeration.
-  self.boardViewModel.infoTypeLastSelected = (enum InfoType)segmentedControl.selectedSegmentIndex;
+  self.boardViewModel.gameInfoTypeLastSelected = (enum GameInfoType)segmentedControl.selectedSegmentIndex;
 
   [self updateGameInfoViewTableViewDelegate];
   [self.tableView reloadData];
@@ -179,9 +180,9 @@
 // -----------------------------------------------------------------------------
 - (void) updateGameInfoViewTableViewDelegate
 {
-  switch (self.boardViewModel.infoTypeLastSelected)
+  switch (self.boardViewModel.gameInfoTypeLastSelected)
   {
-    case ScoreInfoType:
+    case GameInfoTypeScore:
     {
       GameInfoViewScoreTabDelegate* delegate = [[[GameInfoViewScoreTabDelegate alloc] initWithPresentingViewController:self
                                                                                                              tableView:self.tableView] autorelease];
@@ -190,7 +191,7 @@
       self.gameInfoViewTableViewDelegate = delegate;
       break;
     }
-    case GameInfoType:
+    case GameInfoTypeGame:
     {
       GameInfoViewGameTabDelegate* delegate = [[[GameInfoViewGameTabDelegate alloc] initWithPresentingViewController:self
                                                                                                            tableView:self.tableView] autorelease];
@@ -199,9 +200,18 @@
       self.gameInfoViewTableViewDelegate = delegate;
       break;
     }
-    case BoardInfoType:
+    case GameInfoTypeBoard:
     {
       GameInfoViewBoardTabDelegate* delegate = [[[GameInfoViewBoardTabDelegate alloc] init] autorelease];
+      self.tableView.delegate = delegate;
+      self.tableView.dataSource = delegate;
+      self.gameInfoViewTableViewDelegate = delegate;
+      break;
+    }
+    case GameInfoTypeInfo:
+    {
+      GameInfoViewInfoTabDelegate* delegate = [[[GameInfoViewInfoTabDelegate alloc] initWithPresentingViewController:self
+                                                                                                           tableView:self.tableView] autorelease];
       self.tableView.delegate = delegate;
       self.tableView.dataSource = delegate;
       self.gameInfoViewTableViewDelegate = delegate;

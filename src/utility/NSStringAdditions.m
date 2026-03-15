@@ -106,7 +106,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a nicely formatted string for the fraction value @a value.
+/// @brief Returns a nicely formatted string for the fraction value @a value,
+/// using a maximum precision of 6 decimal digits. The returned string does not
+/// use thousands separators, which makes this method unsuitable for
+/// representing large numbers. This method is designed to provide a nice
+/// representation of komi and score values.
 ///
 /// The fractional part of @a value is expected to be one of the following:
 /// 0.0, 0.5, 0.25, 0.75, 0.2, 0.4, 0.6, 0.8, 0.125, 0.375, 0.625, 0.875,
@@ -115,14 +119,24 @@
 /// Generally, if the fractional part is 0.0, the string representation returned
 /// by this method omits the fraction. If the fractional part is among those
 /// recognized by this method, it is represented using the corresponding unicode
-/// fraction character.
+/// fraction character. If the fractional part is not among those recognized by
+/// this method, it is rendered with a precision of up to 6 decimal digits
+/// (trailing zero digits are removed).
 ///
-/// Examples: A value of 6.5 results in the string representation "6½". A value
-/// of 6.0 results in "6".
+/// Examples:
+/// - A value of 6.5 results in the string representation "6½".
+/// - A value of 6.0 results in "6".
+/// - A value of 6.456 results in "6.456". If the maximum precision for double
+///   values (std::numeric_limits<double>::max_digits10) were used for string
+///   formatting, this would result in "6.4560000000000004". Because the
+///   formatting precision is only 6 decimal digits, the formatting results in
+///   "6.456000" from which the trailing zero digits are then removed.
 ///
-/// A special case are values whose integral part is 0 (e.g. 0.5): These values
-/// are represented with the integral part omitted (e.g. 0.5 becomes "½", @b not
-/// "0½").
+/// A special case are values whose integral part is 0 and whose fractional
+/// part is recognized by this method (e.g. 0.5): These values are represented
+/// with the integral part omitted (e.g. 0.5 becomes "½", @b not "0½"). If the
+/// fractional part is not recognized by this method, the usual "0." prefix
+/// is used to represent the zero integral part.
 // -----------------------------------------------------------------------------
 + (NSString*) stringWithFractionValue:(double)value
 {
@@ -134,6 +148,7 @@
   double valueIntegerPart;
   double valueFractionalPart = modf(value, &valueIntegerPart);
   NSString* stringFractionalPart;
+  bool fractionIsRecognized = true;
   if (0.0 == valueFractionalPart)
     return [NSString stringWithFormat:@"%.0f", valueIntegerPart];
   else if (0.125 == valueFractionalPart)
@@ -167,12 +182,29 @@
   else if (fiveSixths == valueFractionalPart)
     stringFractionalPart = @"⅚";
   else
-    return [NSString stringWithFormat:@"%f", value];  // got an unexpected fraction
+  {
+    fractionIsRecognized = false;
+    // Perform string formatting with precision 6. Precision 6 is used because
+    // that is also the default precision that the format specifier "%f" uses.
+    stringFractionalPart = [NSString stringWithFormat:@"%.6f", valueFractionalPart];
+    // Remove the zero digits at the end. Also remove the "0." prefix - this is
+    // added back below.
+    NSCharacterSet* characterSet = [NSCharacterSet characterSetWithCharactersInString:@"0."];
+    stringFractionalPart = [stringFractionalPart stringByTrimmingCharactersInSet:characterSet];
+  }
 
   if (0 == valueIntegerPart)
-    return stringFractionalPart;
+  {
+    return (fractionIsRecognized
+            ? stringFractionalPart
+            : [@"0." stringByAppendingString:stringFractionalPart]);
+  }
   else
-    return [NSString stringWithFormat:@"%.0f%@", valueIntegerPart, stringFractionalPart];
+  {
+    return (fractionIsRecognized
+            ? [NSString stringWithFormat:@"%.0f%@", valueIntegerPart, stringFractionalPart]
+            : [NSString stringWithFormat:@"%.0f.%@", valueIntegerPart, stringFractionalPart]);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -449,9 +481,9 @@
   switch (scoreSummary)
   {
     case GoScoreSummaryBlackWins:
-      return [NSString stringWithFormat:@"B+%.1f", scoreValue];
+      return [@"B+" stringByAppendingString:[NSString stringWithFractionValue:scoreValue]];
     case GoScoreSummaryWhiteWins:
-      return [NSString stringWithFormat:@"W+%.1f", scoreValue];
+      return [@"W+" stringByAppendingString:[NSString stringWithFractionValue:scoreValue]];
     case GoScoreSummaryTie:
       return @"Tie";
     case GoScoreSummaryNone:
@@ -469,9 +501,9 @@
   switch (scoreSummary)
   {
     case GoScoreSummaryBlackWins:
-      return [NSString stringWithFormat:@"Black wins by %.1f", scoreValue];
+      return [@"Black wins by " stringByAppendingString:[NSString stringWithFractionValue:scoreValue]];
     case GoScoreSummaryWhiteWins:
-      return [NSString stringWithFormat:@"White wins by %.1f", scoreValue];
+      return [@"White wins by " stringByAppendingString:[NSString stringWithFractionValue:scoreValue]];
     case GoScoreSummaryTie:
       return @"Game is a tie";
     case GoScoreSummaryNone:
@@ -639,14 +671,31 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the score value @a score represented as string.
+/// @brief Returns @a doubleValue represented as string, using a maximum
+/// precision of 6 decimal digits. This method is designed to provide a string
+/// that looks like the user would probably enter it into an input field, thus
+/// making it suitable for providing a default value for such an input field.
+///
+/// The string returned by this method uses the "x.y" notation, where both
+/// "x" and "y" consist of a series of digits 0-9. Notes:
+/// - If "x" is 0, then the string returned by this method prefixes the
+///   fractional part with "0.".
+/// - If "y" is 0 then the string returned by this method omits the fractional
+///   part.
+/// - The returned string notably does not use thousands separators, and it
+///   does not contain any "beautified" fractional values such as provided by
+///   stringWithFractionValue:().
 // -----------------------------------------------------------------------------
-+ (NSString*) stringWithScore:(double)score
++ (NSString*) stringWithDouble:(double)doubleValue
 {
   NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
   numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+  // The default after setting NSNumberFormatterDecimalStyle is 3. We prefer
+  // to use the default precision of 6 that is also used by the "%f" format
+  // specifier.
+  numberFormatter.maximumFractionDigits = 6;
   numberFormatter.usesGroupingSeparator = NO;
-  return [numberFormatter stringFromNumber:[NSNumber numberWithDouble:score]];
+  return [numberFormatter stringFromNumber:[NSNumber numberWithDouble:doubleValue]];
 }
 
 // -----------------------------------------------------------------------------
@@ -699,6 +748,179 @@
 
   *doubleValue = [number doubleValue];
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a gameInfoRule.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithGameInfoRule:(enum GoGameInfoRule)gameInfoRule
+{
+  switch (gameInfoRule)
+  {
+    case GoGameInfoRuleNone:
+      return @"No game rules";
+    case GoGameInfoRuleSgfString:
+      return @"Custom rule set name";
+    case GoGameInfoRuleAGA:
+      return @"AGA (American Go Association) rules";
+    case GoGameInfoRuleIng:
+      return @"Ing rules";
+    case GoGameInfoRuleJapanese:
+      return @"Nihon-Kiin rule set";
+    case GoGameInfoRuleNewZealand:
+      return @"New Zealand rules";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an abbreviation string that describes @a rankType.
+// -----------------------------------------------------------------------------
++ (NSString*) abbreviationStringWithRankType:(enum GoGameInfoRankType)rankType
+{
+  switch (rankType)
+  {
+    case GoGameInfoRankTypeKyu:
+      return @"k";
+    case GoGameInfoRankTypeAmateurDan:
+      return @"d";
+    case GoGameInfoRankTypeProfessionalDan:
+      return @"p";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a rankType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithRankType:(enum GoGameInfoRankType)rankType
+{
+  switch (rankType)
+  {
+    case GoGameInfoRankTypeKyu:
+      return @"Kyu";
+    case GoGameInfoRankTypeAmateurDan:
+      return @"Amateur Dan";
+    case GoGameInfoRankTypeProfessionalDan:
+      return @"Professional Dan";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a ratingType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithRatingType:(enum GoGameInfoRatingType)ratingType
+{
+  switch (ratingType)
+  {
+    case GoGameInfoRatingTypeUncertain:
+      return @"Uncertain";
+    case GoGameInfoRatingTypeEstablished:
+      return @"Established";
+    case GoGameInfoRatingTypeUnspecified:
+      return @"Unspecified";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an NSDateFormatter object that is set up to use the
+/// Gregorian calendar and the current locale. The latter enables the use of
+/// NSDateFormatter's setLocalizedDateFormatFromTemplate:() method.
+// -----------------------------------------------------------------------------
++ (NSDateFormatter*) dateFormatterWithGregorianCalendarAndCurrentLocale
+{
+  static NSCalendar* calendar = nil;
+  if (! calendar)
+    calendar = [[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] retain];
+
+  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+  dateFormatter.calendar = calendar;
+
+  // Setting this is a precondition for setLocalizedDateFormatFromTemplate:(),
+  // but we also want to use the user's locale when we set the dateStyle
+  // property. Because the app's UI is otherwise not localized, this will cause
+  // "interesting" combinations of localized/non-localized data.
+  dateFormatter.locale = [NSLocale currentLocale];
+
+  return dateFormatter;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a localized string that describes @a dateComponents.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithGameInfoDateComponents:(NSDateComponents*)gameInfoDateComponents style:(NSDateFormatterStyle)style
+{
+  NSDateFormatter* dateFormatter = [NSString dateFormatterWithGregorianCalendarAndCurrentLocale];
+
+  NSDateComponents* dateComponentsToUseForFormatting;
+
+  if (gameInfoDateComponents.day != 0)
+  {
+    // All components are present
+    // => use the input object as-is
+    // => use the supplied style as-is
+    dateComponentsToUseForFormatting = gameInfoDateComponents;
+    dateFormatter.dateStyle = style;
+  }
+  else
+  {
+    // Some components are missing
+    // => copy the input object and set the missing parts to 1 so that a valid
+    //    date can be formed from the components
+    // => use a custom date format instead of the supplied style so that the
+    //    resulting string only represents those components that are present
+    dateComponentsToUseForFormatting = [[gameInfoDateComponents copy] autorelease];
+    NSString* dateFormat;
+
+    if (gameInfoDateComponents.month != 0)
+    {
+      dateComponentsToUseForFormatting.day = 1;
+
+      switch (style)
+      {
+        case NSDateFormatterShortStyle:
+          dateFormat = @"MM yyyy";
+          break;
+        case NSDateFormatterMediumStyle:
+        case NSDateFormatterNoStyle:
+          dateFormat = @"MMM yyyy";
+          break;
+        case NSDateFormatterLongStyle:
+        case NSDateFormatterFullStyle:
+          dateFormat = @"MMMM yyyy";
+          break;
+      }
+    }
+    else
+    {
+      dateComponentsToUseForFormatting.day = 1;
+      dateComponentsToUseForFormatting.month = 1;
+
+      dateFormat = @"yyyy";
+    }
+
+    [dateFormatter setLocalizedDateFormatFromTemplate:dateFormat];
+  }
+
+  NSDate* gameInfoDate = [dateFormatter.calendar dateFromComponents:dateComponentsToUseForFormatting];
+  return [dateFormatter stringFromDate:gameInfoDate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a localized string that describes @a month. @a month must be
+/// a value between 1 and 12.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithMonth:(int)month
+{
+  NSDateFormatter* dateFormatter = [NSString dateFormatterWithGregorianCalendarAndCurrentLocale];
+
+  NSDateComponents* dateComponents = [[[NSDateComponents alloc] init] autorelease];
+  dateComponents.day = 1;
+  dateComponents.month = month;
+  dateComponents.year = 2026;
+
+  NSDate* date = [dateFormatter.calendar dateFromComponents:dateComponents];
+
+  [dateFormatter setLocalizedDateFormatFromTemplate:@"MMMM"];
+  return [dateFormatter stringFromDate:date];
 }
 
 @end

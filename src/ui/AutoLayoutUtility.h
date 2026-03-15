@@ -104,6 +104,8 @@
                                    attribute:(NSLayoutAttribute)attribute
                                 withConstant:(CGFloat)constant
                             constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) setZeroHeightConstraint:(UIView*)view
+                               constraintHolder:(UIView*)constraintHolder;
 + (NSArray*) installVisualFormats:(NSArray*)visualFormats
                         withViews:(NSDictionary*)viewsDictionary
                            inView:(UIView*)view;

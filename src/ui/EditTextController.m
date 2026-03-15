@@ -19,6 +19,7 @@
 #import "EditTextController.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/KeyboardHeightAdjustment.h"
+#import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -30,6 +31,7 @@
 @property(nonatomic, retain) UITextField* textField;
 @property(nonatomic, retain) UITextView* textView;
 @property(nonatomic, retain) UILabel* validationErrorLabel;
+@property(nonatomic, retain) UILabel* footerLabel;
 @property(nonatomic, assign) UIResponder* firstResponderWhenViewWillAppear;
 @property(nonatomic, assign) CGFloat validTextBorderWidth;
 @property(nonatomic, retain) UIColor* validTextBorderColor;
@@ -75,6 +77,7 @@
   self.textField = nil;
   self.textView = nil;
   self.validationErrorLabel = nil;
+  self.footerLabel = nil;
   self.firstResponderWhenViewWillAppear = nil;
   self.context = nil;
   self.editTextControllerStyle = EditTextControllerStyleTextField;
@@ -82,6 +85,7 @@
   self.delegate = nil;
   self.text = nil;
   self.placeholder = nil;
+  self.footerText = nil;
   self.acceptEmptyText = false;
   self.textHasChanged = false;
   self.validTextBorderWidth = 0.0f;
@@ -103,15 +107,19 @@
     [self endObservingKeyboardWithViewToAdjustHeight:self.validationErrorLabel
                                        referenceView:self.validationErrorLabel.superview];
   }
+
   self.contentView = nil;
   self.textField = nil;
   self.textView = nil;
   self.validationErrorLabel = nil;
+  self.footerLabel = nil;
   self.firstResponderWhenViewWillAppear = nil;
   self.context = nil;
   self.delegate = nil;
   self.text = nil;
   self.placeholder = nil;
+  self.footerText = nil;
+
   [super dealloc];
 }
 
@@ -133,6 +141,12 @@
   [self.contentView addSubview:self.validationErrorLabel];
   self.validationErrorLabel.textColor = [UIColor redColor];
   self.validationErrorLabel.numberOfLines = 0;
+
+  self.footerLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  [self.contentView addSubview:self.footerLabel];
+  self.footerLabel.numberOfLines = 0;
+  [UiUtilities applyTableViewHeaderFooterLabelStyle:self.footerLabel];
+  self.footerLabel.text = self.footerText;
 
   // A background color is required to support UIModalPresentationAutomatic
   self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
@@ -200,14 +214,17 @@
 {
   self.textField.translatesAutoresizingMaskIntoConstraints = NO;
   self.validationErrorLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.footerLabel.translatesAutoresizingMaskIntoConstraints = NO;
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.textField, @"textField",
                                    self.validationErrorLabel, @"validationErrorLabel",
+                                   self.footerLabel, @"footerLabel",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-[textField]-|",
                             @"H:|-[validationErrorLabel]-|",
-                            @"V:|-[textField]-[validationErrorLabel]",
+                            @"H:|-[footerLabel]-|",
+                            @"V:|-[textField]-[validationErrorLabel]-[footerLabel]",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
@@ -219,13 +236,7 @@
 // -----------------------------------------------------------------------------
 - (void) configureTextField
 {
-  self.textField.borderStyle = UITextBorderStyleRoundedRect;
-  self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-  self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-  self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-  self.textField.enablesReturnKeyAutomatically = YES;
-  self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-  self.textField.spellCheckingType = UITextSpellCheckingTypeNo;
+  [UiUtilities configureTextFieldForTextInput:self.textField];
 
   self.textField.delegate = self;
   self.textField.text = self.text;
@@ -256,13 +267,16 @@
 
   self.textView.translatesAutoresizingMaskIntoConstraints = NO;
   self.validationErrorLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.footerLabel.translatesAutoresizingMaskIntoConstraints = NO;
   viewsDictionary[@"textView"] = self.textView;
   viewsDictionary[@"validationErrorLabel"] = self.validationErrorLabel;
+  viewsDictionary[@"footerLabel"] = self.footerLabel;
   [visualFormats addObject:@"H:|-[textView]-|"];
   [visualFormats addObject:@"H:|-[validationErrorLabel]-|"];
+  [visualFormats addObject:@"H:|-[footerLabel]-|"];
   // Important: Don't attach the bottom of validationErrorLabel! This is
   // managed by KeyboardHeightAdjustment.
-  [visualFormats addObject:@"V:|-[textView]-[validationErrorLabel]"];
+  [visualFormats addObject:@"V:|-[textView]-[validationErrorLabel]-[footerLabel]"];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
                                    inView:self.contentView];
@@ -274,14 +288,14 @@
   {
     [viewsDictionary removeAllObjects];
     [visualFormats removeAllObjects];
-    viewsDictionary[@"validationErrorLabel"] = self.validationErrorLabel;
-    [visualFormats addObject:@"V:[validationErrorLabel]-|"];
-    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.validationErrorLabel.superview];
+    viewsDictionary[@"footerLabel"] = self.footerLabel;
+    [visualFormats addObject:@"V:[footerLabel]-|"];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.footerLabel.superview];
   }
   else
   {
-    [self beginObservingKeyboardWithViewToAdjustHeight:self.validationErrorLabel
-                                         referenceView:self.validationErrorLabel.superview];
+    [self beginObservingKeyboardWithViewToAdjustHeight:self.footerLabel
+                                         referenceView:self.footerLabel.superview];
   }
 }
 

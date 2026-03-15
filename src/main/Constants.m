@@ -365,7 +365,7 @@ NSString* displayPlayerInfluenceKey = @"DisplayPlayerInfluence";
 NSString* moveNumbersPercentageKey = @"MoveNumbersPercentage";
 NSString* playSoundKey = @"PlaySound";
 NSString* vibrateKey = @"Vibrate";
-NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
+NSString* gameInfoTypeLastSelectedKey = @"GameInfoTypeLastSelected";
 NSString* computerAssistanceTypeKey = @"ComputerAssistanceType";
 // New game settings
 NSString* newGameKey = @"NewGame";
@@ -623,7 +623,7 @@ NSString* goNodeMarkupConnectionsKey = @"Connections";
 NSString* goNodeMarkupLabelsKey = @"Labels";
 NSString* goNodeMarkupDimmingsKey = @"Dimmings";
 // GoNodeTimeData keys
-NSString* goNodeTimeDataIsTimeDataForBlackPlayerKey = @"IsTimeDataForBlackPlayerKey";
+NSString* goNodeTimeDataIsTimeDataForBlackPlayerKey = @"IsTimeDataForBlackPlayer";
 NSString* goNodeTimeDataIsRemainingTimeAbsoluteTimeKey = @"IsRemainingTimeAbsoluteTime";
 NSString* goNodeTimeDataRemainingTimeInSecondsKey = @"RemainingTimeInSeconds";
 NSString* goNodeTimeDataRemainingNumberOfMovesKey = @"RemainingNumberOfMoves";
@@ -699,7 +699,25 @@ NSString* goTimeSystemExtraTimeDurationInSecondsKey = @"ExtraTimeDurationInSecon
 NSString* goTimeSettingsAbsoluteTimeSystemKey = @"AbsoluteTimeSystem";
 NSString* goTimeSettingsPeriodBasedTimeSystemKey = @"PeriodBasedTimeSystem";
 // GoGameInfo keys
+NSString* goGameInfoRecorderNameKey = @"RecorderName";
+NSString* goGameInfoSourceNameKey = @"SourceName";
+NSString* goGameInfoAnnotationAuthorKey = @"AnnotationAuthor";
+NSString* goGameInfoCopyrightInformationKey = @"CopyrightInformation";
+NSString* goGameInfoGameNameKey = @"GameName";
+NSString* goGameInfoGameInformationKey = @"GameInformation";
+NSString* goGameInfoGameInfoDatesKey = @"GameInfoDates";
+NSString* goGameInfoGameInfoRulesKey = @"GameInfoRules";
 NSString* goGameInfoGameResultKey = @"GameResult";
+NSString* goGameInfoOpeningInformationKey = @"OpeningInformation";
+NSString* goGameInfoBlackPlayerNameKey = @"BlackPlayerName";
+NSString* goGameInfoBlackPlayerRankKey = @"BlackPlayerRank";
+NSString* goGameInfoBlackPlayerTeamNameKey = @"BlackPlayerTeamName";
+NSString* goGameInfoWhitePlayerNameKey = @"WhitePlayerName";
+NSString* goGameInfoWhitePlayerRankKey = @"WhitePlayerRank";
+NSString* goGameInfoWhitePlayerTeamNameKey = @"WhitePlayerTeamName";
+NSString* goGameInfoGameLocationKey = @"GameLocation";
+NSString* goGameInfoEventNameKey = @"EventName";
+NSString* goGameInfoGameInfoRoundKey = @"GameInfoRound";
 // GoGameResult keys
 NSString* goGameResultDataTypeKey = @"DataType";
 NSString* goGameResultSgfStringKey = @"SgfString";
@@ -707,6 +725,24 @@ NSString* goGameResultGameResultTypeKey = @"GameResultType";
 NSString* goGameResultWinTypeKey = @"WinType";
 NSString* goGameResultScoreKey = @"Score";
 NSString* goGameResultUpdatePolicyKey = @"UpdatePolicy";
+// GoGameInfoRules keys
+NSString* goGameInfoRulesGameInfoRuleKey = @"GameInfoRule";
+NSString* goGameInfoRulesSgfStringKey = @"SgfString";
+// GoGameInfoRound keys
+NSString* goGameInfoRoundDataTypeKey = @"DataType";
+NSString* goGameInfoRoundSgfStringKey = @"SgfString";
+NSString* goGameInfoRoundRoundTypeKey = @"RoundType";
+NSString* goGameInfoRoundRoundNumberKey = @"RoundNumber";
+// GoGameInfoRank keys
+NSString* goGameInfoRankDataTypeKey = @"DataType";
+NSString* goGameInfoRankSgfStringKey = @"SgfString";
+NSString* goGameInfoRankRankTypeKey = @"RankType";
+NSString* goGameInfoRankRankKey = @"Rank";
+NSString* goGameInfoRankRatingTypeKey = @"RatingType";
+// GoGameInfoDates keys
+NSString* goGameInfoDatesDataTypeKey = @"DataType";
+NSString* goGameInfoDatesSgfStringKey = @"SgfString";
+NSString* goGameInfoDatesDateComponentsKey = @"DateComponents";
 
 // Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";

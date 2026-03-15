@@ -115,6 +115,7 @@ enum EditTextControllerStyle
 /// text.
 @property(nonatomic, assign) enum EditTextControllerStyle editTextControllerStyle;
 /// @brief The keyboard type that EditTextController uses for editing text.
+/// The default value is UIKeyboardTypeDefault.
 @property(nonatomic, assign) UIKeyboardType keyboardType;
 /// @brief This is the delegate that will be informed when the user has
 /// finished editing the text.
@@ -127,11 +128,25 @@ enum EditTextControllerStyle
 /// @brief Placeholder string that should be displayed instead of an empty
 /// text.
 @property(nonatomic, retain) NSString* placeholder;
-/// @brief True if EditTextController should accept an empty text as valid
+/// @brief The string to be displayed below the UITextField or UITextViewas.
+/// Is @e nil if no footer should be displayed.
+///
+/// Setting this property after the controller has displayed its view has no
+/// effect.
+///
+/// The default value is @e nil.
+@property(nonatomic, retain) NSString* footerText;
+/// @brief @e true if EditTextController should accept an empty text as valid
 /// input.
 ///
-/// If this property is false and the user clears the entire text, the user
+/// If this property is @e false and the user clears the entire text, the user
 /// @e must cancel editing to leave the view.
+///
+/// This property is ignored if a delegate is set. In that case the delegate's
+/// implementation of controller:isTextValid:validationErrorMessage:() is
+/// queried instead.
+///
+/// The default value is @e false.
 @property(nonatomic, assign) bool acceptEmptyText;
 /// @brief True if the user has actually made changes to the text. False if the
 /// user has cancelled editing, or if there were no changes.

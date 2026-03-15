@@ -36,7 +36,7 @@
 @property(nonatomic, assign) bool vibrate;
 /// @brief Type of information that was selected when the Info view was
 /// displayed the last time.
-@property(nonatomic, assign) enum InfoType infoTypeLastSelected;
+@property(nonatomic, assign) enum GameInfoType gameInfoTypeLastSelected;
 @property(nonatomic, assign) enum ComputerAssistanceType computerAssistanceType;
 /// @brief Is true if a panning gesture is currently in progress on the board
 /// view.

@@ -212,12 +212,14 @@ enum UIAreaPlayMode
   UIAreaPlayModeDefault = UIAreaPlayModePlay,
 };
 
-/// @brief Enumerates the types of information that the Info view can display.
-enum InfoType
+/// @brief Enumerates the types of information that the Game Info view can
+/// display.
+enum GameInfoType
 {
-  ScoreInfoType,
-  GameInfoType,
-  BoardInfoType
+  GameInfoTypeScore,
+  GameInfoTypeGame,
+  GameInfoTypeBoard,
+  GameInfoTypeInfo,
 };
 
 /// @brief Enumerates the pages that the Annotation view can display.
@@ -1290,6 +1292,135 @@ enum GoGameResultUpdatePolicy
   /// @brief The app is not allowed to automatically update the GoGameResult
   /// object's data. The data may only be manually updated by the user.
   GoGameResultUpdatePolicyManual
+};
+
+/// @brief Enumerates the possible game rules that can be stored in the game
+/// infos. Most of the enumeration values represent rules listed in the SGF
+/// specification for the "RU" property.
+///
+/// @ingroup go
+enum GoGameInfoRule
+{
+  /// @brief Indicates that no game rules are stored in the game infos.
+  GoGameInfoRuleNone,
+  /// @brief A custom string describing rules that are not listed in the
+  /// SGF specification.
+  GoGameInfoRuleSgfString,
+  /// @brief The rules of the American Go Association (AGA).
+  GoGameInfoRuleAGA,
+  /// @brief The Ing rules.
+  ///
+  /// The SGF standard uses the description "The Ing rules of Goe". The word
+  /// "Goe" is an alternative spelling of Go proposed by Ing Chang-Ki, the
+  /// author of the ruleset, to differentiate it from the English verb
+  /// "to go".
+  GoGameInfoRuleIng,
+  /// @brief The Nihon-Kiin rule set.
+  GoGameInfoRuleJapanese,
+  /// @brief The New Zealand rules.
+  GoGameInfoRuleNewZealand,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRuleFirst = GoGameInfoRuleNone,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRuleLast = GoGameInfoRuleNewZealand,
+};
+
+/// @brief Enumerates the kinds of data that a GoGameInfoRound object can hold.
+///
+/// @ingroup go
+enum GoGameInfoRoundDataType
+{
+  /// @brief Indicates that no round information is stored in the game infos.
+  GoGameInfoRoundDataTypeNone,
+  /// @brief The round information is a custom string.
+  GoGameInfoRoundDataTypeSgfString,
+  /// @brief The round information consists of a round type and a round number.
+  GoGameInfoRoundDataTypeStructuredData,
+};
+
+/// @brief Enumerates the kinds of data that a GoGameInfoRank object can hold.
+///
+/// @ingroup go
+enum GoGameInfoRankDataType
+{
+  /// @brief Indicates that no rank information is stored in the GoGameInfoRank
+  /// object.
+  GoGameInfoRankDataTypeNone,
+  /// @brief The rank information is a custom string.
+  GoGameInfoRankDataTypeSgfString,
+  /// @brief The rank information consists of structured data (e.g. rank type,
+  /// rank number, etc.).
+  GoGameInfoRankDataTypeStructuredData,
+};
+
+/// @brief Enumerates the rank types in the traditional Go ranking system.
+///
+/// @ingroup go
+///
+/// The values of this enumeration must be kept in sync with the values of the
+/// enumeration SGFCGoPlayerRankType (order is not relevant) because
+/// SgfUtilities must be able to convert between the two enumerations.
+enum GoGameInfoRankType
+{
+  /// @brief The rank type is Kyu. A Kyu rank is a student rank. The generally
+  /// accepted Kyu ranks range from 30 (lowest) to 1 (highest). The notation
+  /// is "30k", "29k", etc..
+  GoGameInfoRankTypeKyu,
+
+  /// @brief The rank type is amateur Dan. An amateur Dan rank is a master
+  /// rank. The generally accepted amateur Dan ranks range from 1 (lowest) to
+  /// 7 (highest). The notation is "1d", "2d", etc..
+  GoGameInfoRankTypeAmateurDan,
+
+  /// @brief The rank type is professional Dan. A professional Dan rank is a
+  /// master rank. The generally accepted professional Dan ranks range from
+  /// 1 (lowest) to 9 (highest). The notation is "1p", "2p", etc..
+  GoGameInfoRankTypeProfessionalDan,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRankTypeFirst = GoGameInfoRankTypeKyu,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRankTypeLast = GoGameInfoRankTypeProfessionalDan,
+};
+
+/// @brief Enumerates the rating types that can apply to a Go player's rank.
+///
+/// @ingroup go
+///
+/// The values of this enumeration must be kept in sync with the values of the
+/// enumeration SGFCGoPlayerRatingType (order is not relevant) because
+/// SgfUtilities must be able to convert between the two enumerations.
+enum GoGameInfoRatingType
+{
+  /// @brief The rank of the Go player is uncertain.
+  GoGameInfoRatingTypeUncertain,
+  /// @brief The rank of the Go player is established.
+  GoGameInfoRatingTypeEstablished,
+  /// @brief The rating type that applies to the Go player's rank is
+  /// not specified, i.e. it is not known whether the rank is uncertain
+  /// or established.
+  GoGameInfoRatingTypeUnspecified,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRatingTypeFirst = GoGameInfoRatingTypeUncertain,
+  /// @brief Pseudo enum value, used to iterate over the other enum values.
+  GoGameInfoRatingTypeLast = GoGameInfoRatingTypeUnspecified,
+};
+
+/// @brief Enumerates the kinds of data that a GoGameInfoDates object can hold.
+///
+/// @ingroup go
+enum GoGameInfoDatesDataType
+{
+  /// @brief Indicates that no date information is stored in the GoGameInfoDates
+  /// object.
+  GoGameInfoDatesDataTypeNone,
+  /// @brief The date information is a custom string that was read from SGF
+  /// data. The string does not conform to the format mandated by the FF4 SGF
+  /// specification and can therefore not be parsed and transformed into
+  /// structured data.
+  GoGameInfoDatesDataTypeSgfString,
+  /// @brief The date information consists of structured data, i.e. one or more
+  /// NSDateComponents objects.
+  GoGameInfoDatesDataTypeStructuredData,
 };
 
 extern const enum GoGameType gDefaultGameType;
@@ -2588,7 +2719,8 @@ enum TableViewCellType
   ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
   DeleteTextCellType,     ///< @brief Cell that displays a "delete" text. Style and color are similar to the delete cell in Apple's address book or calendar apps.
   VariableHeightCellType, ///< @brief Similar to Value1CellType, but the text label uses a variable number of lines.
-  ActionTextCellType      ///< @brief Cell that displays a text that triggers an action. Style is similar to DeleteTextCellType, but not alarming.
+  ActionTextCellType,     ///< @brief Cell that displays a text that triggers an action. Style is similar to DeleteTextCellType, but not alarming.
+  DatePickerCellType,     ///< @brief Similar to Value1CellType, but with a date picker that allows to adjust the value.
 };
 
 /// @brief Enumerates all possible tags for subviews in custom table view cells
@@ -2706,7 +2838,7 @@ extern NSString* displayPlayerInfluenceKey;
 extern NSString* moveNumbersPercentageKey;
 extern NSString* playSoundKey;
 extern NSString* vibrateKey;
-extern NSString* infoTypeLastSelectedKey;
+extern NSString* gameInfoTypeLastSelectedKey;
 extern NSString* computerAssistanceTypeKey;
 // New game settings
 extern NSString* newGameKey;
@@ -3045,7 +3177,25 @@ extern NSString* goTimeSystemExtraTimeDurationInSecondsKey;
 extern NSString* goTimeSettingsAbsoluteTimeSystemKey;
 extern NSString* goTimeSettingsPeriodBasedTimeSystemKey;
 // GoGameInfo keys
+extern NSString* goGameInfoRecorderNameKey;
+extern NSString* goGameInfoSourceNameKey;
+extern NSString* goGameInfoAnnotationAuthorKey;
+extern NSString* goGameInfoCopyrightInformationKey;
+extern NSString* goGameInfoGameNameKey;
+extern NSString* goGameInfoGameInformationKey;
+extern NSString* goGameInfoGameInfoDatesKey;
+extern NSString* goGameInfoGameInfoRulesKey;
 extern NSString* goGameInfoGameResultKey;
+extern NSString* goGameInfoOpeningInformationKey;
+extern NSString* goGameInfoBlackPlayerNameKey;
+extern NSString* goGameInfoBlackPlayerRankKey;
+extern NSString* goGameInfoBlackPlayerTeamNameKey;
+extern NSString* goGameInfoWhitePlayerNameKey;
+extern NSString* goGameInfoWhitePlayerRankKey;
+extern NSString* goGameInfoWhitePlayerTeamNameKey;
+extern NSString* goGameInfoGameLocationKey;
+extern NSString* goGameInfoEventNameKey;
+extern NSString* goGameInfoGameInfoRoundKey;
 // GoGameResult keys
 extern NSString* goGameResultDataTypeKey;
 extern NSString* goGameResultSgfStringKey;
@@ -3053,6 +3203,24 @@ extern NSString* goGameResultGameResultTypeKey;
 extern NSString* goGameResultWinTypeKey;
 extern NSString* goGameResultScoreKey;
 extern NSString* goGameResultUpdatePolicyKey;
+// GoGameInfoRules keys
+extern NSString* goGameInfoRulesGameInfoRuleKey;
+extern NSString* goGameInfoRulesSgfStringKey;
+// GoGameInfoRound keys
+extern NSString* goGameInfoRoundDataTypeKey;
+extern NSString* goGameInfoRoundSgfStringKey;
+extern NSString* goGameInfoRoundRoundTypeKey;
+extern NSString* goGameInfoRoundRoundNumberKey;
+// GoGameInfoRank keys
+extern NSString* goGameInfoRankDataTypeKey;
+extern NSString* goGameInfoRankSgfStringKey;
+extern NSString* goGameInfoRankRankTypeKey;
+extern NSString* goGameInfoRankRankKey;
+extern NSString* goGameInfoRankRatingTypeKey;
+// GoGameInfoDates keys
+extern NSString* goGameInfoDatesDataTypeKey;
+extern NSString* goGameInfoDatesSgfStringKey;
+extern NSString* goGameInfoDatesDateComponentsKey;
 //@}
 
 // -----------------------------------------------------------------------------

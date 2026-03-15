@@ -17,11 +17,15 @@
 
 // Project includes
 #import "SgfUtilities.h"
+#import "../go/GoGameInfoDates.h"
+#import "../go/GoGameInfoRank.h"
+#import "../go/GoGameInfoRound.h"
 #import "../go/GoGameResult.h"
 #import "../go/GoTimeSettings.h"
 #import "../go/GoTimeSystem.h"
 #import "../play/model/TimeSettingsModel.h"
 #import "../ui/UiUtilities.h"
+#import "../utility/ExceptionUtility.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -113,94 +117,6 @@
       return GoBoardSizeUndefined;
     }
   }
-}
-
-
-// -----------------------------------------------------------------------------
-/// @brief Parses @e sgfGameDates, whose elements must be NSValue objects
-/// wrapping SGFCDate values, and fills the result into the out variables
-/// @a dateArray (elements are NSDate objects) and @a stringArray (elements are
-/// NSString objects).
-///
-/// SGFCDate values found in @a sgfGameDates for which
-/// SGFCDateIsValidCalendarDate() returns NO are ignored.
-// -----------------------------------------------------------------------------
-+ (void) parseSgfGameDates:(NSArray*)sgfGameDates dateArray:(NSArray**)dateArray stringArray:(NSArray**)stringArray
-{
-  NSMutableArray* mutableDateArray = [NSMutableArray array];
-  NSMutableArray* mutableStringArray = [NSMutableArray array];
-
-  NSCalendar* calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-  NSDateFormatter* dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
-  [dateFormatter setLocale:[NSLocale currentLocale]];
-  [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-
-  for (NSValue* sgfGameDateAsValue in sgfGameDates)
-  {
-    SGFCDate sgfGameDate = sgfGameDateAsValue.sgfcDateValue;
-    if (! SGFCDateIsValidCalendarDate(sgfGameDate))
-      continue;
-
-    NSDateComponents* gameDateComponents = [[[NSDateComponents alloc] init] autorelease];
-    gameDateComponents.year = sgfGameDate.Year;
-    gameDateComponents.month = sgfGameDate.Month;
-    gameDateComponents.day = sgfGameDate.Day;
-
-    NSDate* gameDate = [calendar dateFromComponents:gameDateComponents];
-    NSString* gameDateAsString = [dateFormatter stringFromDate:gameDate];
-
-    [mutableDateArray addObject:gameDateAsString];
-    [mutableStringArray addObject:gameDateAsString];
-  }
-
-  *dateArray = mutableDateArray;
-  *stringArray = mutableStringArray;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a string representation of the content of @a sgfGoPlayerRank.
-/// Returns an empty string if the SGFCGoPlayerRank is not valid.
-// -----------------------------------------------------------------------------
-+ (NSString*) stringForSgfGoPlayerRank:(SGFCGoPlayerRank)sgfGoPlayerRank
-{
-  if (! sgfGoPlayerRank.IsValid)
-    return @"";
-
-  NSString* rankTypeAsString;
-  switch (sgfGoPlayerRank.RankType)
-  {
-    case SGFCGoPlayerRankTypeKyu:
-      rankTypeAsString = @"kyu";
-      break;
-    case SGFCGoPlayerRankTypeAmateurDan:
-      rankTypeAsString = @"dan";
-      break;
-    case SGFCGoPlayerRankTypeProfessionalDan:
-      rankTypeAsString = @"p";
-      break;
-    default:
-      assert(0);
-      return @"";
-  }
-
-  NSString* ratingTypeAsString;
-  switch (sgfGoPlayerRank.RatingType)
-  {
-    case SGFCGoPlayerRatingTypeUncertain:
-      ratingTypeAsString = @" (uncertain)";
-      break;
-    case SGFCGoPlayerRatingTypeEstablished:
-      ratingTypeAsString = @" (established)";
-      break;
-    case SGFCGoPlayerRatingTypeUnspecified:
-      ratingTypeAsString = @"";
-      break;
-    default:
-      assert(0);
-      return @"";
-  }
-
-  return [NSString stringWithFormat:@"%ld %@%@", (long)sgfGoPlayerRank.Rank, rankTypeAsString, ratingTypeAsString];
 }
 
 // -----------------------------------------------------------------------------
@@ -912,7 +828,7 @@
 /// @brief Returns a GoGameResult object that is populated with the game result
 /// taken from the value of @a rePropertyValue.
 ///
-/// @a rePropertyValue refers to the value of the SGF game info properties RE.
+/// @a rePropertyValue refers to the value of the SGF game info property RE.
 /// The value @e nil indicates that the property is not present.
 ///
 /// If @a rePropertyValue is an empty string, this is also treated as the
@@ -920,7 +836,7 @@
 /// directly from the SGF data but has passed through some intermediate
 /// processing (e.g. SGFCGameInfo).
 // -----------------------------------------------------------------------------
-+ (GoGameResult*) gameResultFromFromSgfString:(NSString*)rePropertyValue
++ (GoGameResult*) gameResultFromSgfString:(NSString*)rePropertyValue
 {
   if (! rePropertyValue || rePropertyValue.length == 0)
     return [[[GoGameResult alloc] init] autorelease];
@@ -1025,6 +941,306 @@
 
       SGFCGameResult sgfcGameResult = SGFCGameResultMake(sgfcGameResultType, sgfcWinType, gameResult.score, true);
       return SGFCGameResultToPropertyValue(sgfcGameResult);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoGameInfoRound object that is populated with the round
+/// information (if any) stored in @a sgfGameInfo.
+// -----------------------------------------------------------------------------
++ (GoGameInfoRound*) gameInfoRoundFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo
+{
+  if (sgfGameInfo.roundInformation.IsValid)
+  {
+    return [[[GoGameInfoRound alloc] initWithRoundType:sgfGameInfo.roundInformation.RoundType
+                                           roundNumber:sgfGameInfo.roundInformation.RoundNumber] autorelease];
+  }
+  else if (sgfGameInfo.rawRoundInformation && sgfGameInfo.rawRoundInformation.length > 0)
+  {
+    return [[[GoGameInfoRound alloc] initWithSgfString:sgfGameInfo.rawRoundInformation] autorelease];
+  }
+  else
+  {
+    return [[[GoGameInfoRound alloc] init] autorelease];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representing @a gameInfoRound that can be used as
+/// the value of the SGF property RO. Returns @e nil if the @e dataType property
+/// of @a gameInfoRound has the value #GoGameInfoRoundDataTypeNone.
+// -----------------------------------------------------------------------------
++ (NSString*) sgfStringFromGameInfoRound:(GoGameInfoRound*)gameInfoRound
+{
+  switch (gameInfoRound.dataType)
+  {
+    case GoGameInfoRoundDataTypeNone:
+    {
+      return nil;
+    }
+    case GoGameInfoRoundDataTypeSgfString:
+    {
+      return gameInfoRound.sgfString;
+    }
+    case GoGameInfoRoundDataTypeStructuredData:
+    {
+      SGFCRoundInformation sgfcRoundInformation = SGFCRoundInformationMake(gameInfoRound.roundNumber, gameInfoRound.roundType, YES);
+      return SGFCRoundInformationToPropertyValue(sgfcRoundInformation);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoGameInfoRank object that is populated with the rank
+/// information (if any) stored in @a sgfGoGameInfo. If @a blackPlayerRank is
+/// @e true the black player's rank information is used, if @a blackPlayerRank
+/// is @e false the white player's rank information is used.
+// -----------------------------------------------------------------------------
++ (GoGameInfoRank*) gameInfoRankFromSgfGoGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo
+                                  blackPlayerRank:(bool)blackPlayerRank
+{
+  SGFCGoPlayerRank sgfcGoPlayerRank;
+  NSString* rawPropertyValue;
+  if (blackPlayerRank)
+  {
+    sgfcGoPlayerRank = sgfGoGameInfo.goBlackPlayerRank;
+    rawPropertyValue = sgfGoGameInfo.blackPlayerRank;
+  }
+  else
+  {
+    sgfcGoPlayerRank = sgfGoGameInfo.goWhitePlayerRank;
+    rawPropertyValue = sgfGoGameInfo.whitePlayerRank;
+  }
+
+  if (sgfcGoPlayerRank.IsValid)
+  {
+    return [[[GoGameInfoRank alloc] initWithRankType:[SgfUtilities gameInfoRankTypeForSgfRankType:sgfcGoPlayerRank.RankType]
+                                                rank:sgfcGoPlayerRank.Rank
+                                          ratingType:[SgfUtilities gameInfoRatingTypeForSgfRatingType:sgfcGoPlayerRank.RatingType]] autorelease];
+  }
+  else if (rawPropertyValue && rawPropertyValue.length > 0)
+  {
+    return [[[GoGameInfoRank alloc] initWithSgfString:rawPropertyValue] autorelease];
+  }
+  else
+  {
+    return [[[GoGameInfoRank alloc] init] autorelease];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representing @a gameInfoRank that can be used as
+/// the value of one of the SGF properties BR or WR. Returns @e nil if the
+/// @e dataType property of @a gameInfoRank has the value
+/// #GoGameInfoRankDataTypeNone.
+// -----------------------------------------------------------------------------
++ (NSString*) sgfStringFromGameInfoRank:(GoGameInfoRank*)gameInfoRank
+{
+  switch (gameInfoRank.dataType)
+  {
+    case GoGameInfoRankDataTypeNone:
+    {
+      return nil;
+    }
+    case GoGameInfoRankDataTypeSgfString:
+    {
+      return gameInfoRank.sgfString;
+    }
+    case GoGameInfoRankDataTypeStructuredData:
+    {
+      SGFCGoPlayerRank sgfcGoPlayerRank = SGFCGoPlayerRankMake(gameInfoRank.rank,
+                                                               [SgfUtilities sgfRankTypeForGameInfoRankType:gameInfoRank.rankType],
+                                                               [SgfUtilities sgfRatingTypeForGameInfoRatingType:gameInfoRank.ratingType],
+                                                               YES);
+      return SGFCGoPlayerRankToPropertyValue(sgfcGoPlayerRank);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a sgfRankType to a corresponding value from the enumeration
+/// #GoGameInfoRankType.
+///
+/// @exception NSInvalidArgumentException Is thrown if @a sgfRankType
+/// cannot be mapped. This should never happen because the values of
+/// enumeration #GoGameInfoRankType should be kept in sync with the values of
+/// enumeration #SGFCGoPlayerRankType.
+// -----------------------------------------------------------------------------
++ (enum GoGameInfoRankType) gameInfoRankTypeForSgfRankType:(SGFCGoPlayerRankType)sgfRankType
+{
+  switch (sgfRankType)
+  {
+    case SGFCGoPlayerRankTypeKyu:
+      return GoGameInfoRankTypeKyu;
+    case SGFCGoPlayerRankTypeAmateurDan:
+      return GoGameInfoRankTypeAmateurDan;
+    case SGFCGoPlayerRankTypeProfessionalDan:
+      return GoGameInfoRankTypeProfessionalDan;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"goGameInfoRankTypeForSgfRankType failed: invalid sgfRankType %ld" argumentValue:sgfRankType];
+      return GoGameInfoRankTypeKyu;  // dummy return to make compiler happy
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a gameInfoRankType to a corresponding value from the
+/// enumeration #SGFCGoPlayerRankType.
+///
+/// @exception NSInvalidArgumentException Is thrown if @a gameInfoRankType
+/// cannot be mapped. This should never happen because the values of
+/// enumeration #GoGameInfoRankType should be kept in sync with the values of
+/// enumeration #SGFCGoPlayerRankType.
+// -----------------------------------------------------------------------------
++ (SGFCGoPlayerRankType) sgfRankTypeForGameInfoRankType:(enum GoGameInfoRankType)gameInfoRankType
+{
+  switch (gameInfoRankType)
+  {
+    case GoGameInfoRankTypeKyu:
+      return SGFCGoPlayerRankTypeKyu;
+    case GoGameInfoRankTypeAmateurDan:
+      return SGFCGoPlayerRankTypeAmateurDan;
+    case GoGameInfoRankTypeProfessionalDan:
+      return SGFCGoPlayerRankTypeProfessionalDan;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"sgfRankTypeForGameInfoRankType failed: invalid gameInfoRankType %ld" argumentValue:gameInfoRankType];
+      return SGFCGoPlayerRankTypeKyu;  // dummy return to make compiler happy
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a sgfRatingType to a corresponding value from the enumeration
+/// #GoGameInfoRatingType.
+///
+/// @exception NSInvalidArgumentException Is thrown if @a sgfRatingType
+/// cannot be mapped. This should never happen because the values of
+/// enumeration #GoGameInfoRatingType should be kept in sync with the values of
+/// enumeration #SGFCGoPlayerRatingType.
+// -----------------------------------------------------------------------------
++ (enum GoGameInfoRatingType) gameInfoRatingTypeForSgfRatingType:(SGFCGoPlayerRatingType)sgfRatingType
+{
+  switch (sgfRatingType)
+  {
+    case SGFCGoPlayerRatingTypeUncertain:
+      return GoGameInfoRatingTypeUncertain;
+    case SGFCGoPlayerRatingTypeEstablished:
+      return GoGameInfoRatingTypeEstablished;
+    case SGFCGoPlayerRatingTypeUnspecified:
+      return GoGameInfoRatingTypeUnspecified;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"goGameInfoRatingTypeForSgfRatingType failed: invalid sgfRatingType %ld" argumentValue:sgfRatingType];
+      return GoGameInfoRatingTypeUncertain;  // dummy return to make compiler happy
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a gameInfoRatingType to a corresponding value from the
+/// enumeration #SGFCGoPlayerRatingType.
+///
+/// @exception NSInvalidArgumentException Is thrown if @a gameInfoRatingType
+/// cannot be mapped. This should never happen because the values of
+/// enumeration #GoGameInfoRatingType should be kept in sync with the values of
+/// enumeration #SGFCGoPlayerRatingType.
+// -----------------------------------------------------------------------------
++ (SGFCGoPlayerRatingType) sgfRatingTypeForGameInfoRatingType:(enum GoGameInfoRatingType)gameInfoRatingType
+{
+  switch (gameInfoRatingType)
+  {
+    case GoGameInfoRatingTypeUncertain:
+      return SGFCGoPlayerRatingTypeUncertain;
+    case GoGameInfoRatingTypeEstablished:
+      return SGFCGoPlayerRatingTypeEstablished;
+    case GoGameInfoRatingTypeUnspecified:
+      return SGFCGoPlayerRatingTypeUnspecified;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"sgfRatingTypeForGameInfoRatingType failed: invalid gameInfoRatingType %ld" argumentValue:gameInfoRatingType];
+      return SGFCGoPlayerRatingTypeUncertain;  // dummy return to make compiler happy
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoGameInfoDates object that is populated with the game
+/// dates information (if any) stored in @a sgfGameInfo.
+///
+/// SGFCDate values found in the game dates for which SGFCDateIsValidSgfDate()
+/// returns NO are ignored.
+// -----------------------------------------------------------------------------
++ (GoGameInfoDates*) gameInfoDatesFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo
+{
+  NSArray* sgfGameDates = sgfGameInfo.gameDates;
+  if (sgfGameDates.count == 0)
+  {
+    if (sgfGameInfo.rawGameDates && sgfGameInfo.rawGameDates > 0)
+      return [[[GoGameInfoDates alloc] initWithSgfString:sgfGameInfo.rawGameDates] autorelease];
+    else
+      return [[[GoGameInfoDates alloc] init] autorelease];
+  }
+
+  NSMutableArray* dateComponents = [NSMutableArray array];
+  for (NSValue* sgfGameDateAsValue in sgfGameDates)
+  {
+    SGFCDate sgfGameDate = sgfGameDateAsValue.sgfcDateValue;
+    // We expect SgfcKit to have resolved shortcuts, but we may still get
+    // partial dates, therefore we cannot use SGFCDateIsValidCalendarDate
+    if (! SGFCDateIsValidSgfDate(sgfGameDate))
+      continue;
+
+    NSDateComponents* nsDateComponents = [[[NSDateComponents alloc] init] autorelease];
+    nsDateComponents.year = sgfGameDate.Year;
+    nsDateComponents.month = sgfGameDate.Month;
+    nsDateComponents.day = sgfGameDate.Day;
+
+    [dateComponents addObject:nsDateComponents];
+  }
+
+  return [[[GoGameInfoDates alloc] initWithDateComponents:dateComponents] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representing @a gameInfoDates that can be used as
+/// the value of the SGF property DT. Returns @e nil if the @e dataType property
+/// of @a gameInfoDates has the value #GoGameInfoDatesDataTypeNone. Also returns
+/// @e nil if the @e dataType property of @a gameInfoDates has the value
+/// #GoGameInfoDatesDataTypeStructuredData but the @e dateComponents property
+/// contains erroneous data that cannot be encoded for some reason.
+///
+/// NSDateComponents objects found in the @e dateComponents property of
+/// @a gameInfoDates for which (after converting them to SGFCDate values)
+/// SGFCDateIsValidSgfDate() returns NO are ignored.
+// -----------------------------------------------------------------------------
++ (NSString*) sgfStringFromGameInfoDates:(GoGameInfoDates*)gameInfoDates
+{
+  switch (gameInfoDates.dataType)
+  {
+    case GoGameInfoDatesDataTypeNone:
+    {
+      return nil;
+    }
+    case GoGameInfoDatesDataTypeSgfString:
+    {
+      return gameInfoDates.sgfString;
+    }
+    case GoGameInfoDatesDataTypeStructuredData:
+    {
+      NSMutableArray* sgfGameDates = [NSMutableArray array];
+      for (NSDateComponents* dateComponents in gameInfoDates.dateComponents)
+      {
+        SGFCDate sgfGameDate = SGFCDateMake(dateComponents.year,
+                                            dateComponents.month,
+                                            dateComponents.day);
+        // Use SGFCDateIsValidSgfDate(), not SGFCDateIsValidCalendarDate(),
+        // because we must be able to encode partial dates
+        if (! SGFCDateIsValidSgfDate(sgfGameDate))
+          continue;
+
+        NSValue* sgfGameDateAsValue = [NSValue valueWithSGFCDate:sgfGameDate];
+        [sgfGameDates addObject:sgfGameDateAsValue];
+      }
+
+      NSString* propertyValue = SGFCDateToPropertyValue(sgfGameDates);
+      if (propertyValue && propertyValue.length == 0)
+        return nil;
+      return propertyValue;
     }
   }
 }

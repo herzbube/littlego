@@ -54,8 +54,14 @@
 + (NSString*) shortStringWithPeriodBasedTimeSystemType:(enum GoTimeSystemType)periodBasedTimeSystemType;
 + (NSString*) stringWithGameResultType:(enum GoGameResultType)gameResultType;
 + (NSString*) stringWithWinType:(enum GoGameResultWinType)winType;
-+ (NSString*) stringWithScore:(double)score;
++ (NSString*) stringWithDouble:(double)doubleValue;
 - (bool) tryConvertToIntValue:(int*)intValue;
 - (bool) tryConvertToDoubleValue:(double*)doubleValue;
++ (NSString*) stringWithGameInfoRule:(enum GoGameInfoRule)gameInfoRule;
++ (NSString*) abbreviationStringWithRankType:(enum GoGameInfoRankType)rankType;
++ (NSString*) stringWithRankType:(enum GoGameInfoRankType)rankType;
++ (NSString*) stringWithRatingType:(enum GoGameInfoRatingType)ratingType;
++ (NSString*) stringWithGameInfoDateComponents:(NSDateComponents*)gameInfoDateComponents style:(NSDateFormatterStyle)style;
++ (NSString*) stringWithMonth:(int)month;
 
 @end

@@ -27,6 +27,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
 #import "../../go/GoGameInfo.h"
+#import "../../go/GoGameInfoRules.h"
 #import "../../go/GoGameResult.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
@@ -222,7 +223,7 @@ static const int maxStepsForCreateNodes = 9;
   success = [self setupNodes:errorMessage];
   if (! success)
     return false;
-  success = [self setupGameResult:errorMessage];
+  success = [self setupGameInfo:errorMessage];
   if (! success)
     return false;
   success = [self syncGtpEngine:errorMessage];
@@ -1760,7 +1761,59 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   return true;
 }
 
-#pragma mark - Step 6: Setup game result
+#pragma mark - Step 6: Setup game info
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the game info, which includes the result for the new game.
+///
+/// The major part of this setup consists of initializing GoGameInfo object
+/// properties with game info property data. The only special case is the game
+/// result, which can have an effect on the game state. See setupGameResult:()
+/// for details.
+// -----------------------------------------------------------------------------
+- (bool) setupGameInfo:(NSString**)errorMessage
+{
+  GoGameInfo* gameInfo = [GoGame sharedGame].gameInfo;
+
+  NSString* (^goGameInfoPropertyValue)(NSString*) = ^ NSString* (NSString* sgfGameInfoPropertyValue)
+  {
+    // The SgfcKit documentation for SGFCGameInfo indicates that the default
+    // value for most game info properties is SGFCNoneValueString. Such a
+    // default value indicates that the SGF property is not present. In theory
+    // SGF property could be present but have an empty string as its value,
+    // but we treat this simply as "property is not present". This corresponds
+    // to SGFC's behaviour, which deletes properties without a value.
+    if (sgfGameInfoPropertyValue && sgfGameInfoPropertyValue.length == 0)
+      return nil;
+    else
+      return sgfGameInfoPropertyValue;
+  };
+
+  gameInfo.recorderName = goGameInfoPropertyValue(self.sgfGoGameInfo.recorderName);
+  gameInfo.sourceName = goGameInfoPropertyValue(self.sgfGoGameInfo.sourceName);
+  gameInfo.annotationAuthor = goGameInfoPropertyValue(self.sgfGoGameInfo.annotationAuthor);
+  gameInfo.copyrightInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.copyrightInformation);
+  gameInfo.gameName = goGameInfoPropertyValue(self.sgfGoGameInfo.gameName);
+  gameInfo.gameInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.gameInformation);
+  gameInfo.gameInfoDates = [SgfUtilities gameInfoDatesFromSgfGameInfo:self.sgfGoGameInfo];
+  gameInfo.gameInfoRules = [[[GoGameInfoRules alloc] initWithSgfString:goGameInfoPropertyValue(self.sgfGoGameInfo.rulesName)] autorelease];
+  gameInfo.openingInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.openingInformation);
+  NSString* blackPlayerName = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerName);
+  if (blackPlayerName)
+    gameInfo.blackPlayerName = blackPlayerName;
+  gameInfo.blackPlayerRank = [SgfUtilities gameInfoRankFromSgfGoGameInfo:self.sgfGoGameInfo blackPlayerRank:true];
+  gameInfo.blackPlayerTeamName = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerTeamName);
+  NSString* whitePlayerName = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerName);
+  if (whitePlayerName)
+    gameInfo.whitePlayerName = whitePlayerName;
+  gameInfo.whitePlayerRank = [SgfUtilities gameInfoRankFromSgfGoGameInfo:self.sgfGoGameInfo blackPlayerRank:false];
+  gameInfo.whitePlayerTeamName = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerTeamName);
+  gameInfo.gameLocation = goGameInfoPropertyValue(self.sgfGoGameInfo.gameLocation);
+  gameInfo.eventName = goGameInfoPropertyValue(self.sgfGoGameInfo.eventName);
+  gameInfo.gameInfoRound = [SgfUtilities gameInfoRoundFromSgfGameInfo:self.sgfGoGameInfo];
+
+  return [self setupGameResult:errorMessage];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the result for the new game. Also ends the game with a
@@ -1780,7 +1833,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 {
   GoGame* game = [GoGame sharedGame];
 
-  GoGameResult* newGameResult = [SgfUtilities gameResultFromFromSgfString:self.sgfGoGameInfo.rawGameResult];
+  GoGameResult* newGameResult = [SgfUtilities gameResultFromSgfString:self.sgfGoGameInfo.rawGameResult];
   newGameResult.updatePolicy = game.gameInfo.gameResult.updatePolicy;
   game.gameInfo.gameResult = newGameResult;
 

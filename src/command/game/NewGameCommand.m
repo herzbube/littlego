@@ -246,6 +246,9 @@
       GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
       [timeDataValidator validateTimeDataInGameTree:newGame];
     }
+
+    newGame.gameInfo.blackPlayerName = newGame.playerBlack.player.name;
+    newGame.gameInfo.whitePlayerName = newGame.playerWhite.player.name;
   }
   
   DDLogVerbose((@"%@: Game object configuration: board = %@, "
