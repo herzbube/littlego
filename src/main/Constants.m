@@ -705,7 +705,7 @@ NSString* goGameInfoAnnotationAuthorKey = @"AnnotationAuthor";
 NSString* goGameInfoCopyrightInformationKey = @"CopyrightInformation";
 NSString* goGameInfoGameNameKey = @"GameName";
 NSString* goGameInfoGameInformationKey = @"GameInformation";
-NSString* goGameInfoGameDatesKey = @"GameDates";
+NSString* goGameInfoGameInfoDatesKey = @"GameInfoDates";
 NSString* goGameInfoGameInfoRulesKey = @"GameInfoRules";
 NSString* goGameInfoGameResultKey = @"GameResult";
 NSString* goGameInfoOpeningInformationKey = @"OpeningInformation";
@@ -739,6 +739,10 @@ NSString* goGameInfoRankSgfStringKey = @"SgfString";
 NSString* goGameInfoRankRankTypeKey = @"RankType";
 NSString* goGameInfoRankRankKey = @"Rank";
 NSString* goGameInfoRankRatingTypeKey = @"RatingType";
+// GoGameInfoDates keys
+NSString* goGameInfoDatesDataTypeKey = @"DataType";
+NSString* goGameInfoDatesSgfStringKey = @"SgfString";
+NSString* goGameInfoDatesDateComponentsKey = @"DateComponents";
 
 // Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";

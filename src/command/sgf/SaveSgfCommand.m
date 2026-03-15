@@ -248,7 +248,7 @@
   setSgfGameInfoPropertyIfNecessary(gameInfo.copyrightInformation, SGFCPropertyTypeCP, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameName, SGFCPropertyTypeGN, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameInformation, SGFCPropertyTypeGC, false);
-  setSgfGameInfoPropertyIfNecessary(gameInfo.gameDates, SGFCPropertyTypeDT, true);
+  setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameInfoDates:gameInfo.gameInfoDates], SGFCPropertyTypeDT, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameInfoRules.sgfString, SGFCPropertyTypeRU, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.openingInformation, SGFCPropertyTypeON, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.blackPlayerName, SGFCPropertyTypePB, true);

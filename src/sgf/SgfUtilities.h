@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class SGFCDocumentReadResult;
+@class GoGameInfoDates;
 @class GoGameInfoRank;
 @class GoGameInfoRound;
 @class GoGameResult;
@@ -42,7 +43,6 @@
 
 + (NSString*) stringForSgfBoardSize:(SGFCBoardSize)sgfBoardSize;
 + (enum GoBoardSize) goBoardSizeForSgfBoardSize:(SGFCBoardSize)sgfBoardSize errorMessage:(NSString**)errorMessage;
-+ (void) parseSgfGameDates:(NSArray*)sgfGameDates dateArray:(NSArray**)dateArray stringArray:(NSArray**)stringArray;
 + (NSString*) stringForSgfGoPlayerRank:(SGFCGoPlayerRank)sgfGoPlayerRank;
 + (UIColor*) colorForLoadResultWithNoMessages;
 + (UIColor*) colorForLoadResultWithMessagesOfType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage;
@@ -67,5 +67,7 @@
 + (SGFCGoPlayerRankType) sgfRankTypeForGameInfoRankType:(enum GoGameInfoRankType)gameInfoRankType;
 + (enum GoGameInfoRatingType) gameInfoRatingTypeForSgfRatingType:(SGFCGoPlayerRatingType)sgfRatingType;
 + (SGFCGoPlayerRatingType) sgfRatingTypeForGameInfoRatingType:(enum GoGameInfoRatingType)gameInfoRatingType;
++ (GoGameInfoDates*) gameInfoDatesFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
++ (NSString*) sgfStringFromGameInfoDates:(GoGameInfoDates*)gameInfoDates;
 
 @end

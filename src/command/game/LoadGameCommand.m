@@ -1795,7 +1795,7 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   gameInfo.copyrightInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.copyrightInformation);
   gameInfo.gameName = goGameInfoPropertyValue(self.sgfGoGameInfo.gameName);
   gameInfo.gameInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.gameInformation);
-  gameInfo.gameDates = goGameInfoPropertyValue(self.sgfGoGameInfo.rawGameDates);
+  gameInfo.gameInfoDates = [SgfUtilities gameInfoDatesFromSgfGameInfo:self.sgfGoGameInfo];
   gameInfo.gameInfoRules = [[[GoGameInfoRules alloc] initWithSgfString:goGameInfoPropertyValue(self.sgfGoGameInfo.rulesName)] autorelease];
   gameInfo.openingInformation = goGameInfoPropertyValue(self.sgfGoGameInfo.openingInformation);
   gameInfo.blackPlayerName = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerName);

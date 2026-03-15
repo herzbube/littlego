@@ -820,4 +820,107 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns an NSDateFormatter object that is set up to use the
+/// Gregorian calendar and the current locale. The latter enables the use of
+/// NSDateFormatter's setLocalizedDateFormatFromTemplate:() method.
+// -----------------------------------------------------------------------------
++ (NSDateFormatter*) dateFormatterWithGregorianCalendarAndCurrentLocale
+{
+  static NSCalendar* calendar = nil;
+  if (! calendar)
+    calendar = [[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] retain];
+
+  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+  dateFormatter.calendar = calendar;
+
+  // Setting this is a precondition for setLocalizedDateFormatFromTemplate:(),
+  // but we also want to use the user's locale when we set the dateStyle
+  // property. Because the app's UI is otherwise not localized, this will cause
+  // "interesting" combinations of localized/non-localized data.
+  dateFormatter.locale = [NSLocale currentLocale];
+
+  return dateFormatter;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a localized string that describes @a dateComponents.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithGameInfoDateComponents:(NSDateComponents*)gameInfoDateComponents style:(NSDateFormatterStyle)style
+{
+  NSDateFormatter* dateFormatter = [NSString dateFormatterWithGregorianCalendarAndCurrentLocale];
+
+  NSDateComponents* dateComponentsToUseForFormatting;
+
+  if (gameInfoDateComponents.day != 0)
+  {
+    // All components are present
+    // => use the input object as-is
+    // => use the supplied style as-is
+    dateComponentsToUseForFormatting = gameInfoDateComponents;
+    dateFormatter.dateStyle = style;
+  }
+  else
+  {
+    // Some components are missing
+    // => copy the input object and set the missing parts to 1 so that a valid
+    //    date can be formed from the components
+    // => use a custom date format instead of the supplied style so that the
+    //    resulting string only represents those components that are present
+    dateComponentsToUseForFormatting = [[gameInfoDateComponents copy] autorelease];
+    NSString* dateFormat;
+
+    if (gameInfoDateComponents.month != 0)
+    {
+      dateComponentsToUseForFormatting.day = 1;
+
+      switch (style)
+      {
+        case NSDateFormatterShortStyle:
+          dateFormat = @"MM yyyy";
+          break;
+        case NSDateFormatterMediumStyle:
+        case NSDateFormatterNoStyle:
+          dateFormat = @"MMM yyyy";
+          break;
+        case NSDateFormatterLongStyle:
+        case NSDateFormatterFullStyle:
+          dateFormat = @"MMMM yyyy";
+          break;
+      }
+    }
+    else
+    {
+      dateComponentsToUseForFormatting.day = 1;
+      dateComponentsToUseForFormatting.month = 1;
+
+      dateFormat = @"yyyy";
+    }
+
+    [dateFormatter setLocalizedDateFormatFromTemplate:dateFormat];
+  }
+
+  NSDate* gameInfoDate = [dateFormatter.calendar dateFromComponents:dateComponentsToUseForFormatting];
+  return [dateFormatter stringFromDate:gameInfoDate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a localized string that describes @a month. @a month must be
+/// a value between 1 and 12.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithMonth:(int)month
+{
+  NSDateFormatter* dateFormatter = [NSString dateFormatterWithGregorianCalendarAndCurrentLocale];
+
+  NSDateComponents* dateComponents = [[[NSDateComponents alloc] init] autorelease];
+  dateComponents.day = 1;
+  dateComponents.month = month;
+  dateComponents.year = 2026;
+
+  NSDate* date = [dateFormatter.calendar dateFromComponents:dateComponents];
+
+  [dateFormatter setLocalizedDateFormatFromTemplate:@"MMMM"];
+  return [dateFormatter stringFromDate:date];
+}
+
 @end

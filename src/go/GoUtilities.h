@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoGame;
+@class GoGameInfoDates;
 @class GoGameInfoRank;
 @class GoGameInfoRound;
 @class GoGameInfoRules;
@@ -83,5 +84,6 @@
 + (NSString*) stringWithDescriptionOfGameInfoRules:(GoGameInfoRules*)gameInfoRules;
 + (NSString*) stringWithDescriptionOfGameInfoRound:(GoGameInfoRound*)gameInfoRound;
 + (NSString*) stringWithDescriptionOfGameInfoRank:(GoGameInfoRank*)gameInfoRank;
++ (NSString*) stringWithDescriptionOfGameInfoDates:(GoGameInfoDates*)gameInfoDates;
 
 @end

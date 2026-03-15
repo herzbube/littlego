@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoGameInfo.h"
+#import "GoGameInfoDates.h"
 #import "GoGameInfoRank.h"
 #import "GoGameInfoRound.h"
 #import "GoGameInfoRules.h"
@@ -45,7 +46,7 @@
   self.copyrightInformation = nil;
   self.gameName = nil;
   self.gameInformation = nil;
-  self.gameDates = nil;
+  self.gameInfoDates = [[[GoGameInfoDates alloc] init] autorelease];
   self.gameInfoRules = [[[GoGameInfoRules alloc] init] autorelease];
   self.gameResult = [[[GoGameResult alloc] init] autorelease];
   self.openingInformation = nil;
@@ -80,7 +81,7 @@
   self.copyrightInformation = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoCopyrightInformationKey];
   self.gameName = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoGameNameKey];
   self.gameInformation = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoGameInformationKey];
-  self.gameDates = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoGameDatesKey];
+  self.gameInfoDates = [decoder decodeObjectOfClass:[GoGameInfoDates class] forKey:goGameInfoGameInfoDatesKey];
   self.gameInfoRules = [decoder decodeObjectOfClass:[GoGameInfoRules class] forKey:goGameInfoGameInfoRulesKey];
   self.gameResult = [decoder decodeObjectOfClass:[GoGameResult class] forKey:goGameInfoGameResultKey];
   self.openingInformation = [decoder decodeObjectOfClass:[NSString class] forKey:goGameInfoOpeningInformationKey];
@@ -116,7 +117,7 @@
   self.copyrightInformation = nil;
   self.gameName = nil;
   self.gameInformation = nil;
-  self.gameDates = nil;
+  self.gameInfoDates = nil;
   self.gameInfoRules = nil;
   self.gameResult = nil;
   self.openingInformation = nil;
@@ -146,7 +147,7 @@
   [encoder encodeObject:self.copyrightInformation forKey:goGameInfoCopyrightInformationKey];
   [encoder encodeObject:self.gameName forKey:goGameInfoGameNameKey];
   [encoder encodeObject:self.gameInformation forKey:goGameInfoGameInformationKey];
-  [encoder encodeObject:self.gameDates forKey:goGameInfoGameDatesKey];
+  [encoder encodeObject:self.gameInfoDates forKey:goGameInfoGameInfoDatesKey];
   [encoder encodeObject:self.gameInfoRules forKey:goGameInfoGameInfoRulesKey];
   [encoder encodeObject:self.gameResult forKey:goGameInfoGameResultKey];
   [encoder encodeObject:self.openingInformation forKey:goGameInfoOpeningInformationKey];

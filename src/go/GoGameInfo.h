@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoGameInfoDates;
 @class GoGameInfoRank;
 @class GoGameInfoRound;
 @class GoGameInfoRules;
@@ -126,11 +127,12 @@
 
 /// @brief The dates when the game was played.
 ///
-/// Is @e nil to indicate that this property has no value. The default value is
-/// @e nil.
-///
+/// This property must never be @e nil. The GoGameInfoDates object's
+/// @e dataType property has the value #GoGameInfoDatesDataTypeNone to indicate
+/// that there are no dates. The default value is such a GoGameInfoDates object.
+
 /// The value of this property corresponds to the value of the SGF property DT.
-@property(nonatomic, retain) NSString* gameDates;
+@property(nonatomic, retain) GoGameInfoDates* gameInfoDates;
 
 /// @brief The rules used for the game.
 ///

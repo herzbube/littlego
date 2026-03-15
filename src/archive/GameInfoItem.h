@@ -200,7 +200,7 @@ enum GameInfoItemMissingDataDisplayStyle
 /// contains the raw value, exactly as it appears in the SGF property DT.
 @property(nonatomic, retain, readonly) NSString* gameDatesAsString;
 /// @brief The dates when the game was played, based on the data that appears
-/// in the SGF property DT. The array contains NSDate objects.
+/// in the SGF property DT. The array contains NSDateComponents objects.
 ///
 /// If the interpretation of the data in the SGF property DT fails this property
 /// contains an empty array.

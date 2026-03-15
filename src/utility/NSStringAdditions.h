@@ -61,5 +61,7 @@
 + (NSString*) abbreviationStringWithRankType:(enum GoGameInfoRankType)rankType;
 + (NSString*) stringWithRankType:(enum GoGameInfoRankType)rankType;
 + (NSString*) stringWithRatingType:(enum GoGameInfoRatingType)ratingType;
++ (NSString*) stringWithGameInfoDateComponents:(NSDateComponents*)gameInfoDateComponents style:(NSDateFormatterStyle)style;
++ (NSString*) stringWithMonth:(int)month;
 
 @end

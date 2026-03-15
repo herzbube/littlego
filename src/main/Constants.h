@@ -1405,6 +1405,24 @@ enum GoGameInfoRatingType
   GoGameInfoRatingTypeLast = GoGameInfoRatingTypeUnspecified,
 };
 
+/// @brief Enumerates the kinds of data that a GoGameInfoDates object can hold.
+///
+/// @ingroup go
+enum GoGameInfoDatesDataType
+{
+  /// @brief Indicates that no date information is stored in the GoGameInfoDates
+  /// object.
+  GoGameInfoDatesDataTypeNone,
+  /// @brief The date information is a custom string that was read from SGF
+  /// data. The string does not conform to the format mandated by the FF4 SGF
+  /// specification and can therefore not be parsed and transformed into
+  /// structured data.
+  GoGameInfoDatesDataTypeSgfString,
+  /// @brief The date information consists of structured data, i.e. one or more
+  /// NSDateComponents objects.
+  GoGameInfoDatesDataTypeStructuredData,
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -3165,7 +3183,7 @@ extern NSString* goGameInfoAnnotationAuthorKey;
 extern NSString* goGameInfoCopyrightInformationKey;
 extern NSString* goGameInfoGameNameKey;
 extern NSString* goGameInfoGameInformationKey;
-extern NSString* goGameInfoGameDatesKey;
+extern NSString* goGameInfoGameInfoDatesKey;
 extern NSString* goGameInfoGameInfoRulesKey;
 extern NSString* goGameInfoGameResultKey;
 extern NSString* goGameInfoOpeningInformationKey;
@@ -3199,6 +3217,10 @@ extern NSString* goGameInfoRankSgfStringKey;
 extern NSString* goGameInfoRankRankTypeKey;
 extern NSString* goGameInfoRankRankKey;
 extern NSString* goGameInfoRankRatingTypeKey;
+// GoGameInfoDates keys
+extern NSString* goGameInfoDatesDataTypeKey;
+extern NSString* goGameInfoDatesSgfStringKey;
+extern NSString* goGameInfoDatesDateComponentsKey;
 //@}
 
 // -----------------------------------------------------------------------------

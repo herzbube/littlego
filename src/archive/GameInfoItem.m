@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GameInfoItem.h"
+#import "../go/GoGameInfoDates.h"
 #import "../go/GoGameInfoRound.h"
 #import "../go/GoGameInfoRules.h"
 #import "../go/GoGameResult.h"
@@ -823,14 +824,13 @@ enum DataSourceInfoSectionItem
 
     self.gameName = [self stringValue:goGameInfo.gameName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_gameNameHasData];
     self.gameInformation = [self stringValue:goGameInfo.gameInformation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_gameInformationHasData];
-    NSArray* dateArray;
-    NSArray* stringArray;
-    [SgfUtilities parseSgfGameDates:goGameInfo.gameDates dateArray:&dateArray stringArray:&stringArray];
-    self.gameDatesAsString = [self stringValue:[stringArray componentsJoinedByString:@", "]
-                             withFallbackValue:goGameInfo.rawGameDates
-                    forMissingDataDisplayStyle:missingDataDisplayStyle
-                                       hasData:&_gameDatesHasData];
-    self.gameDates = dateArray;
+
+    GoGameInfoDates* gameInfoDates = [SgfUtilities gameInfoDatesFromSgfGameInfo:goGameInfo];
+    NSString* descriptionOfGameInfoDates = (gameInfoDates.dataType == GoGameInfoDatesDataTypeNone
+                                            ? nil // use our own placeholder string, not the one from GoUtilities
+                                            : [GoUtilities stringWithDescriptionOfGameInfoDates:gameInfoDates]);
+    self.gameDatesAsString = [self stringValue:descriptionOfGameInfoDates forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_gameDatesHasData];
+    self.gameDates = gameInfoDates.dateComponents;
 
     GoGameInfoRules* gameInfoRules = [[[GoGameInfoRules alloc] initWithSgfString:goGameInfo.rulesName] autorelease];
     NSString* descriptionOfGameInfoRules = (gameInfoRules.gameInfoRule == GoGameInfoRuleNone

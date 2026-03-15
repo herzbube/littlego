@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SgfUtilities.h"
+#import "../go/GoGameInfoDates.h"
 #import "../go/GoGameInfoRank.h"
 #import "../go/GoGameInfoRound.h"
 #import "../go/GoGameResult.h"
@@ -116,48 +117,6 @@
       return GoBoardSizeUndefined;
     }
   }
-}
-
-
-// -----------------------------------------------------------------------------
-/// @brief Parses @e sgfGameDates, whose elements must be NSValue objects
-/// wrapping SGFCDate values, and fills the result into the out variables
-/// @a dateArray (elements are NSDate objects) and @a stringArray (elements are
-/// NSString objects).
-///
-/// SGFCDate values found in @a sgfGameDates for which
-/// SGFCDateIsValidCalendarDate() returns NO are ignored.
-// -----------------------------------------------------------------------------
-+ (void) parseSgfGameDates:(NSArray*)sgfGameDates dateArray:(NSArray**)dateArray stringArray:(NSArray**)stringArray
-{
-  NSMutableArray* mutableDateArray = [NSMutableArray array];
-  NSMutableArray* mutableStringArray = [NSMutableArray array];
-
-  NSCalendar* calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-  NSDateFormatter* dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
-  [dateFormatter setLocale:[NSLocale currentLocale]];
-  [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-
-  for (NSValue* sgfGameDateAsValue in sgfGameDates)
-  {
-    SGFCDate sgfGameDate = sgfGameDateAsValue.sgfcDateValue;
-    if (! SGFCDateIsValidCalendarDate(sgfGameDate))
-      continue;
-
-    NSDateComponents* gameDateComponents = [[[NSDateComponents alloc] init] autorelease];
-    gameDateComponents.year = sgfGameDate.Year;
-    gameDateComponents.month = sgfGameDate.Month;
-    gameDateComponents.day = sgfGameDate.Day;
-
-    NSDate* gameDate = [calendar dateFromComponents:gameDateComponents];
-    NSString* gameDateAsString = [dateFormatter stringFromDate:gameDate];
-
-    [mutableDateArray addObject:gameDateAsString];
-    [mutableStringArray addObject:gameDateAsString];
-  }
-
-  *dateArray = mutableDateArray;
-  *stringArray = mutableStringArray;
 }
 
 // -----------------------------------------------------------------------------
@@ -1176,6 +1135,93 @@
     default:
       [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"sgfRatingTypeForGameInfoRatingType failed: invalid gameInfoRatingType %ld" argumentValue:gameInfoRatingType];
       return SGFCGoPlayerRatingTypeUncertain;  // dummy return to make compiler happy
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoGameInfoDates object that is populated with the game
+/// dates information (if any) stored in @a sgfGameInfo.
+///
+/// SGFCDate values found in the game dates for which SGFCDateIsValidSgfDate()
+/// returns NO are ignored.
+// -----------------------------------------------------------------------------
++ (GoGameInfoDates*) gameInfoDatesFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo
+{
+  NSArray* sgfGameDates = sgfGameInfo.gameDates;
+  if (sgfGameDates.count == 0)
+  {
+    if (sgfGameInfo.rawGameDates && sgfGameInfo.rawGameDates > 0)
+      return [[[GoGameInfoDates alloc] initWithSgfString:sgfGameInfo.rawGameDates] autorelease];
+    else
+      return [[[GoGameInfoDates alloc] init] autorelease];
+  }
+
+  NSMutableArray* dateComponents = [NSMutableArray array];
+  for (NSValue* sgfGameDateAsValue in sgfGameDates)
+  {
+    SGFCDate sgfGameDate = sgfGameDateAsValue.sgfcDateValue;
+    // We expect SgfcKit to have resolved shortcuts, but we may still get
+    // partial dates, therefore we cannot use SGFCDateIsValidCalendarDate
+    if (! SGFCDateIsValidSgfDate(sgfGameDate))
+      continue;
+
+    NSDateComponents* nsDateComponents = [[[NSDateComponents alloc] init] autorelease];
+    nsDateComponents.year = sgfGameDate.Year;
+    nsDateComponents.month = sgfGameDate.Month;
+    nsDateComponents.day = sgfGameDate.Day;
+
+    [dateComponents addObject:nsDateComponents];
+  }
+
+  return [[[GoGameInfoDates alloc] initWithDateComponents:dateComponents] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representing @a gameInfoDates that can be used as
+/// the value of the SGF property DT. Returns @e nil if the @e dataType property
+/// of @a gameInfoDates has the value #GoGameInfoDatesDataTypeNone. Also returns
+/// @e nil if the @e dataType property of @a gameInfoDates has the value
+/// #GoGameInfoDatesDataTypeStructuredData but the @a dateComponents property
+/// contains erroneous data that cannot be encoded for some reason.
+///
+/// NSDateComponents objects found in the @e dateComponents property of
+/// @a gameInfoDates for which (after converting them to SGFCDate values)
+/// SGFCDateIsValidSgfDate() returns NO are ignored.
+// -----------------------------------------------------------------------------
++ (NSString*) sgfStringFromGameInfoDates:(GoGameInfoDates*)gameInfoDates
+{
+  switch (gameInfoDates.dataType)
+  {
+    case GoGameInfoDatesDataTypeNone:
+    {
+      return nil;
+    }
+    case GoGameInfoDatesDataTypeSgfString:
+    {
+      return gameInfoDates.sgfString;
+    }
+    case GoGameInfoDatesDataTypeStructuredData:
+    {
+      NSMutableArray* sgfGameDates = [NSMutableArray array];
+      for (NSDateComponents* dateComponents in gameInfoDates.dateComponents)
+      {
+        SGFCDate sgfGameDate = SGFCDateMake(dateComponents.year,
+                                            dateComponents.month,
+                                            dateComponents.day);
+        // Use SGFCDateIsValidSgfDate(), not SGFCDateIsValidCalendarDate(),
+        // because we must be able to encode partial dates
+        if (! SGFCDateIsValidSgfDate(sgfGameDate))
+          continue;
+
+        NSValue* sgfGameDateAsValue = [NSValue valueWithSGFCDate:sgfGameDate];
+        [sgfGameDates addObject:sgfGameDateAsValue];
+      }
+
+      NSString* propertyValue = SGFCDateToPropertyValue(sgfGameDates);
+      if (propertyValue && propertyValue.length == 0)
+        return nil;
+      return propertyValue;
+    }
   }
 }
 

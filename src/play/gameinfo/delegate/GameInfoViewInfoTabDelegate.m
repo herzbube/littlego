@@ -267,6 +267,9 @@ enum CellId
     case CellIdRulesName:
       [self showEditGameInfoRulesController];
       break;
+    case CellIdGameDates:
+      [self showEditGameInfoDatesController];
+      break;
     case CellIdBlackPlayerRank:
     case CellIdWhitePlayerRank:
       [self showEditGameInfoRankControllerForCellId:cellId indexPath:indexPath];
@@ -319,6 +322,16 @@ enum CellId
 - (void) showEditGameInfoRulesController
 {
   EditGameInfoRulesController* controller = [EditGameInfoRulesController controllerWithGameInfoRules:self.gameInfo.gameInfoRules
+                                                                                            delegate:self];
+  [self.presentingViewController presentNavigationControllerWithRootViewController:controller];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for tableView:didSelectRowAtIndexPath:().
+// -----------------------------------------------------------------------------
+- (void) showEditGameInfoDatesController
+{
+  EditGameInfoDatesController* controller = [EditGameInfoDatesController controllerWithGameInfoDates:self.gameInfo.gameInfoDates
                                                                                             delegate:self];
   [self.presentingViewController presentNavigationControllerWithRootViewController:controller];
 }
@@ -400,6 +413,30 @@ enum CellId
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
 
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:RulesNameItem inSection:BasicGameInfoSection];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+
+  [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - EditGameInfoDatesControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief EditGameInfoDatesControllerDelegate protocol method
+// -----------------------------------------------------------------------------
+- (void) editGameInfoDatesControllerDidEndEditing:(EditGameInfoDatesController*)controller
+                        didChangeDatesInformation:(bool)didChangeDatesInformation
+{
+  if (didChangeDatesInformation)
+  {
+    // Unlike with EditTextController, there is no need to update self.gameInfo
+    // here because the controller already updated the GoGameInfoDates
+    // sub-object of self.gameInfo.
+
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
+
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:GameDatesItem inSection:BasicGameInfoSection];
     [self.tableView reloadRowsAtIndexPaths:@[indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
   }
@@ -602,6 +639,9 @@ enum CellId
     case CellIdRulesName:
       gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRules:self.gameInfo.gameInfoRules];
       break;
+    case CellIdGameDates:
+      gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoDates:self.gameInfo.gameInfoDates];
+      break;
     case CellIdBlackPlayerRank:
       gameInfoPropertyValue = [GoUtilities stringWithDescriptionOfGameInfoRank:self.gameInfo.blackPlayerRank];
       break;
@@ -638,8 +678,6 @@ enum CellId
       return self.gameInfo.gameName;
     case CellIdGameInformation:
       return self.gameInfo.gameInformation;
-    case CellIdGameDates:
-      return self.gameInfo.gameDates;
     case CellIdOpeningInformation:
       return self.gameInfo.openingInformation;
     case CellIdBlackPlayerName:
@@ -687,9 +725,6 @@ enum CellId
       break;
     case CellIdGameInformation:
       self.gameInfo.gameInformation = propertyValue;
-      break;
-    case CellIdGameDates:
-      self.gameInfo.gameDates = propertyValue;
       break;
     case CellIdOpeningInformation:
       self.gameInfo.openingInformation = propertyValue;
@@ -827,6 +862,5 @@ enum CellId
       return nil;
   }
 }
-
 
 @end

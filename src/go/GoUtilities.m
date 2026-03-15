@@ -21,6 +21,7 @@
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameInfoDates.h"
 #import "GoGameInfoRank.h"
 #import "GoGameInfoRound.h"
 #import "GoGameInfoRules.h"
@@ -1435,6 +1436,32 @@
         return description;
       NSString* ratingTypeString = [NSString stringWithRatingType:gameInfoRank.ratingType];
       return [description stringByAppendingFormat:@" (%@)", [ratingTypeString lowercaseString]];
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes the content of @a gameInfoDates. The
+/// string is suitable to be displayed in the UI.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDescriptionOfGameInfoDates:(GoGameInfoDates*)gameInfoDates
+{
+  switch (gameInfoDates.dataType)
+  {
+    case GoGameInfoDatesDataTypeNone:
+      return @"<Not set>";
+    case GoGameInfoDatesDataTypeSgfString:
+      return gameInfoDates.sgfString;
+    case GoGameInfoDatesDataTypeStructuredData:
+    {
+      NSMutableArray* gameInfoDatesAsStrings = [NSMutableArray array];
+      for (NSDateComponents* gameInfoDateComponents in gameInfoDates.dateComponents)
+      {
+        NSString* gameInfoDateAsString = [NSString stringWithGameInfoDateComponents:gameInfoDateComponents
+                                                                              style:NSDateFormatterMediumStyle];
+        [gameInfoDatesAsStrings addObject:gameInfoDateAsString];
+      }
+      return [gameInfoDatesAsStrings componentsJoinedByString:@", "];
     }
   }
 }
