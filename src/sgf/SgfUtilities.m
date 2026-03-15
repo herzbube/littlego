@@ -967,29 +967,95 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a GoGameInfoRank object that is populated with the rank
-/// information taken from the value of @a propertyValue.
-///
-/// @a propertyValue refers to the value of either the SGF game info property
-/// BR or WR. The value @e nil indicates that the property is not present.
-///
-/// If @a propertyValue is an empty string, this is also treated as the
-/// absence of the property, assuming that the value in this case is not coming
-/// directly from the SGF data but has passed through some intermediate
-/// processing (e.g. SGFCGameInfo).
+/// @brief Returns a string representing @a gameInfoRound that can be used as
+/// the value of the SGF property RO. Returns @e nil if the @e dataType property
+/// of @a gameInfoRound has the value #GoGameInfoRoundDataTypeNone.
 // -----------------------------------------------------------------------------
-+ (GoGameInfoRank*) gameInfoRankFromSgfString:(NSString*)propertyValue
++ (NSString*) sgfStringFromGameInfoRound:(GoGameInfoRound*)gameInfoRound
 {
-  if (! propertyValue || propertyValue.length == 0)
+  switch (gameInfoRound.dataType)
+  {
+    case GoGameInfoRoundDataTypeNone:
+    {
+      return nil;
+    }
+    case GoGameInfoRoundDataTypeSgfString:
+    {
+      return gameInfoRound.sgfString;
+    }
+    case GoGameInfoRoundDataTypeStructuredData:
+    {
+      SGFCRoundInformation sgfcRoundInformation = SGFCRoundInformationMake(gameInfoRound.roundNumber, gameInfoRound.roundType, YES);
+      return SGFCRoundInformationToPropertyValue(sgfcRoundInformation);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a GoGameInfoRank object that is populated with the rank
+/// information (if any) stored in @a sgfGoGameInfo. If @a blackPlayerRank is
+/// @e true the black player's rank information is used, if @a blackPlayerRank
+/// is @e false the white player's rank information is used.
+// -----------------------------------------------------------------------------
++ (GoGameInfoRank*) gameInfoRankFromSgfGoGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo
+                                  blackPlayerRank:(bool)blackPlayerRank
+{
+  SGFCGoPlayerRank sgfcGoPlayerRank;
+  NSString* rawPropertyValue;
+  if (blackPlayerRank)
+  {
+    sgfcGoPlayerRank = sgfGoGameInfo.goBlackPlayerRank;
+    rawPropertyValue = sgfGoGameInfo.blackPlayerRank;
+  }
+  else
+  {
+    sgfcGoPlayerRank = sgfGoGameInfo.goWhitePlayerRank;
+    rawPropertyValue = sgfGoGameInfo.whitePlayerRank;
+  }
+
+  if (sgfcGoPlayerRank.IsValid)
+  {
+    return [[[GoGameInfoRank alloc] initWithRankType:[SgfUtilities gameInfoRankTypeForSgfRankType:sgfcGoPlayerRank.RankType]
+                                                rank:sgfcGoPlayerRank.Rank
+                                          ratingType:[SgfUtilities gameInfoRatingTypeForSgfRatingType:sgfcGoPlayerRank.RatingType]] autorelease];
+  }
+  else if (rawPropertyValue && rawPropertyValue.length > 0)
+  {
+    return [[[GoGameInfoRank alloc] initWithSgfString:rawPropertyValue] autorelease];
+  }
+  else
+  {
     return [[[GoGameInfoRank alloc] init] autorelease];
+  }
+}
 
-  SGFCGoPlayerRank sgfcGoPlayerRank = SGFCGoPlayerRankFromPropertyValue(propertyValue);
-  if (! sgfcGoPlayerRank.IsValid)
-    return [[[GoGameInfoRank alloc] initWithSgfString:propertyValue] autorelease];
-
-  return [[[GoGameInfoRank alloc] initWithRankType:[SgfUtilities gameInfoRankTypeForSgfRankType:sgfcGoPlayerRank.RankType]
-                                              rank:sgfcGoPlayerRank.Rank
-                                        ratingType:[SgfUtilities gameInfoRatingTypeForSgfRatingType:sgfcGoPlayerRank.RatingType]] autorelease];
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representing @a gameInfoRank that can be used as
+/// the value of one of the SGF properties BR or WR. Returns @e nil if the
+/// @e dataType property of @a gameInfoRank has the value
+/// #GoGameInfoRankDataTypeNone.
+// -----------------------------------------------------------------------------
++ (NSString*) sgfStringFromGameInfoRank:(GoGameInfoRank*)gameInfoRank
+{
+  switch (gameInfoRank.dataType)
+  {
+    case GoGameInfoRankDataTypeNone:
+    {
+      return nil;
+    }
+    case GoGameInfoRankDataTypeSgfString:
+    {
+      return gameInfoRank.sgfString;
+    }
+    case GoGameInfoRankDataTypeStructuredData:
+    {
+      SGFCGoPlayerRank sgfcGoPlayerRank = SGFCGoPlayerRankMake(gameInfoRank.rank,
+                                                               [SgfUtilities sgfRankTypeForGameInfoRankType:gameInfoRank.rankType],
+                                                               [SgfUtilities sgfRatingTypeForGameInfoRatingType:gameInfoRank.ratingType],
+                                                               YES);
+      return SGFCGoPlayerRankToPropertyValue(sgfcGoPlayerRank);
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -1135,7 +1201,7 @@
 /// the value of the SGF property DT. Returns @e nil if the @e dataType property
 /// of @a gameInfoDates has the value #GoGameInfoDatesDataTypeNone. Also returns
 /// @e nil if the @e dataType property of @a gameInfoDates has the value
-/// #GoGameInfoDatesDataTypeStructuredData but the @a dateComponents property
+/// #GoGameInfoDatesDataTypeStructuredData but the @e dateComponents property
 /// contains erroneous data that cannot be encoded for some reason.
 ///
 /// NSDateComponents objects found in the @e dateComponents property of

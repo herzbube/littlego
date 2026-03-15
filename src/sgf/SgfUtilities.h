@@ -61,7 +61,10 @@
 + (GoGameResult*) gameResultFromSgfString:(NSString*)rePropertyValue;
 + (NSString*) sgfStringFromGameResult:(GoGameResult*)gameResult;
 + (GoGameInfoRound*) gameInfoRoundFromSgfGameInfo:(SGFCGameInfo*)sgfGameInfo;
-+ (GoGameInfoRank*) gameInfoRankFromSgfString:(NSString*)propertyValue;
++ (NSString*) sgfStringFromGameInfoRound:(GoGameInfoRound*)gameInfoRound;
++ (GoGameInfoRank*) gameInfoRankFromSgfGoGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo
+                                  blackPlayerRank:(bool)blackPlayerRank;
++ (NSString*) sgfStringFromGameInfoRank:(GoGameInfoRank*)gameInfoRank;
 + (enum GoGameInfoRankType) gameInfoRankTypeForSgfRankType:(SGFCGoPlayerRankType)sgfRankType;
 + (SGFCGoPlayerRankType) sgfRankTypeForGameInfoRankType:(enum GoGameInfoRankType)gameInfoRankType;
 + (enum GoGameInfoRatingType) gameInfoRatingTypeForSgfRatingType:(SGFCGoPlayerRatingType)sgfRatingType;

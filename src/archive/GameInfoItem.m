@@ -890,7 +890,7 @@ enum DataSourceInfoSectionItem
 
     self.blackPlayerName = [self stringValue:goGameInfo.blackPlayerName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerNameHasData];
 
-    GoGameInfoRank* blackPlayerRank = [SgfUtilities gameInfoRankFromSgfString:goGameInfo.blackPlayerRank];
+    GoGameInfoRank* blackPlayerRank = [SgfUtilities gameInfoRankFromSgfGoGameInfo:goGameInfo blackPlayerRank:true];
     NSString* descriptionOfBlackPlayerRank = (blackPlayerRank.dataType == GoGameInfoRankDataTypeNone
                                             ? nil // use our own placeholder string, not the one from GoUtilities
                                             : [GoUtilities stringWithDescriptionOfGameInfoRank:blackPlayerRank]);
@@ -900,7 +900,7 @@ enum DataSourceInfoSectionItem
     self.blackPlayerTeamName = [self stringValue:goGameInfo.blackPlayerTeamName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerTeamNameHasData];
     self.whitePlayerName = [self stringValue:goGameInfo.whitePlayerName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_whitePlayerNameHasData];
 
-    GoGameInfoRank* whitePlayerRank = [SgfUtilities gameInfoRankFromSgfString:goGameInfo.whitePlayerRank];
+    GoGameInfoRank* whitePlayerRank = [SgfUtilities gameInfoRankFromSgfGoGameInfo:goGameInfo blackPlayerRank:false];
     NSString* descriptionOfWhitePlayerRank = (whitePlayerRank.dataType == GoGameInfoRankDataTypeNone
                                             ? nil // use our own placeholder string, not the one from GoUtilities
                                             : [GoUtilities stringWithDescriptionOfGameInfoRank:whitePlayerRank]);

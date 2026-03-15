@@ -1801,12 +1801,12 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
   NSString* blackPlayerName = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerName);
   if (blackPlayerName)
     gameInfo.blackPlayerName = blackPlayerName;
-  gameInfo.blackPlayerRank = [SgfUtilities gameInfoRankFromSgfString:self.sgfGoGameInfo.blackPlayerRank];
+  gameInfo.blackPlayerRank = [SgfUtilities gameInfoRankFromSgfGoGameInfo:self.sgfGoGameInfo blackPlayerRank:true];
   gameInfo.blackPlayerTeamName = goGameInfoPropertyValue(self.sgfGoGameInfo.blackPlayerTeamName);
   NSString* whitePlayerName = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerName);
   if (whitePlayerName)
     gameInfo.whitePlayerName = whitePlayerName;
-  gameInfo.whitePlayerRank = [SgfUtilities gameInfoRankFromSgfString:self.sgfGoGameInfo.whitePlayerRank];
+  gameInfo.whitePlayerRank = [SgfUtilities gameInfoRankFromSgfGoGameInfo:self.sgfGoGameInfo blackPlayerRank:false];
   gameInfo.whitePlayerTeamName = goGameInfoPropertyValue(self.sgfGoGameInfo.whitePlayerTeamName);
   gameInfo.gameLocation = goGameInfoPropertyValue(self.sgfGoGameInfo.gameLocation);
   gameInfo.eventName = goGameInfoPropertyValue(self.sgfGoGameInfo.eventName);
