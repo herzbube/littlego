@@ -391,7 +391,7 @@ enum CellId
                                                                          delegate:self];
   editTextController.title = [@"Edit " stringByAppendingString:[self cellLabelForCellId:cellId]];
   editTextController.context = indexPath;
-  editTextController.footerText = [self footerTextForCellId:cellId];
+  editTextController.footerText = [self editTextControllerFooterTextForCellId:cellId];
 
   [self.presentingViewController presentNavigationControllerWithRootViewController:editTextController];
 }
@@ -815,9 +815,11 @@ enum CellId
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the game info property value that corresponds to @a cellId.
+/// @brief Returns a text that can be displayed in the footer of an
+/// EditTextController when editing the game info property value that
+/// corresponds to @a cellId.
 // -----------------------------------------------------------------------------
-- (NSString*) footerTextForCellId:(enum CellId)cellId
+- (NSString*) editTextControllerFooterTextForCellId:(enum CellId)cellId
 {
   switch (cellId)
   {
@@ -828,35 +830,25 @@ enum CellId
     case CellIdAnnotationAuthor:
       return @"The name of the person who made the annotations to the game.";
     case CellIdCopyrightInformation:
-      return @"The copyright information for the game data (including the annotations).";
+      return @"The copyright information (if any) for the game data (including the annotations).";
     case CellIdGameName:
       return @"The name of the game (e.g. for easily finding the game again within a collection).";
     case CellIdGameInformation:
       return @"Information about the game (e.g. background information, a game summary, etc.). Newlines may be used to separate paragraphs.";
-    case CellIdGameDates:
-      return @"The dates when the game was played.";
-    case CellIdRulesName:
-      return @"The name of the rules used for the game.";
     case CellIdOpeningInformation:
-      return @"Information about the opening played.";
+      return @"Information about the opening played (e.g. san-ren-sei, Chinese fuseki, etc.).";
     case CellIdBlackPlayerName:
       return @"The name of the black player.";
-    case CellIdBlackPlayerRank:
-      return @"The rank of the black player.";
     case CellIdBlackPlayerTeamName:
-      return @"The name of the black player's team.";
+      return @"The name of the black player's team, if the game was part of a team match.";
     case CellIdWhitePlayerName:
       return @"The name of the white player.";
-    case CellIdWhitePlayerRank:
-      return @"The rank of the white player.";
     case CellIdWhitePlayerTeamName:
-      return @"The name of the white player's team.";
+      return @"The name of the white player's team, if the game was part of a team match.";
     case CellIdGameLocation:
       return @"The name or description of the location where the game was played.";
     case CellIdEventName:
       return @"The name of the event (e.g. tournament) where the game was played.";
-    case CellIdRoundInformation:
-      return @"The information that describes the round in which the game was played.";
     default:
       assert(0);
       return nil;
