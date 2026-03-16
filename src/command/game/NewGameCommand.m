@@ -241,11 +241,12 @@
       newGame.playerBlack.timeData = blackPlayerTimeData;
       newGame.playerWhite.timeData = whitePlayerTimeData;
     }
-    if (! newGame.timeSettings.hasNoTimeSystems)
-    {
-      GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
-      [timeDataValidator validateTimeDataInGameTree:newGame];
-    }
+
+    // Validation is performed even for games without time systems so that
+    // the GoTimeDataInvalidReasonGameDoesNotUseTimedPlay is stored in the root
+    // node. Nodes created later on during game play will inherit that reason.
+    GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
+    [timeDataValidator validateTimeDataInGameTree:newGame];
 
     newGame.gameInfo.blackPlayerName = newGame.playerBlack.player.name;
     newGame.gameInfo.whitePlayerName = newGame.playerWhite.player.name;

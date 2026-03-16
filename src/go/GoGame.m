@@ -765,12 +765,20 @@
 - (void) updatePlayerTimeDataIfTimeDataIsValid:(GoPlayerTimeData*)playerTimeData
                           andAddTimeDataToNode:(GoNode*)newNode
 {
-  if (! playerTimeData)
-    return;
-
   GoNode* parentNode = newNode.parent;
-  GoTimeDataValidationResult validationState = [GoTimeDataValidator validationStateOfNode:parentNode];
 
+  if (! playerTimeData)
+  {
+    // This exists for games without time systems so that
+    // GoTimeDataInvalidReasonGameDoesNotUseTimedPlay is propagated from the
+    // root node to all other nodes.
+    newNode.isTimeDataValid = parentNode.isTimeDataValid;
+    newNode.timeDataInvalidReason = parentNode.timeDataInvalidReason;
+    newNode.timeDataValidationMode = parentNode.timeDataValidationMode;
+    return;
+  }
+
+  GoTimeDataValidationResult validationState = [GoTimeDataValidator validationStateOfNode:parentNode];
   if (validationState.isTimeDataValid)
   {
     GoNodeTimeData* nodeTimeData = [[[GoNodeTimeData alloc] init] autorelease];

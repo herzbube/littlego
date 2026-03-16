@@ -562,7 +562,7 @@ static const int maxStepsForCreateNodes = 9;
     if (! success)
       return false;
 
-    success = [self validateTimeDataIfGameHasAtLeastOneTimeSystem:errorMessage];
+    success = [self validateTimeData:errorMessage];
     if (! success)
       return false;
 
@@ -687,9 +687,13 @@ static const int maxStepsForCreateNodes = 9;
             GoNode* rootNode = nodeModel.rootNode;
 
             rootNode.goNodeSetup = goNewNode.goNodeSetup;
-            rootNode.goMove = goNewNode.goMove;
             rootNode.goNodeAnnotation = goNewNode.goNodeAnnotation;
             rootNode.goNodeMarkup = goNewNode.goNodeMarkup;
+            // Ignore goNodeTimeData. Time data always goes together with a
+            // move, and since the app does not store a move in the root node,
+            // it also does not store time data in the root node. If the SGF
+            // root node did contain time data, it is therefore discarded. The
+            // loss is acceptable because time data without a move is useless.
 
             goMostRecentContentNode = rootNode;
             goParentNode = nil;
@@ -1645,20 +1649,21 @@ atLeastOneTimeDataPropertyWasFound:(bool)atLeastOneTimeDataPropertyWasFound
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Validates the time data in the entire node tree, but only if the game
-/// has at least one time system.
+/// @brief Validates the time data in the entire node tree.
 ///
 /// Although the validation traverses the entire node tree, this is a much
 /// faster operation than validateSetupAndMoveNodes:() and therefore does not
 /// need to provide progress feedback.
 ///
+/// @note Validation is performed even for games without time systems so that
+/// the reason #GoTimeDataInvalidReasonGameDoesNotUseTimedPlay is set on all
+/// nodes.
+///
 /// This is a helper function for setupNodes:().
 // -----------------------------------------------------------------------------
-- (bool) validateTimeDataIfGameHasAtLeastOneTimeSystem:(NSString**)errorMessage
+- (bool) validateTimeData:(NSString**)errorMessage
 {
   GoGame* game = [GoGame sharedGame];
-  if (game.timeSettings.hasNoTimeSystems)
-    return true;
 
   GoTimeDataValidator* timeDataValidator = [GoTimeDataValidator timeDataValidatorWithUserDefaultsMode];
   [timeDataValidator validateTimeDataInGameTree:game];
