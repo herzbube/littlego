@@ -951,6 +951,10 @@ enum GoClockSuspendedReason
   /// the user sends the app to the background, but also when there is a phone
   /// call or other interruption.
   GoClockSuspendedReasonBoardNotInteractive,
+  /// @brief The clock is suspended because a user preference prevented it from
+  /// being started automatically. The user can manually start the clock via
+  /// interaction with the user interface clock.
+  GoClockSuspendedReasonUserPreferences,
   /// @brief The clock is not suspended. The clock is set to either
   /// #GoClockStateStopped or #GoClockStateStarted.
   GoClockSuspendedReasonNotSuspended,

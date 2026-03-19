@@ -839,10 +839,8 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
             (startReason == PlayerClockStartReasonLoadGameHumanPlayerTurnBegins && ! timedPlayModel.autostartPlayerClockForArchiveGames) ||
             (startReason == PlayerClockStartReasonHumanPlayerTurnBegins && ! timedPlayModel.autostartPlayerClockWhenTurnBegins))
         {
-          // Using the "user action" reason guarantees that the app does not
-          // start the clock on its own
           [self suspendClockIfNotSuspendedAndInvalidateTimer:playerTimeData
-                                                      reason:GoClockSuspendedReasonUserAction];
+                                                      reason:GoClockSuspendedReasonUserPreferences];
           return;
         }
       }
@@ -868,7 +866,8 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
       // - If the human player's clock is already started, we don't have to do
       //   anything.
       // - If the human player's clock is suspended for any reason (in
-      //   particular because of GoClockSuspendedReasonUserAction or
+      //   particular because of GoClockSuspendedReasonUserAction,
+      //   GoClockSuspendedReasonUserPreferences or
       //   GoClockSuspendedReasonBoardNotInteractive), we don't want to start
       //   their clock.
       // - There is no known scenario how the human player's clock could be
@@ -975,6 +974,12 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
           else
             return PlayerClockServiceOperationResultGameContinues;
         case GoClockStateSuspended:
+          // If the clock was merely not started because of a user preference,
+          // then we can act as if the clock state were GoClockStateStarted,
+          // which means the clock can be stopped
+          if (playerTimeData.clockSuspendedReason == GoClockSuspendedReasonUserPreferences)
+            [self stopClockIfNotStoppedAndInvalidateTimer:playerTimeData];
+
           // If a player resigns, then game ends and a suspended clock must be
           // stopped, because the user must not be able to start the clock
           // manually (PlayerClockSuspendReasonUserRequest case), and the clock
@@ -996,7 +1001,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
           //   is discarded "soon" ("soon" being before a clock that was
           //   suspended because of GoClockSuspendedReasonBoardNotInteractive
           //   is started again).
-          if (stopReason == PlayerClockStopReasonPlayerResigns)
+          else if (stopReason == PlayerClockStopReasonPlayerResigns)
             [self stopClockIfNotStoppedAndInvalidateTimer:playerTimeData];
 
           return PlayerClockServiceOperationResultGameContinues;
@@ -1447,6 +1452,7 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
         [self startClockAndScheduleTimer:playerTimeData];
         break;
       case GoClockSuspendedReasonUserAction:
+      case GoClockSuspendedReasonUserPreferences:
         break;
       case GoClockSuspendedReasonNotSuspended:
         // Either clock is already started (should not be possible, but if it
