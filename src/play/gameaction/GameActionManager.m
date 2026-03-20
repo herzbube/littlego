@@ -928,7 +928,13 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   // It's annoying to have buttons appear and disappear all the time, so
   // we try to minimize this by keeping the same buttons in the navigation
-  // bar while the user is browsing board positions.
+  // bar while the user is browsing board positions. The following known cases
+  // exist, though, that require a change to the visible buttons:
+  // - Game has ended and the user switches from/to the last board position of
+  //   the current game variation while the "Play" UI area is in Play mode
+  //   => we show/hide a dedicated button to switch to scoring mode (this
+  //      function is usually only available from the "more game actions" menu)
+  self.visibleStatesNeedUpdate = true;
   self.enabledStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -1151,7 +1157,8 @@ static GameActionManager* sharedGameActionManager = nil;
         }
         else
         {
-          if (GoGameStateGameHasEnded == game.state)
+          if (GoGameStateGameHasEnded == game.state &&
+              boardPosition.isLastPosition)
           {
             [self addGameAction:GameActionScoringStart toVisibleStatesDictionary:visibleStates];
           }

@@ -174,9 +174,10 @@
       }
       case MoreGameActionsButtonScore:
       {
-        // If game has ended there is a dedicated button for enabling scoring
-        // mode, so no need to show this option in our menu
-        if (GoGameStateGameHasEnded == game.state)
+        // If game has ended and the user is viewing the last board position
+        // of the currently selected game variation, there is a dedicated button
+        // for enabling scoring mode, so no need to show this option in our menu
+        if (GoGameStateGameHasEnded == game.state && game.boardPosition.isLastPosition)
           continue;
         if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeBoardSetup && uiAreaPlayMode != UIAreaPlayModeEditMarkup)
           continue;
