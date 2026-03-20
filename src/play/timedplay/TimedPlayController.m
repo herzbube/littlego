@@ -827,8 +827,10 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
       // From this point onwards: The clock can only be stopped.
       // - It cannot be started because before the player's turn began, nobody
       //   can have started the clock because it was not that player's turn.
-      // - Ditto for suspended. GoClockSuspendedReasonUserAction is the only
-      //   exception, and that was handled above.
+      // - It cannot be suspended because before the player's turn began, nobody
+      //   can have suspended the clock because it was not that player's turn.
+      //   GoClockSuspendedReasonUserAction is the only exception, and that was
+      //   handled above.
       assert(playerTimeData.clockState == GoClockStateStopped);
 
       bool humanPlayerTurnBegins = (startReason != PlayerClockStartReasonComputerPlayerTurnBegins);
@@ -905,8 +907,10 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
         return;
 
       // Avoid starting the clock accidentally if the user cannot interact with
-      // the board to play a move. Example: If the "Play" UI area is not in
-      // play mode (#UIAreaPlayModePlay).
+      // the board to play a move. Example: If the "Play" UI area is in scoring
+      // mode the clock is suspended, but the user can tap the clock in an
+      // attempt to start it => we don't want the clock to start because the
+      // user cannot play a move in scoring mode.
       if (playerTimeData.clockSuspendedReason == GoClockSuspendedReasonBoardNotInteractive)
         return;
 
@@ -974,36 +978,28 @@ static const enum UIAreaPlayMode UIAreaPlayModeUnknown = -1;
           else
             return PlayerClockServiceOperationResultGameContinues;
         case GoClockStateSuspended:
-          // If the clock was merely not started because of a user preference,
-          // then we can act as if the clock state were GoClockStateStarted,
-          // which means the clock can be stopped
-          if (playerTimeData.clockSuspendedReason == GoClockSuspendedReasonUserPreferences)
-            [self stopClockIfNotStoppedAndInvalidateTimer:playerTimeData];
+          // User has suspended the clock (the user is allowed to suspend the
+          // clock of both human and computer players). We respect the user's
+          // wish indefinitely and don't stop the clock so that it doesn't
+          // turn back on when it's the player's next turn. The only exception
+          // is if a player resigns - in that case the game ends and the user
+          // must not be able to start the clock again manually
+          // (PlayerClockStartReasonUserRequest).
+          if (playerTimeData.clockSuspendedReason == GoClockSuspendedReasonUserAction &&
+              stopReason != PlayerClockStopReasonPlayerResigns)
+          {
+            return PlayerClockServiceOperationResultGameContinues;
+          }
 
-          // If a player resigns, then game ends and a suspended clock must be
-          // stopped, because the user must not be able to start the clock
-          // manually (PlayerClockSuspendReasonUserRequest case), and the clock
-          // must not be started again automatically (case
-          // GoClockSuspendedReasonBoardNotInteractive).
-          //
-          // For the other stop reaons, the clock remains suspended:
-          // - For PlayerClockStopReasonPlayerTurnEnds the only thing that is
-          //   important is that the clock is not started when the move is
-          //   submitted to GoGame, so that GoGame can perform time keeping
-          //   operations.
-          // - For PlayerClockStopReasonSelectedNodeChanges the only thing
-          //   that is important is that the clock is not started when the node
-          //   change completes, so that TimedPlayController can update the
-          //   players' time data to match the newly selected node (see
-          //   currentBoardPositionDidChange:).
-          // - For PlayerClockStopReasonNewGameWillBeCreated the only thing
-          //   that matters is that the clock is not started. The game data
-          //   is discarded "soon" ("soon" being before a clock that was
-          //   suspended because of GoClockSuspendedReasonBoardNotInteractive
-          //   is started again).
-          else if (stopReason == PlayerClockStopReasonPlayerResigns)
-            [self stopClockIfNotStoppedAndInvalidateTimer:playerTimeData];
-
+          // In all other scenarios we stop the clock, for these reasons:
+          // - Because there simply is no reason to keep the clock suspended.
+          //   If the reason for suspension is still in force when it's the
+          //   player's next turn (e.g. board is still not interactive, or user
+          //   preference still prevents the clock from being started), the
+          //   player's clock will again go from stopped to suspended.
+          // - Because keeping the clock suspended would require all sorts of
+          //   special case handling in startClockOfPlayer:reason:().
+          [self stopClockIfNotStoppedAndInvalidateTimer:playerTimeData];
           return PlayerClockServiceOperationResultGameContinues;
       }
     }
