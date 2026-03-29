@@ -137,7 +137,10 @@
       [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
     }
 
-    [game endGameIfNecessary];
+    // We do not want to update the game result, because the game end state is
+    // set after the game variation changes, not in a context where the game end
+    // state is set due to game play (e.g. a pass move, a player resigns, etc.).
+    [game endGameIfNecessary:false];
 
     [center postNotificationName:currentGameVariationDidChange object:nil];
   }

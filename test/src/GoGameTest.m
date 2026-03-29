@@ -1888,7 +1888,7 @@
   m_game.gameInfo.gameResult.dataType = GoGameResultDataTypeStructuredData;
   m_game.gameInfo.gameResult.gameResultType = GoGameResultTypeWhiteWin;
   m_game.gameInfo.gameResult.winType = GoGameResultWinTypeWinByResignation;
-  [m_game endGameIfNecessary];
+  [m_game endGameIfNecessary:false];
   XCTAssertEqual(m_game.state, GoGameStateGameHasEnded);
   XCTAssertEqual(m_game.reasonForGameHasEnded, GoGameHasEndedReasonWhiteWinsByResignation);
 
@@ -1905,9 +1905,39 @@
   XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
   XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
   XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
-  [m_game endGameIfNecessary];
+  [m_game endGameIfNecessary:false];
   XCTAssertEqual(m_game.state, GoGameStateGameHasEnded);
   XCTAssertEqual(m_game.reasonForGameHasEnded, GoGameHasEndedReasonTwoPasses);
+
+  // GoGameResult is ***NOT*** updated if it is used as the source for
+  // the game end state
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [m_game pass];
+  [m_game pass];
+  [m_game revertStateFromEndedToInProgress:false];
+  m_game.gameInfo.gameResult.dataType = GoGameResultDataTypeStructuredData;
+  m_game.gameInfo.gameResult.gameResultType = GoGameResultTypeWhiteWin;
+  m_game.gameInfo.gameResult.winType = GoGameResultWinTypeWinByResignation;
+  [m_game endGameIfNecessary:true];
+  XCTAssertEqual(m_game.state, GoGameStateGameHasEnded);
+  XCTAssertEqual(m_game.reasonForGameHasEnded, GoGameHasEndedReasonWhiteWinsByResignation);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeWhiteWin);
+  XCTAssertEqual(m_game.gameInfo.gameResult.winType, GoGameResultWinTypeWinByResignation);
+
+  // GoGameResult ***IS*** updated if it is ***NOT*** used as the source for
+  // the game end state
+  [m_game revertStateFromEndedToInProgress:false];
+  m_game.gameInfo.gameResult.dataType = GoGameResultDataTypeStructuredData;
+  m_game.gameInfo.gameResult.gameResultType = GoGameResultTypeWhiteWin;
+  m_game.gameInfo.gameResult.winType = GoGameResultWinTypeWinWithoutScore;
+  [m_game endGameIfNecessary:true];
+  XCTAssertEqual(m_game.state, GoGameStateGameHasEnded);
+  XCTAssertEqual(m_game.reasonForGameHasEnded, GoGameHasEndedReasonTwoPasses);
+  XCTAssertEqual(m_game.gameInfo.gameResult.dataType, GoGameResultDataTypeStructuredData);
+  XCTAssertEqual(m_game.gameInfo.gameResult.gameResultType, GoGameResultTypeUnknownResult);
+  // Don't check the win type, it's not relevant for GoGameResultTypeNoResult
 
   // We know that endGameIfNecessary() invokes
   // endGameDueToPassMovesIfGameRulesRequireIt() => avoid test duplication, see

@@ -1810,11 +1810,17 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 ///   object's data indicates that the player resigned, has lost the game on
 ///   time, or forfeited the game, then the game is ended with the corresponding
 ///   reason.
-/// - Regardless of whether the current game variation is the main variation:
-///   Examines the most recent moves played in the current game variations.
-///   If at least two consecutive pass moves were played, and if the game rules
-///   require the game to end because of this, then the game is ended, with the
-///   reason set to indicate the number of pass moves that were detected.
+/// - If the game is not ended, then the next step happens regardless of whether
+///   the current game variation is the main variation: Examines the most recent
+///   moves played in the current game variations. If at least two consecutive
+///   pass moves were played, and if the game rules require the game to end
+///   because of this, then the game is ended, with the reason set to indicate
+///   the number of pass moves that were detected.
+/// - If the game is now ended, then in addition the GoGameResult object
+///   associated with this GoGame is updated to match the new game state
+///   if @a updateGameResultIfNecessary is @e true, @b and if the current game
+///   variation is the main variation, @b and if the GoGameResult's update
+///   policy allows automatic updates.
 ///
 /// Invoking this method sets the document dirty flag if the game state changes.
 ///
@@ -1824,14 +1830,8 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// @note The pass methods already set the game state, so invoking this method
 /// after a pass move is not necessary.
 // -----------------------------------------------------------------------------
-- (void) endGameIfNecessary
+- (void) endGameIfNecessary:(bool)updateGameResultIfNecessary
 {
-  // IMPORTANT: This method must NOT update the game result - this method is
-  // invoked in a context where the game end state is set after a game variation
-  // changes, not in a context where the game end state is set due to game play
-  // (e.g. a pass move, a player resigns, etc.).
-  const bool updateGameResultIfNecessary = false;
-
   if (self.nodeModel.isMainVariation)
   {
     enum GoGameHasEndedReason reason = [GoUtilities goGameHasEndedReasonForGameResult:self.gameInfo.gameResult];

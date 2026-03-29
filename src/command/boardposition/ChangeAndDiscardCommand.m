@@ -239,6 +239,12 @@
   GoBoardPosition* boardPosition = game.boardPosition;
   GoNodeModel* nodeModel = game.nodeModel;
 
+  // The discard may result in the main game variation being deleted, and
+  // another game variation becoming the main game variation. In that scenario,
+  // if the new main game variation causes the game to end because of pass
+  // moves, the game result must be updated to reflect that.
+  bool updateGameResultIfNecessary = nodeModel.isMainVariation;
+
   int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition + 1;
   int numberOfNodesInCurrentGameVariation = nodeModel.numberOfNodes;
   if (indexOfFirstNodeToDiscard >= numberOfNodesInCurrentGameVariation)
@@ -286,7 +292,9 @@
   //   we must consider the game result.
   // - But if we are now on a non-main variation the game result must
   //   ***NOT*** be considered.
-  [game endGameIfNecessary];
+  // - See comment above why it may be necessary to instead update the game
+  //   result.
+  [game endGameIfNecessary:updateGameResultIfNecessary];
 
   return true;
 }
