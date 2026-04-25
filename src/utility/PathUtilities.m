@@ -103,10 +103,30 @@
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
 
-  NSURL* sourceURL = [NSURL fileURLWithPath:sourcePath];
+  // It's important to specify an URL for the appropriateForURL parameter that
+  // points to a volume where the app has write access to. Reason: The API we're
+  // using will create the temporary folder on that same volume. The API is
+  // designed with the assumption that we will want to move files we create in
+  // the temporary folder to the destination URL, so having the temporary folder
+  // on the same volume will enable the move to work very efficiently, in
+  // particular no cross-volume operation.
+  //
+  // If the URL we specify for the appropriateForURL parameter points to a
+  // location where the app does not have write access to, then the API will
+  // return nil.
+  //
+  // Note: NSTemporaryDirectory() is the classic approach for getting a
+  // temporary directory, but there are hints in Apple's API documentation that
+  // this is no longer the preferred API. Also, NSTemporaryDirectory() just
+  // returns a path to the top-level directory, which would require us to
+  // figure out our own unique subfolder name and create that subfolder. The
+  // new API takes care of all this for us. Example for paths on a device:
+  // - NSTemporaryDirectory() => /private/var/mobile/Containers/Data/Application/ED22B8D9-0D21-4CC6-BA21-89355396EF62/tmp/
+  // - New API                => /private/var/mobile/Containers/Data/Application/ED22B8D9-0D21-4CC6-BA21-89355396EF62/tmp/NSIRD_Little%20Go_3s8aqK/
+  NSURL* destinationURL = [NSURL fileURLWithPath:destinationPath];
   NSURL* temporaryDirectory = [fileManager URLForDirectory:NSItemReplacementDirectory
                                                   inDomain:NSUserDomainMask
-                                         appropriateForURL:sourceURL
+                                         appropriateForURL:destinationURL
                                                     create:YES
                                                      error:error];
   if (! temporaryDirectory)
@@ -115,7 +135,7 @@
     return NO;
   }
 
-  NSString* sourceFileName = [sourceURL lastPathComponent];
+  NSString* sourceFileName = [sourcePath lastPathComponent];
   NSString* temporaryCopyFilePath = [[temporaryDirectory path] stringByAppendingPathComponent:sourceFileName];
   if ([fileManager fileExistsAtPath:temporaryCopyFilePath])
   {
