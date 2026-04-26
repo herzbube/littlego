@@ -32,6 +32,7 @@
 // -----------------------------------------------------------------------------
 @interface ChangeNodeSelectionAsyncCommand()
 @property(nonatomic, retain) GoNode* node;
+@property(nonatomic, assign) bool branchingNodeWasAlreadySelected;
 @end
 
 
@@ -69,6 +70,7 @@
   }
 
   self.node = node;
+  self.branchingNodeWasAlreadySelected = false;
 
   return self;
 }
@@ -115,7 +117,8 @@
   {
     [[LongRunningActionCounter sharedCounter] increment];
 
-    bool success = [self changeBoardPositionToBranchingNode:nodeModel];
+    bool success = [self changeBoardPositionToBranchingNode:nodeModel
+                                              boardPosition:boardPosition];
     if (! success)
       return false;
 
@@ -146,6 +149,7 @@
 /// and new game variations differ.
 // -----------------------------------------------------------------------------
 - (bool) changeBoardPositionToBranchingNode:(GoNodeModel*)nodeModel
+                              boardPosition:(GoBoardPosition*)boardPosition
 {
   [self.asynchronousCommandDelegate asynchronousCommand:self
                                             didProgress:0.0
@@ -155,6 +159,17 @@
   int indexOfAncestorOfNodeInCurrentVariation = [nodeModel indexOfNode:ancestorOfNodeInCurrentVariation];
 
   int newBoardPosition = indexOfAncestorOfNodeInCurrentVariation;
+  if (newBoardPosition == boardPosition.currentBoardPosition)
+  {
+    // ChangeBoardPositionCommand does not do anything if the current board
+    // position is equal to the new board position. For the most part this is
+    // ok, but it also does not do one thing that we want it to do, and that is
+    // stopping the clock of the player whose turn it currently is. We therefore
+    // have to take care that the stopping is done later on.
+    self.branchingNodeWasAlreadySelected = true;
+    return true;
+  }
+
   ChangeBoardPositionCommand* command = [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease];
   command.isFirstBoardPositionChange = true;
   command.isLastBoardPositionChange = false;
@@ -195,7 +210,12 @@
   int indexOfNode = [nodeModel indexOfNode:self.node];
   int newBoardPosition = indexOfNode;
   ChangeBoardPositionCommand* command = [[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease];
-  command.isFirstBoardPositionChange = false;
+  // If the branching node was already selected then we did not execute
+  // ChangeBoardPositionCommand before, which means that when we execute it
+  // hear it will perform the first board position change. This is important
+  // so that ChangeBoardPositionCommand knows whether or not to stop the clock
+  // of the player whose turn it currently is.
+  command.isFirstBoardPositionChange = self.branchingNodeWasAlreadySelected;
   command.isLastBoardPositionChange = true;
   bool success = [command submit];
   if (! success)
