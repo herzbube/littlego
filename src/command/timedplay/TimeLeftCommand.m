@@ -107,16 +107,38 @@ typedef struct TimeLeftParameterValues TimeLeftParameterValues;
 
     if (periodBasedTimeSystem.goUnusedTimeHandling == GoUnusedTimeHandlingUseForExtraMoves)
     {
-      // Handling for GoTimeSystemTypeSteadyAverage: Allow Fuego to aggressively
-      // use all the remaining time for a single move, if it wants to. Because
-      // it did not use the time so far, it may continue to play faster.
+      // Handling for GoTimeSystemTypeSteadyAverage: remainingNumberOfStones
+      // must not be 0, because that would indicate main time is in force.
+      // We set it to 1 to give Fuego the potential to use up all the remaining
+      // time for a single move.
       timeLeftParameterValues.remainingNumberOfStones = 1;
+
+      // When GoTimeSystemTypeSteadyAverage is in force, there is no period
+      // reset until the entire time of the current period has been used up. If
+      // more time is used than what's left, the period reset occurs, any excess
+      // time will simply be deducted from the next period, and the move will
+      // count as the first move of the next period. However, Fuego does not
+      // understand this concept, because it only knows the Canadian Timing
+      // rules, and it will therefore always play within the remaining time.
+      // This means that without intervention, Fuego would get less and less
+      // time to play and no period reset will ever happen. The intervention
+      // here is that we add the time Fuego would have for the first move in the
+      // next period. This allows Fuego to be aggressive about using the actual
+      // remaining time, thus increasing the likelihood that a period reset will
+      // occur.
+      //
+      // All this reasoning aside, since Fuego did not use up the entire period
+      // in the first place, the game might already be in a phase where Fuego is
+      // very sure about the result, so Fuego would then continue to be quick to
+      // play and stay within the current period.
+      timeLeftParameterValues.remainingNumberOfSeconds = (timeLeftParameterValues.remainingNumberOfSeconds +
+                                                          floor(periodBasedTimeSystem.periodDurationInSeconds / periodBasedTimeSystem.minimumNumberOfMovesPerPeriod));
     }
     else
     {
       // remainingNumberOfStones == 0 means SgTimeRecord::UseOvertime() returns
-      // false, i.e. Fuego will assume it is in overtime. It will then use a lot
-      // less time than remainingNumberOfSeconds would allow.
+      // false, i.e. Fuego will assume it is in main time. It will then use a
+      // lot less time than remainingNumberOfSeconds would allow.
       // See SgDefaultTimeControl::TimeForCurrentMove().
       DDLogWarn(@"%@: remainingNumberOfStones is unexpectedly 0, Fuego will treat remainingNumberOfSeconds as main time", self);
     }
