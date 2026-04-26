@@ -328,6 +328,9 @@
 // -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
+  // In a game with timed play, the game can end while a gesture is in progress
+  // when the player runs out of time
+  [self cancelPanningInProgress];
   [self updatePanningEnabled];
 }
 
