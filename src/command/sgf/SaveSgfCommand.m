@@ -134,8 +134,6 @@
                                          boardSize:boardSize];
   [self addGameInfoPropertiesToGameInfoNode:gameInfoNode
                        withValuesFromGoGame:goGame];
-  [self addPlayerNamesToGameInfoNode:gameInfoNode
-                withValuesFromGoGame:goGame];
   [self addTimeDataToGameInfoNode:gameInfoNode
                 withValuesFromGoGame:goGame];
 
@@ -244,21 +242,6 @@
   setSgfGameInfoPropertyIfNecessary(gameInfo.gameLocation, SGFCPropertyTypePC, true);
   setSgfGameInfoPropertyIfNecessary(gameInfo.eventName, SGFCPropertyTypeEV, true);
   setSgfGameInfoPropertyIfNecessary([SgfUtilities sgfStringFromGameInfoRound:gameInfo.gameInfoRound], SGFCPropertyTypeRO, true);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for createSgfDocument:errorMessage:()
-// -----------------------------------------------------------------------------
-- (void) addPlayerNamesToGameInfoNode:(SGFCNode*)gameInfoNode
-                 withValuesFromGoGame:(GoGame*)goGame
-{
-  SGFCSimpleTextPropertyValue* pbPropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:goGame.playerBlack.player.name];
-  SGFCProperty* pbProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypePB value:pbPropertyValue];
-  [gameInfoNode setProperty:pbProperty];
-
-  SGFCSimpleTextPropertyValue* pwPropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:goGame.playerWhite.player.name];
-  SGFCProperty* pwProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypePW value:pwPropertyValue];
-  [gameInfoNode setProperty:pwProperty];
 }
 
 // -----------------------------------------------------------------------------
