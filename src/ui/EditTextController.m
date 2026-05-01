@@ -274,7 +274,7 @@
   [visualFormats addObject:@"H:|-[textView]-|"];
   [visualFormats addObject:@"H:|-[validationErrorLabel]-|"];
   [visualFormats addObject:@"H:|-[footerLabel]-|"];
-  // Important: Don't attach the bottom of validationErrorLabel! This is
+  // Important: Don't attach the bottom of footerLabel! This is
   // managed by KeyboardHeightAdjustment.
   [visualFormats addObject:@"V:|-[textView]-[validationErrorLabel]-[footerLabel]"];
   [AutoLayoutUtility installVisualFormats:visualFormats

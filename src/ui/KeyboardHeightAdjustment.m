@@ -18,6 +18,7 @@
 // Project includes
 #import "KeyboardHeightAdjustment.h"
 #import "../ui/AutoLayoutUtility.h"
+#import "../ui/UiElementMetrics.h"
 
 // System includes
 #import <objc/runtime.h>
@@ -204,10 +205,6 @@ NSString* associatedKeyboardHeightAdjustmentHeightConstraintHighPriorityObjectKe
 /// the height of @e self.keyboardHeightAdjustmentViewToAdjustHeight. The new
 /// constraint forces @e self.keyboardHeightAdjustmentViewToAdjustHeight to
 /// become smaller to make room for the keyboard.
-///
-/// @todo Try to simplify the implementation of this method, and of
-/// keyboardWillHide:(), by using UIKeyboardLayoutGuide. This requires iOS 15
-/// to be the deployment target.
 // -----------------------------------------------------------------------------
 - (void) keyboardHeightAdjustmentKeyboardWillShow:(NSNotification*)notification
 {
@@ -216,38 +213,20 @@ NSString* associatedKeyboardHeightAdjustmentHeightConstraintHighPriorityObjectKe
   if (self.keyboardHeightAdjustmentHeightConstraintHighPriority)
     [self keyboardHeightAdjustmentRemoveHeightConstraintHighPriority];
 
-  NSDictionary* userInfo = [notification userInfo];
-
-  // The frame we get from the notification is in screen coordinates where width
-  // and height might be swapped depending on the current interface orientation.
-  // We invoke convertRect:fromView: in order to translate the frame into our
-  // view coordinates. This translation resolves all interface orientation
-  // complexities for us.
-  NSValue* keyboardFrameAsValue = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
-  CGRect keyboardFrame = [keyboardFrameAsValue CGRectValue];
-  keyboardFrame = [self.keyboardHeightAdjustmentReferenceView convertRect:keyboardFrame fromView:nil];
-  CGFloat distanceFromViewBottom = keyboardFrame.size.height;
-
   // Constraint that allows the view to extend its bottom down to the top
   // of the keyboard.
   self.keyboardHeightAdjustmentHeightConstraintHighPriority = [NSLayoutConstraint constraintWithItem:self.keyboardHeightAdjustmentViewToAdjustHeight
                                                                                            attribute:NSLayoutAttributeBottom
                                                                                            relatedBy:NSLayoutRelationEqual
-                                                                                              toItem:self.keyboardHeightAdjustmentReferenceView.layoutMarginsGuide
-                                                                                           attribute:NSLayoutAttributeBottom
+                                                                                              toItem:self.keyboardHeightAdjustmentReferenceView.keyboardLayoutGuide
+                                                                                           attribute:NSLayoutAttributeTop
                                                                                           multiplier:1.0f
-                                                                                            constant:0];
-  // The constraint uses the negative of distanceFromViewBottom because we want
-  // to express the **difference** of the bottom of the two views involved in
-  // the constraint (self.keyboardHeightAdjustmentViewToAdjustHeight and
-  // self.keyboardHeightAdjustmentReferenceView). In order for this to work, the
-  // reference view must extend to the bottom of the screen to where the
-  // keyboard pops up from.
-  self.keyboardHeightAdjustmentHeightConstraintHighPriority.constant = -distanceFromViewBottom;
+                                                                                            constant:-[UiElementMetrics verticalSpacingSiblings]];
   // While this constraint is installed, it will take precedence over
   // self.keyboardHeightAdjustmentHeightConstraintLowPriority
   self.keyboardHeightAdjustmentHeightConstraintHighPriority.priority = UILayoutPriorityDefaultHigh;
 
+  NSDictionary* userInfo = [notification userInfo];
   NSNumber* animationDurationAsNumber = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
   NSTimeInterval animationDuration = [animationDurationAsNumber doubleValue];
   [UIView animateWithDuration:animationDuration animations:^{

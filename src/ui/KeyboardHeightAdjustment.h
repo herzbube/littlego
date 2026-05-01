@@ -33,8 +33,9 @@
 /// in reaction to the software keyboard appearing/disappearing. The height
 /// @a viewToAdjustHeight is defined by aligning the bottom edge of
 /// @a viewToAdjustHeight to the bottom edge of the layout guide of
-/// @a referenceView. When the keyboard appears this constraint is modified
-/// by the height of the keyboard.
+/// @a referenceView. When the keyboard appears another constraint with higher
+/// priority is created that aligns the bottom edge of @a viewToAdjustHeight to
+/// the top edge of the keyboard.
 ///
 /// For this scheme to work, a number of things must be guaranteed:
 /// - @a viewToAdjustHeight must be a descendant view of @a referenceView in
@@ -42,8 +43,6 @@
 /// - No one else is allowed to define Auto Layout constraints that specify the
 ///   height of @a viewToAdjustHeight, or the location of the bottom edge of
 ///   @a viewToAdjustHeight.
-/// - @a referenceView must extend to the bottom of the screen to where the
-//    keyboard pops up from.
 ///
 /// @note Invoking this method must be balanced by invoking
 /// endObservingKeyboardWithViewToAdjustHeight:(). An object can make only one
