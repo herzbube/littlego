@@ -307,7 +307,20 @@ configurationForConnectingSceneSession:(UISceneSession*)connectingSceneSession
 {
   DDLogInfo(@"application:configurationForConnectingSceneSession:options:() received");
 
-  if (connectingSceneSession.role != UIWindowSceneSessionRoleApplication)
+  // The underlying type of UISceneSessionRole is NSString, therefore to be
+  // sure that the comparison always works we use isEqualToString:(), and not
+  // just the "!=" operator that compares the memory location of the string
+  // constant. One known scenario where string comparison is important is when
+  // upgrading from a version of the app that does not yet implement the
+  // scene-based life cycle:
+  // - The user launches the old version of the app
+  // - The user sends the old version of the app to the background
+  // - The user installs the new version of the app
+  // - The user launches the app
+  // Now the string that connectingSceneSession.role returns does ***NOT***
+  // point to the same memory location as UIWindowSceneSessionRoleApplication,
+  // hence the "!=" operator does not work.
+  if (! [connectingSceneSession.role isEqualToString:UIWindowSceneSessionRoleApplication])
   {
     // The only currently known case where this occurs is when the user starts
     // "Screen Mirroring" on an iOS device to mirror the device's screen on
