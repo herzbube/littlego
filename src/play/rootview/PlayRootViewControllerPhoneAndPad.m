@@ -52,7 +52,8 @@
 @property (nonatomic, assign) bool viewsAreInPortraitOrientation;
 @property (nonatomic, retain) NSMutableArray* autoLayoutConstraints;
 @property (nonatomic, assign) CGFloat splitViewControllerLeftPaneWidthMultiplier;
-@property (nonatomic, assign) UIRectEdge splitViewControllerSafeAreaEdges;
+@property (nonatomic, assign) UIRectEdge safeAreaEdgesToAlignWith;
+@property (nonatomic, assign) UIRectEdge normalEdgesToAlignWith;
 @property (nonatomic, assign) CGFloat annotationViewHeightMultiplier;
 //@}
 
@@ -125,18 +126,23 @@
       // specify a multiplier 1.0 to use the minimal board position cell width
       // for the left pane.
       self.splitViewControllerLeftPaneWidthMultiplier = 1.0;
-      // Align split view with the bottom of the safe area. This prevents it
-      // from extending behind the tab bar at the bottom. In theory no alignment
-      // would be needed with the top of the safe area because iPhone devices
-      // don't display a status bar in landscape orientation. However, this
-      // controller is the root VC of a navigation controller, and even though
-      // that navigation controller's navigation bar is hidden in landscape
-      // orientation, UINavigationController still lays out the view of its
-      // root VC (= this VC) to end below the (hidden) navigation bar. By
-      // aligning with the top of the safe area we override the
-      // UINavigationController's default layouting and force this VC's view to
-      // go up to the screen top edge.
-      self.splitViewControllerSafeAreaEdges = UIRectEdgeTop | UIRectEdgeBottom;
+      // Always align the top-level child view of this view controller with the
+      // top and bottom safe area edges of this controller's view.
+      // - The bottom edge is important to prevent the child view from extending
+      //   behind the tab bar at the bottom. On iPhones the tab bar is always
+      //   at the bottom because unlike on iPad since iOS 18, there is no
+      //   floating tab bar.
+      // - Top edge: In theory no alignment would be needed with the top of the
+      //   safe area because iPhone devices don't display a status bar in
+      //   landscape orientation. However, this controller is the root VC of a
+      //   navigation controller, and even though that navigation controller's
+      //   navigation bar is hidden in landscape orientation,
+      //   UINavigationController still lays out the view of its root VC (= this
+      //   VC) to end below the (hidden) navigation bar. By aligning with the
+      //   top of the safe area we override the UINavigationController's default
+      //   layouting and force this VC's view to go up to the screen top edge.
+      self.safeAreaEdgesToAlignWith = UIRectEdgeTop | UIRectEdgeBottom;
+      self.normalEdgesToAlignWith = UIRectEdgeNone;
       // On iPhone devices the annotation view does not get as much width as on
       // iPad devices. Nevertheless, a multiplier of 1.0 is still sufficient so
       // that description labels can display most description texts without
@@ -153,10 +159,34 @@
       // 1.0 gives the left pane some unneeded space, but the overall layout
       // looks better.
       self.splitViewControllerLeftPaneWidthMultiplier = 1.5;
-      // Align split view with the top and bottom of the safe area. This
-      // prevents it from extending behind the status bar at the top and the
-      // tab bar at the bottom.
-      self.splitViewControllerSafeAreaEdges = UIRectEdgeTop | UIRectEdgeBottom;
+      // On iPad devices, since iOS 18 the tab bar is no longer at the bottom
+      // of the screen, instead it's floating at the top of the screen. For
+      // a long time it was possible to force the tab bar back to the screen
+      // bottom by including the key "UseFloatingTabBar" in the user defaults
+      // with the value "NO". Starting with iOS 26.4 this key is no longer
+      // honored and the tab bar is now ***ALWAYS*** floating at the top. If
+      // a navigation bar is at the top, the tab bar hovers over the navigation
+      // bar (rendered as a segmented control). If no navigation bar is at the
+      // top, one is created by UIKit. This means that the top-level child view
+      // of this view controller always needs to align with the top safe area
+      // edge of this controller's view, but at the bottom the alignment can be
+      // made with the regular edge. It is then the child view controllers job
+      // to take care not to spill relevant content into the safe area.
+      if (@available(iOS 18.0, *))
+      {
+        self.safeAreaEdgesToAlignWith = UIRectEdgeTop;
+        self.normalEdgesToAlignWith = UIRectEdgeBottom;
+      }
+      else
+      {
+        // Pre-iOS 18 the tab bar is still at the bottom, therefore the
+        // alignment needs to be made with the bottom safe area edge. At the
+        // top it's also the safe area edge, because there is either a
+        // navigation bar (portrait) or the status bar (landscape) in the safe
+        // area.
+        self.safeAreaEdgesToAlignWith = UIRectEdgeTop | UIRectEdgeBottom;
+        self.normalEdgesToAlignWith = UIRectEdgeNone;
+      }
       // On iPad devices the annotation view gets a lot of horizontal space in
       // portrait orientation, so the multiplier does not need to be large. But
       // it should still be greater than 1.0 to give the annotation view
@@ -680,12 +710,29 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsPortraitMainView
 {
-  // Wooden background view is laid out within the safe area of the main view.
-  // Especially important are the top/bottom of the safe area - this prevents
-  // the wooden background from extending behind the navigation bar at the top
-  // or the tab bar at the bottom
+//  NSArray* constraints = [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.woodenBackgroundView];
+//  [self.autoLayoutConstraints addObjectsFromArray:constraints];
+
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  NSArray* constraints = [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.woodenBackgroundView];
+
+  viewsDictionary[@"woodenBackgroundView"] = self.woodenBackgroundView;
+
+  [visualFormats addObject:@"H:|-0-[woodenBackgroundView]-0-|"];
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats
+                                                       withViews:viewsDictionary
+                                                          inView:self.view];
+  [self.autoLayoutConstraints addObjectsFromArray:constraints];
+
+  constraints = [AutoLayoutUtility alignFirstView:self.woodenBackgroundView
+                                   withSecondView:self.view
+                                  onSafeAreaEdges:self.safeAreaEdgesToAlignWith];
+  [self.autoLayoutConstraints addObjectsFromArray:constraints];
+  constraints = [AutoLayoutUtility alignFirstView:self.woodenBackgroundView
+                                   withSecondView:self.view
+                                          onEdges:self.normalEdgesToAlignWith];
   [self.autoLayoutConstraints addObjectsFromArray:constraints];
 }
 
@@ -825,6 +872,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsLandscape
 {
+  self.autoLayoutConstraints = [NSMutableArray array];
+
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
@@ -834,14 +883,19 @@
   // Let the split view extend all the way to the left/right edges of our
   // view. The left/right pane controllers take care of the safe area handling.
   [visualFormats addObject:@"H:|-0-[splitView]-0-|"];
-  NSArray* visualFormatsConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
-                                                                    withViews:viewsDictionary
-                                                                       inView:self.view];
-  self.autoLayoutConstraints = [NSMutableArray arrayWithArray:visualFormatsConstraints];
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats
+                                                       withViews:viewsDictionary
+                                                          inView:self.view];
+  [self.autoLayoutConstraints addObjectsFromArray:constraints];
 
-  [AutoLayoutUtility alignFirstView:self.splitViewControllerChild.view
-                     withSecondView:self.view
-                    onSafeAreaEdges:self.splitViewControllerSafeAreaEdges];
+  constraints = [AutoLayoutUtility alignFirstView:self.splitViewControllerChild.view
+                                   withSecondView:self.view
+                                  onSafeAreaEdges:self.safeAreaEdgesToAlignWith];
+  [self.autoLayoutConstraints addObjectsFromArray:constraints];
+  constraints = [AutoLayoutUtility alignFirstView:self.splitViewControllerChild.view
+                                   withSecondView:self.view
+                                          onEdges:self.normalEdgesToAlignWith];
+  [self.autoLayoutConstraints addObjectsFromArray:constraints];
 }
 
 // -----------------------------------------------------------------------------
