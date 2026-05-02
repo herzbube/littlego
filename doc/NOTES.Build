@@ -10,8 +10,8 @@ Xcode version
 Since version 2.1.0, the current build should work out of the box for
 
   Silicon Mac
-  Xcode 26.0.1
-  iOS base SDK 26.0
+  Xcode 26.4.1
+  iOS base SDK 26.4
 
 If you want to build with a different setup you will probably encounter errors.
 The most important thing to keep in mind is that the Xcode project's base SDK

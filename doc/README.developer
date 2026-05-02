@@ -8,8 +8,8 @@ or years :-)
 
 Quick-start guide on how to build and run Little Go
 ---------------------------------------------------
-The current build should work out of the box for Silicon Macs, Xcode 26.0.1 and
-the iOS base SDK 26.0 (read NOTES.Build if you need help setting up this
+The current build should work out of the box for Silicon Macs, Xcode 26.4.1 and
+the iOS base SDK 26.4 (read NOTES.Build if you need help setting up this
 combination). If you want to build with a different setup (especially an Intel
 Mac or an older Xcode version) you will probably encounter errors. Consult
 NOTES.build and NOTES.Build.3rdparty, but mostly you will be on your own.

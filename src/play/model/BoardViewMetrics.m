@@ -700,7 +700,7 @@
 {
   struct GoVertexNumeric numericVertex;
   numericVertex.x = 1 + (coordinates.x - self.topLeftPointX) / self.pointDistance;
-  numericVertex.y = self.boardSize - (coordinates.y - self.topLeftPointY) / self.pointDistance;
+  numericVertex.y = (int)self.boardSize - (coordinates.y - self.topLeftPointY) / self.pointDistance;
   GoVertex* vertex;
   @try
   {

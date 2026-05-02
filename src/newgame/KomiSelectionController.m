@@ -218,7 +218,7 @@ enum NoHandicapGameSectionItem
     }
     case NoHandicapGameSection:
     {
-      komiValue = MinimumKomiItem + (indexPath.row / 2.0);
+      komiValue = (int)MinimumKomiItem + (indexPath.row / 2.0);
       assert(komiValue >= MinimumKomiItem && komiValue <= MaximumKomiItem);
       break;
     }
@@ -250,7 +250,7 @@ enum NoHandicapGameSectionItem
   else
   {
     section = NoHandicapGameSection;
-    row = 2 * (komiValue - MinimumKomiItem);
+    row = 2 * (komiValue - (int)MinimumKomiItem);
     assert(komiValue >= MinimumKomiItem && komiValue <= MaximumKomiItem);
   }
   return [NSIndexPath indexPathForRow:row inSection:section];
