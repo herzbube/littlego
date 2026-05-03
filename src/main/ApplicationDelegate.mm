@@ -328,11 +328,11 @@ configurationForConnectingSceneSession:(UISceneSession*)connectingSceneSession
     // has value UIWindowSceneSessionRoleExternalDisplayNonInteractive. [1]
     // has documentation how apps could support this scenario. For this app,
     // there is currently nothing useful to do. Experimentally determined that
-    // in this case it's ok to return nil and let iOS configure the scene on its
-    // own.
+    // in this case it's ok to return the UISceneConfiguration that is
+    // attached to the UISceneSession object we receive as a parameter.
     // [1] https://developer.apple.com/documentation/uikit/presenting-content-on-a-connected-display?language=objc
-    DDLogWarn(@"Not creating a scene configuration because connectingSceneSession.role != UIWindowSceneSessionRoleApplication, actual value is %@", connectingSceneSession.role);
-    return nil;
+    DDLogInfo(@"connectingSceneSession.role != UIWindowSceneSessionRoleApplication, actual value is %@, returning already-provided scene configuration %@", connectingSceneSession.role, connectingSceneSession.configuration);
+    return connectingSceneSession.configuration;
   }
 
   // Each UISceneConfiguration must have a unique configuration name that is

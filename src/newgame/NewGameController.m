@@ -284,9 +284,10 @@ enum CellID
   [NewGameController postNotificationOnMainThread:newGameScreenDidDisappear];
 
   self.delegate = nil;
+  self.archivedGameTimeSettingsModel = nil;
   self.theNewGameModel = nil;
   self.playerModel = nil;
-  
+
   [super dealloc];
 }
 

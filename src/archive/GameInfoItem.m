@@ -358,6 +358,7 @@ enum DataSourceInfoSectionItem
   self.komiAsString = nil;
   self.gameResultAsString = nil;
 
+  self.timeSettingsModel = nil;
   self.timeLimitInSecondsAsString = nil;
   self.overtimeInformation = nil;
   self.openingInformation = nil;

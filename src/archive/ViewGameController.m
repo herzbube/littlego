@@ -215,6 +215,8 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 - (void) viewDidAppear:(BOOL)animated
 {
+  [super viewDidAppear:animated];
+  
   if (self.needsTableViewDataReload)
   {
     self.needsTableViewDataReload = false;

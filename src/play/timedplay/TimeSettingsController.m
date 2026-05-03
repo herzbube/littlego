@@ -229,6 +229,8 @@ enum PeriodBasedTimeSystemType
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.timeSettingsModel = nil;
+
   [super dealloc];
 }
 

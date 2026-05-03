@@ -289,7 +289,7 @@
   if (! label)
   {
     totalTiles++;
-    UILabel* label = [[[UILabel alloc] initWithFrame:CGRectMake(5, 0, 80, 50)] autorelease];
+    label = [[[UILabel alloc] initWithFrame:CGRectMake(5, 0, 80, 50)] autorelease];
     label.backgroundColor = [UIColor clearColor];
     label.tag = labelTag;
     label.textColor = [UIColor greenColor];

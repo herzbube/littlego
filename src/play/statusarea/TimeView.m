@@ -120,6 +120,7 @@ static int maximumNumberOfMovesOrPeriods = 99999;
 - (void) dealloc
 {
   self.remainingTimeString = nil;
+  self.remainingNumberOfMovesOrPeriodsString = nil;
   self.remainingTimeMovesPeriodsLabel = nil;
 
   [super dealloc];

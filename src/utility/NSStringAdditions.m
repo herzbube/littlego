@@ -831,7 +831,7 @@
   if (! calendar)
     calendar = [[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] retain];
 
-  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+  NSDateFormatter* dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
   dateFormatter.calendar = calendar;
 
   // Setting this is a precondition for setLocalizedDateFormatFromTemplate:(),

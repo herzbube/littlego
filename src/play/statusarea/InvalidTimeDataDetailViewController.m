@@ -230,6 +230,7 @@ enum CellId
   self.game = nil;
   self.currentNode = nil;
   self.precedingNodeTimeData = nil;
+  self.timeSettingsModel = nil;
 
   [super dealloc];
 }

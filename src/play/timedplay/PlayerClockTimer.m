@@ -67,6 +67,10 @@ static double timerIntervalOneSecond = 1.0;
   // that is already done when the timer fires. In effect, to be deallocated
   // we need an outside source to invoke invalidateTimerIfOneIsScheduled().
 
+  // Despite the above, we set self.timer to nil here to silence a warning
+  // from Xcode Analyze.
+  self.timer = nil;
+
   [super dealloc];
 }
 

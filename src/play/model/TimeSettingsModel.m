@@ -61,6 +61,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.customTimeSystemDescription = nil;
+  
   [super dealloc];
 }
 

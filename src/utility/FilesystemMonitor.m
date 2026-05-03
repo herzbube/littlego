@@ -26,12 +26,12 @@
 @property(nonatomic, retain) NSURL* url;
 @property(nonatomic, assign) id<FilesystemMonitorDelegate> delegate;
 @property(nonatomic, assign) int fileDescriptor;
-@property(nonatomic, assign) dispatch_source_t source;
+@property(nonatomic, retain) dispatch_source_t source;
 @property(nonatomic, assign, readwrite) bool isMonitoringStarted;
 @property(nonatomic, assign) bool stopMonitoringInitiated;
 @property(nonatomic, assign) bool restartMonitoringInitiated;
 @property(nonatomic, assign) bool cancelMonitoringInitiated;
-@property(nonatomic, assign) dispatch_semaphore_t stopMonitoringSemaphore;
+@property(nonatomic, retain) dispatch_semaphore_t stopMonitoringSemaphore;
 @end
 
 
@@ -61,7 +61,11 @@
   self.stopMonitoringInitiated = false;
   self.restartMonitoringInitiated = false;
   self.cancelMonitoringInitiated = false;
-  self.stopMonitoringSemaphore = dispatch_semaphore_create(0);
+  // Dispatch objects are built as Objective-C types and therefore participate
+  // in memory management. dispatch_semaphore_create() returns an object with
+  // a retain count 1, therefore we have to autorelease it before storing it in
+  // a property declared with "retain".
+  self.stopMonitoringSemaphore = [dispatch_semaphore_create(0) autorelease];
 
   return self;
 }
@@ -74,8 +78,11 @@
   self.url = nil;
   self.delegate = nil;
 
-  dispatch_release(self.stopMonitoringSemaphore);
-  self.stopMonitoringSemaphore = 0;
+  // Dispatch objects are built as Objective-C types and therefore participate
+  // in memory management. Setting properties declared with "retain" to nil
+  // therefore releases the underlying dispatch objects.
+  self.source = nil;
+  self.stopMonitoringSemaphore = nil;
 
   [super dealloc];
 }
@@ -116,10 +123,14 @@
                                             DISPATCH_VNODE_RENAME |
                                             DISPATCH_VNODE_REVOKE |
                                             DISPATCH_VNODE_WRITE);
-    self.source = dispatch_source_create(DISPATCH_SOURCE_TYPE_VNODE,
-                                         self.fileDescriptor,
-                                         events,
-                                         mainQueue);
+    // Dispatch objects are built as Objective-C types and therefore participate
+    // in memory management. dispatch_source_create() returns an object with
+    // a retain count 1, therefore we have to autorelease it before storing it
+    // in a property declared with "retain".
+    self.source = [dispatch_source_create(DISPATCH_SOURCE_TYPE_VNODE,
+                                          self.fileDescriptor,
+                                          events,
+                                          mainQueue) autorelease];
 
     // This event handler asynchronously notifies the delegate. Because we used
     // the main queue when creating self.source, and the main queue is bound to
