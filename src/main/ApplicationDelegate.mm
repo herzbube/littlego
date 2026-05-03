@@ -305,6 +305,18 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 configurationForConnectingSceneSession:(UISceneSession*)connectingSceneSession
                                options:(UISceneConnectionOptions*)options
 {
+  // !!! IMPORTANT !!!
+  // This method is NOT invoked on every app launch! When the app launches,
+  // UIKit wants to restore the app's window. If it already knows the scene
+  // configuration that the window used last time, then it doesn't invoke this
+  // method. This method is therefore invoked only for the very first launch
+  // of the app on a device. If the app is deleted and reinstalled, this method
+  // is, of course, also invoked again. Verified experimentally: This method
+  // is invoked every time the user activates Screen Mirroring.
+  // Note: This behaviour is not described anywhere in Apple's API
+  // documentation. An explanation can be found on StackOverflow [1].
+  // [1] https://stackoverflow.com/a/64457054
+
   DDLogInfo(@"application:configurationForConnectingSceneSession:options:() received");
 
   // The underlying type of UISceneSessionRole is NSString, therefore to be

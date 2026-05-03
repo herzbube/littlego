@@ -87,7 +87,6 @@
   NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
   switch (uiArea)
   {
-    case UIAreaHelp:
     case UIAreaChangelog:
       self.documentGenerator = [[[DocumentGenerator alloc] initWithFileContent:resourceContent] autorelease];
       break;

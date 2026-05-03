@@ -1012,7 +1012,7 @@ enum GoTimeDataValidationMode
   /// preceding GoNodeTimeData object.
   ///
   /// This mode is likely to be of interest only to users who want highly
-  /// consistent time data data.
+  /// consistent time data.
   GoTimeDataValidationModeStrict,
   /// @brief The same validation is performed as in
   /// #GoTimeDataValidationModeStrict, but when a node with invalid time

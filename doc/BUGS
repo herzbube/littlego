@@ -98,8 +98,17 @@ protobuf is a heavily used and tested library that does not contain such null
 pointer issues.
 
 
-Runtime messages in the Xcode debub console
+Runtime messages in the Xcode debug console
 -------------------------------------------
+!!! UNMAINTAINED SECTION !!!
+I'm no longer maintaining this section because it's too much work for too little
+gain. Every new Xcode release sees new, weird messages popping up in the Debug
+console. Investigating them is a lot of work, and there is rarely any useful
+outcome, therefore I have given up my attempts at keeping the Debug console
+clean.
+!!! UNMAINTAINED SECTION !!!
+
+
 This message occasionally appears in Xcode's debug console:
     2019-01-09 22:17:16.951254+0100 Little Go[17873:3109184] [Common] _BSMachError: port f23; (os/kern) invalid capability (0x14) "Unable to insert COPY_SEND"
 I have not been able to find out what this means. One post that I saw claimed

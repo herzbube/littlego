@@ -969,7 +969,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 {
   if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
   {
-    // periodDurationInSeconds should not be exceeded only on the very first
+    // periodDurationInSeconds should not be exceeded on the very first
     // move for which Fischer Timing is in effect. On later moves it may
     // be exceeded when extra time is added.
     if ((! predecessorNodeTimeData || predecessorNodeTimeData.isRemainingTimeAbsoluteTime) &&
@@ -1087,7 +1087,7 @@ typedef struct TimeDataValidationContext TimeDataValidationContext;
 {
   if (timeDataValidationMode >= GoTimeDataValidationModeNormal)
   {
-    // periodDurationInSeconds should not be exceeded only on the very first
+    // periodDurationInSeconds should not be exceeded on the very first
     // move for which Total Average Timing is in effect. On later moves it may
     // be exceeded when extra time is added.
     if ((! predecessorNodeTimeData || predecessorNodeTimeData.isRemainingTimeAbsoluteTime) &&

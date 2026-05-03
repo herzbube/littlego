@@ -51,7 +51,6 @@
   return UIInterfaceOrientationIsPortrait([UiElementMetrics interfaceOrientation]);
 }
 
-// TODO xxx is this useful?
 + (enum SizeOrientation) windowSceneGeometrySizeOrientation
 {
   CGSize windowSceneGeometrySize;

@@ -100,7 +100,7 @@
   snprintf(programName, sizeof(programName), "fuego");
   snprintf(nobookParameterName, sizeof(nobookParameterName), "--nobook");  // opening book is loaded separately from a project resource
   snprintf(quietParameterName, sizeof(quietParameterName), "--quiet");  // don't print debug messages, otherwise the project's debugging console becomes overloaded
-  int argc = 3;
+  const int argc = 3;
   char* argv[argc];
   argv[0] = programName;
   argv[1] = nobookParameterName;
