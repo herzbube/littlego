@@ -6,7 +6,7 @@ to advertise the app in Apple's app store.
 
 App Store page content
 ----------------------
-Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 15.0.
+Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 16.0.
 
 Features:
 - Board sizes between 7x7 and 19x19 (start a new game to change the board size)
@@ -15,6 +15,7 @@ Features:
 - Adjust the computer's playing strength and resign behaviour by selecting from a number of presets, or by fine-tuning advanced settings
 - Play even games, or games with 2-9 handicap stones (fixed stone placement)
 - Select from 5 pre-defined rulesets when you start a new game, or adjust game rules to your preference (komi, ko rule, area/territory scoring system, number of passes to end game, resume play by alternating/non-alternating play, four passes end game)
+- Optionally play with time limits (Main time only, Overtime only, Main time + Overtime), with a choice from 5 Overtime systems
 - Place arbitrary black and white stones for initial board setup before a game starts
 - View board positions for moves played earlier during the game
 - View and create game variations
@@ -25,7 +26,8 @@ Features:
 - Mark intersections on the board with symbols, markers and labels, and draw arrows or lines on the board
 - Display player influence (aka territory statistics) for an estimate who owns an area
 - Computer vs. computer game for entertainment
-- Save & load games to/from the archive
+- Save & load games to/from the archive using the SGF file format
+- Support for almost all properties of the SGF file format, with strict conformance to the specification
 - Use file sharing to transfer saved games from your iOS device to your computer, and vice versa
 - Import/export game files from/to other apps on your device (e.g. Mail, DropBox)
 - In-app user manual
@@ -55,23 +57,15 @@ App Store Screenshots are prepared in the simulator. The content is the same
 for all devices. iPhone screenshots are taken in portrait orientation, iPad
 screenshots are taken in landscape orientation.
 
-When this app was submitted the last time, screenshots with the following
-dimensions were required by the App Store.
-- iPhone 6.7 inch display (e.g. iPhone 15 Plus, iPhone 15 Pro Max)
-- iPhone 6.5 inch display (e.g. iPhone 14 Plus, iPhone 13 Pro Max)
-- iPhone 5.5 inch display (e.g. iPhone 8 Plus)
-- iPad 13 inch display (e.g. iPad Pro 3rd-6th generation)
-- iPad 12.9 inch display (e.g. iPad Pro 2nd generation)
-
 Notes:
-- The example devices in the previous list were taken from the App Store Connect
-  support website [1].
+- Which dimensions App Store Connect requires is a moving target. The support
+  website has some information [1], but the actual dimensions can be seen only
+  after creating a new app version in App Store Connect.
 - If a set of screenshots is provided for a higher resolution it can often be
-  reused for lower resolutions. For instance, I am reusing the iPhone 6.7 inch
-  display screenshots for the iPhone 6.5 inch display.
-- The iPad 13 inch display screenshots cannot be reused for the iPad 12.9 inch
-  display even though the screenshots have exactly the same size. I therefore
-  upload the same files a second time for the iPad 12.9 inch display.
+  reused for lower resolutions. However, this is not always the case, e.g. the
+  iPad 13 inch display screenshots could not be reused for the iPad 12.9 inch
+  display even though the screenshots hd exactly the same size. Therefore the
+  only source of truth is "what App Store Connect requires at the moment."
 
 [1] https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications
 
@@ -104,7 +98,11 @@ Screenshots
   dead (it's alive because white cannot capture it immediately due to ko).
   The game result should be B+3.
 - Screenshot 3: Take a screenshot from the board
-- Screenshot 4: Take a screenshot from the "Score" tab in the "Game info" screen
+- Screenshot 4: Take a screenshot from the "Score" tab in the "Game info"
+  screen. There is a discrepancy in that the dead/alive status of stones results
+  in the score B+3, but the game result as loaded from SGF indicates the score
+  B+2. One the one hand this is unfortunate, on the other hand it shows that
+  it is ultimately the user's responsibility to record a score.
 - Load "Blood-vomiting game.sgf", go to board position 36 and switch the
   annotation view to the description page
 - Screenshot 5: Take a screenshot from the board

@@ -159,9 +159,10 @@ Make an AppStore distribution (production release)
   do it is a moving target - Apple keeps changing the App Store Connect site,
   so it doesn't make much sense to describe things here in detail. You certainly
   need to fill in the "What's New in This Version" field (the necessary
-  information can be taken from the ChangeLog), and specify whether you want
-  the release the app manually or automatically after the review process has
-  completed. You may also need to update the copyright year, and provide new
+  information can be taken from the ChangeLog, likely in abbreviated form and
+  referring to the in-game Changelog for more details), and specify whether you
+  want the release the app manually or automatically after the review process
+  has completed. You may also need to update the copyright year, and provide new
   screenshots if new devices were introduced by Apple, or if the app's UI layout
   has changed. The content of the "Description" field can be taken from
   NOTES.Marketing, section "App Store page content".

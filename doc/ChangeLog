@@ -1,4 +1,153 @@
 --------------------------------------------------------------------------------
+Version 2.1.0 (2026-05-03)
+--------------------------------------------------------------------------------
+============
+Known issues
+============
+- iPhone devices only: On iOS 26 versions older than 26.4 (i.e. iOS 26.0.x
+  through 26.3.x), the app crashes when you rearrange tabs
+  ("More" tab > tap "Edit" button > attempt to put one of the tabs in the "More"
+  section on the main tab bar). Because the app does not crash when running the
+  exact same source code on iOS 26.4.x (as well as iOS 16.x through 18.x), this
+  is assumed to be a bug in iOS. If you are affected, upgrade your device to
+  iOS 26.4 or newer.
+
+========
+Features
+========
+- The app now supports time-based play (#29). The default mode to play Go in
+  this app is without any time limit. If you like, however, you can now give
+  yourself (and your opponent) a limited amount of time to make your moves.
+  The app supports three combinations: Main time only, Overtime only, or both
+  Main time and Overtime. For Overtime, the app supports five different time
+  systems. You can read all about the details of this feature in the user manual
+  under "Playing the game > Timed play". Link to the online manual:
+  https://littlego-usermanual.herzbube.ch/playing-the-game/timed-play/.
+- The app now has full support for recording the game result for the game's
+  main variation (#414). The app automatically sets the result when the game
+  ends, but the user can override the automatically determined result in the
+  Game Info screen. The app does not attempt to record the game score, this is
+  still something the user has to do, but the app provides the screens necessary
+  to enter the data. You find the place to view and/or change the game result in
+  the Game Info screen on the "Score" tab. You can read all about the details of
+  this feature in the user manual under "Playing the game > The game result".
+  Link to the online manual:
+  https://littlego-usermanual.herzbube.ch/playing-the-game/game-result/.
+  Thanks go to user Deionus for requesting this feature.
+- The app now supports entering 18 different so-called "Game Info" items (#384).
+  These are pieces of information that describe various aspects of the game
+  being played, such as the dates when the game was played, player names, player
+  ranks, the location where the game was played, etc.. The app preserves the
+  entered data when saving the game, and restores the data when reading a game
+  record from the archive. You find the place to view and/or change game info
+  data in the Game Info screen on the new "Info" tab. You can read all about the
+  details of this feature in the user manual under
+  "Other features > Game info screen > The "Info" tab". Link to the online
+  manual:
+  https://littlego-usermanual.herzbube.ch/other-features/game-info-screen/#the-info-tab.
+- The app now supports Multitasking on iPad devices (#304 and #435), i.e.
+  Stage Manager (added by Apple in iOS 16) and Windowed Apps (added by Apple in
+  iOS 26). The implementation is "best effort" only - for instance, if you make
+  the app window too small it will stop being useful.
+- The app now supports Screen Mirroring on iPad devices. When you mirror the
+  content that the iPad displays on an external monitor, the app's window can
+  now also be mirrored. This feature is a side-effect of adopting the
+  scene-based life cycle (#434), listed under "Technical changes".
+
+========================
+Improvements and changes
+========================
+- The touch area size of several buttons has been increased (#441), notably for
+  the buttons with which to navigate back and forth between the nodes of the
+  current game variation. The old size was 22x22 points, the new size is 36x36
+  points, so an increase of the dimensions by more than 60%. Thanks go to
+  Merlin Faidherbe for requesting this improvement.
+- The Status Text is now shown in its own box just above the Go board (#440).
+  In previous versions the Status Text was shown integrated into the navigation
+  bar at the top of the screen (Portrait), or above the node list on the
+  left-hand side of the screen (Landscape). The change was necessary because
+  of the changes Apple has made to the navigation bar in iOS 26 (floating tab
+  bar on iPad devices, also buttons were made substantially larger on all
+  devices).
+- The app now writes its name ("Little Go") and version into the "AP" property
+  when saving an SGF file (#445). Before this change the "AP" property value
+  was "SGFC" plus the SGFC version. With this change, this app can now clearly
+  be identified as the author of an SGF file.
+- The screen that is displayed when the user selects an item on the "Archive"
+  tab now shows a new entry "Number of games detected" (#389). This can be
+  useful when inspecting SGF files that contain multiple games. Such SGF files
+  would have to be imported from an external source, though, because this app
+  does not support storing multiple games in the same SGF file.
+- The game list on the "Archive" tab now refreshes automatically when the user
+  manipulates the games via the macOS Finder, after connecting the device to
+  a Mac (#391).
+- On iPad devices that have iOS 18 or later installed, what used to be the tab
+  bar at the bottom of the screen is now displayed as a "floating" tab bar
+  at the top of the screen (#439). Unfortunately, iOS 26.4 no longer allows the
+  app to opt-out of this questionable layout decision made by Apple.
+- The app now shows the "Pass" button and the "Computer play" button if the game
+  has ended and the user views a node that is not the last node of the current
+  game variation (commit 29a7bbd1). The two buttons were not displayed until
+  now because the dedicated "Scoring" button claimed the needed space. The
+  "Scoring" button is now only displayed when the last node of the current game
+  variation is displayed.
+
+========
+Bugfixes
+========
+- A bug was fixed that could have had potentially unexpected effects when
+  changing settings that use a green toggle button (#442), such as toggling
+  the wrong setting.
+- Fixed a bug that on iPad devices caused the size of some text entry fields to
+  be reduced way too much (commit 88ea7f18).
+
+===========
+Regressions
+===========
+- Fixed a bug that prevented the app from writing log files when logging is
+  enabled by the user in the "Diagnostics" tab (#438). The bug was introduced
+  in version 2.0.0 of the app.
+
+=================
+Technical changes
+=================
+Support for iOS 15 has been dropped (#437).
+- The minimum required version is now iOS 16.0.
+- The following devices are no longer supported:
+  - iPhone 6S / 6S Plus (discontinued September 12, 2018)
+  - iPhone SE 1st generation (discontinued September 12, 2018)
+  - iPhone 7 / 7 Plus (discontinued September 10, 2019)
+  - iPad Air 2 (discontinued March 21, 2017)
+  - iPad Mini 4 (discontinued March 18, 2019)
+  - iPod Touch 7th generation (discontinued May 10, 2022)
+- The main reason for the change is that newer iOS versions drop support for
+  certain methods to handle the rotation of the user interface when the user
+  rotates the device. Maintaining both backwards-compatible logic and new logic
+  required with modern iOS versions is beyond the resources of this
+  single-developer project.
+
+Other technical changes:
+- The project has been upgraded to the iOS 26.4 SDK and Xcode 26.4.1 (#456).
+- The following third party software has been upgraded to new versions:
+  Fuego (from trunk revision 1728 to 2038), Boost (from 1.75.0 to 1.89.0),
+  SgfcKit and libsgfc++ (from 2.0.1 to 3.0.0), SGFC (from 2.0 to 2.2),
+  Cocoa Lumberjack (from 3.8.2 to 3.9.0) and Firebase Crashlytics (from 10.19.0
+  to 12.5.0).
+- The app has been upgraded to adopt the scene-based life cycle (#434). Scenes
+  were introduced by Apple in iOS 13, but their use was voluntary until now.
+  Apple announced that the use of scenes will finally be made mandatory in
+  iOS 27, so this change modernizes the project and makes it ready for the new
+  iOS version.
+- The app is now built with support for C++23 (#393).
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/25?closed=1
+
+
+--------------------------------------------------------------------------------
 Version 2.0.1 (2024-05-11)
 --------------------------------------------------------------------------------
 ========

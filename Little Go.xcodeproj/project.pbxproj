@@ -2086,6 +2086,7 @@
 		D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FilesystemMonitor.m; sourceTree = "<group>"; };
 		D79B280A2EDB12C900AA71A6 /* FilesystemOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemOperations.h; sourceTree = "<group>"; };
 		D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FilesystemOperations.mm; sourceTree = "<group>"; };
+		D7C9BE922FABB75600D7C746 /* copy-sgf-files-to-simulator.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "copy-sgf-files-to-simulator.sh"; sourceTree = "<group>"; };
 		D7F593DA2EF891EF0031317A /* PlayerClockService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerClockService.h; sourceTree = "<group>"; };
 		D7F593DB2EF891EF0031317A /* TimedPlayController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimedPlayController.h; sourceTree = "<group>"; };
 		D7F593DC2EF891EF0031317A /* TimedPlayController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimedPlayController.m; sourceTree = "<group>"; };
@@ -3884,6 +3885,7 @@
 				CD093E63259A7D300058D170 /* build-sgfckit.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDC7F5B62BC2B5900025B81D /* build-usermanual.sh */,
+				D7C9BE922FABB75600D7C746 /* copy-sgf-files-to-simulator.sh */,
 				CD3D8B9628CCC5C40008D22F /* generate-sgf-with-moves.awk */,
 				CD3D5147147436C70098D8E0 /* makedist.sh */,
 				CDD961001662A8E300B54E09 /* render-readme.rb */,
@@ -5406,13 +5408,13 @@
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				EXCLUDED_SOURCE_FILE_NAMES = "GoogleService-Info.plist";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego;
 				PRODUCT_NAME = "Little Go";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5428,12 +5430,12 @@
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego;
 				PRODUCT_NAME = "Little Go";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5633,12 +5635,12 @@
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego;
 				PRODUCT_NAME = "Little Go";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5968,12 +5970,12 @@
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego;
 				PRODUCT_NAME = "Little Go";
 				PROVISIONING_PROFILE_SPECIFIER = "";
