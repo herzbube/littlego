@@ -284,9 +284,20 @@
       return nil;
   }
 
-  XCUIElement* uiElement = app.tabBars.buttons[uiElementName];
-  if (! uiElement.exists)
-    uiElement = app.cells.staticTexts[uiElementName];
+  XCUIElement* uiElement;
+  if (self.uiTestDeviceInfo.uiType != UITypePad)
+  {
+    uiElement = app.tabBars.buttons[uiElementName];
+    if (! uiElement.exists)
+    {
+      // Cells in the table view displayed by the "More" navigation controller
+      uiElement = app.cells.staticTexts[uiElementName];
+    }
+  }
+  else
+  {
+    uiElement = nil; // TODO fix to find the tab in the floating tab bar
+  }
 
   return uiElement;
 }
